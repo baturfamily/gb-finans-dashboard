@@ -12,19 +12,21 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
     <style>
         :root { 
-            --bg-dark: #000000;
-            --text-main: #FFFFFF; 
-            --text-muted: #AEAEC0; 
-            --neon-green: #30d158; 
-            --neon-red: #ff453a; 
-            --neon-blue: #0a84ff; 
-            --neon-yellow: #ffd60a;
+            /* YENİ ZEMİN: TAM SİYAH DEĞİL, PREMIUM MAT KOYU GRİ */
+            --bg-dark: #121212; 
             
-            /* PREMIUM KATMANLI PANEL STİLLERİ */
-            --panel-bg: linear-gradient(180deg, rgba(35,35,37,0.7) 0%, rgba(20,20,22,0.8) 100%);
-            --panel-border: rgba(255, 255, 255, 0.08);
-            --panel-shadow: 0 10px 40px rgba(0,0,0,0.6);
-            --border-color: rgba(255, 255, 255, 0.05);
+            --text-main: #F2F2F7; 
+            --text-muted: #8E8E93; 
+            --neon-green: #32D74B; 
+            --neon-red: #FF453A; 
+            --neon-blue: #0A84FF; 
+            --neon-yellow: #FFD60A;
+            
+            /* KART ZEMİNLERİ: Arka plandan biraz daha aydınlık (Elevated) */
+            --panel-bg: #1C1C1E;
+            --panel-border: rgba(255, 255, 255, 0.05);
+            --panel-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            --border-color: rgba(255, 255, 255, 0.06);
         }
         
         * { 
@@ -42,14 +44,6 @@
             padding-left: 16px; padding-right: 16px;
             overflow-y: auto;
             overscroll-behavior-y: contain;
-            position: relative;
-        }
-
-        /* PREMIUM AMBIENT GLOW (Hafifletilmiş Işık Hüzmesi) */
-        body::before {
-            content: ''; position: fixed; top: -10%; left: -20%; width: 70%; height: 40%;
-            background: radial-gradient(circle, rgba(10,132,255,0.12) 0%, rgba(0,0,0,0) 70%);
-            z-index: -1;
         }
 
         .spinner {
@@ -64,93 +58,80 @@
             font-size: 13px; color: var(--text-muted); transition: height 0.2s ease; margin-top: -10px; font-weight: 500;
         }
 
-        /* YENİ KATMANLI PANEL (CARD) YAPISI */
+        /* YENİ MAT KART YAPISI (Çok Sade ve Net) */
         .card { 
             background: var(--panel-bg); 
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--panel-border); 
-            border-radius: 28px; 
+            border-radius: 20px; 
             margin-bottom: 16px; 
-            padding: 24px; 
+            padding: 20px; 
             box-shadow: var(--panel-shadow);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        /* Kartların mikroskobik aydınlatılmış kenarı */
-        .card::before {
-            content: ''; position: absolute; top:0; left:0; right:0; height: 1px;
-            background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0) 100%);
         }
 
         .card h3 { 
-            color: var(--text-muted); font-size: 11px; text-transform: uppercase; 
-            letter-spacing: 1.5px; margin-bottom: 16px; font-weight: 700; 
+            color: var(--text-muted); font-size: 12px; text-transform: uppercase; 
+            letter-spacing: 1px; margin-bottom: 14px; font-weight: 600; 
         }
 
-        /* HEADER & HERO SECTION */
-        .header-section { padding: 20px 4px 10px 4px; text-align: left; }
-        .header-section h1 { font-size: 32px; font-weight: 800; letter-spacing: -1px; margin-bottom: 2px; }
+        .header-section { padding: 16px 4px 8px 4px; text-align: left; }
+        .header-section h1 { font-size: 30px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 2px; }
         .header-date { font-size: 14px; color: var(--text-muted); font-weight: 500;}
         
         .system-status { font-size: 12px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; margin-top: 14px; color: var(--text-muted);}
         .update-time { font-size: 11px; opacity: 0.6; font-weight: 400;}
 
-        /* PREMIUM TEXT GRADIENT (Net Servet) */
-        .main-stats { text-align: center; padding: 18px 0; border: none; background: linear-gradient(145deg, rgba(40,40,44,0.6) 0%, rgba(15,15,17,0.7) 100%);}
+        .main-stats { text-align: center; padding: 16px 0; border: none; background: #242426; }
         .amount-large { 
-            font-size: 42px; font-weight: 800; letter-spacing: -1.5px; margin-top: 6px;
-            background: linear-gradient(135deg, #ffffff 0%, #aeaec0 100%);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            font-size: 40px; font-weight: 800; letter-spacing: -1.2px; margin-top: 4px; color: #FFFFFF;
         }
 
-        .dashboard-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; }
-        .grid-card { padding: 20px; display: flex; flex-direction: column; justify-content: center; }
-        .grid-card h3 { margin-bottom: 8px; }
-        .stat-sub-text { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
+        .dashboard-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+        .grid-card { padding: 16px; display: flex; flex-direction: column; justify-content: center; }
+        .grid-card h3 { margin-bottom: 6px; }
+        .stat-sub-text { font-size: 18px; font-weight: 700; letter-spacing: -0.5px; }
 
-        .list-row { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--border-color); }
+        .list-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--border-color); }
         .list-row:last-child { border-bottom: none; padding-bottom: 0; }
         .list-label { font-size: 15px; color: rgba(255,255,255,0.95); font-weight: 500; }
         .list-value { font-weight: 600; font-size: 15px; }
 
-        .progress-group { margin-top: 18px; }
+        .progress-group { margin-top: 16px; }
         .progress-label-group { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: var(--text-muted);}
-        .progress-container { width: 100%; background-color: rgba(255,255,255,0.06); border-radius: 12px; height: 8px; overflow: hidden; }
-        .progress-bar { height: 100%; border-radius: 12px; transition: width 1s cubic-bezier(0.1, 0.5, 0.1, 1); }
+        .progress-container { width: 100%; background-color: rgba(255,255,255,0.06); border-radius: 8px; height: 8px; overflow: hidden; }
+        .progress-bar { height: 100%; border-radius: 8px; transition: width 1s cubic-bezier(0.1, 0.5, 0.1, 1); }
 
-        .t-row { display: flex; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid var(--border-color); align-items: center;}
+        .t-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border-color); align-items: center;}
         .t-row:last-child { border-bottom: none; padding-bottom: 0; }
-        .t-icon { width: 40px; height: 40px; border-radius: 14px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.03); display: flex; align-items: center; justify-content: center; margin-right: 14px; font-size: 18px;}
+        .t-icon { width: 36px; height: 36px; border-radius: 10px; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; margin-right: 12px; font-size: 16px;}
         .t-details { flex-grow: 1; }
-        .t-name { font-weight: 600; font-size: 15px; color: #fff; letter-spacing: -0.1px;}
-        .t-meta { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
-        .t-amt { font-weight: 700; font-size: 16px; text-align: right; letter-spacing: -0.3px;}
+        .t-name { font-weight: 600; font-size: 15px; color: #fff;}
+        .t-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+        .t-amt { font-weight: 700; font-size: 15px; text-align: right;}
 
         .text-green { color: var(--neon-green); } .text-red { color: var(--neon-red); } .text-blue { color: var(--neon-blue); }
-        .chart-box { height: 220px; width: 100%; position: relative; margin: 10px 0; padding: 0 5px;}
         
-        .card-urgent { border: 1px solid rgba(255, 69, 58, 0.3); background: linear-gradient(145deg, rgba(255,69,58,0.06) 0%, rgba(20,20,22,0.8) 100%); }
+        /* GRAFİK KUTUSU (Boyut biraz daha genişletildi) */
+        .chart-box { height: 240px; width: 100%; position: relative; margin: 10px 0;}
+        
+        .card-urgent { background: #2A1718; border: 1px solid rgba(255, 69, 58, 0.2); }
 
-        /* BÜTÇE MODÜLÜ */
-        .budget-module { text-align: center; padding: 5px 0; }
-        .budget-amount { font-size: 32px; font-weight: 800; margin-bottom: 2px; letter-spacing: -1px;}
-        .budget-subtitle { font-size: 13px; color: var(--text-muted); margin-bottom: 22px; font-weight: 500;}
-        .budget-progress-container { position: relative; width: 100%; height: 20px; background-color: rgba(255,255,255,0.06); border-radius: 10px; overflow: hidden; margin-bottom: 16px; }
-        .budget-progress-bar { height: 100%; border-radius: 10px; background-color: var(--neon-blue); width: 0%; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); }
+        .budget-module { text-align: center; padding: 4px 0; }
+        .budget-amount { font-size: 30px; font-weight: 800; margin-bottom: 2px; letter-spacing: -1px;}
+        .budget-subtitle { font-size: 13px; color: var(--text-muted); margin-bottom: 16px; font-weight: 500;}
+        .budget-progress-container { position: relative; width: 100%; height: 16px; background-color: rgba(255,255,255,0.06); border-radius: 8px; overflow: hidden; margin-bottom: 12px; }
+        .budget-progress-bar { height: 100%; border-radius: 8px; background-color: var(--neon-blue); width: 0%; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); }
         
-        #budgetPercent { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 11px; font-weight: 800; color: #ffffff; letter-spacing: 0.5px; text-shadow: 0px 1px 3px rgba(0,0,0,0.5);}
-        .budget-footer { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.9); }
+        #budgetPercent { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font-size: 11px; font-weight: 700; color: #ffffff; letter-spacing: 0.5px;}
+        .budget-footer { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.8); }
         
-        .trend-badge { font-size: 12px; padding: 6px 14px; border-radius: 8px; display: inline-flex; font-weight: 600; margin-top: 14px; backdrop-filter: blur(10px);}
-        .trend-good { background-color: rgba(48, 209, 88, 0.12); color: var(--neon-green); border: 1px solid rgba(48, 209, 88, 0.15); }
-        .trend-bad { background-color: rgba(255, 69, 58, 0.12); color: var(--neon-red); border: 1px solid rgba(255, 69, 58, 0.15); }
+        .trend-badge { font-size: 11px; padding: 5px 10px; border-radius: 6px; display: inline-flex; font-weight: 600; margin-top: 10px; }
+        .trend-good { background-color: rgba(48, 209, 88, 0.15); color: var(--neon-green); }
+        .trend-bad { background-color: rgba(255, 69, 58, 0.15); color: var(--neon-red); }
 
-        /* ACCORDION (Açılır Kapanır - Zarif Oklar) */
         .accordion-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding-bottom: 2px; -webkit-tap-highlight-color: transparent;}
         .accordion-header h3 { margin-bottom: 0; pointer-events: none; }
-        .chevron { width: 28px; height: 28px; border-radius: 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.02); display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--text-muted); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); pointer-events: none; }
-        .accordion-content { overflow: hidden; transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s ease; max-height: 1200px; opacity: 1; margin-top: 18px; }
+        .chevron { width: 24px; height: 24px; border-radius: 12px; background: rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--text-muted); transition: transform 0.3s ease; pointer-events: none; }
+        .accordion-content { overflow: hidden; transition: max-height 0.4s ease, opacity 0.4s ease; max-height: 1200px; opacity: 1; margin-top: 12px; }
         .card.collapsed .accordion-content { max-height: 0; opacity: 0; margin-top: 0; }
         .card.collapsed .chevron { transform: rotate(-90deg); }
     </style>
@@ -196,7 +177,7 @@
     </div>
 
     <div class="card">
-        <h3 style="text-align: center; margin-bottom: 24px;">Aylık Gider & Bütçe</h3>
+        <h3 style="text-align: center; margin-bottom: 16px;">Aylık Gider & Bütçe</h3>
         <div class="budget-module">
             <div class="budget-amount" id="aylikGider">Yükleniyor...</div>
             <div class="budget-subtitle">Bu Ayki Toplam Harcama</div>
@@ -259,7 +240,7 @@
             <div class="chevron">▼</div>
         </div>
         <div class="accordion-content" id="yaklasan-listesi">
-            <div style="text-align:center; color:var(--text-muted); font-size: 14px; padding: 15px 0;"><span class="spinner" style="border-left-color: var(--text-muted);"></span>Analiz ediliyor...</div>
+            <div style="text-align:center; color:var(--text-muted); font-size: 14px; padding: 10px 0;"><span class="spinner" style="border-left-color: var(--text-muted);"></span>Analiz ediliyor...</div>
         </div>
     </div>
 
@@ -269,7 +250,7 @@
             <div class="chevron">▼</div>
         </div>
         <div class="accordion-content" id="islem-listesi">
-            <div style="text-align:center; padding: 25px 0;"><span class="spinner" style="border-left-color: var(--text-muted);"></span>Yükleniyor</div>
+            <div style="text-align:center; padding: 15px 0;"><span class="spinner" style="border-left-color: var(--text-muted);"></span>Yükleniyor</div>
         </div>
     </div>
 
@@ -307,16 +288,16 @@
             if (window.scrollY <= 0 && touchStart > 0) {
                 const diff = e.touches[0].pageY - touchStart;
                 if (diff > 0) {
-                    const h = Math.min(diff * 0.4, 65);
+                    const h = Math.min(diff * 0.4, 60);
                     pullIndicator.style.height = h + 'px';
-                    if (h > 55) { pullIndicator.innerHTML = '<span class="spinner"></span> Güncellenebilir...'; } 
+                    if (h > 50) { pullIndicator.innerHTML = '<span class="spinner"></span> Bırakın güncellensin'; } 
                     else { pullIndicator.innerHTML = 'Aşağı çek...'; }
                 }
             }
         }, {passive: true});
         
         document.addEventListener('touchend', async e => {
-            if (parseInt(pullIndicator.style.height) > 55) {
+            if (parseInt(pullIndicator.style.height) > 50) {
                 pullIndicator.innerHTML = '<span class="spinner"></span> Güncelleniyor...';
                 await verileriCek(); 
             }
@@ -386,12 +367,9 @@
                     const now = new Date();
                     document.getElementById('last-update').innerText = "Son: " + now.toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'});
 
-                    // Net Servet Rakamını Parse Et (JSON'dan bazen formatlı metin bazen sayı gelebilir, backend'ine bağlı)
                     let servetSayi = 0;
                     if(typeof data.netServet === 'string') {
-                        // Eğer metin geliyorsa parse et (örn: "₺ 150.000,00" veya "150000.00")
                         let s = data.netServet.replace("₺", "").replace(/\s/g, "");
-                        // Eğer noktayla binlik, virgülle ondalık ayrılmışsa düzelt (örn: 150.000,00 -> 150000.00)
                         if(s.indexOf('.') !== -1 && s.indexOf(',') !== -1) s = s.replace(/\./g, "").replace(",", ".");
                         servetSayi = parseFloat(s);
                     } else if(typeof data.netServet === 'number') {
@@ -430,14 +408,12 @@
 
                             if (harcananYuzde > 100) {
                                 budgetBarDOM.style.width = "100%";
-                                budgetBarDOM.style.background = "linear-gradient(90deg, #ff453a, #ff9f0a)";
-                                percentDOM.style.color = "#ffffff";
+                                budgetBarDOM.style.backgroundColor = "var(--neon-red)";
                                 bakiyeDOM.innerText = "Aşıldı: " + formatTL(Math.abs(kalan));
                                 bakiyeDOM.style.color = "var(--neon-red)";
                             } else {
                                 budgetBarDOM.style.width = harcananYuzde + "%";
-                                budgetBarDOM.style.background = harcananYuzde > 80 ? "linear-gradient(90deg, #ffd60a, #ff9f0a)" : "linear-gradient(90deg, #0a84ff, #5e5ce6)";
-                                percentDOM.style.color = "#ffffff";
+                                budgetBarDOM.style.backgroundColor = harcananYuzde > 80 ? "var(--neon-yellow)" : "var(--neon-blue)";
                                 bakiyeDOM.innerText = "Kalan: " + formatTL(kalan);
                                 bakiyeDOM.style.color = "var(--neon-green)";
                             }
@@ -456,11 +432,11 @@
                                 trendDOM.className = "trend-badge trend-good"; trendDOM.innerText = "Geçen aya göre %" + yuzde + " az ↓";
                             } else {
                                 trendDOM.className = "trend-badge"; trendDOM.innerText = "Geçen ayla aynı ━";
-                                trendDOM.style.background = "rgba(255,255,255,0.06)"; trendDOM.style.border = "1px solid rgba(255,255,255,0.02)"; trendDOM.style.color = "#fff";
+                                trendDOM.style.background = "rgba(255,255,255,0.06)"; trendDOM.style.color = "#fff";
                             }
                         } else {
                             trendDOM.className = "trend-badge"; trendDOM.innerText = "Geçen ay verisi yok";
-                            trendDOM.style.background = "rgba(255,255,255,0.04)"; trendDOM.style.border = "none"; trendDOM.style.color = "var(--text-muted)";
+                            trendDOM.style.background = "rgba(255,255,255,0.04)"; trendDOM.style.color = "var(--text-muted)";
                         }
                     }
 
@@ -470,9 +446,9 @@
                         data.yaklasanOdemeler.forEach(islem => {
                             yaklasanDOM.innerHTML += `<div class="list-row"><span class="list-label">Ayın ${islem.gun}'ü - ${islem.kalem}</span><span class="list-value text-red">${formatTL(islem.tutar)}</span></div>`;
                         });
-                        yaklasanDOM.innerHTML += `<div style="text-align:right; margin-top:14px; font-size:13px; color:var(--text-muted); padding-right:5px;">Toplam Çıkış: <span style="color:#fff; font-weight:800; font-size:15px; letter-spacing:-0.2px;">${formatTL(data.yaklasanToplam)}</span></div>`;
+                        yaklasanDOM.innerHTML += `<div style="text-align:right; margin-top:12px; font-size:13px; color:var(--text-muted);">Toplam Çıkış: <span style="color:#fff; font-weight:800; font-size:14px;">${formatTL(data.yaklasanToplam)}</span></div>`;
                     } else {
-                        yaklasanDOM.innerHTML = `<div style="text-align:center; color:var(--neon-green); font-size: 14px; padding: 15px 0; font-weight: 600;">Önümüzdeki 7 gün planlı ödeme yok 🎉</div>`;
+                        yaklasanDOM.innerHTML = `<div style="text-align:center; color:var(--neon-green); font-size: 14px; padding: 10px 0; font-weight: 600;">Önümüzdeki 7 gün planlı ödeme yok 🎉</div>`;
                     }
 
                     const listeDOM = document.getElementById('islem-listesi');
@@ -493,8 +469,8 @@
                             </div>`;
                     });
                     
-                    // Sütun Grafiği Çiz (Pasta değil!)
-                    grafigiCizBar(data.pastaGrafik, servetSayi);
+                    // YATAY SÜTUN GRAFİĞİ ÇİZİMİ
+                    grafigiCizHorizontalBar(data.pastaGrafik, data.buAyToplamGider);
                 }
             } catch (error) {
                 console.error(error);
@@ -502,102 +478,61 @@
             }
         }
 
-        // YENİ: DİKEY SÜTUN GRAFİK (Çok Daha Anlaşılabilir)
-        function grafigiCizBar(kategoriData, netServet) {
+        // --- YENİ HATASIZ YATAY SÜTUN GRAFİK ---
+        function grafigiCizHorizontalBar(kategoriData, buAyToplamGider) {
             const ctx = document.getElementById('expenseChart').getContext('2d');
             const labels = kategoriData.map(item => item.isim);
             const values = kategoriData.map(item => item.toplam);
             
-            // Eğer toplam harcama varsa yüzdeleri hesapla
-            const totalExpense = values.reduce((a, b) => a + b, 0);
-
             if(expenseChartInstance) { expenseChartInstance.destroy(); }
-            
-            // Chart.js Datalabels Plugin'ini etkinleştir (Yüzdeleri sütun üstüne yazmak için)
             Chart.register(ChartDataLabels);
 
             expenseChartInstance = new Chart(ctx, {
-                type: 'bar',
+                type: 'bar', // bar tipinde kalacak ama indexAxis 'y' olacak
                 data: {
                     labels: labels,
                     datasets: [{
                         data: values,
-                        backgroundColor: function(context) {
-                            const chart = context.chart;
-                            const {ctx, chartArea} = chart;
-                            if (!chartArea) return null;
-                            
-                            // Sütunlara şık bir dikey degrade ver (iOS standardı)
-                            const gradients = [];
-                            const colors = ['#0a84ff', '#ff453a', '#30d158', '#ffd60a', '#bf5af2'];
-                            
-                            colors.forEach(col => {
-                                const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
-                                gradient.addColorStop(0, col + '20'); // %12 saydam alt
-                                gradient.addColorStop(1, col); // Tam renk üst
-                                gradients.push(gradient);
-                            });
-                            return gradients;
-                        }(),
-                        borderColor: ['#0a84ff', '#ff453a', '#30d158', '#ffd60a', '#bf5af2'],
-                        borderWidth: 1,
-                        borderRadius: 8, // Yumuşak köşeler
-                        borderSkipped: false, // Tüm köşeler yumuşak
+                        backgroundColor: ['#0A84FF', '#FF453A', '#32D74B', '#FFD60A', '#BF5AF2'],
+                        borderRadius: 6, // Yumuşak uçlu çubuklar
+                        barThickness: 16 // Çubuk inceliği
                     }]
                 },
                 options: { 
+                    indexAxis: 'y', // GRAFİĞİ YATAY YAPAN SİHİRLİ AYAR
                     responsive: true, maintainAspectRatio: false,
-                    layout: { padding: { top: 20 } },
+                    layout: { padding: { right: 40 } }, // Yüzdelerin sağda kesilmemesi için boşluk
                     scales: {
-                        y: {
-                            display: false, // Y ekseni gizli (Sütun üstüne değer yazacağız)
-                            grid: { display: false },
-                            beginAtZero: true
-                        },
-                        x: {
-                            display: true,
-                            grid: { display: false }, // Dikey çizgileryok
+                        x: { display: false, grid: { display: false } }, // Alt ekseni tamamen gizle
+                        y: { 
+                            grid: { display: false }, 
+                            border: { display: false },
                             ticks: { 
-                                color: '#AEAEC0', // var(--text-muted)
-                                font: { size: 11, weight: '500' },
-                                padding: 5
-                            },
-                            border: { display: false } // Alt çizgi yok
+                                color: '#F2F2F7', 
+                                font: { size: 12, weight: '600' }
+                            }
                         }
                     },
                     plugins: { 
-                        legend: { display: false }, // Legend yok
-                        tooltip: { enabled: false }, // Tooltip yok (Datalabels kullanıyoruz)
-                        // SÜTUN ÜSTÜNE YAZILAN DEĞERLER (DataLabels Plugin)
+                        legend: { display: false },
+                        tooltip: { enabled: false }, 
                         datalabels: {
-                            anchor: 'end', // Sütun bitişine çapa at
-                            align: 'end',   // Sütun dışına hizala
-                            color: '#FFFFFF',
-                            offset: 2, // Sütunla yazı arası boşluk
-                            font: { size: 10, weight: 'bold' },
-                            // Sütun üstüne Yüzde mi yoksa Tutar mı yazalım?
-                            formatter: function(value, context) {
-                                // Seçenek A: Yüzde Yaz (Toplam harcamanın % kaçı?)
-                                if (totalExpense > 0) {
-                                    let percentage = Math.round((value / totalExpense) * 100);
+                            anchor: 'end', 
+                            align: 'right', // Yazıyı çubuğun sağ ucuna hizala
+                            color: '#8E8E93',
+                            font: { size: 11, weight: '600' },
+                            formatter: function(value) {
+                                if (buAyToplamGider > 0) {
+                                    let percentage = Math.round((value / buAyToplamGider) * 100);
                                     return '%' + percentage;
                                 }
-                                
-                                // Seçenek B: Kısaltılmış Tutar Yaz (Örn: 1.5K)
-                                /*
-                                if (value >= 1000) return (value / 1000).toFixed(1) + 'K';
-                                return value + '₺';
-                                */
-                                return ""; 
+                                return '';
                             }
                         }
                     } 
                 }
             });
         }
-
-        // İlk veri çekme
-        verileriCek();
     </script>
 </body>
 </html>
