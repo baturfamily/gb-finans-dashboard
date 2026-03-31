@@ -9,11 +9,10 @@
     
     <title>Finans Merkezi</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
     <style>
         :root { 
-            /* PREMIUM MAT KOYU MOD (OLED Siyahı yerine Dinlendirici Uzay Grisi) */
             --bg-dark: #121212; 
-            
             --text-main: #F2F2F7; 
             --text-muted: #8E8E93; 
             --neon-green: #32D74B; 
@@ -21,7 +20,6 @@
             --neon-blue: #0A84FF; 
             --neon-yellow: #FFD60A;
             
-            /* KART ZEMİNLERİ */
             --panel-bg: #1C1C1E;
             --panel-border: rgba(255, 255, 255, 0.05);
             --panel-shadow: 0 4px 12px rgba(0,0,0,0.3);
@@ -43,6 +41,7 @@
             padding-left: 16px; padding-right: 16px;
             overflow-y: auto;
             overscroll-behavior-y: contain;
+            position: relative;
         }
 
         .spinner {
@@ -57,7 +56,6 @@
             font-size: 13px; color: var(--text-muted); transition: height 0.2s ease; margin-top: -10px; font-weight: 500;
         }
 
-        /* YENİ MAT KART YAPISI */
         .card { 
             background: var(--panel-bg); 
             border: 1px solid var(--panel-border); 
@@ -106,9 +104,7 @@
         .t-amt { font-weight: 700; font-size: 15px; text-align: right;}
 
         .text-green { color: var(--neon-green); } .text-red { color: var(--neon-red); } .text-blue { color: var(--neon-blue); }
-        
         .chart-box { height: 240px; width: 100%; position: relative; margin: 10px 0;}
-        
         .card-urgent { background: #2A1718; border: 1px solid rgba(255, 69, 58, 0.2); }
 
         .budget-module { text-align: center; padding: 4px 0; }
@@ -140,7 +136,7 @@
         <h1>Finans Merkezi</h1>
         <div class="header-date" id="current-date">Tarih Yükleniyor...</div>
         <div class="system-status">
-            <span id="baglanti-durumu" style="color: var(--neon-yellow);"><span class="spinner"></span>Bağlanıyor...</span>
+            <span id="baglanti-durumu" style="color: var(--neon-yellow);"><span class="spinner"></span>Bağlanıyor</span>
             <span class="update-time" id="last-update">Bekleniyor</span>
         </div>
     </div>
@@ -236,7 +232,7 @@
             <div class="chevron">▼</div>
         </div>
         <div class="accordion-content" id="yaklasan-listesi">
-            <div style="text-align:center; color:var(--text-muted); font-size: 14px; padding: 10px 0;"><span class="spinner" style="border-left-color: var(--text-muted);"></span>Analiz ediliyor...</div>
+            <div style="text-align:center; color:var(--text-muted); font-size: 14px; padding: 15px 0;"><span class="spinner" style="border-left-color: var(--text-muted);"></span>Analiz ediliyor...</div>
         </div>
     </div>
 
@@ -246,7 +242,7 @@
             <div class="chevron">▼</div>
         </div>
         <div class="accordion-content" id="islem-listesi">
-            <div style="text-align:center; padding: 15px 0;"><span class="spinner" style="border-left-color: var(--text-muted);"></span>Yükleniyor</div>
+            <div style="text-align:center; padding: 25px 0;"><span class="spinner" style="border-left-color: var(--text-muted);"></span>Yükleniyor</div>
         </div>
     </div>
 
@@ -284,16 +280,16 @@
             if (window.scrollY <= 0 && touchStart > 0) {
                 const diff = e.touches[0].pageY - touchStart;
                 if (diff > 0) {
-                    const h = Math.min(diff * 0.4, 60);
+                    const h = Math.min(diff * 0.4, 65);
                     pullIndicator.style.height = h + 'px';
-                    if (h > 50) { pullIndicator.innerHTML = '<span class="spinner"></span> Bırakın güncellensin'; } 
+                    if (h > 55) { pullIndicator.innerHTML = '<span class="spinner"></span> Bırakın güncellensin...'; } 
                     else { pullIndicator.innerHTML = 'Aşağı çek...'; }
                 }
             }
         }, {passive: true});
         
         document.addEventListener('touchend', async e => {
-            if (parseInt(pullIndicator.style.height) > 50) {
+            if (parseInt(pullIndicator.style.height) > 55) {
                 pullIndicator.innerHTML = '<span class="spinner"></span> Güncelleniyor...';
                 await verileriCek(); 
             }
@@ -301,14 +297,17 @@
             touchStart = 0;
         });
 
+        // Güvenli Sayı Formatlama
         function formatTL(sayi) {
             if (isNaN(sayi) || sayi === null || sayi === "") return "0,00 ₺";
             return new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY', minimumFractionDigits: 2 }).format(sayi);
         }
 
+        // HATA YARATAN ANİMASYON GÜVENLİ HALE GETİRİLDİ
         function animateValue(id, endValue, duration) {
             const obj = document.getElementById(id);
-            if(!obj) return;
+            if(!obj || isNaN(endValue)) return; // Sayı değilse animasyona girme, çökme engellendi
+            
             let startTimestamp = null;
             const step = (timestamp) => {
                 if (!startTimestamp) startTimestamp = timestamp;
@@ -336,21 +335,21 @@
         function getCategoryIcon(kalem) {
             if(!kalem) return "💸";
             const k = kalem.toLowerCase();
-            if(k.includes("market") || k.includes("migros") || k.includes("şok") || k.includes("bim")) return "🛒";
+            if(k.includes("market") || k.includes("migros")) return "🛒";
             if(k.includes("benzin") || k.includes("yakıt")) return "⛽️";
-            if(k.includes("kira") || k.includes("aidat") || k.includes("site")) return "🏠";
-            if(k.includes("sigara") || k.includes("tekel")) return "🚬";
-            if(k.includes("amazon") || k.includes("hepsi") || k.includes("ikea") || k.includes("trendyol")) return "📦";
+            if(k.includes("kira") || k.includes("aidat")) return "🏠";
+            if(k.includes("sigara")) return "🚬";
+            if(k.includes("amazon") || k.includes("hepsiburada") || k.includes("ikea")) return "📦";
             if(k.includes("fatura") || k.includes("elektrik") || k.includes("su") || k.includes("doğalgaz")) return "📄";
-            if(k.includes("kredi") || k.includes("borç") || k.includes("eft") || k.includes("hesap")) return "🏦";
-            if(k.includes("köpek") || k.includes("mama") || k.includes("veteriner")) return "🐾";
-            if(k.includes("maaş") || k.includes("mtsk")) return "💰";
+            if(k.includes("kredi") || k.includes("borç") || k.includes("eft")) return "🏦";
+            if(k.includes("köpek") || k.includes("mama")) return "🐾";
+            if(k.includes("maaş")) return "💰";
             return "💸";
         }
 
         async function verileriCek() {
             const durumEl = document.getElementById('baglanti-durumu');
-            durumEl.innerHTML = '<span class="spinner" style="border-left-color: var(--neon-yellow);"></span>Sistem Okunuyor';
+            durumEl.innerHTML = '<span class="spinner" style="border-left-color: var(--neon-yellow);"></span>Yükleniyor';
             durumEl.style.color = "var(--neon-yellow)";
             
             try {
@@ -358,32 +357,34 @@
                 const data = await response.json();
 
                 if(data.durum === "basarili") {
-                    durumEl.innerText = "Güncel";
+                    durumEl.innerText = "Senkronize Edildi";
                     durumEl.style.color = "var(--text-muted)";
                     
                     const now = new Date();
-                    document.getElementById('last-update').innerText = "Son Senkronize: " + now.toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'});
+                    document.getElementById('last-update').innerText = "Son: " + now.toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'});
 
-                    // Net Servet Güvenli Çevirme
-                    let servetSayi = 0;
-                    let ns = data.netServet;
-                    if(ns !== undefined && ns !== null) {
-                        if(typeof ns === 'string') {
-                            let s = ns.replace(/₺/g, "").replace(/\s/g, "");
-                            if(s.indexOf('.') !== -1 && s.indexOf(',') !== -1) s = s.replace(/\./g, "").replace(",", ".");
-                            else if(s.indexOf(',') !== -1) s = s.replace(",", ".");
-                            servetSayi = parseFloat(s);
-                        } else if(typeof ns === 'number') {
-                            servetSayi = ns;
+                    // KUSURSUZ SAYI DÖNÜŞTÜRÜCÜ (Net Servet İçin)
+                    let servetTutar = 0;
+                    if(typeof data.netServet === 'string') {
+                        // Örn: "2.116.326,58" veya "2116326.58" -> 2116326.58 yapar
+                        let temizStr = data.netServet.replace(/[^0-9,-.]/g, "");
+                        if(temizStr.includes(',') && temizStr.includes('.')) {
+                            temizStr = temizStr.replace(/\./g, '').replace(',', '.');
+                        } else if(temizStr.includes(',')) {
+                            temizStr = temizStr.replace(',', '.');
                         }
+                        servetTutar = parseFloat(temizStr);
+                    } else if(typeof data.netServet === 'number') {
+                        servetTutar = data.netServet;
                     }
-                    
-                    if(!isNaN(servetSayi)) {
-                       animateValue("val-net-servet", servetSayi, 1200);
+
+                    if(!isNaN(servetTutar) && servetTutar !== 0) {
+                       animateValue("val-net-servet", servetTutar, 1500);
                     } else {
                        document.getElementById('val-net-servet').innerText = data.netServet || "₺ 0,00";
                     }
 
+                    // Diğer kartları doldur
                     document.getElementById('val-kasa').innerText = formatTL(data.toplamKasa);
                     document.getElementById('val-borc').innerText = formatTL(data.toplamBorc);
                     document.getElementById('val-borc-acil').innerText = formatTL(data.toplamCanYakan);
@@ -411,12 +412,14 @@
 
                             if (harcananYuzde > 100) {
                                 budgetBarDOM.style.width = "100%";
-                                budgetBarDOM.style.backgroundColor = "var(--neon-red)";
+                                budgetBarDOM.style.background = "linear-gradient(90deg, #ff453a, #ff9f0a)";
+                                percentDOM.style.color = "#ffffff";
                                 bakiyeDOM.innerText = "Aşıldı: " + formatTL(Math.abs(kalan));
                                 bakiyeDOM.style.color = "var(--neon-red)";
                             } else {
                                 budgetBarDOM.style.width = harcananYuzde + "%";
-                                budgetBarDOM.style.backgroundColor = harcananYuzde > 80 ? "var(--neon-yellow)" : "var(--neon-blue)";
+                                budgetBarDOM.style.background = harcananYuzde > 80 ? "linear-gradient(90deg, #ffd60a, #ff9f0a)" : "linear-gradient(90deg, #0a84ff, #5e5ce6)";
+                                percentDOM.style.color = "#ffffff";
                                 bakiyeDOM.innerText = "Kalan: " + formatTL(kalan);
                                 bakiyeDOM.style.color = "var(--neon-green)";
                             }
@@ -435,11 +438,11 @@
                                 trendDOM.className = "trend-badge trend-good"; trendDOM.innerText = "Geçen aya göre %" + yuzde + " az ↓";
                             } else {
                                 trendDOM.className = "trend-badge"; trendDOM.innerText = "Geçen ayla aynı ━";
-                                trendDOM.style.background = "rgba(255,255,255,0.06)"; trendDOM.style.color = "#fff";
+                                trendDOM.style.background = "rgba(255,255,255,0.06)"; trendDOM.style.border = "1px solid rgba(255,255,255,0.02)"; trendDOM.style.color = "#fff";
                             }
                         } else {
                             trendDOM.className = "trend-badge"; trendDOM.innerText = "Geçen ay verisi yok";
-                            trendDOM.style.background = "rgba(255,255,255,0.04)"; trendDOM.style.color = "var(--text-muted)";
+                            trendDOM.style.background = "rgba(255,255,255,0.04)"; trendDOM.style.border = "none"; trendDOM.style.color = "var(--text-muted)";
                         }
                     }
 
@@ -449,9 +452,9 @@
                         data.yaklasanOdemeler.forEach(islem => {
                             yaklasanDOM.innerHTML += `<div class="list-row"><span class="list-label">Ayın ${islem.gun}'ü - ${islem.kalem}</span><span class="list-value text-red">${formatTL(islem.tutar)}</span></div>`;
                         });
-                        yaklasanDOM.innerHTML += `<div style="text-align:right; margin-top:12px; font-size:13px; color:var(--text-muted);">Toplam Çıkış: <span style="color:#fff; font-weight:800; font-size:14px;">${formatTL(data.yaklasanToplam)}</span></div>`;
+                        yaklasanDOM.innerHTML += `<div style="text-align:right; margin-top:14px; font-size:13px; color:var(--text-muted); padding-right:5px;">Toplam Çıkış: <span style="color:#fff; font-weight:800; font-size:15px; letter-spacing:-0.2px;">${formatTL(data.yaklasanToplam)}</span></div>`;
                     } else {
-                        yaklasanDOM.innerHTML = `<div style="text-align:center; color:var(--neon-green); font-size: 14px; padding: 10px 0; font-weight: 600;">Önümüzdeki 7 gün planlı ödeme yok 🎉</div>`;
+                        yaklasanDOM.innerHTML = `<div style="text-align:center; color:var(--neon-green); font-size: 14px; padding: 15px 0; font-weight: 600;">Önümüzdeki 7 gün planlı ödeme yok 🎉</div>`;
                     }
 
                     const listeDOM = document.getElementById('islem-listesi');
@@ -461,6 +464,7 @@
                             let renk = islem.tur === "Gelir" ? "text-green" : "";
                             let isaret = islem.tur === "Gelir" ? "+" : "-";
                             let emoji = getCategoryIcon(islem.kalem);
+                            
                             listeDOM.innerHTML += `
                                 <div class="t-row">
                                     <div class="t-icon">${emoji}</div>
@@ -472,90 +476,94 @@
                                 </div>`;
                         });
                     } else {
-                        listeDOM.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding:10px 0;">Henüz işlem yok</div>`;
+                        listeDOM.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding: 15px 0;">Henüz işlem yok</div>`;
                     }
                     
-                    if(typeof Chart !== 'undefined' && data.pastaGrafik) {
-                        grafigiCizHorizontalBar(data.pastaGrafik, data.buAyToplamGider);
-                    }
-                } else {
-                    throw new Error("Veri hatası");
+                    // Sütun Grafiği Çiz
+                    grafigiCizBar(data.pastaGrafik, data.buAyToplamGider);
                 }
             } catch (error) {
-                // EKRANDA HATANIN NE OLDUĞUNU GÖSTEREN GÜVENLİK KODU
-                durumEl.innerText = "Hata Oluştu!"; 
-                durumEl.style.color = "var(--neon-red)";
                 console.error(error);
+                durumEl.innerText = "Sistem Hatası!"; durumEl.style.color = "var(--neon-red)";
             }
         }
 
-        // --- YENİ HATASIZ YATAY SÜTUN GRAFİK (KENDİ İÇ EKLENTİSİYLE) ---
-        function grafigiCizHorizontalBar(kategoriData, buAyToplamGider) {
+        // --- YATAY SÜTUN GRAFİK (DataLabels Plugin Kullanarak) ---
+        function grafigiCizBar(kategoriData, totalExpense) {
             const ctx = document.getElementById('expenseChart').getContext('2d');
+            
+            // Veri yoksa çizme
+            if(!kategoriData || kategoriData.length === 0) return;
+
             const labels = kategoriData.map(item => item.isim);
             const values = kategoriData.map(item => item.toplam);
-            
-            if(expenseChartInstance) { expenseChartInstance.destroy(); }
 
-            // Yüzdeleri çizmek için Native (Kendi Kodumuz) Eklenti
-            const percentPlugin = {
-                id: 'percentPlugin',
-                afterDatasetsDraw(chart) {
-                    const { ctx, data } = chart;
-                    ctx.save();
-                    ctx.font = 'bold 11px -apple-system, BlinkMacSystemFont, sans-serif';
-                    ctx.fillStyle = '#8E8E93';
-                    ctx.textAlign = 'left';
-                    ctx.textBaseline = 'middle';
-                    
-                    const dataset = data.datasets[0];
-                    chart.getDatasetMeta(0).data.forEach((bar, index) => {
-                        const value = dataset.data[index];
-                        if (buAyToplamGider > 0 && value > 0) {
-                            const pct = Math.round((value / buAyToplamGider) * 100) + '%';
-                            // Çubuğun hemen sağına yüzdeyi yazdır
-                            ctx.fillText(pct, bar.x + 6, bar.y + 1);
-                        }
-                    });
-                    ctx.restore();
-                }
-            };
+            if(expenseChartInstance) { expenseChartInstance.destroy(); }
+            
+            Chart.register(ChartDataLabels);
 
             expenseChartInstance = new Chart(ctx, {
-                type: 'bar', 
+                type: 'bar',
                 data: {
                     labels: labels,
                     datasets: [{
                         data: values,
-                        backgroundColor: ['#0A84FF', '#FF453A', '#32D74B', '#FFD60A', '#BF5AF2'],
-                        borderRadius: 6, 
-                        barThickness: 16 
+                        backgroundColor: function(context) {
+                            const chart = context.chart;
+                            const {ctx, chartArea} = chart;
+                            if (!chartArea) return null;
+                            const gradients = [];
+                            const colors = ['#0a84ff', '#ff453a', '#30d158', '#ffd60a', '#bf5af2'];
+                            
+                            colors.forEach(col => {
+                                const gradient = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
+                                gradient.addColorStop(0, col + '40'); // %25 saydam sol
+                                gradient.addColorStop(1, col); // Tam renk sağ
+                                gradients.push(gradient);
+                            });
+                            return gradients;
+                        }(),
+                        borderRadius: 6, // Yumuşak uçlu çubuklar
+                        barThickness: 14 // Çubuk inceliği
                     }]
                 },
                 options: { 
-                    indexAxis: 'y', // GRAFİĞİ YATAY YAPAN KOD
+                    indexAxis: 'y', // YATAY EKSEN
                     responsive: true, maintainAspectRatio: false,
-                    layout: { padding: { right: 40 } }, 
+                    layout: { padding: { right: 40 } }, // Yüzdelerin sağda kesilmemesi için boşluk
                     scales: {
-                        x: { display: false, grid: { display: false } }, 
+                        x: { display: false, grid: { display: false } },
                         y: { 
                             grid: { display: false }, 
                             border: { display: false },
-                            ticks: { color: '#F2F2F7', font: { size: 12, weight: '600' } }
+                            ticks: { color: '#F2F2F7', font: { size: 12, weight: '500' } }
                         }
                     },
                     plugins: { 
                         legend: { display: false },
                         tooltip: { 
-                            callbacks: { 
-                                label: function(context) { return ' ' + formatTL(context.raw); } 
-                            } 
-                        } 
+                            callbacks: { label: function(context) { return ' ' + formatTL(context.raw); } } 
+                        }, 
+                        datalabels: {
+                            anchor: 'end', 
+                            align: 'right', // Yazıyı çubuğun sağ ucuna hizala
+                            color: '#8E8E93',
+                            font: { size: 11, weight: 'bold' },
+                            formatter: function(value) {
+                                if (totalExpense > 0) {
+                                    let percentage = Math.round((value / totalExpense) * 100);
+                                    return '%' + percentage;
+                                }
+                                return '';
+                            }
+                        }
                     } 
-                },
-                plugins: [percentPlugin] // Hatasız eklentimiz devrede
+                }
             });
         }
+
+        // İlk veri çekme
+        verileriCek();
     </script>
 </body>
 </html>
