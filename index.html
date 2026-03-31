@@ -85,7 +85,6 @@
         .progress-container { width: 100%; background-color: rgba(255,255,255,0.06); border-radius: 8px; height: 8px; overflow: hidden; }
         .progress-bar { height: 100%; border-radius: 8px; transition: width 1s cubic-bezier(0.1, 0.5, 0.1, 1); }
 
-        /* YENİ İŞLEM LİSTESİ STİLLERİ (EMOJİSİZ VE CİDDİ) */
         .t-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border-color); align-items: center;}
         .t-row:last-child { border-bottom: none; padding-bottom: 0; }
         .t-details { flex-grow: 1; }
@@ -308,15 +307,10 @@
             window.requestAnimationFrame(step);
         }
 
+        // TARIH FORMATINI DÜZELTTİK: ARTIK BUGÜN/DÜN YERİNE SADECE TARİHİ VERİYOR
         function formatAppleTarih(tarihHucresi) {
             if(!tarihHucresi) return "";
-            const islemTarihi = tarihHucresi.toString().substring(0, 10);
-            const bugunDate = new Date();
-            const getStr = (d) => String(d.getDate()).padStart(2, '0') + "." + String(d.getMonth() + 1).padStart(2, '0') + "." + d.getFullYear();
-            if (islemTarihi === getStr(bugunDate)) return "Bugün";
-            const dunDate = new Date(); dunDate.setDate(dunDate.getDate() - 1);
-            if (islemTarihi === getStr(dunDate)) return "Dün";
-            return islemTarihi;
+            return tarihHucresi.toString().substring(0, 10);
         }
 
         async function verileriCek() {
@@ -335,7 +329,6 @@
                     const now = new Date();
                     document.getElementById('last-update').innerText = "Son: " + now.toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'});
 
-                    // Net Servet Dönüştürücü
                     let servetSayi = 0;
                     let ns = data.netServet;
                     if(ns !== undefined && ns !== null) {
@@ -427,7 +420,7 @@
                         yaklasanDOM.innerHTML = `<div style="text-align:center; color:var(--neon-green); font-size: 14px; padding: 15px 0; font-weight: 600;">Önümüzdeki 7 gün planlı ödeme yok 🎉</div>`;
                     }
 
-                    // EMOJİLER SİLİNDİ, DAHA SADE LİSTE
+                    // SADE VE CİDDİ İŞLEM LİSTESİ
                     const listeDOM = document.getElementById('islem-listesi');
                     if(data.sonIslemler && data.sonIslemler.length > 0) {
                         listeDOM.innerHTML = "";
