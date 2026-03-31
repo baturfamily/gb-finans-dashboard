@@ -41,18 +41,20 @@
             align-items: center;
             justify-content: center;
             font-size: 13px;
-            color: var(--neon-blue);
+            color: var(--text-muted);
             transition: height 0.2s ease;
+            margin-top: -10px;
         }
-
-        .header { text-align: left; margin: 20px 0 24px 4px; }
-        .header h1 { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; }
-        .header p { font-size: 14px; margin-top: 4px; color: var(--text-muted); }
-        #baglanti-durumu { font-weight: 600; color: var(--neon-yellow); }
 
         .card { background-color: var(--card-bg); padding: 20px; border-radius: 22px; margin-bottom: 16px; }
         .card h3 { color: var(--text-muted); font-size: 13px; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px; font-weight: 600; }
         
+        /* HEADER KARTI STİLİ */
+        .header-card { text-align: center; padding: 24px 20px; background: linear-gradient(180deg, #2c2c2e 0%, var(--card-bg) 100%); border: 1px solid var(--border-color); margin-top: 16px;}
+        .header-card h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 6px; }
+        .header-card p { font-size: 13px; color: var(--text-muted); }
+        #baglanti-durumu { font-weight: 600; color: var(--neon-yellow); }
+
         .main-stats { text-align: center; padding: 10px 0; }
         .amount-large { font-size: 34px; font-weight: 800; letter-spacing: -1px; }
 
@@ -60,7 +62,7 @@
         .stat-sub-text { font-size: 18px; font-weight: 700; }
 
         .list-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 0.5px solid var(--border-color); }
-        .list-row:last-child { border-bottom: none; }
+        .list-row:last-child { border-bottom: none; padding-bottom: 0; }
         .list-label { font-size: 15px; color: var(--text-main); }
         .list-value { font-weight: 600; font-size: 15px; }
 
@@ -71,6 +73,7 @@
 
         .transaction-list { list-style: none; }
         .t-row { display: flex; justify-content: space-between; padding: 14px 0; border-bottom: 0.5px solid var(--border-color); }
+        .t-row:last-child { border-bottom: none; padding-bottom: 0; }
         .t-name { font-weight: 600; font-size: 16px; }
         .t-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
         .t-amt { font-weight: 700; font-size: 16px; text-align: right; }
@@ -83,50 +86,34 @@
             border: 1px solid rgba(255, 69, 58, 0.25);
         }
 
-        /* --- YENİ EKLENEN STİLLER --- */
-        .trend-badge {
-            font-size: 12px;
-            padding: 4px 8px;
-            border-radius: 6px;
-            display: inline-flex;
-            align-items: center;
-            margin-top: 8px;
-            font-weight: 600;
-        }
-        .trend-good { 
-            background-color: rgba(50, 215, 75, 0.15); 
-            color: var(--neon-green); 
-        }
-        .trend-bad { 
-            background-color: rgba(255, 69, 58, 0.15); 
-            color: var(--neon-red); 
-        }
+        /* YENİ: Zarif Bütçe & Gider Modülü */
+        .budget-module { text-align: center; padding: 10px 0; }
+        .budget-amount { font-size: 28px; font-weight: 700; margin-bottom: 4px; }
+        .budget-subtitle { font-size: 13px; color: var(--text-muted); margin-bottom: 16px; }
+        .budget-progress-container { width: 100%; height: 14px; background-color: var(--border-color); border-radius: 7px; overflow: hidden; margin-bottom: 12px; }
+        .budget-progress-bar { height: 100%; border-radius: 7px; background-color: var(--neon-blue); width: 0%; transition: width 0.8s ease; }
+        .budget-footer { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; }
 
-        .budget-progress-container {
-            width: 100%;
-            height: 10px;
-            background-color: var(--border-color);
-            border-radius: 5px;
-            overflow: hidden;
-            margin-top: 12px;
-        }
-        .budget-progress-bar {
-            height: 100%;
-            border-radius: 5px;
-            background-color: var(--neon-blue);
-            width: 0%; 
-            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+        .trend-badge { font-size: 11px; padding: 4px 8px; border-radius: 6px; display: inline-flex; font-weight: 600; margin-top: 8px; }
+        .trend-good { background-color: rgba(50, 215, 75, 0.15); color: var(--neon-green); }
+        .trend-bad { background-color: rgba(255, 69, 58, 0.15); color: var(--neon-red); }
+
+        /* YENİ: Accordion (Açılır Kapanır) Stilleri */
+        .accordion-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding-bottom: 4px;}
+        .accordion-header h3 { margin-bottom: 0; pointer-events: none; }
+        .chevron { font-size: 12px; color: var(--text-muted); transition: transform 0.3s ease; pointer-events: none; }
+        .accordion-content { overflow: hidden; transition: max-height 0.4s ease, opacity 0.4s ease; max-height: 1000px; opacity: 1; margin-top: 12px; }
+        .card.collapsed .accordion-content { max-height: 0; opacity: 0; margin-top: 0; }
+        .card.collapsed .chevron { transform: rotate(-90deg); }
     </style>
 </head>
 <body>
 
     <div id="pull-indicator">Yenilemek için bırak...</div>
 
-    <div class="header">
+    <div class="card header-card">
         <h1>Finans Merkezi</h1>
-        <p>Sistem: <span id="baglanti-durumu">Veriler Çekiliyor...</span></p>
-        <p style="font-size: 11px; opacity: 0.7;">Güncellemek için aşağı kaydır</p>
+        <p>Bağlantı: <span id="baglanti-durumu">Veriler Çekiliyor...</span></p>
     </div>
 
     <div class="card main-stats">
@@ -140,7 +127,7 @@
             <div class="stat-sub-text text-green" id="val-kasa">₺ 0,00</div>
         </div>
         <div class="card">
-            <h3>Genel Borç Yükü</h3>
+            <h3>Genel Borç</h3>
             <div class="stat-sub-text" id="val-borc">₺ 0,00</div>
         </div>
     </div>
@@ -157,48 +144,75 @@
     </div>
 
     <div class="card">
-        <h3>💳 Kredi Kartı Durumu</h3>
-        <div class="list-row"><span class="list-label">Toplam Borç</span><span class="list-value" id="val-kart-toplam">₺ 0,00</span></div>
-        <div class="list-row"><span class="list-label">Bu Ay (24'ü)</span><span class="list-value text-red" id="val-kart-buay">₺ 0,00</span></div>
-        <div class="list-row"><span class="list-label">Gelecek Ay</span><span class="list-value text-blue" id="val-kart-gelecek">₺ 0,00</span></div>
-    </div>
-
-    <div class="dashboard-grid-2">
-        <div class="card">
-            <h3>Gider (Bu Ay)</h3>
-            <div class="stat-sub-text" id="aylikGider">Yükleniyor...</div>
-            <div id="aylikTrend" class="trend-badge" style="display: none;"></div>
-        </div>
-        <div class="card">
-            <h3>Aylık Bütçe</h3>
-            <div class="stat-sub-text" style="font-size: 16px;" id="butceDurum">Yükleniyor...</div>
+        <h3 style="text-align: center;">Aylık Gider ve Bütçe Durumu</h3>
+        <div class="budget-module">
+            <div class="budget-amount" id="aylikGider">Yükleniyor...</div>
+            <div class="budget-subtitle">Bu Ayki Toplam Harcama</div>
+            
             <div class="budget-progress-container">
                 <div class="budget-progress-bar" id="budgetBar"></div>
             </div>
-            <div style="font-size: 11px; margin-top: 8px; color: var(--text-muted);" id="kalanBakiye"></div>
+            
+            <div class="budget-footer">
+                <span id="butceDurum">Gelir: ₺0,00</span>
+                <span id="kalanBakiye">Kalan: ₺0,00</span>
+            </div>
+            <div id="aylikTrend" class="trend-badge" style="display: none;"></div>
+        </div>
+    </div>
+
+    <div class="card accordion" onclick="toggleAccordion(this)">
+        <div class="accordion-header">
+            <h3>💳 Kredi Kartı Durumu</h3>
+            <span class="chevron">▼</span>
+        </div>
+        <div class="accordion-content">
+            <div class="list-row"><span class="list-label">Toplam Borç</span><span class="list-value" id="val-kart-toplam">₺ 0,00</span></div>
+            <div class="list-row"><span class="list-label">Bu Ay (24'ü)</span><span class="list-value text-red" id="val-kart-buay">₺ 0,00</span></div>
+            <div class="list-row"><span class="list-label">Gelecek Ay</span><span class="list-value text-blue" id="val-kart-gelecek">₺ 0,00</span></div>
+        </div>
+    </div>
+
+    <div class="card accordion" onclick="toggleAccordion(this)">
+        <div class="accordion-header">
+            <h3 style="text-align: center; width: 100%;">Aylık Gider Dağılımı</h3>
+            <span class="chevron">▼</span>
+        </div>
+        <div class="accordion-content">
+            <div class="chart-box"><canvas id="expenseChart"></canvas></div>
+        </div>
+    </div>
+
+    <div class="card accordion" onclick="toggleAccordion(this)">
+        <div class="accordion-header">
+            <h3>🏦 Kredi İlerlemeleri</h3>
+            <span class="chevron">▼</span>
+        </div>
+        <div class="accordion-content">
+            <div class="progress-group" style="margin-top: 0;">
+                <div class="progress-label-group"><span>Nev Kredisi</span><span id="val-nev-yuzde">%0</span></div>
+                <div class="progress-container"><div class="progress-bar" id="bar-nev" style="width: 0%; background-color: var(--neon-green);"></div></div>
+            </div>
+            <div class="progress-group">
+                <div class="progress-label-group"><span>Getir Kredisi</span><span id="val-getir-yuzde">%0</span></div>
+                <div class="progress-container"><div class="progress-bar" id="bar-getir" style="width: 0%; background-color: var(--neon-blue);"></div></div>
+            </div>
         </div>
     </div>
 
     <div class="card">
-        <h3>Aylık Gider Dağılımı</h3>
-        <div class="chart-box"><canvas id="expenseChart"></canvas></div>
-    </div>
-
-    <div class="card">
-        <h3>🏦 Kredi İlerlemeleri</h3>
-        <div class="progress-group">
-            <div class="progress-label-group"><span>Nev Kredisi</span><span id="val-nev-yuzde">%0</span></div>
-            <div class="progress-container"><div class="progress-bar" id="bar-nev" style="width: 0%; background-color: var(--neon-green);"></div></div>
-        </div>
-        <div class="progress-group">
-            <div class="progress-label-group"><span>Getir Kredisi</span><span id="val-getir-yuzde">%0</span></div>
-            <div class="progress-container"><div class="progress-bar" id="bar-getir" style="width: 0%; background-color: var(--neon-blue);"></div></div>
+        <h3>⏳ Yaklaşan Ödemeler (7 Gün)</h3>
+        <div id="yaklasan-listesi">
+            <div style="text-align:center; color:var(--text-muted); font-size: 14px; padding: 10px 0;">Veriler analiz ediliyor...</div>
         </div>
     </div>
 
-    <div class="card">
-        <h3>Son İşlemler</h3>
-        <div id="islem-listesi">
+    <div class="card accordion" onclick="toggleAccordion(this)">
+        <div class="accordion-header">
+            <h3>Son İşlemler</h3>
+            <span class="chevron">▼</span>
+        </div>
+        <div class="accordion-content" id="islem-listesi">
             <div class="t-row"><div class="t-name">Yükleniyor...</div></div>
         </div>
     </div>
@@ -207,53 +221,57 @@
         const API_URL = "https://script.google.com/macros/s/AKfycbwMd0e-v5_8CZ5jvNNvqHrxwMGMWrP6OSZBErj0SBT6MIXqQ1edtrh-3CP2DixePGsLuw/exec";
         let expenseChartInstance = null;
 
-        // Pull to Refresh
-        let touchStart = 0;
-        document.addEventListener('touchstart', e => { touchStart = e.touches[0].pageY; });
-        document.addEventListener('touchmove', e => {
-            const touchDiff = e.touches[0].pageY - touchStart;
-            if (window.scrollY === 0 && touchDiff > 0) {
-                const height = Math.min(touchDiff * 0.5, 60);
-                document.getElementById('pull-indicator').style.height = height + 'px';
-                if(height > 50) document.getElementById('pull-indicator').innerText = "Yenilemek için bırak...";
-            }
-        });
-        document.addEventListener('touchend', e => {
-            if (parseInt(document.getElementById('pull-indicator').style.height) > 50) {
-                verileriCek();
-            }
-            document.getElementById('pull-indicator').style.height = '0px';
-        });
-
-        // --- YENİ PARA FORMATLAYICI ---
-        function formatTL(sayi) {
-            if (isNaN(sayi) || sayi === null || sayi === "") return "0,00 ₺";
-            return new Intl.NumberFormat('tr-TR', { 
-                style: 'currency', 
-                currency: 'TRY',
-                minimumFractionDigits: 2
-            }).format(sayi);
+        // Accordion (Açılır-Kapanır) Fonksiyonu
+        function toggleAccordion(element) {
+            element.classList.toggle("collapsed");
         }
 
-        // APPLE STİLİ TARİH FORMATLAMA (Bugün/Dün algoritması)
+        // Pull to Refresh (Düzeltilmiş)
+        let touchStart = 0;
+        const pullIndicator = document.getElementById('pull-indicator');
+        
+        document.addEventListener('touchstart', e => { 
+            if (window.scrollY === 0) touchStart = e.touches[0].pageY; 
+        }, {passive: true});
+        
+        document.addEventListener('touchmove', e => {
+            if (window.scrollY === 0 && touchStart > 0) {
+                const touchDiff = e.touches[0].pageY - touchStart;
+                if (touchDiff > 0) {
+                    const height = Math.min(touchDiff * 0.4, 60);
+                    pullIndicator.style.height = height + 'px';
+                    pullIndicator.innerText = height > 50 ? "Yenilemek için bırak..." : "Aşağı çek...";
+                }
+            }
+        }, {passive: true});
+        
+        document.addEventListener('touchend', async e => {
+            if (parseInt(pullIndicator.style.height) > 50) {
+                pullIndicator.innerText = "Sistem Güncelleniyor...";
+                await verileriCek(); // Verileri bekle
+            }
+            pullIndicator.style.height = '0px';
+            touchStart = 0;
+        });
+
+        function formatTL(sayi) {
+            if (isNaN(sayi) || sayi === null || sayi === "") return "0,00 ₺";
+            return new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY', minimumFractionDigits: 2 }).format(sayi);
+        }
+
         function formatAppleTarih(tarihHucresi) {
             if(!tarihHucresi) return "";
             const islemTarihi = tarihHucresi.toString().substring(0, 10);
-            
             const bugunDate = new Date();
             const getStr = (d) => String(d.getDate()).padStart(2, '0') + "." + String(d.getMonth() + 1).padStart(2, '0') + "." + d.getFullYear();
-            const bugunStr = getStr(bugunDate);
-            
-            const dunDate = new Date();
-            dunDate.setDate(dunDate.getDate() - 1);
-            const dunStr = getStr(dunDate);
-            if (islemTarihi === bugunStr) return "Bugün";
-            if (islemTarihi === dunStr) return "Dün";
+            if (islemTarihi === getStr(bugunDate)) return "Bugün";
+            const dunDate = new Date(); dunDate.setDate(dunDate.getDate() - 1);
+            if (islemTarihi === getStr(dunDate)) return "Dün";
             return islemTarihi;
         }
 
         async function verileriCek() {
-            document.getElementById('baglanti-durumu').innerText = "Güncelleniyor...";
+            document.getElementById('baglanti-durumu').innerText = "Bağlanıyor...";
             document.getElementById('baglanti-durumu').style.color = "var(--neon-yellow)";
             
             try {
@@ -269,42 +287,17 @@
                     document.getElementById('val-borc').innerText = formatTL(data.toplamBorc);
                     document.getElementById('val-borc-acil').innerText = formatTL(data.toplamCanYakan);
                     document.getElementById('val-borc-planli').innerText = formatTL(data.toplamPlanli);
-
                     document.getElementById('val-kart-toplam').innerText = formatTL(data.kartToplam);
                     document.getElementById('val-kart-buay').innerText = formatTL(data.kartBuAy);
                     document.getElementById('val-kart-gelecek').innerText = formatTL(data.kartGelecek);
-                    
                     document.getElementById('val-nev-yuzde').innerText = "%" + data.nevYuzde;
                     document.getElementById('bar-nev').style.width = data.nevYuzde + "%";
                     document.getElementById('val-getir-yuzde').innerText = "%" + data.getirYuzde;
                     document.getElementById('bar-getir').style.width = data.getirYuzde + "%";
 
-                    // --- YENİ EKLENEN: Aylık Gider, Bütçe ve Trend Mantığı ---
+                    // Birleştirilmiş Şık Bütçe Modülü
                     if(data.buAyToplamGider !== undefined) {
                         document.getElementById('aylikGider').innerText = formatTL(data.buAyToplamGider);
-                        
-                        const trendDOM = document.getElementById('aylikTrend');
-                        if(data.gecenAyToplamGider > 0) {
-                            let fark = data.buAyToplamGider - data.gecenAyToplamGider;
-                            let yuzde = Math.abs((fark / data.gecenAyToplamGider) * 100).toFixed(1);
-                            trendDOM.style.display = "inline-flex";
-                            
-                            if (fark > 0) {
-                                trendDOM.className = "trend-badge trend-bad";
-                                trendDOM.innerText = "Geçen aya göre %" + yuzde + " fazla ↑";
-                            } else if (fark < 0) {
-                                trendDOM.className = "trend-badge trend-good";
-                                trendDOM.innerText = "Geçen aya göre %" + yuzde + " az ↓";
-                            } else {
-                                trendDOM.className = "trend-badge";
-                                trendDOM.style.backgroundColor = "var(--border-color)";
-                                trendDOM.style.color = "var(--text-main)";
-                                trendDOM.innerText = "Geçen ayla aynı ━";
-                            }
-                        } else {
-                            trendDOM.style.display = "none";
-                        }
-
                         const bakiyeDOM = document.getElementById('kalanBakiye');
                         const budgetBarDOM = document.getElementById('budgetBar');
                         document.getElementById('butceDurum').innerText = "Gelir: " + formatTL(data.buAyToplamGelir);
@@ -316,26 +309,58 @@
                             if (harcananYuzde > 100) {
                                 budgetBarDOM.style.width = "100%";
                                 budgetBarDOM.style.backgroundColor = "var(--neon-red)";
-                                bakiyeDOM.innerText = "Bütçe Aşıldı: " + formatTL(Math.abs(kalan));
+                                bakiyeDOM.innerText = "Aşıldı: " + formatTL(Math.abs(kalan));
                                 bakiyeDOM.style.color = "var(--neon-red)";
                             } else {
                                 budgetBarDOM.style.width = harcananYuzde + "%";
                                 budgetBarDOM.style.backgroundColor = harcananYuzde > 80 ? "var(--neon-yellow)" : "var(--neon-blue)";
-                                bakiyeDOM.innerText = "Kalan Bakiye: " + formatTL(kalan);
-                                bakiyeDOM.style.color = "var(--text-muted)";
+                                bakiyeDOM.innerText = "Kalan: " + formatTL(kalan);
+                                bakiyeDOM.style.color = "var(--neon-green)";
                             }
                         } else {
                             budgetBarDOM.style.width = "0%";
-                            bakiyeDOM.innerText = "Henüz gelir eklenmedi.";
+                            bakiyeDOM.innerText = "Veri Yok";
+                        }
+
+                        // Trend Modülü
+                        const trendDOM = document.getElementById('aylikTrend');
+                        if(data.gecenAyToplamGider > 0) {
+                            let fark = data.buAyToplamGider - data.gecenAyToplamGider;
+                            let yuzde = Math.abs((fark / data.gecenAyToplamGider) * 100).toFixed(1);
+                            trendDOM.style.display = "inline-flex";
+                            if (fark > 0) {
+                                trendDOM.className = "trend-badge trend-bad";
+                                trendDOM.innerText = "Geçen aya göre %" + yuzde + " fazla ↑";
+                            } else if (fark < 0) {
+                                trendDOM.className = "trend-badge trend-good";
+                                trendDOM.innerText = "Geçen aya göre %" + yuzde + " az ↓";
+                            } else {
+                                trendDOM.className = "trend-badge";
+                                trendDOM.innerText = "Geçen ayla aynı ━";
+                                trendDOM.style.backgroundColor = "var(--border-color)";
+                                trendDOM.style.color = "var(--text-main)";
+                            }
                         }
                     }
 
+                    // Yaklaşan Ödemeler Listesi
+                    const yaklasanDOM = document.getElementById('yaklasan-listesi');
+                    if(data.yaklasanOdemeler && data.yaklasanOdemeler.length > 0) {
+                        yaklasanDOM.innerHTML = "";
+                        data.yaklasanOdemeler.forEach(islem => {
+                            yaklasanDOM.innerHTML += `<div class="list-row"><span class="list-label">Ayın ${islem.gun}'ü - ${islem.kalem}</span><span class="list-value text-red">${formatTL(islem.tutar)}</span></div>`;
+                        });
+                        yaklasanDOM.innerHTML += `<div style="text-align:right; margin-top:8px; font-size:13px; color:var(--text-muted);">Toplam Çıkış: <span style="color:var(--text-main); font-weight:bold;">${formatTL(data.yaklasanToplam)}</span></div>`;
+                    } else {
+                        yaklasanDOM.innerHTML = `<div style="text-align:center; color:var(--neon-green); font-size: 14px; padding: 10px 0; font-weight: 600;">Önümüzdeki 7 gün planlı ödeme yok 🎉</div>`;
+                    }
+
+                    // Son İşlemler Listesi
                     const listeDOM = document.getElementById('islem-listesi');
                     listeDOM.innerHTML = "";
                     data.sonIslemler.forEach(islem => {
                         let renk = islem.tur === "Gelir" ? "text-green" : "";
                         let isaret = islem.tur === "Gelir" ? "+" : "-";
-                        
                         listeDOM.innerHTML += `
                             <div class="t-row">
                                 <div>
@@ -359,7 +384,6 @@
             const values = kategoriData.map(item => item.toplam);
 
             if(expenseChartInstance) { expenseChartInstance.destroy(); }
-
             expenseChartInstance = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
@@ -367,25 +391,14 @@
                     datasets: [{
                         data: values,
                         backgroundColor: ['#0a84ff', '#ff373f', '#32d74b', '#ffd60a', '#af52de', '#5e5ce6', '#64d2ff'],
-                        borderWidth: 0,
-                        hoverOffset: 4
+                        borderWidth: 0, hoverOffset: 4
                     }]
                 },
                 options: { 
-                    responsive: true, 
-                    maintainAspectRatio: false,
-                    cutout: '82%', 
+                    responsive: true, maintainAspectRatio: false, cutout: '82%', 
                     plugins: { 
                         legend: { display: false },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    let label = context.label || '';
-                                    let value = context.raw || 0;
-                                    return label + ': ' + formatTL(value);
-                                }
-                            }
-                        }
+                        tooltip: { callbacks: { label: function(context) { return context.label + ': ' + formatTL(context.raw); } } }
                     } 
                 }
             });
