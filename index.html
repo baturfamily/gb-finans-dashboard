@@ -10,110 +10,172 @@
     <title>Finansal Kontrol Merkezi</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root { --bg-dark: #000000; --card-bg: #1c1c1e; --text-main: #ffffff; --text-muted: #8e8e93; --neon-green: #34c759; --neon-red: #ff3b30; --neon-blue: #0a84ff; --border-color: #2c2c2e; }
+        :root { 
+            --bg-dark: #000000; 
+            --card-bg: #1c1c1e; 
+            --text-main: #ffffff; 
+            --text-muted: #8e8e93; 
+            --neon-green: #32d74b; 
+            --neon-red: #ff453a; 
+            --neon-blue: #0a84ff; 
+            --neon-yellow: #ffd60a;
+            --border-color: #2c2c2e; 
+        }
         
-        /* iOS Kayan Engelleme ve Dynamic Island Ayarları */
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", sans-serif; -webkit-tap-highlight-color: transparent; }
+        
         body { 
             background-color: var(--bg-dark); 
             color: var(--text-main); 
-            /* iPhone ekranlarının çentiği ve alt çizgisi için güvenlik boşlukları */
             padding-top: env(safe-area-inset-top); 
             padding-bottom: env(safe-area-inset-bottom);
             padding-left: 16px; padding-right: 16px;
-            overflow-x: hidden;
+            overflow-y: auto;
+            overscroll-behavior-y: contain; /* Pull-to-refresh için tarayıcı varsayılanını yönetmek adına */
         }
 
-        .header { text-align: center; margin: 20px 0; }
-        .header h1 { font-size: 24px; font-weight: 700; letter-spacing: 0.5px; }
-        .header p { font-size: 13px; margin-top: 4px; color: var(--text-muted); }
-        #baglanti-durumu { font-weight: 600; color: #ffd60a; }
+        /* Pull to Refresh Indicator */
+        #pull-indicator {
+            height: 0;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            color: var(--neon-blue);
+            transition: height 0.2s ease;
+        }
 
-        /* iOS Tarzı Kartlar */
-        .dashboard-grid { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 24px; }
-        .dashboard-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
-        .card { background-color: var(--card-bg); padding: 18px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
-        .card h3 { color: var(--text-muted); font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; font-weight: 600; }
-        .amount { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
+        .header { text-align: left; margin: 20px 0 24px 4px; }
+        .header h1 { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; }
+        .header p { font-size: 14px; margin-top: 4px; color: var(--text-muted); }
+        #baglanti-durumu { font-weight: 600; color: var(--neon-yellow); }
+
+        /* iOS Kart Yapısı */
+        .card { background-color: var(--card-bg); padding: 20px; border-radius: 22px; margin-bottom: 16px; }
+        .card h3 { color: var(--text-muted); font-size: 13px; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px; font-weight: 600; }
+        
+        /* Büyük Tutar Grubu */
+        .main-stats { text-align: center; padding: 10px 0; }
+        .amount-large { font-size: 40px; font-weight: 800; letter-spacing: -1px; }
+
+        /* Esnek Grid Yapısı - Mobilde Yan Yana Duranları Koruyan Ama Daraltmayan Yapı */
+        .dashboard-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+        .stat-sub-text { font-size: 20px; font-weight: 700; }
+
+        /* Kredi Kartı Detay */
+        .list-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 0.5px solid var(--border-color); }
+        .list-row:last-child { border-bottom: none; }
+        .list-label { font-size: 15px; color: var(--text-main); }
+        .list-value { font-weight: 600; font-size: 15px; }
+
+        /* Progress Bar */
+        .progress-group { margin-top: 15px; }
+        .progress-label-group { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 14px; font-weight: 600; }
+        .progress-container { width: 100%; background-color: #3a3a3c; border-radius: 10px; height: 8px; }
+        .progress-bar { height: 100%; border-radius: 10px; transition: width 1s cubic-bezier(0.1, 0.5, 0.1, 1); }
+
+        /* İşlem Listesi */
+        .transaction-list { list-style: none; }
+        .t-row { display: flex; justify-content: space-between; padding: 14px 0; border-bottom: 0.5px solid var(--border-color); }
+        .t-name { font-weight: 600; font-size: 16px; }
+        .t-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+        .t-amt { font-weight: 700; font-size: 16px; text-align: right; }
+
         .text-green { color: var(--neon-green); } .text-red { color: var(--neon-red); } .text-blue { color: var(--neon-blue); }
 
-        /* İlerleme Çubuğu ve Liste */
-        .progress-container { width: 100%; background-color: #000; border-radius: 10px; height: 10px; margin-top: 8px; }
-        .progress-bar { height: 100%; border-radius: 10px; transition: width 1s ease-in-out; }
-        .radar-item { margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border-color); }
-        .radar-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-        .radar-item span { display: flex; justify-content: space-between; font-size: 15px; align-items: center; }
-
-        .transaction-list { list-style: none; }
-        .transaction-list li { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--border-color); }
-        .transaction-list li:last-child { border-bottom: none; }
-        .t-info { display: flex; flex-direction: column; } 
-        .t-title { font-weight: 600; font-size: 16px; text-transform: capitalize; } 
-        .t-date { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
-        .t-amount { font-weight: 700; font-size: 16px; }
-        .chart-container { position: relative; width: 100%; height: 220px; display: flex; justify-content: center; }
+        /* Grafik Konteynırı - Mobilde Daha Derli Toplu */
+        .chart-box { height: 180px; width: 100%; position: relative; margin: 10px 0; }
     </style>
 </head>
 <body>
+
+    <div id="pull-indicator">Yenilemek için bırak...</div>
+
     <div class="header">
         <h1>Finans Merkezi</h1>
         <p>Sistem: <span id="baglanti-durumu">Veriler Çekiliyor...</span></p>
+        <p style="font-size: 11px; opacity: 0.7;">Güncellemek için aşağı kaydır</p>
     </div>
 
-    <div class="card" style="margin-bottom: 16px; text-align: center;">
+    <div class="card main-stats">
         <h3>Net Servet</h3>
-        <div class="amount text-main" id="val-net-servet" style="font-size: 36px;">₺ ---</div>
+        <div class="amount-large" id="val-net-servet">₺ 0</div>
     </div>
 
     <div class="dashboard-grid-2">
-        <div class="card"><h3>Kasa</h3><div class="amount text-green" id="val-kasa" style="font-size: 22px;">₺ ---</div></div>
-        <div class="card"><h3>Toplam Borç</h3><div class="amount text-red" id="val-borc" style="font-size: 22px;">₺ ---</div></div>
-    </div>
-
-    <div class="card" style="margin-bottom: 16px;">
-        <h3 style="border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px;">💳 Kredi Kartı</h3>
-        <div class="radar-item"><span><strong style="color:var(--text-muted)">Toplam Borç</strong> <b id="val-kart-toplam">₺ ---</b></span></div>
-        <div class="radar-item"><span><strong>Bu Ay (24'ü)</strong> <b class="text-red" id="val-kart-buay">₺ ---</b></span></div>
-        <div class="radar-item"><span><strong>Gelecek Aya Sarkan</strong> <b class="text-blue" id="val-kart-gelecek">₺ ---</b></span></div>
-    </div>
-
-    <div class="dashboard-grid-2">
-        <div class="card" style="display: flex; flex-direction: column; align-items: center;">
-            <h3 style="align-self: flex-start;">Aylık Dağılım</h3>
-            <div class="chart-container"><canvas id="expenseChart"></canvas></div>
+        <div class="card">
+            <h3>Kasa</h3>
+            <div class="stat-sub-text text-green" id="val-kasa">₺ 0</div>
         </div>
         <div class="card">
-            <h3 style="margin-bottom: 15px;">🏦 Krediler</h3>
-            <div class="radar-item" style="border:none; padding:0;">
-                <span style="font-size: 13px; margin-bottom: 4px;"><strong>Nev Kredisi</strong></span>
-                <span style="font-size: 12px; color: var(--text-muted);"><b id="val-nev-yuzde">%--</b></span>
-                <div class="progress-container"><div class="progress-bar" id="bar-nev" style="width: 0%; background-color: var(--neon-green);"></div></div>
-            </div>
-            <div class="radar-item" style="border:none; padding:0; margin-top: 20px;">
-                <span style="font-size: 13px; margin-bottom: 4px;"><strong>Getir Kredisi</strong></span>
-                <span style="font-size: 12px; color: var(--text-muted);"><b id="val-getir-yuzde">%--</b></span>
-                <div class="progress-container"><div class="progress-bar" id="bar-getir" style="width: 0%; background-color: var(--neon-blue);"></div></div>
-            </div>
+            <h3>Toplam Borç</h3>
+            <div class="stat-sub-text text-red" id="val-borc">₺ 0</div>
         </div>
     </div>
 
-    <div class="card" style="margin-bottom: 30px;">
+    <div class="card">
+        <h3>💳 Kredi Kartı Durumu</h3>
+        <div class="list-row"><span class="list-label">Toplam Borç</span><span class="list-value" id="val-kart-toplam">₺ 0</span></div>
+        <div class="list-row"><span class="list-label">Bu Ay (24'ü)</span><span class="list-value text-red" id="val-kart-buay">₺ 0</span></div>
+        <div class="list-row"><span class="list-label">Gelecek Ay</span><span class="list-value text-blue" id="val-kart-gelecek">₺ 0</span></div>
+    </div>
+
+    <div class="card">
+        <h3>Aylık Gider Dağılımı</h3>
+        <div class="chart-box"><canvas id="expenseChart"></canvas></div>
+    </div>
+
+    <div class="card">
+        <h3>🏦 Kredi İlerlemeleri</h3>
+        <div class="progress-group">
+            <div class="progress-label-group"><span>Nev Kredisi</span><span id="val-nev-yuzde">%0</span></div>
+            <div class="progress-container"><div class="progress-bar" id="bar-nev" style="width: 0%; background-color: var(--neon-green);"></div></div>
+        </div>
+        <div class="progress-group">
+            <div class="progress-label-group"><span>Getir Kredisi</span><span id="val-getir-yuzde">%0</span></div>
+            <div class="progress-container"><div class="progress-bar" id="bar-getir" style="width: 0%; background-color: var(--neon-blue);"></div></div>
+        </div>
+    </div>
+
+    <div class="card">
         <h3>Son İşlemler</h3>
-        <ul class="transaction-list" id="islem-listesi">
-            <li><div class="t-info"><span class="t-title">Veriler yükleniyor...</span></div></li>
-        </ul>
+        <div id="islem-listesi">
+            <div class="t-row"><div class="t-name">Yükleniyor...</div></div>
+        </div>
     </div>
 
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbwMd0e-v5_8CZ5jvNNvqHrxwMGMWrP6OSZBErj0SBT6MIXqQ1edtrh-3CP2DixePGsLuw/exec";
-        let expenseChartInstance = null; // Grafik objesi
+        let expenseChartInstance = null;
+
+        // Pull to Refresh Logic
+        let touchStart = 0;
+        document.addEventListener('touchstart', e => { touchStart = e.touches[0].pageY; });
+        document.addEventListener('touchmove', e => {
+            const touchDiff = e.touches[0].pageY - touchStart;
+            if (window.scrollY === 0 && touchDiff > 0) {
+                const height = Math.min(touchDiff * 0.5, 60);
+                document.getElementById('pull-indicator').style.height = height + 'px';
+                if(height > 50) document.getElementById('pull-indicator').innerText = "Yenilemek için bırak...";
+            }
+        });
+        document.addEventListener('touchend', e => {
+            if (parseInt(document.getElementById('pull-indicator').style.height) > 50) {
+                verileriCek();
+            }
+            document.getElementById('pull-indicator').style.height = '0px';
+        });
 
         function formatTL(sayi) {
-            if(isNaN(sayi) || sayi === "") return "₺ 0";
-            return "₺ " + Number(sayi).toLocaleString('tr-TR');
+            if(isNaN(sayi) || sayi === "" || sayi === null) return "₺ 0";
+            return "₺ " + Number(sayi).toLocaleString('tr-TR', {minimumFractionDigits: 0, maximumFractionDigits: 0});
         }
 
         async function verileriCek() {
+            document.getElementById('baglanti-durumu').innerText = "Güncelleniyor...";
+            document.getElementById('baglanti-durumu').style.color = "var(--neon-yellow)";
+            
             try {
                 const response = await fetch(API_URL);
                 const data = await response.json();
@@ -134,43 +196,35 @@
                     document.getElementById('val-getir-yuzde').innerText = "%" + data.getirYuzde;
                     document.getElementById('bar-getir').style.width = data.getirYuzde + "%";
 
-                    // Son 5 İşlemi Ekrana Bas
                     const listeDOM = document.getElementById('islem-listesi');
-                    listeDOM.innerHTML = ""; // eskiyi sil
-                    
+                    listeDOM.innerHTML = "";
                     data.sonIslemler.forEach(islem => {
-                        let renk = islem.tur === "Gelir" ? "text-green" : "text-main";
+                        let renk = islem.tur === "Gelir" ? "text-green" : "";
                         let isaret = islem.tur === "Gelir" ? "+" : "-";
-                        let tutarYazi = islem.tur === "Gelir" ? formatTL(islem.tutar) : formatTL(islem.tutar);
-                        
-                        let li = `<li>
-                            <div class="t-info">
-                                <span class="t-title">${islem.kalem}</span>
-                                <span class="t-date">${islem.tarih.substring(0,10)} | ${islem.odeme}</span>
-                            </div>
-                            <div class="t-amount ${renk}">${isaret} ${tutarYazi}</div>
-                        </li>`;
-                        listeDOM.innerHTML += li;
+                        listeDOM.innerHTML += `
+                            <div class="t-row">
+                                <div>
+                                    <div class="t-name">${islem.kalem}</div>
+                                    <div class="t-meta">${islem.tarih.substring(0,10)} • ${islem.odeme}</div>
+                                </div>
+                                <div class="t-amt ${renk}">${isaret} ${formatTL(islem.tutar)}</div>
+                            </div>`;
                     });
 
-                    // Pasta Grafiği Güncelle
                     grafigiCiz(data.pastaGrafik);
-
                 }
             } catch (error) {
-                document.getElementById('baglanti-durumu').innerText = "Çevrimdışı";
+                document.getElementById('baglanti-durumu').innerText = "Bağlantı Hatası";
                 document.getElementById('baglanti-durumu').style.color = "var(--neon-red)";
             }
         }
 
         function grafigiCiz(kategoriData) {
             const ctx = document.getElementById('expenseChart').getContext('2d');
-            
-            // Sadece etiketleri ve tutarları array'e ayırıyoruz
             const labels = kategoriData.map(item => item.isim);
             const values = kategoriData.map(item => item.toplam);
 
-            if(expenseChartInstance) { expenseChartInstance.destroy(); } // Eski grafiği sil
+            if(expenseChartInstance) { expenseChartInstance.destroy(); }
 
             expenseChartInstance = new Chart(ctx, {
                 type: 'doughnut',
@@ -178,17 +232,16 @@
                     labels: labels,
                     datasets: [{
                         data: values,
-                        backgroundColor: ['#0a84ff', '#ff3b30', '#34c759', '#ffcc00', '#af52de'],
-                        borderWidth: 0
+                        backgroundColor: ['#0a84ff', '#ff373f', '#32d74b', '#ffd60a', '#af52de', '#5e5ce6', '#64d2ff'],
+                        borderWidth: 0,
+                        hoverOffset: 4
                     }]
                 },
                 options: { 
                     responsive: true, 
                     maintainAspectRatio: false,
-                    cutout: '75%', 
-                    plugins: { 
-                        legend: { display: false } // İsimler mobilde yer kaplamasın diye kapattım
-                    } 
+                    cutout: '82%', 
+                    plugins: { legend: { display: false } } 
                 }
             });
         }
