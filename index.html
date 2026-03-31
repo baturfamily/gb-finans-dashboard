@@ -77,6 +77,12 @@
 
         .text-green { color: var(--neon-green); } .text-red { color: var(--neon-red); } .text-blue { color: var(--neon-blue); }
         .chart-box { height: 180px; width: 100%; position: relative; margin: 10px 0; }
+        
+        /* Yeni Eklenti: Can Yakan Borç Kutusu Stili */
+        .card-urgent {
+            background: linear-gradient(145deg, rgba(255, 69, 58, 0.12) 0%, var(--card-bg) 100%);
+            border: 1px solid rgba(255, 69, 58, 0.25);
+        }
     </style>
 </head>
 <body>
@@ -100,8 +106,19 @@
             <div class="stat-sub-text text-green" id="val-kasa">₺ 0,00</div>
         </div>
         <div class="card">
-            <h3>Toplam Borç</h3>
-            <div class="stat-sub-text text-red" id="val-borc">₺ 0,00</div>
+            <h3>Genel Borç Yükü</h3>
+            <div class="stat-sub-text" id="val-borc">₺ 0,00</div>
+        </div>
+    </div>
+
+    <div class="dashboard-grid-2">
+        <div class="card card-urgent">
+            <h3 style="color: var(--neon-red);">🔥 Can Yakan</h3>
+            <div class="stat-sub-text text-red" id="val-borc-acil">₺ 0,00</div>
+        </div>
+        <div class="card">
+            <h3>📅 Planlı</h3>
+            <div class="stat-sub-text text-muted" id="val-borc-planli">₺ 0,00</div>
         </div>
     </div>
 
@@ -158,13 +175,32 @@
             document.getElementById('pull-indicator').style.height = '0px';
         });
 
-        // PAR PARA FORMATLAMA (70.240,40 formatı için güncellendi)
+        // PARA FORMATLAMA (70.240,40)
         function formatTL(sayi) {
             if(isNaN(sayi) || sayi === "" || sayi === null) return "₺ 0,00";
             return "₺ " + Number(sayi).toLocaleString('tr-TR', {
                 minimumFractionDigits: 2, 
                 maximumFractionDigits: 2
             });
+        }
+
+        // APPLE STİLİ TARİH FORMATLAMA (Bugün/Dün algoritması)
+        function formatAppleTarih(tarihHucresi) {
+            if(!tarihHucresi) return "";
+            const islemTarihi = tarihHucresi.toString().substring(0, 10); // Örn: 31.03.2026
+            
+            const bugunDate = new Date();
+            const getStr = (d) => String(d.getDate()).padStart(2, '0') + "." + String(d.getMonth() + 1).padStart(2, '0') + "." + d.getFullYear();
+            
+            const bugunStr = getStr(bugunDate);
+            
+            const dunDate = new Date();
+            dunDate.setDate(dunDate.getDate() - 1);
+            const dunStr = getStr(dunDate);
+
+            if (islemTarihi === bugunStr) return "Bugün";
+            if (islemTarihi === dunStr) return "Dün";
+            return islemTarihi;
         }
 
         async function verileriCek() {
@@ -182,6 +218,11 @@
                     document.getElementById('val-net-servet').innerText = formatTL(data.netServet);
                     document.getElementById('val-kasa').innerText = formatTL(data.toplamKasa);
                     document.getElementById('val-borc').innerText = formatTL(data.toplamBorc);
+                    
+                    // YENİ EKLENEN: Borçların Bölünmesi
+                    document.getElementById('val-borc-acil').innerText = formatTL(data.toplamCanYakan);
+                    document.getElementById('val-borc-planli').innerText = formatTL(data.toplamPlanli);
+
                     document.getElementById('val-kart-toplam').innerText = formatTL(data.kartToplam);
                     document.getElementById('val-kart-buay').innerText = formatTL(data.kartBuAy);
                     document.getElementById('val-kart-gelecek').innerText = formatTL(data.kartGelecek);
@@ -196,11 +237,13 @@
                     data.sonIslemler.forEach(islem => {
                         let renk = islem.tur === "Gelir" ? "text-green" : "";
                         let isaret = islem.tur === "Gelir" ? "+" : "-";
+                        
+                        // YENİ EKLENEN: formatAppleTarih fonksiyonu kullanımı
                         listeDOM.innerHTML += `
                             <div class="t-row">
                                 <div>
                                     <div class="t-name">${islem.kalem}</div>
-                                    <div class="t-meta">${islem.tarih.substring(0,10)} • ${islem.odeme}</div>
+                                    <div class="t-meta">${formatAppleTarih(islem.tarih)} • ${islem.odeme}</div>
                                 </div>
                                 <div class="t-amt ${renk}">${isaret} ${formatTL(islem.tutar)}</div>
                             </div>`;
@@ -239,7 +282,6 @@
                         legend: { display: false },
                         tooltip: {
                             callbacks: {
-                                // Grafik üzerine gelince rakamın düzgün görünmesi için:
                                 label: function(context) {
                                     let label = context.label || '';
                                     let value = context.raw || 0;
