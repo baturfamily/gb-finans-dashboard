@@ -9,10 +9,9 @@
     
     <title>Finans Merkezi</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
     <style>
         :root { 
-            /* YENİ ZEMİN: TAM SİYAH DEĞİL, PREMIUM MAT KOYU GRİ */
+            /* PREMIUM MAT KOYU MOD (OLED Siyahı yerine Dinlendirici Uzay Grisi) */
             --bg-dark: #121212; 
             
             --text-main: #F2F2F7; 
@@ -22,7 +21,7 @@
             --neon-blue: #0A84FF; 
             --neon-yellow: #FFD60A;
             
-            /* KART ZEMİNLERİ: Arka plandan biraz daha aydınlık (Elevated) */
+            /* KART ZEMİNLERİ */
             --panel-bg: #1C1C1E;
             --panel-border: rgba(255, 255, 255, 0.05);
             --panel-shadow: 0 4px 12px rgba(0,0,0,0.3);
@@ -58,7 +57,7 @@
             font-size: 13px; color: var(--text-muted); transition: height 0.2s ease; margin-top: -10px; font-weight: 500;
         }
 
-        /* YENİ MAT KART YAPISI (Çok Sade ve Net) */
+        /* YENİ MAT KART YAPISI */
         .card { 
             background: var(--panel-bg); 
             border: 1px solid var(--panel-border); 
@@ -81,9 +80,7 @@
         .update-time { font-size: 11px; opacity: 0.6; font-weight: 400;}
 
         .main-stats { text-align: center; padding: 16px 0; border: none; background: #242426; }
-        .amount-large { 
-            font-size: 40px; font-weight: 800; letter-spacing: -1.2px; margin-top: 4px; color: #FFFFFF;
-        }
+        .amount-large { font-size: 40px; font-weight: 800; letter-spacing: -1.2px; margin-top: 4px; color: #FFFFFF; }
 
         .dashboard-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
         .grid-card { padding: 16px; display: flex; flex-direction: column; justify-content: center; }
@@ -110,7 +107,6 @@
 
         .text-green { color: var(--neon-green); } .text-red { color: var(--neon-red); } .text-blue { color: var(--neon-blue); }
         
-        /* GRAFİK KUTUSU (Boyut biraz daha genişletildi) */
         .chart-box { height: 240px; width: 100%; position: relative; margin: 10px 0;}
         
         .card-urgent { background: #2A1718; border: 1px solid rgba(255, 69, 58, 0.2); }
@@ -144,7 +140,7 @@
         <h1>Finans Merkezi</h1>
         <div class="header-date" id="current-date">Tarih Yükleniyor...</div>
         <div class="system-status">
-            <span id="baglanti-durumu" style="color: var(--neon-yellow);"><span class="spinner"></span>Bağlanıyor</span>
+            <span id="baglanti-durumu" style="color: var(--neon-yellow);"><span class="spinner"></span>Bağlanıyor...</span>
             <span class="update-time" id="last-update">Bekleniyor</span>
         </div>
     </div>
@@ -338,22 +334,23 @@
         }
 
         function getCategoryIcon(kalem) {
+            if(!kalem) return "💸";
             const k = kalem.toLowerCase();
-            if(k.includes("market") || k.includes("migros")) return "🛒";
+            if(k.includes("market") || k.includes("migros") || k.includes("şok") || k.includes("bim")) return "🛒";
             if(k.includes("benzin") || k.includes("yakıt")) return "⛽️";
-            if(k.includes("kira") || k.includes("aidat")) return "🏠";
-            if(k.includes("sigara")) return "🚬";
-            if(k.includes("amazon") || k.includes("hepsiburada") || k.includes("ikea")) return "📦";
+            if(k.includes("kira") || k.includes("aidat") || k.includes("site")) return "🏠";
+            if(k.includes("sigara") || k.includes("tekel")) return "🚬";
+            if(k.includes("amazon") || k.includes("hepsi") || k.includes("ikea") || k.includes("trendyol")) return "📦";
             if(k.includes("fatura") || k.includes("elektrik") || k.includes("su") || k.includes("doğalgaz")) return "📄";
-            if(k.includes("kredi") || k.includes("borç") || k.includes("eft")) return "🏦";
-            if(k.includes("köpek") || k.includes("mama")) return "🐾";
-            if(k.includes("maaş")) return "💰";
+            if(k.includes("kredi") || k.includes("borç") || k.includes("eft") || k.includes("hesap")) return "🏦";
+            if(k.includes("köpek") || k.includes("mama") || k.includes("veteriner")) return "🐾";
+            if(k.includes("maaş") || k.includes("mtsk")) return "💰";
             return "💸";
         }
 
         async function verileriCek() {
             const durumEl = document.getElementById('baglanti-durumu');
-            durumEl.innerHTML = '<span class="spinner" style="border-left-color: var(--neon-yellow);"></span>Yükleniyor';
+            durumEl.innerHTML = '<span class="spinner" style="border-left-color: var(--neon-yellow);"></span>Sistem Okunuyor';
             durumEl.style.color = "var(--neon-yellow)";
             
             try {
@@ -361,22 +358,28 @@
                 const data = await response.json();
 
                 if(data.durum === "basarili") {
-                    durumEl.innerText = "Senkronize Edildi";
+                    durumEl.innerText = "Güncel";
                     durumEl.style.color = "var(--text-muted)";
                     
                     const now = new Date();
-                    document.getElementById('last-update').innerText = "Son: " + now.toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'});
+                    document.getElementById('last-update').innerText = "Son Senkronize: " + now.toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'});
 
+                    // Net Servet Güvenli Çevirme
                     let servetSayi = 0;
-                    if(typeof data.netServet === 'string') {
-                        let s = data.netServet.replace("₺", "").replace(/\s/g, "");
-                        if(s.indexOf('.') !== -1 && s.indexOf(',') !== -1) s = s.replace(/\./g, "").replace(",", ".");
-                        servetSayi = parseFloat(s);
-                    } else if(typeof data.netServet === 'number') {
-                        servetSayi = data.netServet;
+                    let ns = data.netServet;
+                    if(ns !== undefined && ns !== null) {
+                        if(typeof ns === 'string') {
+                            let s = ns.replace(/₺/g, "").replace(/\s/g, "");
+                            if(s.indexOf('.') !== -1 && s.indexOf(',') !== -1) s = s.replace(/\./g, "").replace(",", ".");
+                            else if(s.indexOf(',') !== -1) s = s.replace(",", ".");
+                            servetSayi = parseFloat(s);
+                        } else if(typeof ns === 'number') {
+                            servetSayi = ns;
+                        }
                     }
+                    
                     if(!isNaN(servetSayi)) {
-                       animateValue("val-net-servet", servetSayi, 1500);
+                       animateValue("val-net-servet", servetSayi, 1200);
                     } else {
                        document.getElementById('val-net-servet').innerText = data.netServet || "₺ 0,00";
                     }
@@ -388,10 +391,10 @@
                     document.getElementById('val-kart-toplam').innerText = formatTL(data.kartToplam);
                     document.getElementById('val-kart-buay').innerText = formatTL(data.kartBuAy);
                     document.getElementById('val-kart-gelecek').innerText = formatTL(data.kartGelecek);
-                    document.getElementById('val-nev-yuzde').innerText = "%" + data.nevYuzde;
-                    document.getElementById('bar-nev').style.width = data.nevYuzde + "%";
-                    document.getElementById('val-getir-yuzde').innerText = "%" + data.getirYuzde;
-                    document.getElementById('bar-getir').style.width = data.getirYuzde + "%";
+                    document.getElementById('val-nev-yuzde').innerText = "%" + (data.nevYuzde || 0);
+                    document.getElementById('bar-nev').style.width = (data.nevYuzde || 0) + "%";
+                    document.getElementById('val-getir-yuzde').innerText = "%" + (data.getirYuzde || 0);
+                    document.getElementById('bar-getir').style.width = (data.getirYuzde || 0) + "%";
 
                     if(data.buAyToplamGider !== undefined) {
                         document.getElementById('aylikGider').innerText = formatTL(data.buAyToplamGider);
@@ -452,85 +455,105 @@
                     }
 
                     const listeDOM = document.getElementById('islem-listesi');
-                    listeDOM.innerHTML = "";
-                    data.sonIslemler.forEach(islem => {
-                        let renk = islem.tur === "Gelir" ? "text-green" : "";
-                        let isaret = islem.tur === "Gelir" ? "+" : "-";
-                        let emoji = getCategoryIcon(islem.kalem);
-                        
-                        listeDOM.innerHTML += `
-                            <div class="t-row">
-                                <div class="t-icon">${emoji}</div>
-                                <div class="t-details">
-                                    <div class="t-name">${islem.kalem}</div>
-                                    <div class="t-meta">${formatAppleTarih(islem.tarih)} • ${islem.odeme}</div>
-                                </div>
-                                <div class="t-amt ${renk}">${isaret} ${formatTL(islem.tutar)}</div>
-                            </div>`;
-                    });
+                    if(data.sonIslemler && data.sonIslemler.length > 0) {
+                        listeDOM.innerHTML = "";
+                        data.sonIslemler.forEach(islem => {
+                            let renk = islem.tur === "Gelir" ? "text-green" : "";
+                            let isaret = islem.tur === "Gelir" ? "+" : "-";
+                            let emoji = getCategoryIcon(islem.kalem);
+                            listeDOM.innerHTML += `
+                                <div class="t-row">
+                                    <div class="t-icon">${emoji}</div>
+                                    <div class="t-details">
+                                        <div class="t-name">${islem.kalem}</div>
+                                        <div class="t-meta">${formatAppleTarih(islem.tarih)} • ${islem.odeme}</div>
+                                    </div>
+                                    <div class="t-amt ${renk}">${isaret} ${formatTL(islem.tutar)}</div>
+                                </div>`;
+                        });
+                    } else {
+                        listeDOM.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding:10px 0;">Henüz işlem yok</div>`;
+                    }
                     
-                    // YATAY SÜTUN GRAFİĞİ ÇİZİMİ
-                    grafigiCizHorizontalBar(data.pastaGrafik, data.buAyToplamGider);
+                    if(typeof Chart !== 'undefined' && data.pastaGrafik) {
+                        grafigiCizHorizontalBar(data.pastaGrafik, data.buAyToplamGider);
+                    }
+                } else {
+                    throw new Error("Veri hatası");
                 }
             } catch (error) {
+                // EKRANDA HATANIN NE OLDUĞUNU GÖSTEREN GÜVENLİK KODU
+                durumEl.innerText = "Hata Oluştu!"; 
+                durumEl.style.color = "var(--neon-red)";
                 console.error(error);
-                durumEl.innerText = "Bağlantı Hatası"; durumEl.style.color = "var(--neon-red)";
             }
         }
 
-        // --- YENİ HATASIZ YATAY SÜTUN GRAFİK ---
+        // --- YENİ HATASIZ YATAY SÜTUN GRAFİK (KENDİ İÇ EKLENTİSİYLE) ---
         function grafigiCizHorizontalBar(kategoriData, buAyToplamGider) {
             const ctx = document.getElementById('expenseChart').getContext('2d');
             const labels = kategoriData.map(item => item.isim);
             const values = kategoriData.map(item => item.toplam);
             
             if(expenseChartInstance) { expenseChartInstance.destroy(); }
-            Chart.register(ChartDataLabels);
+
+            // Yüzdeleri çizmek için Native (Kendi Kodumuz) Eklenti
+            const percentPlugin = {
+                id: 'percentPlugin',
+                afterDatasetsDraw(chart) {
+                    const { ctx, data } = chart;
+                    ctx.save();
+                    ctx.font = 'bold 11px -apple-system, BlinkMacSystemFont, sans-serif';
+                    ctx.fillStyle = '#8E8E93';
+                    ctx.textAlign = 'left';
+                    ctx.textBaseline = 'middle';
+                    
+                    const dataset = data.datasets[0];
+                    chart.getDatasetMeta(0).data.forEach((bar, index) => {
+                        const value = dataset.data[index];
+                        if (buAyToplamGider > 0 && value > 0) {
+                            const pct = Math.round((value / buAyToplamGider) * 100) + '%';
+                            // Çubuğun hemen sağına yüzdeyi yazdır
+                            ctx.fillText(pct, bar.x + 6, bar.y + 1);
+                        }
+                    });
+                    ctx.restore();
+                }
+            };
 
             expenseChartInstance = new Chart(ctx, {
-                type: 'bar', // bar tipinde kalacak ama indexAxis 'y' olacak
+                type: 'bar', 
                 data: {
                     labels: labels,
                     datasets: [{
                         data: values,
                         backgroundColor: ['#0A84FF', '#FF453A', '#32D74B', '#FFD60A', '#BF5AF2'],
-                        borderRadius: 6, // Yumuşak uçlu çubuklar
-                        barThickness: 16 // Çubuk inceliği
+                        borderRadius: 6, 
+                        barThickness: 16 
                     }]
                 },
                 options: { 
-                    indexAxis: 'y', // GRAFİĞİ YATAY YAPAN SİHİRLİ AYAR
+                    indexAxis: 'y', // GRAFİĞİ YATAY YAPAN KOD
                     responsive: true, maintainAspectRatio: false,
-                    layout: { padding: { right: 40 } }, // Yüzdelerin sağda kesilmemesi için boşluk
+                    layout: { padding: { right: 40 } }, 
                     scales: {
-                        x: { display: false, grid: { display: false } }, // Alt ekseni tamamen gizle
+                        x: { display: false, grid: { display: false } }, 
                         y: { 
                             grid: { display: false }, 
                             border: { display: false },
-                            ticks: { 
-                                color: '#F2F2F7', 
-                                font: { size: 12, weight: '600' }
-                            }
+                            ticks: { color: '#F2F2F7', font: { size: 12, weight: '600' } }
                         }
                     },
                     plugins: { 
                         legend: { display: false },
-                        tooltip: { enabled: false }, 
-                        datalabels: {
-                            anchor: 'end', 
-                            align: 'right', // Yazıyı çubuğun sağ ucuna hizala
-                            color: '#8E8E93',
-                            font: { size: 11, weight: '600' },
-                            formatter: function(value) {
-                                if (buAyToplamGider > 0) {
-                                    let percentage = Math.round((value / buAyToplamGider) * 100);
-                                    return '%' + percentage;
-                                }
-                                return '';
-                            }
-                        }
+                        tooltip: { 
+                            callbacks: { 
+                                label: function(context) { return ' ' + formatTL(context.raw); } 
+                            } 
+                        } 
                     } 
-                }
+                },
+                plugins: [percentPlugin] // Hatasız eklentimiz devrede
             });
         }
     </script>
