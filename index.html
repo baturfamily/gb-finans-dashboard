@@ -22,7 +22,14 @@
             --border-color: #2c2c2e;
         }
         
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", sans-serif; -webkit-tap-highlight-color: transparent; }
+        /* METİN SEÇİMİNİ İPTAL ETME (Gerçek Uygulama Hissiyatı) */
+        * { 
+            margin: 0; padding: 0; box-sizing: border-box; 
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", sans-serif; 
+            -webkit-tap-highlight-color: transparent; 
+            -webkit-user-select: none; /* iOS Safari */
+            user-select: none; /* Genel */
+        }
         
         body { 
             background-color: var(--bg-dark);
@@ -33,6 +40,20 @@
             overflow-y: auto;
             overscroll-behavior-y: contain;
         }
+
+        /* YENİ: Dönen Yüklenme İkonu (Spinner) */
+        .spinner {
+            border: 2px solid rgba(255,255,255,0.2);
+            border-left-color: var(--neon-blue);
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         #pull-indicator {
             height: 0;
@@ -49,9 +70,12 @@
         .card { background-color: var(--card-bg); padding: 20px; border-radius: 22px; margin-bottom: 16px; }
         .card h3 { color: var(--text-muted); font-size: 13px; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px; font-weight: 600; }
         
+        /* HEADER KARTI */
         .header-card { text-align: center; padding: 24px 20px; background: linear-gradient(180deg, #2c2c2e 0%, var(--card-bg) 100%); border: 1px solid var(--border-color); margin-top: 16px;}
-        .header-card h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 6px; }
+        .header-card h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 4px; }
+        .header-date { font-size: 13px; color: var(--text-muted); margin-bottom: 12px; font-weight: 500;}
         .header-card p { font-size: 13px; color: var(--text-muted); }
+        .header-update { font-size: 11px; color: var(--text-muted); margin-top: 8px; opacity: 0.7;}
         #baglanti-durumu { font-weight: 600; color: var(--neon-yellow); }
 
         .main-stats { text-align: center; padding: 10px 0; }
@@ -70,7 +94,6 @@
         .progress-container { width: 100%; background-color: #3a3a3c; border-radius: 10px; height: 8px; }
         .progress-bar { height: 100%; border-radius: 10px; transition: width 1s cubic-bezier(0.1, 0.5, 0.1, 1); }
 
-        .transaction-list { list-style: none; }
         .t-row { display: flex; justify-content: space-between; padding: 14px 0; border-bottom: 0.5px solid var(--border-color); }
         .t-row:last-child { border-bottom: none; padding-bottom: 0; }
         .t-name { font-weight: 600; font-size: 16px; }
@@ -82,17 +105,26 @@
         
         .card-urgent { background: linear-gradient(145deg, rgba(255, 69, 58, 0.12) 0%, var(--card-bg) 100%); border: 1px solid rgba(255, 69, 58, 0.25); }
 
+        /* BÜTÇE MODÜLÜ VE YÜZDE GÖSTERİMİ */
         .budget-module { text-align: center; padding: 10px 0; }
         .budget-amount { font-size: 28px; font-weight: 700; margin-bottom: 4px; }
         .budget-subtitle { font-size: 13px; color: var(--text-muted); margin-bottom: 16px; }
-        .budget-progress-container { width: 100%; height: 14px; background-color: var(--border-color); border-radius: 7px; overflow: hidden; margin-bottom: 12px; }
-        .budget-progress-bar { height: 100%; border-radius: 7px; background-color: var(--neon-blue); width: 0%; transition: width 0.8s ease; }
-        .budget-footer { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; }
+        .budget-progress-container { position: relative; width: 100%; height: 16px; background-color: var(--border-color); border-radius: 8px; overflow: hidden; margin-bottom: 12px; }
+        .budget-progress-bar { height: 100%; border-radius: 8px; background-color: var(--neon-blue); width: 0%; transition: width 0.8s ease; }
+        
+        /* YENİ: Bütçe Barı İçindeki Yüzde Yazısı */
+        #budgetPercent {
+            position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+            font-size: 11px; font-weight: 700; color: #ffffff; text-shadow: 0px 1px 2px rgba(0,0,0,0.5);
+            pointer-events: none;
+        }
 
+        .budget-footer { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; }
         .trend-badge { font-size: 11px; padding: 4px 8px; border-radius: 6px; display: inline-flex; font-weight: 600; margin-top: 8px; }
         .trend-good { background-color: rgba(50, 215, 75, 0.15); color: var(--neon-green); }
         .trend-bad { background-color: rgba(255, 69, 58, 0.15); color: var(--neon-red); }
 
+        /* ACCORDION (Kartın sadece başlığına tıklandığında çalışır) */
         .accordion-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding-bottom: 4px; -webkit-tap-highlight-color: transparent;}
         .accordion-header h3 { margin-bottom: 0; pointer-events: none; }
         .chevron { font-size: 12px; color: var(--text-muted); transition: transform 0.3s ease; pointer-events: none; }
@@ -103,11 +135,13 @@
 </head>
 <body>
 
-    <div id="pull-indicator">Yenilemek için bırak...</div>
+    <div id="pull-indicator">Aşağı çek...</div>
 
     <div class="card header-card">
         <h1>Finans Merkezi</h1>
-        <p>Bağlantı: <span id="baglanti-durumu">Veriler Çekiliyor...</span></p>
+        <div class="header-date" id="current-date">Tarih Yükleniyor...</div>
+        <p>Sistem: <span id="baglanti-durumu"><span class="spinner" style="width: 12px; height: 12px;"></span>Veriler Çekiliyor...</span></p>
+        <div class="header-update" id="last-update">Son Güncelleme: Bekleniyor</div>
     </div>
 
     <div class="card main-stats">
@@ -145,6 +179,7 @@
             
             <div class="budget-progress-container">
                 <div class="budget-progress-bar" id="budgetBar"></div>
+                <div id="budgetPercent">%0</div>
             </div>
             
             <div class="budget-footer">
@@ -155,8 +190,8 @@
         </div>
     </div>
 
-    <div class="card accordion" id="acc-kredi-karti" onclick="toggleAccordion(this)">
-        <div class="accordion-header">
+    <div class="card accordion" id="acc-kredi-karti">
+        <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
             <h3>💳 Kredi Kartı Durumu</h3>
             <span class="chevron">▼</span>
         </div>
@@ -167,8 +202,8 @@
         </div>
     </div>
 
-    <div class="card accordion" id="acc-pasta-grafik" onclick="toggleAccordion(this)">
-        <div class="accordion-header">
+    <div class="card accordion" id="acc-pasta-grafik">
+        <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
             <h3 style="text-align: center; width: 100%;">Aylık Gider Dağılımı</h3>
             <span class="chevron">▼</span>
         </div>
@@ -177,8 +212,8 @@
         </div>
     </div>
 
-    <div class="card accordion" id="acc-kredi-ilerleme" onclick="toggleAccordion(this)">
-        <div class="accordion-header">
+    <div class="card accordion" id="acc-kredi-ilerleme">
+        <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
             <h3>🏦 Kredi İlerlemeleri</h3>
             <span class="chevron">▼</span>
         </div>
@@ -194,18 +229,18 @@
         </div>
     </div>
 
-    <div class="card accordion" id="acc-yaklasan" onclick="toggleAccordion(this)">
-        <div class="accordion-header">
+    <div class="card accordion" id="acc-yaklasan">
+        <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
             <h3>⏳ Yaklaşan Ödemeler (7 Gün)</h3>
             <span class="chevron">▼</span>
         </div>
         <div class="accordion-content" id="yaklasan-listesi">
-            <div style="text-align:center; color:var(--text-muted); font-size: 14px; padding: 10px 0;">Veriler analiz ediliyor...</div>
+            <div style="text-align:center; color:var(--text-muted); font-size: 14px; padding: 10px 0;"><span class="spinner"></span>Analiz ediliyor...</div>
         </div>
     </div>
 
-    <div class="card accordion" id="acc-son-islemler" onclick="toggleAccordion(this)">
-        <div class="accordion-header">
+    <div class="card accordion" id="acc-son-islemler">
+        <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
             <h3>Son İşlemler</h3>
             <span class="chevron">▼</span>
         </div>
@@ -218,57 +253,85 @@
         const API_URL = "https://script.google.com/macros/s/AKfycbwMd0e-v5_8CZ5jvNNvqHrxwMGMWrP6OSZBErj0SBT6MIXqQ1edtrh-3CP2DixePGsLuw/exec";
         let expenseChartInstance = null;
 
-        // --- HAFIZALI ACCORDION MANTIĞI (LOCALSTORAGE) ---
+        // Sayfa açıldığında statik tarihi yaz
+        function setDate() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('current-date').innerText = "Bugün: " + now.toLocaleDateString('tr-TR', options);
+        }
+        setDate();
+
+        // Hafızalı Accordion
         function initAccordions() {
             document.querySelectorAll('.accordion').forEach(el => {
-                if (el.id && localStorage.getItem(el.id) === "1") {
-                    el.classList.add("collapsed");
-                }
+                if (el.id && localStorage.getItem(el.id) === "1") el.classList.add("collapsed");
             });
         }
-        
-        // Sayfa yüklendiğinde kartların eski durumunu cihazdan çek
         document.addEventListener("DOMContentLoaded", initAccordions);
 
         function toggleAccordion(element) {
             element.classList.toggle("collapsed");
-            // Tıklandığında durumu cihaza kaydet (1 kapalı, 0 açık)
             if(element.id) {
                 localStorage.setItem(element.id, element.classList.contains("collapsed") ? "1" : "0");
             }
         }
 
-        // --- PULL TO REFRESH MANTIĞI ---
+        // Yenilenmiş ve Hassaslaştırılmış Pull-to-Refresh
         let touchStart = 0;
         const pullIndicator = document.getElementById('pull-indicator');
         
         document.addEventListener('touchstart', e => { 
-            if (window.scrollY === 0) touchStart = e.touches[0].pageY; 
+            if (window.scrollY <= 0) touchStart = e.touches[0].pageY; 
         }, {passive: true});
         
         document.addEventListener('touchmove', e => {
-            if (window.scrollY === 0 && touchStart > 0) {
-                const touchDiff = e.touches[0].pageY - touchStart;
-                if (touchDiff > 0) {
-                    const height = Math.min(touchDiff * 0.4, 60);
-                    pullIndicator.style.height = height + 'px';
-                    pullIndicator.innerText = height > 50 ? "Yenilemek için bırak..." : "Aşağı çek...";
+            if (window.scrollY <= 0 && touchStart > 0) {
+                const diff = e.touches[0].pageY - touchStart;
+                if (diff > 0) {
+                    const h = Math.min(diff * 0.4, 65);
+                    pullIndicator.style.height = h + 'px';
+                    if (h > 55) {
+                        pullIndicator.innerHTML = '<span class="spinner"></span> Bırakın güncellensin...';
+                    } else {
+                        pullIndicator.innerHTML = 'Aşağı çek...';
+                    }
                 }
             }
         }, {passive: true});
         
         document.addEventListener('touchend', async e => {
-            if (parseInt(pullIndicator.style.height) > 50) {
-                pullIndicator.innerText = "Sistem Güncelleniyor...";
+            if (parseInt(pullIndicator.style.height) > 55) {
+                pullIndicator.innerHTML = '<span class="spinner"></span> Güncelleniyor...';
                 await verileriCek(); 
             }
             pullIndicator.style.height = '0px';
             touchStart = 0;
         });
 
+        // Yeni Para Formatı
         function formatTL(sayi) {
             if (isNaN(sayi) || sayi === null || sayi === "") return "0,00 ₺";
             return new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY', minimumFractionDigits: 2 }).format(sayi);
+        }
+
+        // YENİ: Sayı Sayan Animasyon Fonksiyonu
+        function animateValue(id, endValue, duration) {
+            const obj = document.getElementById(id);
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                // Yumuşak yavaşlama efekti (easeOut)
+                const easeProgress = 1 - Math.pow(1 - progress, 4); 
+                const currentVal = endValue * easeProgress;
+                obj.innerText = formatTL(currentVal);
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                } else {
+                    obj.innerText = formatTL(endValue); // Garanti sonuç
+                }
+            };
+            window.requestAnimationFrame(step);
         }
 
         function formatAppleTarih(tarihHucresi) {
@@ -283,7 +346,7 @@
         }
 
         async function verileriCek() {
-            document.getElementById('baglanti-durumu').innerText = "Bağlanıyor...";
+            document.getElementById('baglanti-durumu').innerHTML = '<span class="spinner" style="width: 12px; height: 12px;"></span>Bağlanıyor...';
             document.getElementById('baglanti-durumu').style.color = "var(--neon-yellow)";
             
             try {
@@ -293,8 +356,15 @@
                 if(data.durum === "basarili") {
                     document.getElementById('baglanti-durumu').innerText = "Senkronize";
                     document.getElementById('baglanti-durumu').style.color = "var(--neon-green)";
+                    
+                    // Son Güncelleme Saatini Yaz
+                    const now = new Date();
+                    document.getElementById('last-update').innerText = "Son Güncelleme: " + now.toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit', second:'2-digit'});
 
-                    document.getElementById('val-net-servet').innerText = formatTL(data.netServet);
+                    // Net Servet Rakamını Animasyonlu Olarak Doldur (1.5 saniye sürer)
+                    animateValue("val-net-servet", parseFloat(data.netServet), 1500);
+
+                    // Diğer verileri doldur
                     document.getElementById('val-kasa').innerText = formatTL(data.toplamKasa);
                     document.getElementById('val-borc').innerText = formatTL(data.toplamBorc);
                     document.getElementById('val-borc-acil').innerText = formatTL(data.toplamCanYakan);
@@ -307,59 +377,58 @@
                     document.getElementById('val-getir-yuzde').innerText = "%" + data.getirYuzde;
                     document.getElementById('bar-getir').style.width = data.getirYuzde + "%";
 
-                    // Birleştirilmiş Şık Bütçe Modülü ve Geçen Ay Kıyaslaması
+                    // Bütçe Modülü
                     if(data.buAyToplamGider !== undefined) {
                         document.getElementById('aylikGider').innerText = formatTL(data.buAyToplamGider);
                         const bakiyeDOM = document.getElementById('kalanBakiye');
                         const budgetBarDOM = document.getElementById('budgetBar');
+                        const percentDOM = document.getElementById('budgetPercent'); // Yüzde metni
+                        
                         document.getElementById('butceDurum').innerText = "Gelir: " + formatTL(data.buAyToplamGelir);
                         
                         if (data.buAyToplamGelir > 0) {
                             let harcananYuzde = (data.buAyToplamGider / data.buAyToplamGelir) * 100;
                             let kalan = data.buAyToplamGelir - data.buAyToplamGider;
                             
+                            // Yüzdeyi yazdır
+                            percentDOM.innerText = "%" + Math.round(harcananYuzde);
+
                             if (harcananYuzde > 100) {
                                 budgetBarDOM.style.width = "100%";
                                 budgetBarDOM.style.backgroundColor = "var(--neon-red)";
+                                percentDOM.style.color = "var(--text-main)";
                                 bakiyeDOM.innerText = "Aşıldı: " + formatTL(Math.abs(kalan));
                                 bakiyeDOM.style.color = "var(--neon-red)";
                             } else {
                                 budgetBarDOM.style.width = harcananYuzde + "%";
                                 budgetBarDOM.style.backgroundColor = harcananYuzde > 80 ? "var(--neon-yellow)" : "var(--neon-blue)";
+                                percentDOM.style.color = "var(--text-main)";
                                 bakiyeDOM.innerText = "Kalan: " + formatTL(kalan);
                                 bakiyeDOM.style.color = "var(--neon-green)";
                             }
                         } else {
                             budgetBarDOM.style.width = "0%";
+                            percentDOM.innerText = "%0";
                             bakiyeDOM.innerText = "Veri Yok";
                         }
 
-                        // Trend Modülü (Gizlenmesi iptal edildi, verisizlik durumu eklendi)
+                        // Trend Rozeti
                         const trendDOM = document.getElementById('aylikTrend');
                         trendDOM.style.display = "inline-flex"; 
-                        
                         if(data.gecenAyToplamGider > 0) {
                             let fark = data.buAyToplamGider - data.gecenAyToplamGider;
                             let yuzde = Math.abs((fark / data.gecenAyToplamGider) * 100).toFixed(1);
-                            
                             if (fark > 0) {
-                                trendDOM.className = "trend-badge trend-bad";
-                                trendDOM.innerText = "Geçen aya göre %" + yuzde + " fazla ↑";
+                                trendDOM.className = "trend-badge trend-bad"; trendDOM.innerText = "Geçen aya göre %" + yuzde + " fazla ↑";
                             } else if (fark < 0) {
-                                trendDOM.className = "trend-badge trend-good";
-                                trendDOM.innerText = "Geçen aya göre %" + yuzde + " az ↓";
+                                trendDOM.className = "trend-badge trend-good"; trendDOM.innerText = "Geçen aya göre %" + yuzde + " az ↓";
                             } else {
-                                trendDOM.className = "trend-badge";
-                                trendDOM.innerText = "Geçen ayla aynı ━";
-                                trendDOM.style.backgroundColor = "var(--border-color)";
-                                trendDOM.style.color = "var(--text-main)";
+                                trendDOM.className = "trend-badge"; trendDOM.innerText = "Geçen ayla aynı ━";
+                                trendDOM.style.backgroundColor = "var(--border-color)"; trendDOM.style.color = "var(--text-main)";
                             }
                         } else {
-                            // Geçen ay sıfırsa veya veri yoksa bunu göster
-                            trendDOM.className = "trend-badge";
-                            trendDOM.innerText = "Geçen ay verisi yok";
-                            trendDOM.style.backgroundColor = "var(--border-color)";
-                            trendDOM.style.color = "var(--text-muted)";
+                            trendDOM.className = "trend-badge"; trendDOM.innerText = "Geçen ay verisi yok";
+                            trendDOM.style.backgroundColor = "var(--border-color)"; trendDOM.style.color = "var(--text-muted)";
                         }
                     }
 
