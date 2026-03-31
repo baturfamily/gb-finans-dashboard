@@ -49,7 +49,6 @@
         .card { background-color: var(--card-bg); padding: 20px; border-radius: 22px; margin-bottom: 16px; }
         .card h3 { color: var(--text-muted); font-size: 13px; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px; font-weight: 600; }
         
-        /* HEADER KARTI STİLİ */
         .header-card { text-align: center; padding: 24px 20px; background: linear-gradient(180deg, #2c2c2e 0%, var(--card-bg) 100%); border: 1px solid var(--border-color); margin-top: 16px;}
         .header-card h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 6px; }
         .header-card p { font-size: 13px; color: var(--text-muted); }
@@ -81,12 +80,8 @@
         .text-green { color: var(--neon-green); } .text-red { color: var(--neon-red); } .text-blue { color: var(--neon-blue); }
         .chart-box { height: 180px; width: 100%; position: relative; margin: 10px 0; }
         
-        .card-urgent {
-            background: linear-gradient(145deg, rgba(255, 69, 58, 0.12) 0%, var(--card-bg) 100%);
-            border: 1px solid rgba(255, 69, 58, 0.25);
-        }
+        .card-urgent { background: linear-gradient(145deg, rgba(255, 69, 58, 0.12) 0%, var(--card-bg) 100%); border: 1px solid rgba(255, 69, 58, 0.25); }
 
-        /* YENİ: Zarif Bütçe & Gider Modülü */
         .budget-module { text-align: center; padding: 10px 0; }
         .budget-amount { font-size: 28px; font-weight: 700; margin-bottom: 4px; }
         .budget-subtitle { font-size: 13px; color: var(--text-muted); margin-bottom: 16px; }
@@ -98,8 +93,7 @@
         .trend-good { background-color: rgba(50, 215, 75, 0.15); color: var(--neon-green); }
         .trend-bad { background-color: rgba(255, 69, 58, 0.15); color: var(--neon-red); }
 
-        /* YENİ: Accordion (Açılır Kapanır) Stilleri */
-        .accordion-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding-bottom: 4px;}
+        .accordion-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding-bottom: 4px; -webkit-tap-highlight-color: transparent;}
         .accordion-header h3 { margin-bottom: 0; pointer-events: none; }
         .chevron { font-size: 12px; color: var(--text-muted); transition: transform 0.3s ease; pointer-events: none; }
         .accordion-content { overflow: hidden; transition: max-height 0.4s ease, opacity 0.4s ease; max-height: 1000px; opacity: 1; margin-top: 12px; }
@@ -161,7 +155,7 @@
         </div>
     </div>
 
-    <div class="card accordion" onclick="toggleAccordion(this)">
+    <div class="card accordion" id="acc-kredi-karti" onclick="toggleAccordion(this)">
         <div class="accordion-header">
             <h3>💳 Kredi Kartı Durumu</h3>
             <span class="chevron">▼</span>
@@ -173,7 +167,7 @@
         </div>
     </div>
 
-    <div class="card accordion" onclick="toggleAccordion(this)">
+    <div class="card accordion" id="acc-pasta-grafik" onclick="toggleAccordion(this)">
         <div class="accordion-header">
             <h3 style="text-align: center; width: 100%;">Aylık Gider Dağılımı</h3>
             <span class="chevron">▼</span>
@@ -183,7 +177,7 @@
         </div>
     </div>
 
-    <div class="card accordion" onclick="toggleAccordion(this)">
+    <div class="card accordion" id="acc-kredi-ilerleme" onclick="toggleAccordion(this)">
         <div class="accordion-header">
             <h3>🏦 Kredi İlerlemeleri</h3>
             <span class="chevron">▼</span>
@@ -200,14 +194,17 @@
         </div>
     </div>
 
-    <div class="card">
-        <h3>⏳ Yaklaşan Ödemeler (7 Gün)</h3>
-        <div id="yaklasan-listesi">
+    <div class="card accordion" id="acc-yaklasan" onclick="toggleAccordion(this)">
+        <div class="accordion-header">
+            <h3>⏳ Yaklaşan Ödemeler (7 Gün)</h3>
+            <span class="chevron">▼</span>
+        </div>
+        <div class="accordion-content" id="yaklasan-listesi">
             <div style="text-align:center; color:var(--text-muted); font-size: 14px; padding: 10px 0;">Veriler analiz ediliyor...</div>
         </div>
     </div>
 
-    <div class="card accordion" onclick="toggleAccordion(this)">
+    <div class="card accordion" id="acc-son-islemler" onclick="toggleAccordion(this)">
         <div class="accordion-header">
             <h3>Son İşlemler</h3>
             <span class="chevron">▼</span>
@@ -221,12 +218,27 @@
         const API_URL = "https://script.google.com/macros/s/AKfycbwMd0e-v5_8CZ5jvNNvqHrxwMGMWrP6OSZBErj0SBT6MIXqQ1edtrh-3CP2DixePGsLuw/exec";
         let expenseChartInstance = null;
 
-        // Accordion (Açılır-Kapanır) Fonksiyonu
+        // --- HAFIZALI ACCORDION MANTIĞI (LOCALSTORAGE) ---
+        function initAccordions() {
+            document.querySelectorAll('.accordion').forEach(el => {
+                if (el.id && localStorage.getItem(el.id) === "1") {
+                    el.classList.add("collapsed");
+                }
+            });
+        }
+        
+        // Sayfa yüklendiğinde kartların eski durumunu cihazdan çek
+        document.addEventListener("DOMContentLoaded", initAccordions);
+
         function toggleAccordion(element) {
             element.classList.toggle("collapsed");
+            // Tıklandığında durumu cihaza kaydet (1 kapalı, 0 açık)
+            if(element.id) {
+                localStorage.setItem(element.id, element.classList.contains("collapsed") ? "1" : "0");
+            }
         }
 
-        // Pull to Refresh (Düzeltilmiş)
+        // --- PULL TO REFRESH MANTIĞI ---
         let touchStart = 0;
         const pullIndicator = document.getElementById('pull-indicator');
         
@@ -248,7 +260,7 @@
         document.addEventListener('touchend', async e => {
             if (parseInt(pullIndicator.style.height) > 50) {
                 pullIndicator.innerText = "Sistem Güncelleniyor...";
-                await verileriCek(); // Verileri bekle
+                await verileriCek(); 
             }
             pullIndicator.style.height = '0px';
             touchStart = 0;
@@ -295,7 +307,7 @@
                     document.getElementById('val-getir-yuzde').innerText = "%" + data.getirYuzde;
                     document.getElementById('bar-getir').style.width = data.getirYuzde + "%";
 
-                    // Birleştirilmiş Şık Bütçe Modülü
+                    // Birleştirilmiş Şık Bütçe Modülü ve Geçen Ay Kıyaslaması
                     if(data.buAyToplamGider !== undefined) {
                         document.getElementById('aylikGider').innerText = formatTL(data.buAyToplamGider);
                         const bakiyeDOM = document.getElementById('kalanBakiye');
@@ -322,12 +334,14 @@
                             bakiyeDOM.innerText = "Veri Yok";
                         }
 
-                        // Trend Modülü
+                        // Trend Modülü (Gizlenmesi iptal edildi, verisizlik durumu eklendi)
                         const trendDOM = document.getElementById('aylikTrend');
+                        trendDOM.style.display = "inline-flex"; 
+                        
                         if(data.gecenAyToplamGider > 0) {
                             let fark = data.buAyToplamGider - data.gecenAyToplamGider;
                             let yuzde = Math.abs((fark / data.gecenAyToplamGider) * 100).toFixed(1);
-                            trendDOM.style.display = "inline-flex";
+                            
                             if (fark > 0) {
                                 trendDOM.className = "trend-badge trend-bad";
                                 trendDOM.innerText = "Geçen aya göre %" + yuzde + " fazla ↑";
@@ -340,6 +354,12 @@
                                 trendDOM.style.backgroundColor = "var(--border-color)";
                                 trendDOM.style.color = "var(--text-main)";
                             }
+                        } else {
+                            // Geçen ay sıfırsa veya veri yoksa bunu göster
+                            trendDOM.className = "trend-badge";
+                            trendDOM.innerText = "Geçen ay verisi yok";
+                            trendDOM.style.backgroundColor = "var(--border-color)";
+                            trendDOM.style.color = "var(--text-muted)";
                         }
                     }
 
