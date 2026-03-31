@@ -11,7 +11,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { 
-            --bg-dark: #000000; 
+            --bg-dark: #000000;
             --card-bg: #1c1c1e; 
             --text-main: #ffffff; 
             --text-muted: #8e8e93; 
@@ -19,22 +19,21 @@
             --neon-red: #ff453a; 
             --neon-blue: #0a84ff; 
             --neon-yellow: #ffd60a;
-            --border-color: #2c2c2e; 
+            --border-color: #2c2c2e;
         }
         
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", sans-serif; -webkit-tap-highlight-color: transparent; }
         
         body { 
-            background-color: var(--bg-dark); 
+            background-color: var(--bg-dark);
             color: var(--text-main); 
             padding-top: env(safe-area-inset-top); 
             padding-bottom: env(safe-area-inset-bottom);
             padding-left: 16px; padding-right: 16px;
             overflow-y: auto;
-            overscroll-behavior-y: contain; /* Pull-to-refresh için tarayıcı varsayılanını yönetmek adına */
+            overscroll-behavior-y: contain;
         }
 
-        /* Pull to Refresh Indicator */
         #pull-indicator {
             height: 0;
             overflow: hidden;
@@ -51,31 +50,25 @@
         .header p { font-size: 14px; margin-top: 4px; color: var(--text-muted); }
         #baglanti-durumu { font-weight: 600; color: var(--neon-yellow); }
 
-        /* iOS Kart Yapısı */
         .card { background-color: var(--card-bg); padding: 20px; border-radius: 22px; margin-bottom: 16px; }
         .card h3 { color: var(--text-muted); font-size: 13px; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px; font-weight: 600; }
         
-        /* Büyük Tutar Grubu */
         .main-stats { text-align: center; padding: 10px 0; }
-        .amount-large { font-size: 40px; font-weight: 800; letter-spacing: -1px; }
+        .amount-large { font-size: 34px; font-weight: 800; letter-spacing: -1px; }
 
-        /* Esnek Grid Yapısı - Mobilde Yan Yana Duranları Koruyan Ama Daraltmayan Yapı */
         .dashboard-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
-        .stat-sub-text { font-size: 20px; font-weight: 700; }
+        .stat-sub-text { font-size: 18px; font-weight: 700; }
 
-        /* Kredi Kartı Detay */
         .list-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 0.5px solid var(--border-color); }
         .list-row:last-child { border-bottom: none; }
         .list-label { font-size: 15px; color: var(--text-main); }
         .list-value { font-weight: 600; font-size: 15px; }
 
-        /* Progress Bar */
         .progress-group { margin-top: 15px; }
         .progress-label-group { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 14px; font-weight: 600; }
         .progress-container { width: 100%; background-color: #3a3a3c; border-radius: 10px; height: 8px; }
         .progress-bar { height: 100%; border-radius: 10px; transition: width 1s cubic-bezier(0.1, 0.5, 0.1, 1); }
 
-        /* İşlem Listesi */
         .transaction-list { list-style: none; }
         .t-row { display: flex; justify-content: space-between; padding: 14px 0; border-bottom: 0.5px solid var(--border-color); }
         .t-name { font-weight: 600; font-size: 16px; }
@@ -83,8 +76,6 @@
         .t-amt { font-weight: 700; font-size: 16px; text-align: right; }
 
         .text-green { color: var(--neon-green); } .text-red { color: var(--neon-red); } .text-blue { color: var(--neon-blue); }
-
-        /* Grafik Konteynırı - Mobilde Daha Derli Toplu */
         .chart-box { height: 180px; width: 100%; position: relative; margin: 10px 0; }
     </style>
 </head>
@@ -100,25 +91,25 @@
 
     <div class="card main-stats">
         <h3>Net Servet</h3>
-        <div class="amount-large" id="val-net-servet">₺ 0</div>
+        <div class="amount-large" id="val-net-servet">₺ 0,00</div>
     </div>
 
     <div class="dashboard-grid-2">
         <div class="card">
             <h3>Kasa</h3>
-            <div class="stat-sub-text text-green" id="val-kasa">₺ 0</div>
+            <div class="stat-sub-text text-green" id="val-kasa">₺ 0,00</div>
         </div>
         <div class="card">
             <h3>Toplam Borç</h3>
-            <div class="stat-sub-text text-red" id="val-borc">₺ 0</div>
+            <div class="stat-sub-text text-red" id="val-borc">₺ 0,00</div>
         </div>
     </div>
 
     <div class="card">
         <h3>💳 Kredi Kartı Durumu</h3>
-        <div class="list-row"><span class="list-label">Toplam Borç</span><span class="list-value" id="val-kart-toplam">₺ 0</span></div>
-        <div class="list-row"><span class="list-label">Bu Ay (24'ü)</span><span class="list-value text-red" id="val-kart-buay">₺ 0</span></div>
-        <div class="list-row"><span class="list-label">Gelecek Ay</span><span class="list-value text-blue" id="val-kart-gelecek">₺ 0</span></div>
+        <div class="list-row"><span class="list-label">Toplam Borç</span><span class="list-value" id="val-kart-toplam">₺ 0,00</span></div>
+        <div class="list-row"><span class="list-label">Bu Ay (24'ü)</span><span class="list-value text-red" id="val-kart-buay">₺ 0,00</span></div>
+        <div class="list-row"><span class="list-label">Gelecek Ay</span><span class="list-value text-blue" id="val-kart-gelecek">₺ 0,00</span></div>
     </div>
 
     <div class="card">
@@ -149,7 +140,7 @@
         const API_URL = "https://script.google.com/macros/s/AKfycbwMd0e-v5_8CZ5jvNNvqHrxwMGMWrP6OSZBErj0SBT6MIXqQ1edtrh-3CP2DixePGsLuw/exec";
         let expenseChartInstance = null;
 
-        // Pull to Refresh Logic
+        // Pull to Refresh
         let touchStart = 0;
         document.addEventListener('touchstart', e => { touchStart = e.touches[0].pageY; });
         document.addEventListener('touchmove', e => {
@@ -167,9 +158,13 @@
             document.getElementById('pull-indicator').style.height = '0px';
         });
 
+        // PAR PARA FORMATLAMA (70.240,40 formatı için güncellendi)
         function formatTL(sayi) {
-            if(isNaN(sayi) || sayi === "" || sayi === null) return "₺ 0";
-            return "₺ " + Number(sayi).toLocaleString('tr-TR', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+            if(isNaN(sayi) || sayi === "" || sayi === null) return "₺ 0,00";
+            return "₺ " + Number(sayi).toLocaleString('tr-TR', {
+                minimumFractionDigits: 2, 
+                maximumFractionDigits: 2
+            });
         }
 
         async function verileriCek() {
@@ -210,7 +205,6 @@
                                 <div class="t-amt ${renk}">${isaret} ${formatTL(islem.tutar)}</div>
                             </div>`;
                     });
-
                     grafigiCiz(data.pastaGrafik);
                 }
             } catch (error) {
@@ -241,7 +235,19 @@
                     responsive: true, 
                     maintainAspectRatio: false,
                     cutout: '82%', 
-                    plugins: { legend: { display: false } } 
+                    plugins: { 
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                // Grafik üzerine gelince rakamın düzgün görünmesi için:
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    let value = context.raw || 0;
+                                    return label + ': ' + formatTL(value);
+                                }
+                            }
+                        }
+                    } 
                 }
             });
         }
