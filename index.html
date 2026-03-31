@@ -78,10 +78,44 @@
         .text-green { color: var(--neon-green); } .text-red { color: var(--neon-red); } .text-blue { color: var(--neon-blue); }
         .chart-box { height: 180px; width: 100%; position: relative; margin: 10px 0; }
         
-        /* Yeni Eklenti: Can Yakan Borç Kutusu Stili */
         .card-urgent {
             background: linear-gradient(145deg, rgba(255, 69, 58, 0.12) 0%, var(--card-bg) 100%);
             border: 1px solid rgba(255, 69, 58, 0.25);
+        }
+
+        /* --- YENİ EKLENEN STİLLER --- */
+        .trend-badge {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            margin-top: 8px;
+            font-weight: 600;
+        }
+        .trend-good { 
+            background-color: rgba(50, 215, 75, 0.15); 
+            color: var(--neon-green); 
+        }
+        .trend-bad { 
+            background-color: rgba(255, 69, 58, 0.15); 
+            color: var(--neon-red); 
+        }
+
+        .budget-progress-container {
+            width: 100%;
+            height: 10px;
+            background-color: var(--border-color);
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 12px;
+        }
+        .budget-progress-bar {
+            height: 100%;
+            border-radius: 5px;
+            background-color: var(--neon-blue);
+            width: 0%; 
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
         }
     </style>
 </head>
@@ -127,6 +161,22 @@
         <div class="list-row"><span class="list-label">Toplam Borç</span><span class="list-value" id="val-kart-toplam">₺ 0,00</span></div>
         <div class="list-row"><span class="list-label">Bu Ay (24'ü)</span><span class="list-value text-red" id="val-kart-buay">₺ 0,00</span></div>
         <div class="list-row"><span class="list-label">Gelecek Ay</span><span class="list-value text-blue" id="val-kart-gelecek">₺ 0,00</span></div>
+    </div>
+
+    <div class="dashboard-grid-2">
+        <div class="card">
+            <h3>Gider (Bu Ay)</h3>
+            <div class="stat-sub-text" id="aylikGider">Yükleniyor...</div>
+            <div id="aylikTrend" class="trend-badge" style="display: none;"></div>
+        </div>
+        <div class="card">
+            <h3>Aylık Bütçe</h3>
+            <div class="stat-sub-text" style="font-size: 16px;" id="butceDurum">Yükleniyor...</div>
+            <div class="budget-progress-container">
+                <div class="budget-progress-bar" id="budgetBar"></div>
+            </div>
+            <div style="font-size: 11px; margin-top: 8px; color: var(--text-muted);" id="kalanBakiye"></div>
+        </div>
     </div>
 
     <div class="card">
@@ -175,29 +225,28 @@
             document.getElementById('pull-indicator').style.height = '0px';
         });
 
-        // PARA FORMATLAMA (70.240,40)
+        // --- YENİ PARA FORMATLAYICI ---
         function formatTL(sayi) {
-            if(isNaN(sayi) || sayi === "" || sayi === null) return "₺ 0,00";
-            return "₺ " + Number(sayi).toLocaleString('tr-TR', {
-                minimumFractionDigits: 2, 
-                maximumFractionDigits: 2
-            });
+            if (isNaN(sayi) || sayi === null || sayi === "") return "0,00 ₺";
+            return new Intl.NumberFormat('tr-TR', { 
+                style: 'currency', 
+                currency: 'TRY',
+                minimumFractionDigits: 2
+            }).format(sayi);
         }
 
         // APPLE STİLİ TARİH FORMATLAMA (Bugün/Dün algoritması)
         function formatAppleTarih(tarihHucresi) {
             if(!tarihHucresi) return "";
-            const islemTarihi = tarihHucresi.toString().substring(0, 10); // Örn: 31.03.2026
+            const islemTarihi = tarihHucresi.toString().substring(0, 10);
             
             const bugunDate = new Date();
             const getStr = (d) => String(d.getDate()).padStart(2, '0') + "." + String(d.getMonth() + 1).padStart(2, '0') + "." + d.getFullYear();
-            
             const bugunStr = getStr(bugunDate);
             
             const dunDate = new Date();
             dunDate.setDate(dunDate.getDate() - 1);
             const dunStr = getStr(dunDate);
-
             if (islemTarihi === bugunStr) return "Bugün";
             if (islemTarihi === dunStr) return "Dün";
             return islemTarihi;
@@ -218,8 +267,6 @@
                     document.getElementById('val-net-servet').innerText = formatTL(data.netServet);
                     document.getElementById('val-kasa').innerText = formatTL(data.toplamKasa);
                     document.getElementById('val-borc').innerText = formatTL(data.toplamBorc);
-                    
-                    // YENİ EKLENEN: Borçların Bölünmesi
                     document.getElementById('val-borc-acil').innerText = formatTL(data.toplamCanYakan);
                     document.getElementById('val-borc-planli').innerText = formatTL(data.toplamPlanli);
 
@@ -232,13 +279,63 @@
                     document.getElementById('val-getir-yuzde').innerText = "%" + data.getirYuzde;
                     document.getElementById('bar-getir').style.width = data.getirYuzde + "%";
 
+                    // --- YENİ EKLENEN: Aylık Gider, Bütçe ve Trend Mantığı ---
+                    if(data.buAyToplamGider !== undefined) {
+                        document.getElementById('aylikGider').innerText = formatTL(data.buAyToplamGider);
+                        
+                        const trendDOM = document.getElementById('aylikTrend');
+                        if(data.gecenAyToplamGider > 0) {
+                            let fark = data.buAyToplamGider - data.gecenAyToplamGider;
+                            let yuzde = Math.abs((fark / data.gecenAyToplamGider) * 100).toFixed(1);
+                            trendDOM.style.display = "inline-flex";
+                            
+                            if (fark > 0) {
+                                trendDOM.className = "trend-badge trend-bad";
+                                trendDOM.innerText = "Geçen aya göre %" + yuzde + " fazla ↑";
+                            } else if (fark < 0) {
+                                trendDOM.className = "trend-badge trend-good";
+                                trendDOM.innerText = "Geçen aya göre %" + yuzde + " az ↓";
+                            } else {
+                                trendDOM.className = "trend-badge";
+                                trendDOM.style.backgroundColor = "var(--border-color)";
+                                trendDOM.style.color = "var(--text-main)";
+                                trendDOM.innerText = "Geçen ayla aynı ━";
+                            }
+                        } else {
+                            trendDOM.style.display = "none";
+                        }
+
+                        const bakiyeDOM = document.getElementById('kalanBakiye');
+                        const budgetBarDOM = document.getElementById('budgetBar');
+                        document.getElementById('butceDurum').innerText = "Gelir: " + formatTL(data.buAyToplamGelir);
+                        
+                        if (data.buAyToplamGelir > 0) {
+                            let harcananYuzde = (data.buAyToplamGider / data.buAyToplamGelir) * 100;
+                            let kalan = data.buAyToplamGelir - data.buAyToplamGider;
+                            
+                            if (harcananYuzde > 100) {
+                                budgetBarDOM.style.width = "100%";
+                                budgetBarDOM.style.backgroundColor = "var(--neon-red)";
+                                bakiyeDOM.innerText = "Bütçe Aşıldı: " + formatTL(Math.abs(kalan));
+                                bakiyeDOM.style.color = "var(--neon-red)";
+                            } else {
+                                budgetBarDOM.style.width = harcananYuzde + "%";
+                                budgetBarDOM.style.backgroundColor = harcananYuzde > 80 ? "var(--neon-yellow)" : "var(--neon-blue)";
+                                bakiyeDOM.innerText = "Kalan Bakiye: " + formatTL(kalan);
+                                bakiyeDOM.style.color = "var(--text-muted)";
+                            }
+                        } else {
+                            budgetBarDOM.style.width = "0%";
+                            bakiyeDOM.innerText = "Henüz gelir eklenmedi.";
+                        }
+                    }
+
                     const listeDOM = document.getElementById('islem-listesi');
                     listeDOM.innerHTML = "";
                     data.sonIslemler.forEach(islem => {
                         let renk = islem.tur === "Gelir" ? "text-green" : "";
                         let isaret = islem.tur === "Gelir" ? "+" : "-";
                         
-                        // YENİ EKLENEN: formatAppleTarih fonksiyonu kullanımı
                         listeDOM.innerHTML += `
                             <div class="t-row">
                                 <div>
