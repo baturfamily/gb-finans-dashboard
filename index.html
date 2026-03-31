@@ -85,9 +85,9 @@
         .progress-container { width: 100%; background-color: rgba(255,255,255,0.06); border-radius: 8px; height: 8px; overflow: hidden; }
         .progress-bar { height: 100%; border-radius: 8px; transition: width 1s cubic-bezier(0.1, 0.5, 0.1, 1); }
 
+        /* YENİ İŞLEM LİSTESİ STİLLERİ (EMOJİSİZ VE CİDDİ) */
         .t-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border-color); align-items: center;}
         .t-row:last-child { border-bottom: none; padding-bottom: 0; }
-        .t-icon { width: 36px; height: 36px; border-radius: 10px; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; margin-right: 12px; font-size: 16px;}
         .t-details { flex-grow: 1; }
         .t-name { font-weight: 600; font-size: 15px; color: #fff;}
         .t-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
@@ -228,7 +228,7 @@
 
     <div class="card accordion" id="acc-son-islemler">
         <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
-            <h3>Son İşlemler</h3>
+            <h3>Son 10 İşlem</h3>
             <div class="chevron">▼</div>
         </div>
         <div class="accordion-content" id="islem-listesi">
@@ -317,21 +317,6 @@
             const dunDate = new Date(); dunDate.setDate(dunDate.getDate() - 1);
             if (islemTarihi === getStr(dunDate)) return "Dün";
             return islemTarihi;
-        }
-
-        function getCategoryIcon(kalem) {
-            if(!kalem) return "💸";
-            const k = kalem.toLowerCase();
-            if(k.includes("market") || k.includes("migros") || k.includes("şok") || k.includes("bim")) return "🛒";
-            if(k.includes("benzin") || k.includes("yakıt")) return "⛽️";
-            if(k.includes("kira") || k.includes("aidat") || k.includes("site")) return "🏠";
-            if(k.includes("sigara") || k.includes("tekel")) return "🚬";
-            if(k.includes("amazon") || k.includes("hepsi") || k.includes("ikea") || k.includes("trendyol")) return "📦";
-            if(k.includes("fatura") || k.includes("elektrik") || k.includes("su") || k.includes("doğalgaz")) return "📄";
-            if(k.includes("kredi") || k.includes("borç") || k.includes("eft") || k.includes("hesap")) return "🏦";
-            if(k.includes("köpek") || k.includes("mama") || k.includes("veteriner")) return "🐾";
-            if(k.includes("maaş") || k.includes("mtsk")) return "💰";
-            return "💸";
         }
 
         async function verileriCek() {
@@ -442,17 +427,16 @@
                         yaklasanDOM.innerHTML = `<div style="text-align:center; color:var(--neon-green); font-size: 14px; padding: 15px 0; font-weight: 600;">Önümüzdeki 7 gün planlı ödeme yok 🎉</div>`;
                     }
 
+                    // EMOJİLER SİLİNDİ, DAHA SADE LİSTE
                     const listeDOM = document.getElementById('islem-listesi');
                     if(data.sonIslemler && data.sonIslemler.length > 0) {
                         listeDOM.innerHTML = "";
                         data.sonIslemler.forEach(islem => {
                             let renk = islem.tur === "Gelir" ? "text-green" : "";
                             let isaret = islem.tur === "Gelir" ? "+" : "-";
-                            let emoji = getCategoryIcon(islem.kalem);
                             
                             listeDOM.innerHTML += `
                                 <div class="t-row">
-                                    <div class="t-icon">${emoji}</div>
                                     <div class="t-details">
                                         <div class="t-name">${islem.kalem}</div>
                                         <div class="t-meta">${formatAppleTarih(islem.tarih)} • ${islem.odeme}</div>
@@ -464,7 +448,6 @@
                         listeDOM.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding: 15px 0;">Henüz işlem yok</div>`;
                     }
                     
-                    // --- KENDİ EKLENTİMİZ İLE HATASIZ SÜTUN ÇİZİMİ ---
                     grafigiCizBar(data.pastaGrafik, data.buAyToplamGider);
                 } else {
                     throw new Error("API'den basarili kodu gelmedi.");
@@ -475,7 +458,6 @@
             }
         }
 
-        // --- TAMAMEN KENDİ YAZDIĞIMIZ, HARİCİ EKLENTİSİZ GRAFİK MOTORU ---
         function grafigiCizBar(kategoriData, totalExpense) {
             const canvas = document.getElementById('expenseChart');
             if(!canvas) return;
@@ -488,7 +470,6 @@
 
             if(expenseChartInstance) { expenseChartInstance.destroy(); }
 
-            // Yüzdeleri grafik çubuklarının ucuna yazan yerel (native) eklentimiz
             const percentPlugin = {
                 id: 'percentPlugin',
                 afterDatasetsDraw(chart) {
@@ -504,7 +485,6 @@
                         const value = dataset.data[index];
                         if (totalExpense > 0 && value > 0) {
                             const pct = Math.round((value / totalExpense) * 100) + '%';
-                            // Çubuğun ucundan 8 piksel sağa yazdırıyoruz
                             ctx.fillText(pct, bar.x + 8, bar.y + 1);
                         }
                     });
@@ -512,7 +492,6 @@
                 }
             };
             
-            // Renk paleti
             const colors = ['#0a84ff', '#ff453a', '#30d158', '#ffd60a', '#bf5af2'];
 
             expenseChartInstance = new Chart(ctx, {
@@ -527,9 +506,9 @@
                     }]
                 },
                 options: { 
-                    indexAxis: 'y', // Grafiği Yatay Yapar
+                    indexAxis: 'y', 
                     responsive: true, maintainAspectRatio: false,
-                    layout: { padding: { right: 40 } }, // Yüzde yazıları sağdan taşmasın diye
+                    layout: { padding: { right: 40 } }, 
                     scales: {
                         x: { display: false, grid: { display: false } },
                         y: { 
@@ -545,7 +524,7 @@
                         }
                     } 
                 },
-                plugins: [percentPlugin] // Yerel eklentimizi devreye sokuyoruz
+                plugins: [percentPlugin] 
             });
         }
 
