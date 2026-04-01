@@ -57,7 +57,7 @@
             padding: 20px 20px 10px 20px;
             padding-top: calc(env(safe-area-inset-top) + 20px);
             border-bottom: 1px solid rgba(255,255,255,0.05);
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
 
         .header-section { text-align: left; }
@@ -68,24 +68,10 @@
         .time-selector::-webkit-scrollbar { display: none; }
         .time-btn { padding: 8px 20px; border-radius: 24px; background: rgba(255,255,255,0.03); color: var(--text-muted); font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; white-space: nowrap; border: 1px solid rgba(255,255,255,0.05);}
         .time-btn.active { background: var(--brand-gradient); color: #fff; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4); border-color: transparent; font-weight: 700;}
+        .time-btn:active { transform: scale(0.95); }
         
         .content-container { padding: 0 20px; }
         .trend-box { font-size: 12px; font-weight: 700; margin-top: 10px; display: inline-block; letter-spacing: 0.3px; transition: 0.3s ease;}
-
-        /* TEST PANELİ (DEDEKTİF) */
-        #debug-panel {
-            background: rgba(244, 63, 94, 0.1);
-            border: 1px solid var(--rose);
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 16px;
-            font-size: 11px;
-            font-family: monospace;
-            color: #f8fafc;
-            word-wrap: break-word;
-            display: none; 
-        }
-        #debug-panel b { color: var(--rose); }
 
         .card { 
             background: var(--panel-bg); 
@@ -99,7 +85,9 @@
             margin-bottom: 16px; 
             padding: 24px; 
             box-shadow: var(--panel-shadow); 
+            transition: transform 0.2s ease, border-color 0.2s ease;
         }
+        .card:active { transform: scale(0.99); border-color: rgba(255,255,255,0.15); }
         .card h3 { color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 16px; font-weight: 600; display: flex; align-items: center;}
         .card-icon { margin-right: 8px; opacity: 0.8; }
 
@@ -118,8 +106,8 @@
         .main-stats::before { content: ''; position: absolute; top: -50px; left: 50%; transform: translateX(-50%); width: 150px; height: 150px; background: var(--brand-gradient); filter: blur(80px); opacity: 0.3; pointer-events: none;}
         .amount-large { font-size: clamp(38px, 10vw, 46px); font-weight: 800; letter-spacing: -1.5px; margin-top: 8px; color: #FFFFFF; text-shadow: 0 2px 10px rgba(0,0,0,0.5); position: relative; z-index: 1;}
 
-        .dashboard-grid-2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; margin-bottom: 16px; }
-        .grid-card { padding: 18px 12px; display: flex; flex-direction: column; justify-content: center; min-width: 0; overflow: hidden; }
+        .dashboard-grid-2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; margin-bottom: 16px; }
+        .grid-card { padding: 18px 14px; display: flex; flex-direction: column; justify-content: center; min-width: 0;}
         .grid-card h3 { margin-bottom: 10px; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
         .stat-sub-text { font-size: clamp(16px, 5vw, 24px); font-weight: 700; letter-spacing: -0.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; width: 100%;}
 
@@ -204,7 +192,6 @@
     </div>
 
     <div class="content-container">
-        <div id="debug-panel"></div>
 
         <div class="card main-stats">
             <h3>Net Servet</h3>
@@ -511,48 +498,17 @@
             el.innerHTML = `<span style="color:${color}; background:color-mix(in srgb, ${color} 15%, transparent); padding: 5px 10px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); border: 1px solid color-mix(in srgb, ${color} 30%, transparent);">${icon} ₺${formattedDiff}</span>`;
         }
 
+        // ESKİ, SORUNSUZ VE ŞİMŞEK GİBİ ÇALIŞAN FETCH METODU
         async function verileriCek() {
             const durumEl = document.getElementById('baglanti-durumu');
-            const debugPanel = document.getElementById('debug-panel');
-            let timeoutTriggered = false;
-            
             durumEl.innerHTML = '<span class="spinner" style="border-left-color: var(--amber);"></span>Bağlanıyor';
             durumEl.style.color = "var(--amber)";
             
-            // Eğer 6 saniye içinde yanıt gelmezse dedektif panelini aç
-            const timeoutMonitor = setTimeout(() => {
-                timeoutTriggered = true;
-                debugPanel.style.display = "block";
-                debugPanel.innerHTML = "<b>UYARI:</b> Sunucu çok yavaş yanıt veriyor veya Safari CORS/Yönlendirme kalkanına takıldı. Lütfen biraz daha bekleyin...";
-            }, 6000);
-            
             try {
-                // SORUNU ÇÖZEN SAF FETCH KULLANIMI (Yönlendirmeyi Safari kendi yönetsin, Headers temizlendi)
-                const response = await fetch(API_URL, {
-                    redirect: 'follow',
-                    // Header'ı "text/plain" yaparak Chrome/Safari Pre-Flight engeline takılmasını önlüyoruz
-                    headers: { 'Content-Type': 'text/plain' } 
-                });
-                
-                if (!response.ok) {
-                    throw new Error("HTTP Hata: " + response.status);
-                }
-                
-                const textData = await response.text();
-                
-                let data;
-                try {
-                    data = JSON.parse(textData);
-                } catch (e) {
-                    debugPanel.style.display = "block";
-                    debugPanel.innerHTML = "<b>JSON HATASI!</b> Google API'si geçerli bir veri döndürmedi. <br><br>Gelen Yanıtın Bir Kısmı:<br>" + textData.substring(0, 150) + "...";
-                    throw new Error("Veri JSON değil.");
-                }
+                const response = await fetch(API_URL);
+                const data = await response.json();
 
                 if(data.durum === "basarili") {
-                    clearTimeout(timeoutMonitor);
-                    debugPanel.style.display = "none";
-                    
                     durumEl.innerText = "Senkronize Edildi";
                     durumEl.style.color = "var(--text-muted)";
                     
@@ -689,19 +645,12 @@
                     
                     grafigiCizDoughnut(data.pastaGrafik, data.buAyToplamGider);
                 } else { 
-                    throw new Error("API Hatası: " + (data.message || "Bilinmeyen Hata")); 
+                    throw new Error("API hatası: " + (data.message || "Bilinmeyen Hata")); 
                 }
             } catch (error) { 
-                clearTimeout(timeoutMonitor);
                 console.error("Hata Yakalandı:", error);
-                durumEl.innerText = "Bağlantı Koptu"; 
+                durumEl.innerText = "Bağlantı veya URL Hatası"; 
                 durumEl.style.color = "var(--rose)"; 
-                
-                // Hatayı sadece kullanıcı 5 saniyeden fazla beklerse göster
-                if(timeoutTriggered) {
-                    debugPanel.style.display = "block";
-                    debugPanel.innerHTML = "<b>Bağlantı Başarısız:</b><br>Safari CORS veya Ağ kısıtlamasına takıldı.<br>Lütfen sayfayı yenileyin.";
-                }
             }
         }
 
