@@ -47,7 +47,6 @@
 
         #pull-indicator { height: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 13px; color: var(--text-muted); transition: height 0.2s ease; font-weight: 500; background: var(--bg-dark);}
 
-        /* YAPISKAN ÜST MENÜ */
         .top-container {
             position: sticky;
             top: 0;
@@ -84,7 +83,7 @@
             font-family: monospace;
             color: #f8fafc;
             word-wrap: break-word;
-            display: none; /* Hata olana kadar gizli */
+            display: none; 
         }
         #debug-panel b { color: var(--rose); }
 
@@ -515,39 +514,44 @@
         async function verileriCek() {
             const durumEl = document.getElementById('baglanti-durumu');
             const debugPanel = document.getElementById('debug-panel');
+            let timeoutTriggered = false;
             
             durumEl.innerHTML = '<span class="spinner" style="border-left-color: var(--amber);"></span>Bağlanıyor';
             durumEl.style.color = "var(--amber)";
             
-            // DEDEKTİF PANELİNİ TEMİZLE VE AÇ
-            debugPanel.style.display = "block";
-            debugPanel.innerHTML = "Adım 1: Google sunucusuna istek atılıyor...<br>";
+            // Eğer 6 saniye içinde yanıt gelmezse dedektif panelini aç
+            const timeoutMonitor = setTimeout(() => {
+                timeoutTriggered = true;
+                debugPanel.style.display = "block";
+                debugPanel.innerHTML = "<b>UYARI:</b> Sunucu çok yavaş yanıt veriyor veya Safari CORS/Yönlendirme kalkanına takıldı. Lütfen biraz daha bekleyin...";
+            }, 6000);
             
             try {
-                const response = await fetch(API_URL);
-                debugPanel.innerHTML += "Adım 2: Yanıt alındı (Durum: " + response.status + ")<br>";
-
+                // SORUNU ÇÖZEN SAF FETCH KULLANIMI (Yönlendirmeyi Safari kendi yönetsin, Headers temizlendi)
+                const response = await fetch(API_URL, {
+                    redirect: 'follow',
+                    // Header'ı "text/plain" yaparak Chrome/Safari Pre-Flight engeline takılmasını önlüyoruz
+                    headers: { 'Content-Type': 'text/plain' } 
+                });
+                
                 if (!response.ok) {
                     throw new Error("HTTP Hata: " + response.status);
                 }
-
-                // Veriyi önce text olarak alıyoruz ki HTML/Hata sayfası mı döndü görelim
+                
                 const textData = await response.text();
-                debugPanel.innerHTML += "Adım 3: Veri indirildi (Uzunluk: " + textData.length + " karakter)<br>";
-
+                
                 let data;
                 try {
                     data = JSON.parse(textData);
-                    debugPanel.innerHTML += "Adım 4: Veri başarıyla JSON formatına çevrildi.<br>";
                 } catch (e) {
-                    // Eğer JSON'a çevrilemiyorsa, Google bize gizli bir hata sayfası göndermiş demektir
-                    debugPanel.innerHTML += "<b>JSON ÇEVİRME HATASI!</b> Google'ın gönderdiği gizli yanıt:<br>";
-                    debugPanel.innerHTML += "<div style='background:rgba(0,0,0,0.5); padding:10px; margin-top:5px; max-height:100px; overflow:auto;'>" + textData.replace(/</g, "&lt;").replace(/>/g, "&gt;") + "</div>";
-                    throw new Error("Veri JSON formatında değil.");
+                    debugPanel.style.display = "block";
+                    debugPanel.innerHTML = "<b>JSON HATASI!</b> Google API'si geçerli bir veri döndürmedi. <br><br>Gelen Yanıtın Bir Kısmı:<br>" + textData.substring(0, 150) + "...";
+                    throw new Error("Veri JSON değil.");
                 }
 
                 if(data.durum === "basarili") {
-                    debugPanel.innerHTML += "Adım 5: Arayüz güncelleniyor...<br>";
+                    clearTimeout(timeoutMonitor);
+                    debugPanel.style.display = "none";
                     
                     durumEl.innerText = "Senkronize Edildi";
                     durumEl.style.color = "var(--text-muted)";
@@ -684,18 +688,20 @@
                     } else { listeDOM.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding: 15px 0;">Henüz işlem yok</div>`; }
                     
                     grafigiCizDoughnut(data.pastaGrafik, data.buAyToplamGider);
-                    
-                    // İşlem bittiyse dedektif panelini gizle
-                    debugPanel.style.display = "none";
-
-                } else { throw new Error("API hatası: " + (data.message || "Bilinmeyen Hata")); }
+                } else { 
+                    throw new Error("API Hatası: " + (data.message || "Bilinmeyen Hata")); 
+                }
             } catch (error) { 
+                clearTimeout(timeoutMonitor);
                 console.error("Hata Yakalandı:", error);
                 durumEl.innerText = "Bağlantı Koptu"; 
                 durumEl.style.color = "var(--rose)"; 
                 
-                // HATAYI EKRANA BAS
-                debugPanel.innerHTML += "<b>SİSTEM ÇÖKTÜ:</b> " + error.name + " - " + error.message;
+                // Hatayı sadece kullanıcı 5 saniyeden fazla beklerse göster
+                if(timeoutTriggered) {
+                    debugPanel.style.display = "block";
+                    debugPanel.innerHTML = "<b>Bağlantı Başarısız:</b><br>Safari CORS veya Ağ kısıtlamasına takıldı.<br>Lütfen sayfayı yenileyin.";
+                }
             }
         }
 
