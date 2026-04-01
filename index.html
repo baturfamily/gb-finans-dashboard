@@ -25,14 +25,19 @@
 
         #pull-indicator { height: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 13px; color: var(--text-muted); transition: height 0.2s ease; margin-top: -10px; font-weight: 500; }
 
+        .header-section { padding: 16px 4px 12px 4px; text-align: left; }
+        .header-section h1 { font-size: 30px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 2px; }
+        .system-status { font-size: 12px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; margin-top: 14px; color: var(--text-muted);}
+
+        /* YENİ: ZAMAN FİLTRESİ STİLLERİ */
+        .time-selector { display: flex; gap: 10px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+        .time-selector::-webkit-scrollbar { display: none; }
+        .time-btn { padding: 8px 18px; border-radius: 20px; background: rgba(255,255,255,0.06); color: var(--text-muted); font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.3s; white-space: nowrap; border: 1px solid rgba(255,255,255,0.02);}
+        .time-btn.active { background: var(--neon-blue); color: #fff; box-shadow: 0 4px 12px rgba(10, 132, 255, 0.4); border-color: var(--neon-blue);}
+        .trend-box { font-size: 12px; font-weight: 700; margin-top: 8px; display: inline-block; letter-spacing: 0.3px; transition: 0.3s ease;}
+
         .card { background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 20px; margin-bottom: 16px; padding: 20px; box-shadow: var(--panel-shadow); }
         .card h3 { color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; font-weight: 600; }
-
-        .header-section { padding: 16px 4px 8px 4px; text-align: left; }
-        .header-section h1 { font-size: 30px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 2px; }
-        .header-date { font-size: 14px; color: var(--text-muted); font-weight: 500;}
-        .system-status { font-size: 12px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; margin-top: 14px; color: var(--text-muted);}
-        .update-time { font-size: 11px; opacity: 0.6; font-weight: 400;}
 
         .main-stats { text-align: center; padding: 16px 0; border: none; background: #242426; }
         .amount-large { font-size: 40px; font-weight: 800; letter-spacing: -1.2px; margin-top: 4px; color: #FFFFFF; }
@@ -59,7 +64,7 @@
         .t-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
         .t-amt { font-weight: 700; font-size: 15px; text-align: right;}
 
-        .text-green { color: var(--neon-green); } .text-red { color: var(--neon-red); } .text-blue { color: var(--neon-blue); }
+        .text-green { color: var(--neon-green); } .text-red { color: var(--neon-red); } .text-blue { color: var(--neon-blue); } .text-gray { color: var(--text-muted); }
         .chart-box { height: 240px; width: 100%; position: relative; margin: 10px 0;}
         .card-urgent { background: #2A1718; border: 1px solid rgba(255, 69, 58, 0.2); }
 
@@ -70,7 +75,7 @@
         .budget-progress-bar { height: 100%; border-radius: 8px; background-color: var(--neon-blue); width: 0%; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); }
         #budgetPercent { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font-size: 11px; font-weight: 700; color: #ffffff; letter-spacing: 0.5px;}
         .budget-footer { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.8); }
-        
+
         .trend-badge { font-size: 11px; padding: 5px 10px; border-radius: 6px; display: inline-flex; font-weight: 600; margin-top: 10px; }
         .trend-good { background-color: rgba(48, 209, 88, 0.15); color: var(--neon-green); }
         .trend-bad { background-color: rgba(255, 69, 58, 0.15); color: var(--neon-red); }
@@ -89,16 +94,24 @@
 
     <div class="header-section">
         <h1>Finans Merkezi</h1>
-        <div class="header-date" id="current-date">Tarih Yükleniyor...</div>
         <div class="system-status">
             <span id="baglanti-durumu" style="color: var(--neon-yellow);"><span class="spinner"></span>Bağlanıyor</span>
             <span class="update-time" id="last-update">Bekleniyor</span>
         </div>
     </div>
 
+    <div class="time-selector" id="time-filters">
+        <div class="time-btn active" onclick="updateTrends(7, this)">1 Hafta</div>
+        <div class="time-btn" onclick="updateTrends(30, this)">1 Ay</div>
+        <div class="time-btn" onclick="updateTrends(90, this)">3 Ay</div>
+        <div class="time-btn" onclick="updateTrends(180, this)">6 Ay</div>
+        <div class="time-btn" onclick="updateTrends(365, this)">1 Yıl</div>
+    </div>
+
     <div class="card main-stats">
         <h3>Net Servet</h3>
         <div class="amount-large" id="val-net-servet">₺ 0,00</div>
+        <div class="trend-box" id="trend-net-servet"></div>
     </div>
 
     <div class="dashboard-grid-2">
@@ -109,6 +122,7 @@
         <div class="card grid-card">
             <h3>Genel Borç</h3>
             <div class="stat-sub-text" id="val-borc">₺ 0,00</div>
+            <div class="trend-box" id="trend-borc" style="margin-top:2px; font-size:11px;"></div>
         </div>
     </div>
 
@@ -116,11 +130,13 @@
         <div class="card grid-card card-urgent">
             <h3 style="color: var(--neon-red);">🔥 Can Yakan</h3>
             <div class="stat-sub-text text-red" id="val-borc-acil">₺ 0,00</div>
+            <div class="trend-box" id="trend-can-yakan" style="margin-top:2px; font-size:11px;"></div>
             <div style="font-size: 11px; margin-top: 6px; color: rgba(255,69,58,0.7); font-weight: 600;" id="val-tahmini-faiz">Faiz (+%5): ₺ 0,00</div>
         </div>
         <div class="card grid-card">
             <h3>📅 Planlı</h3>
             <div class="stat-sub-text text-muted" id="val-borc-planli">₺ 0,00</div>
+            <div class="trend-box" id="trend-planli" style="margin-top:2px; font-size:11px;"></div>
         </div>
     </div>
 
@@ -229,13 +245,10 @@
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbwMd0e-v5_8CZ5jvNNvqHrxwMGMWrP6OSZBErj0SBT6MIXqQ1edtrh-3CP2DixePGsLuw/exec"; // LÜTFEN KENDİ YENİ LİNKİNİZİ YAPIŞTIRIN
         let expenseChartInstance = null;
-
-        function setDate() {
-            const now = new Date();
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            document.getElementById('current-date').innerText = now.toLocaleDateString('tr-TR', options);
-        }
-        setDate();
+        
+        // Verileri globalde tutalım ki filtre tuşlarına basınca yeniden hesaplayalım
+        window.tarihceData = [];
+        window.currentStats = {};
 
         function initAccordions() {
             document.querySelectorAll('.accordion').forEach(el => {
@@ -278,6 +291,15 @@
             return new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY', minimumFractionDigits: 2 }).format(sayi);
         }
 
+        const parseSaha = (val) => {
+            if(typeof val === 'number') return val;
+            if(!val) return 0;
+            let s = val.toString().replace(/₺/g, "").replace(/\s/g, "");
+            if(s.indexOf('.') !== -1 && s.indexOf(',') !== -1) s = s.replace(/\./g, "").replace(",", ".");
+            else if(s.indexOf(',') !== -1) s = s.replace(",", ".");
+            return parseFloat(s) || 0;
+        };
+
         function animateValue(id, endValue, duration) {
             const obj = document.getElementById(id);
             if(!obj || isNaN(endValue)) return;
@@ -292,6 +314,77 @@
                 else { obj.innerText = formatTL(endValue); }
             };
             window.requestAnimationFrame(step);
+        }
+
+        // --- YENİ ZAMAN MAKİNESİ (Tarihçe Analiz Motoru) ---
+        function updateTrends(days, btnElement) {
+            // Buton rengini aktif yap
+            document.querySelectorAll('.time-btn').forEach(btn => btn.classList.remove('active'));
+            if(btnElement) btnElement.classList.add('active');
+
+            const ids = ['trend-net-servet', 'trend-borc', 'trend-can-yakan', 'trend-planli'];
+            
+            // Eğer tarihçe boşsa veya sadece 1 günlük (bugün) veri varsa uyarı ver
+            if(!window.tarihceData || window.tarihceData.length < 2) {
+                const msg = `<span style="color:var(--text-muted); font-weight:500;">Veri toplanıyor ⏳</span>`;
+                ids.forEach(id => document.getElementById(id).innerHTML = msg);
+                return;
+            }
+
+            const now = new Date();
+            const targetDate = new Date(now.getTime() - (days * 24 * 60 * 60 * 1000));
+            
+            let bestRow = null;
+            let minDiff = Infinity;
+
+            // Tarihçedeki en uygun eski tarihi bul
+            window.tarihceData.forEach(row => {
+                const rowDate = new Date(row[0]);
+                if(isNaN(rowDate.getTime())) return; 
+                
+                const diff = Math.abs(rowDate.getTime() - targetDate.getTime());
+                if(diff < minDiff) {
+                    minDiff = diff;
+                    bestRow = row;
+                }
+            });
+
+            if(!bestRow) return;
+
+            const pastServet = parseSaha(bestRow[1]);
+            const pastBorc = parseSaha(bestRow[2]);
+            const pastCanYakan = parseSaha(bestRow[3]);
+            const pastPlanli = parseSaha(bestRow[4]);
+
+            // Trend Rozetlerini Çiz (isDebt=true ise artışlar Kırmızı, azalışlar Yeşil olur)
+            renderTrend('trend-net-servet', window.currentStats.netServet, pastServet, false); 
+            renderTrend('trend-borc', window.currentStats.toplamBorc, pastBorc, true); 
+            renderTrend('trend-can-yakan', window.currentStats.toplamCanYakan, pastCanYakan, true);
+            renderTrend('trend-planli', window.currentStats.toplamPlanli, pastPlanli, true);
+        }
+
+        function renderTrend(elementId, current, past, isDebt) {
+            const diff = current - past;
+            const el = document.getElementById(elementId);
+            if(!el) return;
+            
+            if (Math.abs(diff) < 1) {
+                el.innerHTML = `<span style="color:var(--text-muted); font-weight:500;">━ Değişim yok</span>`;
+                return;
+            }
+
+            const formattedDiff = formatTL(Math.abs(diff));
+            let color, icon;
+
+            if (diff > 0) { // Artış
+                color = isDebt ? "var(--neon-red)" : "var(--neon-green)";
+                icon = "▲";
+            } else { // Azalış
+                color = isDebt ? "var(--neon-green)" : "var(--neon-red)";
+                icon = "▼";
+            }
+
+            el.innerHTML = `<span style="color:${color}; background:color-mix(in srgb, ${color} 15%, transparent); padding: 4px 8px; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">${icon} ${formattedDiff}</span>`;
         }
 
         async function verileriCek() {
@@ -310,20 +403,17 @@
                     const now = new Date();
                     document.getElementById('last-update').innerText = "Son: " + now.toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'});
 
-                    // Net Servet
-                    let servetSayi = 0; let ns = data.netServet;
-                    if(ns !== undefined && ns !== null) {
-                        if(typeof ns === 'string') {
-                            let s = ns.replace(/₺/g, "").replace(/\s/g, "");
-                            if(s.indexOf('.') !== -1 && s.indexOf(',') !== -1) s = s.replace(/\./g, "").replace(",", ".");
-                            else if(s.indexOf(',') !== -1) s = s.replace(",", ".");
-                            servetSayi = parseFloat(s);
-                        } else if(typeof ns === 'number') servetSayi = ns;
-                    }
-                    if(!isNaN(servetSayi)) animateValue("val-net-servet", servetSayi, 1200);
-                    else document.getElementById('val-net-servet').innerText = data.netServet || "₺ 0,00";
+                    // Mevcut değerleri global değişkene kaydet (Trend hesabı için)
+                    window.tarihceData = data.tarihce || [];
+                    window.currentStats = {
+                        netServet: parseSaha(data.netServet),
+                        toplamBorc: parseSaha(data.toplamBorc),
+                        toplamCanYakan: parseSaha(data.toplamCanYakan),
+                        toplamPlanli: parseSaha(data.toplamPlanli)
+                    };
 
-                    // Temel Rakamlar
+                    animateValue("val-net-servet", window.currentStats.netServet, 1200);
+
                     document.getElementById('val-kasa').innerText = formatTL(data.toplamKasa);
                     document.getElementById('val-borc').innerText = formatTL(data.toplamBorc);
                     document.getElementById('val-borc-acil').innerText = formatTL(data.toplamCanYakan);
@@ -334,7 +424,6 @@
                     document.getElementById('val-kart-buay').innerText = formatTL(data.kartBuAy);
                     document.getElementById('val-kart-gelecek').innerText = formatTL(data.kartGelecek);
 
-                    // Krediler
                     document.getElementById('val-nev-yuzde').innerText = "%" + (data.nevYuzde || 0);
                     document.getElementById('bar-nev').style.width = (data.nevYuzde || 0) + "%";
                     document.getElementById('val-nev-kalan').innerText = "(Kalan: " + formatTL(data.nevKalan || 0) + ")";
@@ -343,7 +432,10 @@
                     document.getElementById('bar-getir').style.width = (data.getirYuzde || 0) + "%";
                     document.getElementById('val-getir-kalan').innerText = "(Kalan: " + formatTL(data.getirKalan || 0) + ")";
 
-                    // 🏦 BANKA HESAPLARIM LİSTESİ (YENİ)
+                    // İlk Açılışta 1 Haftalık Trendi Göster
+                    updateTrends(7, document.querySelector('.time-btn.active'));
+
+                    // BANKALAR LİSTESİ
                     const bankaDOM = document.getElementById('banka-listesi');
                     if (data.bankalar && data.bankalar.length > 0) {
                         bankaDOM.innerHTML = "";
@@ -353,7 +445,7 @@
                             let ikon = (banka.isim || "").toLowerCase().includes("nakit") ? "💵" : "🏦";
                             bankaDOM.innerHTML += `
                             <div class="list-row">
-                                <span class="list-label">${ikon} ${banka.isim}</span>
+                                <span class="list-label" style="font-size:15px; font-weight:600; color:#fff;">${ikon} ${banka.isim}</span>
                                 <span class="list-value ${renk}">${formatTL(bakiyeDegeri)}</span>
                             </div>`;
                         });
@@ -439,7 +531,6 @@
                 }
             } catch (error) { 
                 console.error("Hata Yakalandı:", error);
-                // "Sistem Hatası" yerine URL veya Bağlantı hatası olduğunu belirt
                 durumEl.innerText = "Bağlantı veya URL Hatası"; 
                 durumEl.style.color = "var(--neon-red)"; 
             }
