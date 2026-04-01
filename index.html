@@ -10,80 +10,130 @@
     <title>Finans Merkezi</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
         :root { 
-            --bg-dark: #121212; --text-main: #F2F2F7; --text-muted: #8E8E93; 
-            --neon-green: #32D74B; --neon-red: #FF453A; --neon-blue: #0A84FF; --neon-yellow: #FFD60A;
-            --panel-bg: #1C1C1E; --panel-border: rgba(255, 255, 255, 0.05);
-            --panel-shadow: 0 4px 12px rgba(0,0,0,0.3); --border-color: rgba(255, 255, 255, 0.06);
+            --bg-dark: #0f1115; 
+            --text-main: #f8fafc; 
+            --text-muted: #94a3b8; 
+            --emerald: #10b981; 
+            --rose: #f43f5e; 
+            --blue: #3b82f6; 
+            --amber: #f59e0b;
+            --brand-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            
+            /* Glassmorphism Variables */
+            --panel-bg: rgba(30, 41, 59, 0.4); 
+            --panel-border: rgba(255, 255, 255, 0.08);
+            --panel-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            --border-color: rgba(255, 255, 255, 0.06);
         }
         
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", sans-serif; -webkit-tap-highlight-color: transparent; -webkit-user-select: none; user-select: none; }
-        body { background-color: var(--bg-dark); color: var(--text-main); padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); padding-left: 16px; padding-right: 16px; overflow-y: auto; overscroll-behavior-y: contain; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; -webkit-user-select: none; user-select: none; }
+        
+        body { 
+            background-color: var(--bg-dark); 
+            background-image: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.12) 0%, transparent 60%);
+            background-attachment: fixed;
+            color: var(--text-main); 
+            padding-top: env(safe-area-inset-top); 
+            padding-bottom: env(safe-area-inset-bottom); 
+            padding-left: 20px; 
+            padding-right: 20px; 
+            overflow-y: auto; 
+            overscroll-behavior-y: contain; 
+        }
 
-        .spinner { border: 2px solid rgba(255,255,255,0.2); border-left-color: var(--text-main); border-radius: 50%; width: 14px; height: 14px; animation: spin 1s linear infinite; display: inline-block; margin-right: 6px; vertical-align: middle; }
+        .spinner { border: 2px solid rgba(255,255,255,0.1); border-left-color: var(--text-main); border-radius: 50%; width: 14px; height: 14px; animation: spin 1s linear infinite; display: inline-block; margin-right: 6px; vertical-align: middle; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         #pull-indicator { height: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 13px; color: var(--text-muted); transition: height 0.2s ease; margin-top: -10px; font-weight: 500; }
 
-        .header-section { padding: 16px 4px 12px 4px; text-align: left; }
-        .header-section h1 { font-size: 30px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 2px; }
-        .system-status { font-size: 12px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; margin-top: 14px; color: var(--text-muted);}
+        .header-section { padding: 20px 4px 16px 4px; text-align: left; }
+        .header-section h1 { font-size: 32px; font-weight: 800; letter-spacing: -1px; margin-bottom: 4px; background: linear-gradient(to right, #fff, #cbd5e1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .system-status { font-size: 12px; font-weight: 500; display: flex; justify-content: space-between; align-items: center; margin-top: 14px; color: var(--text-muted);}
 
         /* ZAMAN FİLTRESİ STİLLERİ */
-        .time-selector { display: flex; gap: 10px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+        .time-selector { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
         .time-selector::-webkit-scrollbar { display: none; }
-        .time-btn { padding: 8px 18px; border-radius: 20px; background: rgba(255,255,255,0.06); color: var(--text-muted); font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.3s; white-space: nowrap; border: 1px solid rgba(255,255,255,0.02);}
-        .time-btn.active { background: var(--neon-blue); color: #fff; box-shadow: 0 4px 12px rgba(10, 132, 255, 0.4); border-color: var(--neon-blue);}
-        .trend-box { font-size: 12px; font-weight: 700; margin-top: 8px; display: inline-block; letter-spacing: 0.3px; transition: 0.3s ease;}
+        .time-btn { padding: 8px 20px; border-radius: 24px; background: rgba(255,255,255,0.03); color: var(--text-muted); font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; white-space: nowrap; border: 1px solid rgba(255,255,255,0.05);}
+        .time-btn.active { background: var(--brand-gradient); color: #fff; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4); border-color: transparent; font-weight: 700;}
+        .trend-box { font-size: 12px; font-weight: 700; margin-top: 10px; display: inline-block; letter-spacing: 0.3px; transition: 0.3s ease;}
 
-        .card { background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 20px; margin-bottom: 16px; padding: 20px; box-shadow: var(--panel-shadow); }
-        .card h3 { color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; font-weight: 600; }
+        /* GLASSMORPHISM KARTLAR */
+        .card { 
+            background: var(--panel-bg); 
+            backdrop-filter: blur(16px); 
+            -webkit-backdrop-filter: blur(16px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-left: 1px solid rgba(255, 255, 255, 0.05);
+            border-right: 1px solid rgba(255, 255, 255, 0.02);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+            border-radius: 24px; 
+            margin-bottom: 16px; 
+            padding: 22px; 
+            box-shadow: var(--panel-shadow); 
+        }
+        .card h3 { color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 14px; font-weight: 600; }
 
-        .main-stats { text-align: center; padding: 16px 0; border: none; background: #242426; }
-        .amount-large { font-size: 40px; font-weight: 800; letter-spacing: -1.2px; margin-top: 4px; color: #FFFFFF; }
+        /* ANA İSTATİSTİK KARTI */
+        .main-stats { text-align: center; padding: 24px 0; border: 1px solid rgba(99, 102, 241, 0.2); background: linear-gradient(180deg, rgba(30,41,59,0.7) 0%, rgba(15,17,21,0.5) 100%); position: relative; overflow: hidden;}
+        .main-stats::before { content: ''; position: absolute; top: -50px; left: 50%; transform: translateX(-50%); width: 150px; height: 150px; background: var(--brand-gradient); filter: blur(80px); opacity: 0.3; pointer-events: none;}
+        .amount-large { font-size: 42px; font-weight: 800; letter-spacing: -1.5px; margin-top: 6px; color: #FFFFFF; text-shadow: 0 2px 10px rgba(0,0,0,0.5); position: relative; z-index: 1;}
 
-        .dashboard-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
-        .grid-card { padding: 16px; display: flex; flex-direction: column; justify-content: center; }
-        .grid-card h3 { margin-bottom: 6px; }
-        .stat-sub-text { font-size: 18px; font-weight: 700; letter-spacing: -0.5px; }
+        .dashboard-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; }
+        .grid-card { padding: 18px; display: flex; flex-direction: column; justify-content: center; }
+        .grid-card h3 { margin-bottom: 8px; font-size: 11px;}
+        .stat-sub-text { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
 
-        .list-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--border-color); }
+        .list-row { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--border-color); }
         .list-row:last-child { border-bottom: none; padding-bottom: 0; }
-        .list-label { font-size: 15px; color: rgba(255,255,255,0.95); font-weight: 500; }
-        .list-value { font-weight: 600; font-size: 15px; }
+        .list-label { font-size: 15px; color: #e2e8f0; font-weight: 500; }
+        .list-value { font-weight: 700; font-size: 15px; letter-spacing: -0.2px;}
 
-        .progress-group { margin-top: 16px; }
-        .progress-label-group { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: var(--text-muted);}
-        .progress-container { width: 100%; background-color: rgba(255,255,255,0.06); border-radius: 8px; height: 8px; overflow: hidden; }
-        .progress-bar { height: 100%; border-radius: 8px; transition: width 1s cubic-bezier(0.1, 0.5, 0.1, 1); }
+        /* İLERLEME ÇUBUKLARI */
+        .progress-group { margin-top: 18px; }
+        .progress-label-group { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 13px; font-weight: 500; color: #cbd5e1;}
+        .progress-container { width: 100%; background-color: rgba(0,0,0,0.3); border-radius: 10px; height: 8px; overflow: hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);}
+        .progress-bar { height: 100%; border-radius: 10px; transition: width 1s cubic-bezier(0.1, 0.5, 0.1, 1); }
 
-        .t-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border-color); align-items: center;}
+        .t-row { display: flex; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid var(--border-color); align-items: center;}
         .t-row:last-child { border-bottom: none; padding-bottom: 0; }
         .t-details { flex-grow: 1; }
-        .t-name { font-weight: 600; font-size: 15px; color: #fff;}
-        .t-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-        .t-amt { font-weight: 700; font-size: 15px; text-align: right;}
+        .t-name { font-weight: 600; font-size: 15px; color: #e2e8f0;}
+        .t-meta { font-size: 12px; color: var(--text-muted); margin-top: 4px; font-weight: 500;}
+        .t-amt { font-weight: 700; font-size: 15px; text-align: right; letter-spacing: -0.3px;}
 
-        .text-green { color: var(--neon-green); } .text-red { color: var(--neon-red); } .text-blue { color: var(--neon-blue); } .text-gray { color: var(--text-muted); }
+        /* YUMUŞATILMIŞ RENKLER */
+        .text-green { color: var(--emerald); } 
+        .text-red { color: var(--rose); } 
+        .text-blue { color: var(--blue); } 
+        .text-gray { color: var(--text-muted); }
+        
         .chart-box { height: 240px; width: 100%; position: relative; margin: 10px 0;}
-        .card-urgent { background: #2A1718; border: 1px solid rgba(255, 69, 58, 0.2); }
+        
+        /* CAN YAKAN KARTI ÖZEL STİLİ */
+        .card-urgent { background: linear-gradient(180deg, rgba(244,63,94,0.1) 0%, rgba(30,41,59,0.4) 100%); border-top: 1px solid rgba(244,63,94,0.2); }
 
+        /* BÜTÇE MODÜLÜ */
         .budget-module { text-align: center; padding: 4px 0; }
-        .budget-amount { font-size: 30px; font-weight: 800; margin-bottom: 2px; letter-spacing: -1px;}
-        .budget-subtitle { font-size: 13px; color: var(--text-muted); margin-bottom: 16px; font-weight: 500;}
-        .budget-progress-container { position: relative; width: 100%; height: 16px; background-color: rgba(255,255,255,0.06); border-radius: 8px; overflow: hidden; margin-bottom: 12px; }
-        .budget-progress-bar { height: 100%; border-radius: 8px; background-color: var(--neon-blue); width: 0%; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); }
-        #budgetPercent { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font-size: 11px; font-weight: 700; color: #ffffff; letter-spacing: 0.5px;}
-        .budget-footer { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.8); }
+        .budget-amount { font-size: 34px; font-weight: 800; margin-bottom: 4px; letter-spacing: -1.2px; color: #fff;}
+        .budget-subtitle { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; font-weight: 500;}
+        .budget-progress-container { position: relative; width: 100%; height: 18px; background-color: rgba(0,0,0,0.3); border-radius: 10px; overflow: hidden; margin-bottom: 14px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);}
+        .budget-progress-bar { height: 100%; border-radius: 10px; background: var(--brand-gradient); width: 0%; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);}
+        #budgetPercent { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 11px; font-weight: 800; color: #ffffff; letter-spacing: 0.5px; text-shadow: 0 1px 2px rgba(0,0,0,0.5);}
+        .budget-footer { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; color: #cbd5e1; }
 
-        .trend-badge { font-size: 11px; padding: 5px 10px; border-radius: 6px; display: inline-flex; font-weight: 600; margin-top: 10px; }
-        .trend-good { background-color: rgba(48, 209, 88, 0.15); color: var(--neon-green); }
-        .trend-bad { background-color: rgba(255, 69, 58, 0.15); color: var(--neon-red); }
+        .trend-badge { font-size: 11px; padding: 6px 12px; border-radius: 8px; display: inline-flex; font-weight: 600; margin-top: 12px; }
+        .trend-good { background-color: rgba(16, 185, 129, 0.15); color: var(--emerald); border: 1px solid rgba(16, 185, 129, 0.2);}
+        .trend-bad { background-color: rgba(244, 63, 94, 0.15); color: var(--rose); border: 1px solid rgba(244, 63, 94, 0.2);}
 
+        /* AKORDİYON STİLLERİ */
         .accordion-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding-bottom: 2px; -webkit-tap-highlight-color: transparent;}
-        .accordion-header h3 { margin-bottom: 0; pointer-events: none; }
-        .chevron { width: 24px; height: 24px; border-radius: 12px; background: rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--text-muted); transition: transform 0.3s ease; pointer-events: none; }
-        .accordion-content { overflow: hidden; transition: max-height 0.4s ease, opacity 0.4s ease; max-height: 1200px; opacity: 1; margin-top: 12px; }
+        .accordion-header h3 { margin-bottom: 0; pointer-events: none; color: #e2e8f0; font-size: 13px;}
+        .chevron { width: 28px; height: 28px; border-radius: 14px; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--text-muted); transition: all 0.3s ease; pointer-events: none; border: 1px solid rgba(255,255,255,0.02);}
+        .accordion-header:active .chevron { background: rgba(255,255,255,0.1); }
+        .accordion-content { overflow: hidden; transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease; max-height: 1200px; opacity: 1; margin-top: 16px; }
         .card.collapsed .accordion-content { max-height: 0; opacity: 0; margin-top: 0; }
         .card.collapsed .chevron { transform: rotate(-90deg); }
     </style>
@@ -95,7 +145,7 @@
     <div class="header-section">
         <h1>Finans Merkezi</h1>
         <div class="system-status">
-            <span id="baglanti-durumu" style="color: var(--neon-yellow);"><span class="spinner"></span>Bağlanıyor</span>
+            <span id="baglanti-durumu" style="color: var(--amber);"><span class="spinner"></span>Bağlanıyor</span>
             <span class="update-time" id="last-update">Bekleniyor</span>
         </div>
     </div>
@@ -123,21 +173,21 @@
         <div class="card grid-card">
             <h3>Genel Borç</h3>
             <div class="stat-sub-text" id="val-borc">₺ 0,00</div>
-            <div class="trend-box" id="trend-borc" style="margin-top:2px; font-size:11px;"></div>
+            <div class="trend-box" id="trend-borc" style="margin-top:4px; font-size:11px;"></div>
         </div>
     </div>
 
     <div class="dashboard-grid-2">
         <div class="card grid-card card-urgent">
-            <h3 style="color: var(--neon-red);">🔥 Can Yakan</h3>
+            <h3 style="color: var(--rose);">🔥 Can Yakan</h3>
             <div class="stat-sub-text text-red" id="val-borc-acil">₺ 0,00</div>
-            <div class="trend-box" id="trend-can-yakan" style="margin-top:2px; font-size:11px;"></div>
-            <div style="font-size: 11px; margin-top: 6px; color: rgba(255,69,58,0.7); font-weight: 600;" id="val-tahmini-faiz">Faiz (+%5): ₺ 0,00</div>
+            <div class="trend-box" id="trend-can-yakan" style="margin-top:4px; font-size:11px;"></div>
+            <div style="font-size: 11px; margin-top: 8px; color: rgba(244,63,94,0.8); font-weight: 600;" id="val-tahmini-faiz">Faiz (+%5): ₺ 0,00</div>
         </div>
         <div class="card grid-card">
             <h3>📅 Planlı</h3>
-            <div class="stat-sub-text text-muted" id="val-borc-planli">₺ 0,00</div>
-            <div class="trend-box" id="trend-planli" style="margin-top:2px; font-size:11px;"></div>
+            <div class="stat-sub-text text-gray" id="val-borc-planli" style="color:#cbd5e1;">₺ 0,00</div>
+            <div class="trend-box" id="trend-planli" style="margin-top:4px; font-size:11px;"></div>
         </div>
     </div>
 
@@ -198,17 +248,17 @@
         <div class="accordion-content">
             <div class="progress-group" style="margin-top: 0;">
                 <div class="progress-label-group">
-                    <span>Nev Kredisi <span style="font-size:11px; color:var(--text-muted); font-weight:normal; margin-left:4px;" id="val-nev-kalan"></span></span>
-                    <span id="val-nev-yuzde">%0</span>
+                    <span>Nev Kredisi <span style="font-size:11px; color:var(--text-muted); font-weight:normal; margin-left:6px;" id="val-nev-kalan"></span></span>
+                    <span id="val-nev-yuzde" style="color:var(--emerald); font-weight:700;">%0</span>
                 </div>
-                <div class="progress-container"><div class="progress-bar" id="bar-nev" style="width: 0%; background-color: var(--neon-green);"></div></div>
+                <div class="progress-container"><div class="progress-bar" id="bar-nev" style="width: 0%; background-color: var(--emerald); box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);"></div></div>
             </div>
             <div class="progress-group">
                 <div class="progress-label-group">
-                    <span>Getir Kredisi <span style="font-size:11px; color:var(--text-muted); font-weight:normal; margin-left:4px;" id="val-getir-kalan"></span></span>
-                    <span id="val-getir-yuzde">%0</span>
+                    <span>Getir Kredisi <span style="font-size:11px; color:var(--text-muted); font-weight:normal; margin-left:6px;" id="val-getir-kalan"></span></span>
+                    <span id="val-getir-yuzde" style="color:var(--blue); font-weight:700;">%0</span>
                 </div>
-                <div class="progress-container"><div class="progress-bar" id="bar-getir" style="width: 0%; background-color: var(--neon-blue);"></div></div>
+                <div class="progress-container"><div class="progress-bar" id="bar-getir" style="width: 0%; background-color: var(--blue); box-shadow: 0 0 10px rgba(59, 130, 246, 0.4);"></div></div>
             </div>
         </div>
     </div>
@@ -244,9 +294,10 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbwMd0e-v5_8CZ5jvNNvqHrxwMGMWrP6OSZBErj0SBT6MIXqQ1edtrh-3CP2DixePGsLuw/exec"; // LÜTFEN KENDİ YENİ LİNKİNİZİ YAPIŞTIRIN
-        let expenseChartInstance = null;
+        // API LİNKİNİ BURAYA YAPIŞTIR
+        const API_URL = "https://script.google.com/macros/s/AKfycbwMd0e-v5_8CZ5jvNNvqHrxwMGMWrP6OSZBErj0SBT6MIXqQ1edtrh-3CP2DixePGsLuw/exec"; 
         
+        let expenseChartInstance = null;
         window.tarihceData = [];
         window.currentStats = {};
 
@@ -316,14 +367,12 @@
             window.requestAnimationFrame(step);
         }
 
-        // --- GÜNCEL EKLENMİŞ ZAMAN MAKİNESİ ---
         function updateTrends(days, btnElement) {
             document.querySelectorAll('.time-btn').forEach(btn => btn.classList.remove('active'));
             if(btnElement) btnElement.classList.add('active');
 
             const ids = ['trend-net-servet', 'trend-borc', 'trend-can-yakan', 'trend-planli'];
             
-            // Eğer "Güncel" butonuna basıldıysa (0 gün), kıyaslama kutularını temizle
             if (days === 0) {
                 ids.forEach(id => document.getElementById(id).innerHTML = "");
                 return;
@@ -379,20 +428,20 @@
             let color, icon;
 
             if (diff > 0) { // Artış
-                color = isDebt ? "var(--neon-red)" : "var(--neon-green)";
+                color = isDebt ? "var(--rose)" : "var(--emerald)";
                 icon = "▲";
             } else { // Azalış
-                color = isDebt ? "var(--neon-green)" : "var(--neon-red)";
+                color = isDebt ? "var(--emerald)" : "var(--rose)";
                 icon = "▼";
             }
 
-            el.innerHTML = `<span style="color:${color}; background:color-mix(in srgb, ${color} 15%, transparent); padding: 4px 8px; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">${icon} ${formattedDiff}</span>`;
+            el.innerHTML = `<span style="color:${color}; background:color-mix(in srgb, ${color} 15%, transparent); padding: 5px 10px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); border: 1px solid color-mix(in srgb, ${color} 30%, transparent);">${icon} ${formattedDiff}</span>`;
         }
 
         async function verileriCek() {
             const durumEl = document.getElementById('baglanti-durumu');
-            durumEl.innerHTML = '<span class="spinner" style="border-left-color: var(--neon-yellow);"></span>Yükleniyor';
-            durumEl.style.color = "var(--neon-yellow)";
+            durumEl.innerHTML = '<span class="spinner" style="border-left-color: var(--amber);"></span>Yükleniyor';
+            durumEl.style.color = "var(--amber)";
             
             try {
                 const response = await fetch(API_URL);
@@ -433,7 +482,6 @@
                     document.getElementById('bar-getir').style.width = (data.getirYuzde || 0) + "%";
                     document.getElementById('val-getir-kalan').innerText = "(Kalan: " + formatTL(data.getirKalan || 0) + ")";
 
-                    // İlk açılışta GÜNCEL sekmesini tetikle (0 gün - kıyaslama yok)
                     updateTrends(0, document.querySelector('.time-btn.active'));
 
                     // BANKALAR LİSTESİ
@@ -446,7 +494,7 @@
                             let ikon = (banka.isim || "").toLowerCase().includes("nakit") ? "💵" : "🏦";
                             bankaDOM.innerHTML += `
                             <div class="list-row">
-                                <span class="list-label" style="font-size:15px; font-weight:600; color:#fff;">${ikon} ${banka.isim}</span>
+                                <span class="list-label" style="font-size:15px; font-weight:600; color:#e2e8f0;">${ikon} ${banka.isim}</span>
                                 <span class="list-value ${renk}">${formatTL(bakiyeDegeri)}</span>
                             </div>`;
                         });
@@ -466,11 +514,11 @@
                             percentDOM.innerText = "%" + Math.round(harcananYuzde);
 
                             if (harcananYuzde > 100) {
-                                budgetBarDOM.style.width = "100%"; budgetBarDOM.style.background = "linear-gradient(90deg, #ff453a, #ff9f0a)"; percentDOM.style.color = "#ffffff";
-                                bakiyeDOM.innerText = "Aşıldı: " + formatTL(Math.abs(kalan)); bakiyeDOM.style.color = "var(--neon-red)";
+                                budgetBarDOM.style.width = "100%"; budgetBarDOM.style.background = "linear-gradient(90deg, #f43f5e, #fb923c)"; percentDOM.style.color = "#ffffff";
+                                bakiyeDOM.innerText = "Aşıldı: " + formatTL(Math.abs(kalan)); bakiyeDOM.style.color = "var(--rose)";
                             } else {
-                                budgetBarDOM.style.width = harcananYuzde + "%"; budgetBarDOM.style.background = harcananYuzde > 80 ? "linear-gradient(90deg, #ffd60a, #ff9f0a)" : "linear-gradient(90deg, #0a84ff, #5e5ce6)"; percentDOM.style.color = "#ffffff";
-                                bakiyeDOM.innerText = "Kalan: " + formatTL(kalan); bakiyeDOM.style.color = "var(--neon-green)";
+                                budgetBarDOM.style.width = harcananYuzde + "%"; budgetBarDOM.style.background = harcananYuzde > 80 ? "linear-gradient(90deg, #f59e0b, #f43f5e)" : "var(--brand-gradient)"; percentDOM.style.color = "#ffffff";
+                                bakiyeDOM.innerText = "Kalan: " + formatTL(kalan); bakiyeDOM.style.color = "var(--emerald)";
                             }
                         } else { budgetBarDOM.style.width = "0%"; percentDOM.innerText = "%0"; bakiyeDOM.innerText = "Veri Yok"; }
 
@@ -489,27 +537,27 @@
                     if(data.yaklasanOdemeler && data.yaklasanOdemeler.length > 0) {
                         yaklasanDOM.innerHTML = "";
                         data.yaklasanOdemeler.forEach(islem => { yaklasanDOM.innerHTML += `<div class="list-row"><span class="list-label">Ayın ${islem.gun}'ü - ${islem.kalem}</span><span class="list-value text-red">${formatTL(islem.tutar)}</span></div>`; });
-                        yaklasanDOM.innerHTML += `<div style="text-align:right; margin-top:14px; font-size:13px; color:var(--text-muted); padding-right:5px;">Toplam Çıkış: <span style="color:#fff; font-weight:800; font-size:15px; letter-spacing:-0.2px;">${formatTL(data.yaklasanToplam)}</span></div>`;
-                    } else { yaklasanDOM.innerHTML = `<div style="text-align:center; color:var(--neon-green); font-size: 14px; padding: 15px 0; font-weight: 600;">Önümüzdeki 7 gün planlı ödeme yok 🎉</div>`; }
+                        yaklasanDOM.innerHTML += `<div style="text-align:right; margin-top:14px; font-size:13px; color:var(--text-muted); padding-right:5px;">Toplam Çıkış: <span style="color:#fff; font-weight:800; font-size:16px; letter-spacing:-0.2px;">${formatTL(data.yaklasanToplam)}</span></div>`;
+                    } else { yaklasanDOM.innerHTML = `<div style="text-align:center; color:var(--emerald); font-size: 14px; padding: 15px 0; font-weight: 600;">Önümüzdeki 7 gün planlı ödeme yok 🎉</div>`; }
 
                     // Sabitler
                     const sabitlerDOM = document.getElementById('sabitler-listesi');
                     if(data.tumSabitlerListe && data.tumSabitlerListe.length > 0) {
                         sabitlerDOM.innerHTML = "";
                         data.tumSabitlerListe.forEach(sabit => {
-                            let checkIcon = sabit.odendiMi ? '<span style="color:var(--neon-green); margin-left:8px; font-size:14px; text-shadow: 0 0 4px rgba(50,215,75,0.4);">✓</span>' : '';
-                            let opacityStyle = sabit.odendiMi ? 'opacity: 0.45;' : '';
-                            let yontemRenk = (sabit.yontem || "").toLowerCase().includes("kredi") ? "var(--neon-blue)" : "var(--text-muted)";
+                            let checkIcon = sabit.odendiMi ? '<span style="color:var(--emerald); margin-left:8px; font-size:14px; text-shadow: 0 0 6px rgba(16, 185, 129, 0.4);">✓</span>' : '';
+                            let opacityStyle = sabit.odendiMi ? 'opacity: 0.4;' : '';
+                            let yontemRenk = (sabit.yontem || "").toLowerCase().includes("kredi") ? "var(--blue)" : "var(--text-muted)";
                             let kalanMetin = (sabit.kalanAy === "Süresiz" || !sabit.kalanAy) ? "Süresiz" : sabit.kalanAy + " Ay Kaldı";
                             let kalanBadge = `<span style="color:var(--text-muted); margin-left:6px; font-weight:normal;">• ${kalanMetin}</span>`;
                             
                             sabitlerDOM.innerHTML += `
-                                <div class="list-row" style="${opacityStyle} border-bottom: 1px solid var(--border-color); padding: 14px 0;">
+                                <div class="list-row" style="${opacityStyle} border-bottom: 1px solid var(--border-color); padding: 16px 0;">
                                     <div style="display:flex; flex-direction:column;">
-                                        <span class="list-label" style="font-size:15px; color:#fff;">Ayın ${sabit.gun}'ü - ${sabit.kalem} ${checkIcon}</span>
-                                        <span style="font-size:11px; color:${yontemRenk}; margin-top:4px; font-weight:600;">${sabit.yontem} ${kalanBadge}</span>
+                                        <span class="list-label" style="font-size:15px; color:#f8fafc;">Ayın ${sabit.gun}'ü - ${sabit.kalem} ${checkIcon}</span>
+                                        <span style="font-size:11px; color:${yontemRenk}; margin-top:6px; font-weight:600;">${sabit.yontem} ${kalanBadge}</span>
                                     </div>
-                                    <span class="list-value" style="font-weight:700;">${formatTL(sabit.tutar)}</span>
+                                    <span class="list-value" style="font-weight:800;">${formatTL(sabit.tutar)}</span>
                                 </div>
                             `;
                         });
@@ -533,7 +581,7 @@
             } catch (error) { 
                 console.error("Hata Yakalandı:", error);
                 durumEl.innerText = "Bağlantı veya URL Hatası"; 
-                durumEl.style.color = "var(--neon-red)"; 
+                durumEl.style.color = "var(--rose)"; 
             }
         }
 
@@ -542,7 +590,7 @@
             if(expenseChartInstance) { expenseChartInstance.destroy(); }
             
             if(!kategoriData || kategoriData.length === 0) {
-                ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.font = '600 13px -apple-system, BlinkMacSystemFont, sans-serif'; ctx.fillStyle = '#8E8E93'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.font = '600 13px Inter, sans-serif'; ctx.fillStyle = '#94a3b8'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
                 ctx.fillText('Bu ay henüz harcama kaydı yok 🎉', canvas.width / 2, canvas.height / 2); return;
             }
 
@@ -551,7 +599,7 @@
             const percentPlugin = {
                 id: 'percentPlugin',
                 afterDatasetsDraw(chart) {
-                    const { ctx, data } = chart; ctx.save(); ctx.font = 'bold 11px -apple-system, BlinkMacSystemFont, sans-serif'; ctx.fillStyle = '#8E8E93'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+                    const { ctx, data } = chart; ctx.save(); ctx.font = 'bold 11px Inter, sans-serif'; ctx.fillStyle = '#94a3b8'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
                     const dataset = data.datasets[0];
                     chart.getDatasetMeta(0).data.forEach((bar, index) => {
                         const value = dataset.data[index];
@@ -560,11 +608,13 @@
                     ctx.restore();
                 }
             };
-            const colors = ['#0a84ff', '#ff453a', '#30d158', '#ffd60a', '#bf5af2'];
+            
+            // Pasta grafik renkleri daha soft ve premium tonlara çekildi
+            const colors = ['#3b82f6', '#f43f5e', '#10b981', '#f59e0b', '#8b5cf6'];
 
             expenseChartInstance = new Chart(ctx, {
-                type: 'bar', data: { labels: labels, datasets: [{ data: values, backgroundColor: colors, borderRadius: 6, barThickness: 14 }] },
-                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, layout: { padding: { right: 40 } }, scales: { x: { display: false, grid: { display: false } }, y: { grid: { display: false }, border: { display: false }, ticks: { color: '#F2F2F7', font: { size: 12, weight: '500' } } } }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(context) { return ' ' + formatTL(context.raw); } } } } },
+                type: 'bar', data: { labels: labels, datasets: [{ data: values, backgroundColor: colors, borderRadius: 8, barThickness: 16 }] },
+                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, layout: { padding: { right: 40 } }, scales: { x: { display: false, grid: { display: false } }, y: { grid: { display: false }, border: { display: false }, ticks: { color: '#e2e8f0', font: { size: 12, family: 'Inter', weight: '500' } } } }, plugins: { legend: { display: false }, tooltip: { backgroundColor: 'rgba(15, 23, 42, 0.9)', titleFont: {family: 'Inter'}, bodyFont: {family: 'Inter'}, padding: 10, cornerRadius: 8, callbacks: { label: function(context) { return ' ' + formatTL(context.raw); } } } } },
                 plugins: [percentPlugin] 
             });
         }
