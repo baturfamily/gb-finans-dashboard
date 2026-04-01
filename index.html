@@ -322,7 +322,6 @@
                     document.getElementById('val-kart-buay').innerText = formatTL(data.kartBuAy);
                     document.getElementById('val-kart-gelecek').innerText = formatTL(data.kartGelecek);
 
-                    // Kredi Yüzdeleri ve Kalan Tutarları (YENİ)
                     document.getElementById('val-nev-yuzde').innerText = "%" + (data.nevYuzde || 0);
                     document.getElementById('bar-nev').style.width = (data.nevYuzde || 0) + "%";
                     document.getElementById('val-nev-kalan').innerText = "(Kalan: " + formatTL(data.nevKalan || 0) + ")";
@@ -367,21 +366,24 @@
                         yaklasanDOM.innerHTML += `<div style="text-align:right; margin-top:14px; font-size:13px; color:var(--text-muted); padding-right:5px;">Toplam Çıkış: <span style="color:#fff; font-weight:800; font-size:15px; letter-spacing:-0.2px;">${formatTL(data.yaklasanToplam)}</span></div>`;
                     } else { yaklasanDOM.innerHTML = `<div style="text-align:center; color:var(--neon-green); font-size: 14px; padding: 15px 0; font-weight: 600;">Önümüzdeki 7 gün planlı ödeme yok 🎉</div>`; }
 
-                    // YENİ: TÜM SABİTLER LİSTESİ VE ÖDENDİ TİKİ
+                    // TÜM SABİTLER LİSTESİ (KALAN AY VE TİK EKLENTİSİ)
                     const sabitlerDOM = document.getElementById('sabitler-listesi');
                     if(data.tumSabitlerListe && data.tumSabitlerListe.length > 0) {
                         sabitlerDOM.innerHTML = "";
                         data.tumSabitlerListe.forEach(sabit => {
-                            // Ödendiyse yeşil tik ve hafif soluklaştırma (opacity: 0.45)
                             let checkIcon = sabit.odendiMi ? '<span style="color:var(--neon-green); margin-left:8px; font-size:14px; text-shadow: 0 0 4px rgba(50,215,75,0.4);">✓</span>' : '';
                             let opacityStyle = sabit.odendiMi ? 'opacity: 0.45;' : '';
                             let yontemRenk = sabit.yontem.toLowerCase().includes("kredi") ? "var(--neon-blue)" : "var(--text-muted)";
+                            
+                            // KALAN AY HESAPLAMASI
+                            let kalanMetin = (sabit.kalanAy === "Süresiz" || !sabit.kalanAy) ? "Süresiz" : sabit.kalanAy + " Ay Kaldı";
+                            let kalanBadge = `<span style="color:var(--text-muted); margin-left:6px; font-weight:normal;">• ${kalanMetin}</span>`;
                             
                             sabitlerDOM.innerHTML += `
                                 <div class="list-row" style="${opacityStyle} border-bottom: 1px solid var(--border-color); padding: 14px 0;">
                                     <div style="display:flex; flex-direction:column;">
                                         <span class="list-label" style="font-size:15px; color:#fff;">Ayın ${sabit.gun}'ü - ${sabit.kalem} ${checkIcon}</span>
-                                        <span style="font-size:11px; color:${yontemRenk}; margin-top:4px; font-weight:600;">${sabit.yontem}</span>
+                                        <span style="font-size:11px; color:${yontemRenk}; margin-top:4px; font-weight:600;">${sabit.yontem} ${kalanBadge}</span>
                                     </div>
                                     <span class="list-value" style="font-weight:700;">${formatTL(sabit.tutar)}</span>
                                 </div>
