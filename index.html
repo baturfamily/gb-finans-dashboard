@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Finans">
+    
     <title>Finans Merkezi</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { 
             --bg-dark: #121212; --text-main: #F2F2F7; --text-muted: #8E8E93; 
@@ -13,53 +16,80 @@
             --panel-bg: #1C1C1E; --panel-border: rgba(255, 255, 255, 0.05);
             --panel-shadow: 0 4px 12px rgba(0,0,0,0.3); --border-color: rgba(255, 255, 255, 0.06);
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: var(--bg-dark); color: var(--text-main); padding: env(safe-area-inset-top) 16px env(safe-area-inset-bottom); overflow-y: auto; }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", sans-serif; -webkit-tap-highlight-color: transparent; -webkit-user-select: none; user-select: none; }
+        body { background-color: var(--bg-dark); color: var(--text-main); padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); padding-left: 16px; padding-right: 16px; overflow-y: auto; overscroll-behavior-y: contain; }
 
         .spinner { border: 2px solid rgba(255,255,255,0.2); border-left-color: var(--text-main); border-radius: 50%; width: 14px; height: 14px; animation: spin 1s linear infinite; display: inline-block; margin-right: 6px; vertical-align: middle; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
+        #pull-indicator { height: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 13px; color: var(--text-muted); transition: height 0.2s ease; margin-top: -10px; font-weight: 500; }
+
         .card { background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 20px; margin-bottom: 16px; padding: 20px; box-shadow: var(--panel-shadow); }
         .card h3 { color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; font-weight: 600; }
 
-        .header-section { padding: 16px 4px 8px 4px; }
+        .header-section { padding: 16px 4px 8px 4px; text-align: left; }
         .header-section h1 { font-size: 30px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 2px; }
+        .header-date { font-size: 14px; color: var(--text-muted); font-weight: 500;}
         .system-status { font-size: 12px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; margin-top: 14px; color: var(--text-muted);}
+        .update-time { font-size: 11px; opacity: 0.6; font-weight: 400;}
 
         .main-stats { text-align: center; padding: 16px 0; border: none; background: #242426; }
         .amount-large { font-size: 40px; font-weight: 800; letter-spacing: -1.2px; margin-top: 4px; color: #FFFFFF; }
 
         .dashboard-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
         .grid-card { padding: 16px; display: flex; flex-direction: column; justify-content: center; }
+        .grid-card h3 { margin-bottom: 6px; }
         .stat-sub-text { font-size: 18px; font-weight: 700; letter-spacing: -0.5px; }
-        .card-urgent { background: #2A1718; border: 1px solid rgba(255, 69, 58, 0.2); }
 
         .list-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--border-color); }
         .list-row:last-child { border-bottom: none; padding-bottom: 0; }
-        
+        .list-label { font-size: 15px; color: rgba(255,255,255,0.95); font-weight: 500; }
+        .list-value { font-weight: 600; font-size: 15px; }
+
         .progress-group { margin-top: 16px; }
         .progress-label-group { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: var(--text-muted);}
         .progress-container { width: 100%; background-color: rgba(255,255,255,0.06); border-radius: 8px; height: 8px; overflow: hidden; }
         .progress-bar { height: 100%; border-radius: 8px; transition: width 1s cubic-bezier(0.1, 0.5, 0.1, 1); }
 
         .t-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border-color); align-items: center;}
+        .t-row:last-child { border-bottom: none; padding-bottom: 0; }
         .t-details { flex-grow: 1; }
         .t-name { font-weight: 600; font-size: 15px; color: #fff;}
         .t-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
         .t-amt { font-weight: 700; font-size: 15px; text-align: right;}
 
         .text-green { color: var(--neon-green); } .text-red { color: var(--neon-red); } .text-blue { color: var(--neon-blue); } .text-gray { color: var(--text-muted); }
+        .chart-box { height: 240px; width: 100%; position: relative; margin: 10px 0;}
+        .card-urgent { background: #2A1718; border: 1px solid rgba(255, 69, 58, 0.2); }
+
+        .budget-module { text-align: center; padding: 4px 0; }
+        .budget-amount { font-size: 30px; font-weight: 800; margin-bottom: 2px; letter-spacing: -1px;}
+        .budget-subtitle { font-size: 13px; color: var(--text-muted); margin-bottom: 16px; font-weight: 500;}
+        .budget-progress-container { position: relative; width: 100%; height: 16px; background-color: rgba(255,255,255,0.06); border-radius: 8px; overflow: hidden; margin-bottom: 12px; }
+        .budget-progress-bar { height: 100%; border-radius: 8px; background-color: var(--neon-blue); width: 0%; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); }
+        #budgetPercent { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font-size: 11px; font-weight: 700; color: #ffffff; letter-spacing: 0.5px;}
+        .budget-footer { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.8); }
         
-        .accordion-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding-bottom: 2px; }
-        .chevron { width: 24px; height: 24px; border-radius: 12px; background: rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--text-muted); transition: transform 0.3s ease; }
-        .accordion-content { overflow: hidden; transition: max-height 0.4s ease, opacity 0.4s ease; max-height: 2000px; opacity: 1; margin-top: 12px; }
+        .trend-badge { font-size: 11px; padding: 5px 10px; border-radius: 6px; display: inline-flex; font-weight: 600; margin-top: 10px; }
+        .trend-good { background-color: rgba(48, 209, 88, 0.15); color: var(--neon-green); }
+        .trend-bad { background-color: rgba(255, 69, 58, 0.15); color: var(--neon-red); }
+
+        .accordion-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding-bottom: 2px; -webkit-tap-highlight-color: transparent;}
+        .accordion-header h3 { margin-bottom: 0; pointer-events: none; }
+        .chevron { width: 24px; height: 24px; border-radius: 12px; background: rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--text-muted); transition: transform 0.3s ease; pointer-events: none; }
+        .accordion-content { overflow: hidden; transition: max-height 0.4s ease, opacity 0.4s ease; max-height: 1200px; opacity: 1; margin-top: 12px; }
         .card.collapsed .accordion-content { max-height: 0; opacity: 0; margin-top: 0; }
         .card.collapsed .chevron { transform: rotate(-90deg); }
     </style>
 </head>
 <body>
+
+    <div id="pull-indicator">Aşağı çek...</div>
+
     <div class="header-section">
         <h1>Finans Merkezi</h1>
+        <div class="header-date" id="current-date">Tarih Yükleniyor...</div>
         <div class="system-status">
             <span id="baglanti-durumu" style="color: var(--neon-yellow);"><span class="spinner"></span>Bağlanıyor</span>
             <span class="update-time" id="last-update">Bekleniyor</span>
@@ -73,11 +103,11 @@
 
     <div class="dashboard-grid-2">
         <div class="card grid-card">
-            <h3>Nakit Pozisyonu</h3>
+            <h3>Kasa</h3>
             <div class="stat-sub-text text-green" id="val-kasa">₺ 0,00</div>
         </div>
         <div class="card grid-card">
-            <h3>Toplam Borç</h3>
+            <h3>Genel Borç</h3>
             <div class="stat-sub-text" id="val-borc">₺ 0,00</div>
         </div>
     </div>
@@ -89,15 +119,57 @@
             <div style="font-size: 11px; margin-top: 6px; color: rgba(255,69,58,0.7); font-weight: 600;" id="val-tahmini-faiz">Faiz (+%5): ₺ 0,00</div>
         </div>
         <div class="card grid-card">
-            <h3>📅 Planlı Borç</h3>
+            <h3>📅 Planlı</h3>
             <div class="stat-sub-text text-muted" id="val-borc-planli">₺ 0,00</div>
         </div>
     </div>
 
+    <div class="card accordion" id="acc-bankalar">
+        <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
+            <h3>🏦 Banka Hesaplarım</h3>
+            <div class="chevron">▼</div>
+        </div>
+        <div class="accordion-content" id="banka-listesi">
+            <div style="text-align:center; color:var(--text-muted); padding: 10px 0;"><span class="spinner" style="border-left-color: var(--text-muted);"></span>Yükleniyor...</div>
+        </div>
+    </div>
+
     <div class="card">
-        <h3>🏦 Banka Hesaplarım</h3>
-        <div id="banka-listesi">
-            <div style="text-align:center; color:var(--text-muted); padding: 10px 0;"><span class="spinner"></span>Yükleniyor...</div>
+        <h3 style="text-align: center; margin-bottom: 16px;">Aylık Gider & Bütçe</h3>
+        <div class="budget-module">
+            <div class="budget-amount" id="aylikGider">Yükleniyor...</div>
+            <div class="budget-subtitle">Bu Ayki Toplam Harcama</div>
+            <div class="budget-progress-container">
+                <div class="budget-progress-bar" id="budgetBar"></div>
+                <div id="budgetPercent">%0</div>
+            </div>
+            <div class="budget-footer">
+                <span id="butceDurum">Gelir: ₺0,00</span>
+                <span id="kalanBakiye">Kalan: ₺0,00</span>
+            </div>
+            <div id="aylikTrend" class="trend-badge" style="display: none;"></div>
+        </div>
+    </div>
+
+    <div class="card accordion" id="acc-kredi-karti">
+        <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
+            <h3>💳 Kredi Kartı Durumu</h3>
+            <div class="chevron">▼</div>
+        </div>
+        <div class="accordion-content">
+            <div class="list-row"><span class="list-label">Toplam Borç</span><span class="list-value" id="val-kart-toplam">₺ 0,00</span></div>
+            <div class="list-row"><span class="list-label">Bu Ay (24'ü)</span><span class="list-value text-red" id="val-kart-buay">₺ 0,00</span></div>
+            <div class="list-row"><span class="list-label">Gelecek Ay</span><span class="list-value text-blue" id="val-kart-gelecek">₺ 0,00</span></div>
+        </div>
+    </div>
+
+    <div class="card accordion" id="acc-harcama-grafik">
+        <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
+            <h3 style="text-align: center; width: 100%;">Aylık Gider Dağılımı</h3>
+            <div class="chevron">▼</div>
+        </div>
+        <div class="accordion-content">
+            <div class="chart-box"><canvas id="expenseChart"></canvas></div>
         </div>
     </div>
 
@@ -109,14 +181,14 @@
         <div class="accordion-content">
             <div class="progress-group" style="margin-top: 0;">
                 <div class="progress-label-group">
-                    <span>Nev <span style="font-size:11px; font-weight:400;" id="val-nev-kalan"></span></span>
+                    <span>Nev Kredisi <span style="font-size:11px; color:var(--text-muted); font-weight:normal; margin-left:4px;" id="val-nev-kalan"></span></span>
                     <span id="val-nev-yuzde">%0</span>
                 </div>
                 <div class="progress-container"><div class="progress-bar" id="bar-nev" style="width: 0%; background-color: var(--neon-green);"></div></div>
             </div>
             <div class="progress-group">
                 <div class="progress-label-group">
-                    <span>Getir <span style="font-size:11px; font-weight:400;" id="val-getir-kalan"></span></span>
+                    <span>Getir Kredisi <span style="font-size:11px; color:var(--text-muted); font-weight:normal; margin-left:4px;" id="val-getir-kalan"></span></span>
                     <span id="val-getir-yuzde">%0</span>
                 </div>
                 <div class="progress-container"><div class="progress-bar" id="bar-getir" style="width: 0%; background-color: var(--neon-blue);"></div></div>
@@ -124,99 +196,268 @@
         </div>
     </div>
 
+    <div class="card accordion" id="acc-yaklasan">
+        <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
+            <h3>⏳ Yaklaşan Ödemeler (7 Gün)</h3>
+            <div class="chevron">▼</div>
+        </div>
+        <div class="accordion-content" id="yaklasan-listesi">
+            <div style="text-align:center; color:var(--text-muted); font-size: 14px; padding: 10px 0;"><span class="spinner" style="border-left-color: var(--text-muted);"></span>Analiz ediliyor...</div>
+        </div>
+    </div>
+
     <div class="card accordion" id="acc-tum-sabitler">
         <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
-            <h3>🔄 Sabit Ödemelerim</h3>
+            <h3>🔄 Tüm Sabit Ödemelerim</h3>
             <div class="chevron">▼</div>
         </div>
         <div class="accordion-content" id="sabitler-listesi">
-            <div style="text-align:center; color:var(--text-muted); font-size: 14px; padding: 10px 0;"><span class="spinner"></span>Yükleniyor...</div>
+            <div style="text-align:center; color:var(--text-muted); font-size: 14px; padding: 10px 0;"><span class="spinner" style="border-left-color: var(--text-muted);"></span>Yükleniyor...</div>
         </div>
     </div>
 
     <div class="card accordion" id="acc-son-islemler">
         <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
-            <h3>Son Hareketler</h3>
+            <h3>Son 10 İşlem</h3>
             <div class="chevron">▼</div>
         </div>
         <div class="accordion-content" id="islem-listesi">
-            <div style="text-align:center; padding: 15px 0;"><span class="spinner"></span>Yükleniyor</div>
+            <div style="text-align:center; padding: 15px 0;"><span class="spinner" style="border-left-color: var(--text-muted);"></span>Yükleniyor</div>
         </div>
     </div>
 
     <script>
-        const API_URL = "BURAYA_YENI_WEB_APP_LINKINI_YAPISTIR"; // LÜTFEN GÜNCELLE
+        const API_URL = "BURAYA_YENI_WEB_APP_LINKINI_YAPISTIR";
+        let expenseChartInstance = null;
+
+        function setDate() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('current-date').innerText = now.toLocaleDateString('tr-TR', options);
+        }
+        setDate();
+
+        function initAccordions() {
+            document.querySelectorAll('.accordion').forEach(el => {
+                if (el.id && localStorage.getItem(el.id) === "1") el.classList.add("collapsed");
+            });
+        }
+        document.addEventListener("DOMContentLoaded", initAccordions);
 
         function toggleAccordion(element) {
             element.classList.toggle("collapsed");
+            if(element.id) { localStorage.setItem(element.id, element.classList.contains("collapsed") ? "1" : "0"); }
         }
 
+        let touchStart = 0;
+        const pullIndicator = document.getElementById('pull-indicator');
+        
+        document.addEventListener('touchstart', e => { if (window.scrollY <= 0) touchStart = e.touches[0].pageY; }, {passive: true});
+        document.addEventListener('touchmove', e => {
+            if (window.scrollY <= 0 && touchStart > 0) {
+                const diff = e.touches[0].pageY - touchStart;
+                if (diff > 0) {
+                    const h = Math.min(diff * 0.4, 60);
+                    pullIndicator.style.height = h + 'px';
+                    if (h > 50) { pullIndicator.innerHTML = '<span class="spinner"></span> Bırakın güncellensin'; } 
+                    else { pullIndicator.innerHTML = 'Aşağı çek...'; }
+                }
+            }
+        }, {passive: true});
+        
+        document.addEventListener('touchend', async e => {
+            if (parseInt(pullIndicator.style.height) > 50) {
+                pullIndicator.innerHTML = '<span class="spinner"></span> Güncelleniyor...';
+                await verileriCek(); 
+            }
+            pullIndicator.style.height = '0px'; touchStart = 0;
+        });
+
         function formatTL(sayi) {
-            return new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY', minimumFractionDigits: 2 }).format(sayi || 0);
+            if (isNaN(sayi) || sayi === null || sayi === "") return "0,00 ₺";
+            return new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY', minimumFractionDigits: 2 }).format(sayi);
+        }
+
+        function animateValue(id, endValue, duration) {
+            const obj = document.getElementById(id);
+            if(!obj || isNaN(endValue)) return;
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const easeProgress = 1 - Math.pow(1 - progress, 4); 
+                const currentVal = endValue * easeProgress;
+                obj.innerText = formatTL(currentVal);
+                if (progress < 1) { window.requestAnimationFrame(step); } 
+                else { obj.innerText = formatTL(endValue); }
+            };
+            window.requestAnimationFrame(step);
         }
 
         async function verileriCek() {
             const durumEl = document.getElementById('baglanti-durumu');
-            durumEl.innerHTML = '<span class="spinner"></span>Güncelleniyor';
+            durumEl.innerHTML = '<span class="spinner" style="border-left-color: var(--neon-yellow);"></span>Yükleniyor';
+            durumEl.style.color = "var(--neon-yellow)";
             
             try {
                 const response = await fetch(API_URL);
                 const data = await response.json();
 
                 if(data.durum === "basarili") {
-                    durumEl.innerText = "Senkronize";
-                    document.getElementById('last-update').innerText = "Son: " + new Date().toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'});
+                    durumEl.innerText = "Senkronize Edildi";
+                    durumEl.style.color = "var(--text-muted)";
+                    
+                    const now = new Date();
+                    document.getElementById('last-update').innerText = "Son: " + now.toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'});
 
-                    document.getElementById('val-net-servet').innerText = formatTL(data.netServet);
+                    let servetSayi = 0; let ns = data.netServet;
+                    if(ns !== undefined && ns !== null) {
+                        if(typeof ns === 'string') {
+                            let s = ns.replace(/₺/g, "").replace(/\s/g, "");
+                            if(s.indexOf('.') !== -1 && s.indexOf(',') !== -1) s = s.replace(/\./g, "").replace(",", ".");
+                            else if(s.indexOf(',') !== -1) s = s.replace(",", ".");
+                            servetSayi = parseFloat(s);
+                        } else if(typeof ns === 'number') servetSayi = ns;
+                    }
+                    if(!isNaN(servetSayi)) animateValue("val-net-servet", servetSayi, 1200);
+                    else document.getElementById('val-net-servet').innerText = data.netServet || "₺ 0,00";
+
                     document.getElementById('val-kasa').innerText = formatTL(data.toplamKasa);
                     document.getElementById('val-borc').innerText = formatTL(data.toplamBorc);
                     document.getElementById('val-borc-acil').innerText = formatTL(data.toplamCanYakan);
                     document.getElementById('val-tahmini-faiz').innerText = "Faiz (+%5): " + formatTL(data.tahminiFaiz);
                     document.getElementById('val-borc-planli').innerText = formatTL(data.toplamPlanli);
                     
-                    document.getElementById('val-nev-yuzde').innerText = "%" + data.nevYuzde;
-                    document.getElementById('bar-nev').style.width = data.nevYuzde + "%";
-                    document.getElementById('val-nev-kalan').innerText = "(Kalan: " + formatTL(data.nevKalan) + ")";
+                    document.getElementById('val-kart-toplam').innerText = formatTL(data.kartToplam);
+                    document.getElementById('val-kart-buay').innerText = formatTL(data.kartBuAy);
+                    document.getElementById('val-kart-gelecek').innerText = formatTL(data.kartGelecek);
 
-                    document.getElementById('val-getir-yuzde').innerText = "%" + data.getirYuzde;
-                    document.getElementById('bar-getir').style.width = data.getirYuzde + "%";
-                    document.getElementById('val-getir-kalan').innerText = "(Kalan: " + formatTL(data.getirKalan) + ")";
+                    document.getElementById('val-nev-yuzde').innerText = "%" + (data.nevYuzde || 0);
+                    document.getElementById('bar-nev').style.width = (data.nevYuzde || 0) + "%";
+                    document.getElementById('val-nev-kalan').innerText = "(Kalan: " + formatTL(data.nevKalan || 0) + ")";
 
-                    // YENİ: Bankalar Listesini Doldurma
+                    document.getElementById('val-getir-yuzde').innerText = "%" + (data.getirYuzde || 0);
+                    document.getElementById('bar-getir').style.width = (data.getirYuzde || 0) + "%";
+                    document.getElementById('val-getir-kalan').innerText = "(Kalan: " + formatTL(data.getirKalan || 0) + ")";
+
+                    // YENİ EKLENEN BANKALAR LİSTESİ DOLDURMA
                     const bankaDOM = document.getElementById('banka-listesi');
-                    bankaDOM.innerHTML = "";
-                    data.bankalar.forEach(banka => {
-                        let renk = banka.bakiye < 0 ? "text-red" : (banka.bakiye > 0 ? "text-green" : "text-gray");
-                        let ikon = banka.isim.toLowerCase().includes("nakit") ? "💵" : "💳";
+                    if (data.bankalar && data.bankalar.length > 0) {
+                        bankaDOM.innerHTML = "";
+                        data.bankalar.forEach(banka => {
+                            let renk = banka.bakiye < 0 ? "text-red" : (banka.bakiye > 0 ? "text-green" : "text-gray");
+                            let ikon = banka.isim.toLowerCase().includes("nakit") ? "💵" : "🏦";
+                            bankaDOM.innerHTML += `
+                            <div class="list-row">
+                                <span class="list-label">${ikon} ${banka.isim}</span>
+                                <span class="list-value ${renk}">${formatTL(banka.bakiye)}</span>
+                            </div>`;
+                        });
+                    } else { bankaDOM.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding: 15px 0;">Banka verisi bulunamadı.</div>`; }
+
+                    if(data.buAyToplamGider !== undefined) {
+                        document.getElementById('aylikGider').innerText = formatTL(data.buAyToplamGider);
+                        const bakiyeDOM = document.getElementById('kalanBakiye'), budgetBarDOM = document.getElementById('budgetBar'), percentDOM = document.getElementById('budgetPercent');
+                        document.getElementById('butceDurum').innerText = "Gelir: " + formatTL(data.buAyToplamGelir);
                         
-                        bankaDOM.innerHTML += `
-                        <div class="list-row">
-                            <span style="font-weight:600; font-size:15px; color:#fff;">${ikon} ${banka.isim}</span>
-                            <span class="${renk}" style="font-weight:700; font-size:15px;">${formatTL(banka.bakiye)}</span>
-                        </div>`;
-                    });
+                        if (data.buAyToplamGelir > 0) {
+                            let harcananYuzde = (data.buAyToplamGider / data.buAyToplamGelir) * 100;
+                            let kalan = data.buAyToplamGelir - data.buAyToplamGider;
+                            percentDOM.innerText = "%" + Math.round(harcananYuzde);
 
-                    // Sabitler
+                            if (harcananYuzde > 100) {
+                                budgetBarDOM.style.width = "100%"; budgetBarDOM.style.background = "linear-gradient(90deg, #ff453a, #ff9f0a)"; percentDOM.style.color = "#ffffff";
+                                bakiyeDOM.innerText = "Aşıldı: " + formatTL(Math.abs(kalan)); bakiyeDOM.style.color = "var(--neon-red)";
+                            } else {
+                                budgetBarDOM.style.width = harcananYuzde + "%"; budgetBarDOM.style.background = harcananYuzde > 80 ? "linear-gradient(90deg, #ffd60a, #ff9f0a)" : "linear-gradient(90deg, #0a84ff, #5e5ce6)"; percentDOM.style.color = "#ffffff";
+                                bakiyeDOM.innerText = "Kalan: " + formatTL(kalan); bakiyeDOM.style.color = "var(--neon-green)";
+                            }
+                        } else { budgetBarDOM.style.width = "0%"; percentDOM.innerText = "%0"; bakiyeDOM.innerText = "Veri Yok"; }
+
+                        const trendDOM = document.getElementById('aylikTrend');
+                        trendDOM.style.display = "inline-flex"; 
+                        if(data.gecenAyToplamGider > 0) {
+                            let fark = data.buAyToplamGider - data.gecenAyToplamGider; let yuzde = Math.abs((fark / data.gecenAyToplamGider) * 100).toFixed(1);
+                            if (fark > 0) { trendDOM.className = "trend-badge trend-bad"; trendDOM.innerText = "Geçen aya göre %" + yuzde + " fazla ↑"; } 
+                            else if (fark < 0) { trendDOM.className = "trend-badge trend-good"; trendDOM.innerText = "Geçen aya göre %" + yuzde + " az ↓"; } 
+                            else { trendDOM.className = "trend-badge"; trendDOM.innerText = "Geçen ayla aynı ━"; trendDOM.style.background = "rgba(255,255,255,0.06)"; trendDOM.style.border = "1px solid rgba(255,255,255,0.02)"; trendDOM.style.color = "#fff"; }
+                        } else { trendDOM.className = "trend-badge"; trendDOM.innerText = "Geçen ay verisi yok"; trendDOM.style.background = "rgba(255,255,255,0.04)"; trendDOM.style.border = "none"; trendDOM.style.color = "var(--text-muted)"; }
+                    }
+
+                    const yaklasanDOM = document.getElementById('yaklasan-listesi');
+                    if(data.yaklasanOdemeler && data.yaklasanOdemeler.length > 0) {
+                        yaklasanDOM.innerHTML = "";
+                        data.yaklasanOdemeler.forEach(islem => { yaklasanDOM.innerHTML += `<div class="list-row"><span class="list-label">Ayın ${islem.gun}'ü - ${islem.kalem}</span><span class="list-value text-red">${formatTL(islem.tutar)}</span></div>`; });
+                        yaklasanDOM.innerHTML += `<div style="text-align:right; margin-top:14px; font-size:13px; color:var(--text-muted); padding-right:5px;">Toplam Çıkış: <span style="color:#fff; font-weight:800; font-size:15px; letter-spacing:-0.2px;">${formatTL(data.yaklasanToplam)}</span></div>`;
+                    } else { yaklasanDOM.innerHTML = `<div style="text-align:center; color:var(--neon-green); font-size: 14px; padding: 15px 0; font-weight: 600;">Önümüzdeki 7 gün planlı ödeme yok 🎉</div>`; }
+
                     const sabitlerDOM = document.getElementById('sabitler-listesi');
-                    sabitlerDOM.innerHTML = "";
-                    data.tumSabitlerListe.forEach(s => {
-                        let check = s.odendiMi ? '<span style="color:var(--neon-green);">✓</span>' : '';
-                        let op = s.odendiMi ? 'opacity:0.4;' : '';
-                        let kalan = (s.kalanAy == "Süresiz") ? "Süresiz" : s.kalanAy + " Ay Kaldı";
-                        sabitlerDOM.innerHTML += `<div class="list-row" style="${op}"><div style="display:flex; flex-direction:column;"><span style="font-size:15px; color:#fff;">${s.gun}. Gün - ${s.kalem} ${check}</span><span style="font-size:11px; color:var(--text-muted);">${s.yontem} • ${kalan}</span></div><span style="font-weight:700;">${formatTL(s.tutar)}</span></div>`;
-                    });
+                    if(data.tumSabitlerListe && data.tumSabitlerListe.length > 0) {
+                        sabitlerDOM.innerHTML = "";
+                        data.tumSabitlerListe.forEach(sabit => {
+                            let checkIcon = sabit.odendiMi ? '<span style="color:var(--neon-green); margin-left:8px; font-size:14px; text-shadow: 0 0 4px rgba(50,215,75,0.4);">✓</span>' : '';
+                            let opacityStyle = sabit.odendiMi ? 'opacity: 0.45;' : '';
+                            let yontemRenk = sabit.yontem.toLowerCase().includes("kredi") ? "var(--neon-blue)" : "var(--text-muted)";
+                            let kalanMetin = (sabit.kalanAy === "Süresiz" || !sabit.kalanAy) ? "Süresiz" : sabit.kalanAy + " Ay Kaldı";
+                            let kalanBadge = `<span style="color:var(--text-muted); margin-left:6px; font-weight:normal;">• ${kalanMetin}</span>`;
+                            
+                            sabitlerDOM.innerHTML += `
+                                <div class="list-row" style="${opacityStyle} border-bottom: 1px solid var(--border-color); padding: 14px 0;">
+                                    <div style="display:flex; flex-direction:column;">
+                                        <span class="list-label" style="font-size:15px; color:#fff;">Ayın ${sabit.gun}'ü - ${sabit.kalem} ${checkIcon}</span>
+                                        <span style="font-size:11px; color:${yontemRenk}; margin-top:4px; font-weight:600;">${sabit.yontem} ${kalanBadge}</span>
+                                    </div>
+                                    <span class="list-value" style="font-weight:700;">${formatTL(sabit.tutar)}</span>
+                                </div>
+                            `;
+                        });
+                    } else { sabitlerDOM.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size: 13px; padding: 15px 0;">Kayıtlı sabit ödeme bulunamadı.</div>`; }
 
-                    // Son İşlemler
                     const listeDOM = document.getElementById('islem-listesi');
-                    listeDOM.innerHTML = "";
-                    data.sonIslemler.forEach(islem => {
-                        let renk = islem.tur === "Gelir" ? "text-green" : "";
-                        listeDOM.innerHTML += `<div class="t-row"><div class="t-details"><div class="t-name">${islem.kalem}</div><div class="t-meta">${islem.tarih} • ${islem.odeme}</div></div><div class="t-amt ${renk}">${formatTL(islem.tutar)}</div></div>`;
-                    });
-                }
-            } catch (error) { durumEl.innerText = "Hata!"; }
+                    if(data.sonIslemler && data.sonIslemler.length > 0) {
+                        listeDOM.innerHTML = "";
+                        data.sonIslemler.forEach(islem => {
+                            let renk = islem.tur === "Gelir" ? "text-green" : ""; let isaret = islem.tur === "Gelir" ? "+" : "-";
+                            listeDOM.innerHTML += `<div class="t-row"><div class="t-details"><div class="t-name">${islem.kalem}</div><div class="t-meta">${islem.tarih} • ${islem.odeme}</div></div><div class="t-amt ${renk}">${isaret} ${formatTL(islem.tutar)}</div></div>`;
+                        });
+                    } else { listeDOM.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding: 15px 0;">Henüz işlem yok</div>`; }
+                    
+                    grafigiCizBar(data.pastaGrafik, data.buAyToplamGider);
+                } else { throw new Error("API'den basarili kodu gelmedi."); }
+            } catch (error) { console.error(error); durumEl.innerText = "Sistem Hatası"; durumEl.style.color = "var(--neon-red)"; }
         }
 
+        function grafigiCizBar(kategoriData, totalExpense) {
+            const canvas = document.getElementById('expenseChart'); if(!canvas) return; const ctx = canvas.getContext('2d');
+            if(expenseChartInstance) { expenseChartInstance.destroy(); }
+            
+            if(!kategoriData || kategoriData.length === 0) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.font = '600 13px -apple-system, BlinkMacSystemFont, sans-serif'; ctx.fillStyle = '#8E8E93'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                ctx.fillText('Bu ay henüz harcama kaydı yok 🎉', canvas.width / 2, canvas.height / 2); return;
+            }
+
+            const labels = kategoriData.map(item => item.isim); const values = kategoriData.map(item => item.toplam);
+
+            const percentPlugin = {
+                id: 'percentPlugin',
+                afterDatasetsDraw(chart) {
+                    const { ctx, data } = chart; ctx.save(); ctx.font = 'bold 11px -apple-system, BlinkMacSystemFont, sans-serif'; ctx.fillStyle = '#8E8E93'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+                    const dataset = data.datasets[0];
+                    chart.getDatasetMeta(0).data.forEach((bar, index) => {
+                        const value = dataset.data[index];
+                        if (totalExpense > 0 && value > 0) { const pct = Math.round((value / totalExpense) * 100) + '%'; ctx.fillText(pct, bar.x + 8, bar.y + 1); }
+                    });
+                    ctx.restore();
+                }
+            };
+            const colors = ['#0a84ff', '#ff453a', '#30d158', '#ffd60a', '#bf5af2'];
+
+            expenseChartInstance = new Chart(ctx, {
+                type: 'bar', data: { labels: labels, datasets: [{ data: values, backgroundColor: colors, borderRadius: 6, barThickness: 14 }] },
+                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, layout: { padding: { right: 40 } }, scales: { x: { display: false, grid: { display: false } }, y: { grid: { display: false }, border: { display: false }, ticks: { color: '#F2F2F7', font: { size: 12, weight: '500' } } } }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(context) { return ' ' + formatTL(context.raw); } } } } },
+                plugins: [percentPlugin] 
+            });
+        }
         verileriCek();
     </script>
 </body>
