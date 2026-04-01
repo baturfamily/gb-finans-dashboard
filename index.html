@@ -8,12 +8,7 @@
     <meta name="apple-mobile-web-app-title" content="Finans">
     
     <title>Finans Merkezi</title>
-    
-    <link rel="preconnect" href="https://script.google.com">
-    <link rel="preconnect" href="https://script.googleusercontent.com">
-    
-    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
-    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
@@ -27,6 +22,7 @@
             --amber: #f59e0b;
             --brand-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
             
+            /* UI/UX: Daha Derin "Glass" Efekti */
             --panel-bg: rgba(30, 41, 59, 0.45); 
             --panel-border: rgba(255, 255, 255, 0.08);
             --panel-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
@@ -45,6 +41,7 @@
             overscroll-behavior-y: contain; 
         }
 
+        /* TABULAR NUMS: Rakamların titremesini engeller, borsa ekranı gibi hizalar */
         .tabular-nums { font-variant-numeric: tabular-nums; }
 
         .spinner { border: 2px solid rgba(255,255,255,0.1); border-left-color: var(--text-main); border-radius: 50%; width: 14px; height: 14px; animation: spin 1s linear infinite; display: inline-block; margin-right: 6px; vertical-align: middle; }
@@ -52,6 +49,7 @@
 
         #pull-indicator { height: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 13px; color: var(--text-muted); transition: height 0.2s ease; font-weight: 500; background: var(--bg-dark);}
 
+        /* YAPISKAN ÜST MENÜ */
         .top-container {
             position: sticky;
             top: 0;
@@ -73,7 +71,6 @@
         .time-selector::-webkit-scrollbar { display: none; }
         .time-btn { padding: 8px 20px; border-radius: 24px; background: rgba(255,255,255,0.03); color: var(--text-muted); font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; white-space: nowrap; border: 1px solid rgba(255,255,255,0.05);}
         .time-btn.active { background: var(--brand-gradient); color: #fff; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4); border-color: transparent; font-weight: 700;}
-        .time-btn:active { transform: scale(0.95); }
         
         .content-container { padding: 0 20px; }
         .trend-box { font-size: 12px; font-weight: 700; margin-top: 10px; display: inline-block; letter-spacing: 0.3px; transition: 0.3s ease;}
@@ -92,27 +89,33 @@
             box-shadow: var(--panel-shadow); 
             transition: transform 0.2s ease, border-color 0.2s ease;
         }
+        /* YENİ: Dokunmatik çökme efekti */
         .card:active { transform: scale(0.99); border-color: rgba(255,255,255,0.15); }
+
         .card h3 { color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 16px; font-weight: 600; display: flex; align-items: center;}
         .card-icon { margin-right: 8px; opacity: 0.8; }
 
-        @keyframes moveGradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        /* NET SERVET KARTI ORTALANDI */
         .main-stats { 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; 
-            padding: 30px 0; border: 1px solid rgba(99, 102, 241, 0.2); 
+            display: flex;
+            flex-direction: column;
+            align-items: center; 
+            justify-content: center; 
+            text-align: center; 
+            padding: 30px 0; 
+            border: 1px solid rgba(99, 102, 241, 0.2); 
             background: linear-gradient(180deg, rgba(30,41,59,0.7) 0%, rgba(15,17,21,0.5) 100%); 
-            position: relative; overflow: hidden;
+            position: relative; 
+            overflow: hidden;
         }
-        .main-stats::before { 
-            content: ''; position: absolute; top: -50px; left: 50%; transform: translateX(-50%); 
-            width: 150px; height: 150px; background: var(--brand-gradient); filter: blur(80px); opacity: 0.3; pointer-events: none;
-            background-size: 200% 200%; animation: moveGradient 10s ease infinite;
-        }
-        .amount-large { font-size: clamp(38px, 10vw, 46px); font-weight: 800; letter-spacing: -1.5px; margin-top: 8px; color: #FFFFFF; text-shadow: 0 2px 10px rgba(0,0,0,0.5); position: relative; z-index: 1;}
+        .main-stats::before { content: ''; position: absolute; top: -50px; left: 50%; transform: translateX(-50%); width: 150px; height: 150px; background: var(--brand-gradient); filter: blur(80px); opacity: 0.3; pointer-events: none;}
+        .amount-large { font-size: 46px; font-weight: 800; letter-spacing: -1.5px; margin-top: 8px; color: #FFFFFF; text-shadow: 0 2px 10px rgba(0,0,0,0.5); position: relative; z-index: 1;}
 
+        /* TAŞMAYI KÖKTEN ÇÖZEN GRID YAPISI */
         .dashboard-grid-2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; margin-bottom: 16px; }
-        .grid-card { padding: 18px 14px; display: flex; flex-direction: column; justify-content: center; min-width: 0;}
+        .grid-card { padding: 18px 12px; display: flex; flex-direction: column; justify-content: center; min-width: 0; overflow: hidden; }
         .grid-card h3 { margin-bottom: 10px; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+        /* clamp fonksiyonu sayesinde ekran küçülürse font da küçülür, kart taşmaz */
         .stat-sub-text { font-size: clamp(16px, 5vw, 24px); font-weight: 700; letter-spacing: -0.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; width: 100%;}
 
         .list-row { display: flex; justify-content: space-between; align-items: center; padding: 18px 0; border-bottom: 1px solid var(--border-color); }
@@ -120,6 +123,7 @@
         .list-label { font-size: 15px; color: #e2e8f0; font-weight: 500; display:flex; align-items:center;}
         .list-value { font-weight: 700; font-size: 17px; letter-spacing: -0.2px;}
 
+        /* PILL (HAP) ETİKET STİLLERİ */
         .pill-badge { padding: 5px 12px; border-radius: 14px; font-size: 14px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; letter-spacing: -0.2px; box-shadow: inset 0 1px 1px rgba(255,255,255,0.05);}
         .pill-red { background: rgba(244, 63, 94, 0.15); color: var(--rose); border: 1px solid rgba(244, 63, 94, 0.2); }
         .pill-green { background: rgba(16, 185, 129, 0.15); color: var(--emerald); border: 1px solid rgba(16, 185, 129, 0.2); }
@@ -130,14 +134,15 @@
         .progress-container { width: 100%; background-color: rgba(0,0,0,0.3); border-radius: 12px; height: 10px; overflow: hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);}
         .progress-bar { height: 100%; border-radius: 12px; transition: width 1s cubic-bezier(0.1, 0.5, 0.1, 1); position: relative;}
         
+        /* IŞILTILI BARLAR İÇİN PULSE EFEKTİ */
         @keyframes shimmerPulse { 0% { opacity: 0.8; } 50% { opacity: 1; box-shadow: 0 0 15px currentColor;} 100% { opacity: 0.8; } }
 
         .t-row { display: flex; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid var(--border-color); align-items: center;}
         .t-row:last-child { border-bottom: none; padding-bottom: 0; }
-        .t-details { flex-grow: 1; padding-right: 10px; min-width: 0;}
+        .t-details { flex-grow: 1; min-width: 0; padding-right: 10px; }
         .t-name { font-weight: 600; font-size: 16px; color: #e2e8f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
         .t-meta { font-size: 13px; color: var(--text-muted); margin-top: 5px; font-weight: 500;}
-        .t-amt { font-weight: 700; font-size: 17px; text-align: right; letter-spacing: -0.3px;}
+        .t-amt { font-weight: 700; font-size: 17px; text-align: right; letter-spacing: -0.3px; flex-shrink: 0;}
 
         .text-green { color: var(--emerald); } .text-red { color: var(--rose); } .text-blue { color: var(--blue); } .text-gray { color: var(--text-muted); }
         
@@ -164,6 +169,7 @@
         .trend-good { background-color: rgba(16, 185, 129, 0.15); color: var(--emerald); border: 1px solid rgba(16, 185, 129, 0.2);}
         .trend-bad { background-color: rgba(244, 63, 94, 0.15); color: var(--rose); border: 1px solid rgba(244, 63, 94, 0.2);}
 
+        /* ANİMASYONLU SVG OKLAR (CHEVRON) */
         .accordion-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding-bottom: 4px; -webkit-tap-highlight-color: transparent;}
         .accordion-header h3 { margin-bottom: 0; pointer-events: none; color: #e2e8f0; font-size: 14px;}
         .chevron-icon { width: 22px; height: 22px; color: var(--text-muted); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); pointer-events: none; }
@@ -356,7 +362,7 @@
     </div> 
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbyebPFD4QugLI_XCUQIX2y1J34029uezaHoTJrjpLnnpOUwKo4Dt1uVcrWpUkzYcmGd_Q/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbyf4VwhjJ7fpf82W-56eWCRQEsmkMlGDP5FZmWN8NJwwaCU_zkDA-N103srUOJ6gd0wnQ/exec"; 
         
         let expenseChartInstance = null;
         window.tarihceData = [];
@@ -501,12 +507,14 @@
             el.innerHTML = `<span style="color:${color}; background:color-mix(in srgb, ${color} 15%, transparent); padding: 5px 10px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); border: 1px solid color-mix(in srgb, ${color} 30%, transparent);">${icon} ₺${formattedDiff}</span>`;
         }
 
+        // ESKİ, SAF VE EN HIZLI FETCH FONKSİYONUNA GERİ DÖNÜLDÜ
         async function verileriCek() {
             const durumEl = document.getElementById('baglanti-durumu');
             durumEl.innerHTML = '<span class="spinner" style="border-left-color: var(--amber);"></span>Bağlanıyor';
             durumEl.style.color = "var(--amber)";
             
             try {
+                // SAF FETCH (Safari'nin kalkanına takılmaz, eski çalışan halin)
                 const response = await fetch(API_URL);
                 const data = await response.json();
 
@@ -624,6 +632,7 @@
                         });
                     } else { sabitlerDOM.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size: 13px; padding: 15px 0;">Kayıtlı sabit ödeme bulunamadı.</div>`; }
 
+                    // HAP TASARIMLI SON İŞLEMLER
                     const listeDOM = document.getElementById('islem-listesi');
                     if(data.sonIslemler && data.sonIslemler.length > 0) {
                         listeDOM.innerHTML = "";
@@ -634,11 +643,11 @@
                             
                             listeDOM.innerHTML += `
                             <div class="t-row">
-                                <div class="t-details">
-                                    <div class="t-name">${islem.kalem}</div>
+                                <div class="t-details" style="min-width:0; padding-right:10px;">
+                                    <div class="t-name" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${islem.kalem}</div>
                                     <div class="t-meta tabular-nums">${islem.tarih} • ${islem.odeme}</div>
                                 </div>
-                                <div class="t-amt tabular-nums" style="background:${bgClass}; color:${colorClass}; padding:6px 10px; border-radius:10px; font-size:15px; font-weight:700;">
+                                <div class="t-amt tabular-nums" style="background:${bgClass}; color:${colorClass}; padding:6px 10px; border-radius:10px; font-size:15px; font-weight:700; flex-shrink:0;">
                                     ${isaret} ${formatTL(islem.tutar)}
                                 </div>
                             </div>`;
@@ -651,7 +660,7 @@
                 }
             } catch (error) { 
                 console.error("Hata Yakalandı:", error);
-                durumEl.innerText = "Bağlantı Koptu"; 
+                durumEl.innerText = "Bağlantı veya URL Hatası"; 
                 durumEl.style.color = "var(--rose)"; 
             }
         }
