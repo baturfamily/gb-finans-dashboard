@@ -22,7 +22,6 @@
             --amber: #f59e0b;
             --brand-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
             
-            /* UI/UX: Daha Derin "Glass" Efekti */
             --panel-bg: rgba(30, 41, 59, 0.45); 
             --panel-border: rgba(255, 255, 255, 0.08);
             --panel-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
@@ -78,7 +77,6 @@
         .card h3 { color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 16px; font-weight: 600; display: flex; align-items: center;}
         .card-icon { margin-right: 8px; opacity: 0.8; }
 
-        /* ANA SERVET KARTI (AKORDEON UYUMLU) */
         .main-stats { display: block; text-align: center; padding: 24px; border: 1px solid rgba(99, 102, 241, 0.2); background: linear-gradient(180deg, rgba(30,41,59,0.7) 0%, rgba(15,17,21,0.5) 100%); position: relative; overflow: hidden; }
         .main-stats::before { content: ''; position: absolute; top: -50px; left: 50%; transform: translateX(-50%); width: 150px; height: 150px; background: var(--brand-gradient); filter: blur(80px); opacity: 0.3; pointer-events: none;}
         .main-stats .accordion-header { justify-content: center; position: relative; }
@@ -87,7 +85,6 @@
         .main-stats .accordion-content { display: flex; flex-direction: column; align-items: center; margin-top: 10px; }
         .amount-large { font-size: 46px; font-weight: 800; letter-spacing: -1.5px; margin-top: 8px; color: #FFFFFF; text-shadow: 0 2px 10px rgba(0,0,0,0.5); position: relative; z-index: 1;}
 
-        /* GİZLİLİK MODU STİLLERİ */
         .privacy-btn { position: absolute; top: 18px; left: 16px; color: var(--text-muted); padding: 8px; border-radius: 50%; background: rgba(255,255,255,0.05); cursor: pointer; transition: all 0.2s ease; z-index: 10; display: flex; align-items: center; justify-content: center; }
         .privacy-btn:active { transform: scale(0.9); }
         .sensitive-data { transition: all 0.2s ease; }
@@ -237,7 +234,6 @@
                             Can Yakan
                         </span>
                         <span class="summary-val text-red tabular-nums sensitive-data" id="val-borc-acil">₺ 0,00</span>
-                        
                         <span class="tabular-nums sensitive-data" style="font-size: 10px; margin-top: 8px; color: var(--amber); background: rgba(245, 158, 11, 0.15); padding: 3px 6px; border-radius: 6px; border: 1px solid rgba(245, 158, 11, 0.2); display: inline-flex; width: fit-content;" id="val-tahmini-faiz">Faiz (+%5): ₺ 0,00</span>
                     </div>
                     <div class="summary-item">
@@ -388,6 +384,17 @@
         window.tarihceData = [];
         window.currentStats = {};
 
+        // HAPTIC FEEDBACK (Dokunsal Geri Bildirim) YARDIMCI FONKSİYONU
+        function triggerHaptic(pattern) {
+            try {
+                if (navigator.vibrate) {
+                    navigator.vibrate(pattern);
+                }
+            } catch (e) {
+                // Sessizce hatayı yut (bazı cihazlar kısıtlayabilir)
+            }
+        }
+
         const EYE_OPEN = `<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>`;
         const EYE_CLOSED = `<path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/>`;
 
@@ -399,7 +406,9 @@
         }
         
         function togglePrivacy(e) {
-            if(e) e.stopPropagation(); // Ok'a basınca akordeon menünün açılmasını engeller
+            if(e) e.stopPropagation(); 
+            triggerHaptic(50); // Tok titreşim
+            
             const body = document.body;
             body.classList.toggle('privacy-mode');
             const isPrivacy = body.classList.contains('privacy-mode');
@@ -416,6 +425,7 @@
         document.addEventListener("DOMContentLoaded", initAccordions);
 
         function toggleAccordion(element) {
+            triggerHaptic(20); // İnce titreşim
             element.classList.toggle("collapsed");
             if(element.id) { localStorage.setItem(element.id, element.classList.contains("collapsed") ? "1" : "0"); }
         }
@@ -477,6 +487,8 @@
         }
 
         function updateTrends(days, btnElement) {
+            if(btnElement) triggerHaptic(15); // Filtre değişimi titremesi
+
             document.querySelectorAll('.time-btn').forEach(btn => btn.classList.remove('active'));
             if(btnElement) btnElement.classList.add('active');
 
@@ -565,6 +577,7 @@
                 if(data.durum === "basarili") {
                     durumEl.innerText = "Senkronize Edildi";
                     durumEl.style.color = "var(--text-muted)";
+                    triggerHaptic([30, 50, 30]); // Başarı titreşimi
                     
                     const now = new Date();
                     document.getElementById('last-update').innerText = "Son: " + now.toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'});
