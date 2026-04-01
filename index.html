@@ -384,17 +384,6 @@
         window.tarihceData = [];
         window.currentStats = {};
 
-        // HAPTIC FEEDBACK (Dokunsal Geri Bildirim) YARDIMCI FONKSİYONU
-        function triggerHaptic(pattern) {
-            try {
-                if (navigator.vibrate) {
-                    navigator.vibrate(pattern);
-                }
-            } catch (e) {
-                // Sessizce hatayı yut (bazı cihazlar kısıtlayabilir)
-            }
-        }
-
         const EYE_OPEN = `<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>`;
         const EYE_CLOSED = `<path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/>`;
 
@@ -407,8 +396,6 @@
         
         function togglePrivacy(e) {
             if(e) e.stopPropagation(); 
-            triggerHaptic(50); // Tok titreşim
-            
             const body = document.body;
             body.classList.toggle('privacy-mode');
             const isPrivacy = body.classList.contains('privacy-mode');
@@ -425,7 +412,6 @@
         document.addEventListener("DOMContentLoaded", initAccordions);
 
         function toggleAccordion(element) {
-            triggerHaptic(20); // İnce titreşim
             element.classList.toggle("collapsed");
             if(element.id) { localStorage.setItem(element.id, element.classList.contains("collapsed") ? "1" : "0"); }
         }
@@ -487,8 +473,6 @@
         }
 
         function updateTrends(days, btnElement) {
-            if(btnElement) triggerHaptic(15); // Filtre değişimi titremesi
-
             document.querySelectorAll('.time-btn').forEach(btn => btn.classList.remove('active'));
             if(btnElement) btnElement.classList.add('active');
 
@@ -577,7 +561,6 @@
                 if(data.durum === "basarili") {
                     durumEl.innerText = "Senkronize Edildi";
                     durumEl.style.color = "var(--text-muted)";
-                    triggerHaptic([30, 50, 30]); // Başarı titreşimi
                     
                     const now = new Date();
                     document.getElementById('last-update').innerText = "Son: " + now.toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'});
