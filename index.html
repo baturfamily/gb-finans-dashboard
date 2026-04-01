@@ -22,9 +22,10 @@
             --amber: #f59e0b;
             --brand-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
             
-            --panel-bg: rgba(30, 41, 59, 0.4); 
+            /* UI/UX: Daha Derin "Glass" Efekti */
+            --panel-bg: rgba(30, 41, 59, 0.45); 
             --panel-border: rgba(255, 255, 255, 0.08);
-            --panel-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            --panel-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
             --border-color: rgba(255, 255, 255, 0.06);
         }
         
@@ -76,75 +77,98 @@
 
         .card { 
             background: var(--panel-bg); 
-            backdrop-filter: blur(16px); 
-            -webkit-backdrop-filter: blur(16px);
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            border-left: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(18px); 
+            -webkit-backdrop-filter: blur(18px);
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+            border-left: 1px solid rgba(255, 255, 255, 0.08);
             border-right: 1px solid rgba(255, 255, 255, 0.02);
             border-bottom: 1px solid rgba(255, 255, 255, 0.02);
-            border-radius: 24px; 
+            border-radius: 26px; 
             margin-bottom: 16px; 
-            padding: 22px; 
+            padding: 24px; 
             box-shadow: var(--panel-shadow); 
         }
-        .card h3 { color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 14px; font-weight: 600; display: flex; align-items: center;}
-        .card-icon { margin-right: 6px; opacity: 0.8; }
+        .card h3 { color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 16px; font-weight: 600; display: flex; align-items: center;}
+        .card-icon { margin-right: 8px; opacity: 0.8; }
 
-        .main-stats { text-align: center; padding: 24px 0; border: 1px solid rgba(99, 102, 241, 0.2); background: linear-gradient(180deg, rgba(30,41,59,0.7) 0%, rgba(15,17,21,0.5) 100%); position: relative; overflow: hidden;}
+        /* YENİ: NET SERVET KARTI ORTALANDI */
+        .main-stats { 
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Yatayda ortalar */
+            justify-content: center; /* Düşeyde ortalar (eğer kartın dikey boşluğu varsa) */
+            text-align: center; /* Metin içeriğini ortalar */
+            padding: 30px 0; 
+            border: 1px solid rgba(99, 102, 241, 0.2); 
+            background: linear-gradient(180deg, rgba(30,41,59,0.7) 0%, rgba(15,17,21,0.5) 100%); 
+            position: relative; 
+            overflow: hidden;
+        }
         .main-stats::before { content: ''; position: absolute; top: -50px; left: 50%; transform: translateX(-50%); width: 150px; height: 150px; background: var(--brand-gradient); filter: blur(80px); opacity: 0.3; pointer-events: none;}
-        .amount-large { font-size: 44px; font-weight: 800; letter-spacing: -1.5px; margin-top: 6px; color: #FFFFFF; text-shadow: 0 2px 10px rgba(0,0,0,0.5); position: relative; z-index: 1;}
+        .amount-large { font-size: 46px; font-weight: 800; letter-spacing: -1.5px; margin-top: 8px; color: #FFFFFF; text-shadow: 0 2px 10px rgba(0,0,0,0.5); position: relative; z-index: 1;}
 
         .dashboard-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; }
-        .grid-card { padding: 18px; display: flex; flex-direction: column; justify-content: center; }
-        .grid-card h3 { margin-bottom: 8px; font-size: 11px;}
-        .stat-sub-text { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+        .grid-card { padding: 20px; display: flex; flex-direction: column; justify-content: center; }
+        .grid-card h3 { margin-bottom: 10px; font-size: 11px;}
+        .stat-sub-text { font-size: 24px; font-weight: 700; letter-spacing: -0.5px; }
 
-        .list-row { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--border-color); }
+        .list-row { display: flex; justify-content: space-between; align-items: center; padding: 18px 0; border-bottom: 1px solid var(--border-color); }
         .list-row:last-child { border-bottom: none; padding-bottom: 0; }
         .list-label { font-size: 15px; color: #e2e8f0; font-weight: 500; display:flex; align-items:center;}
-        .list-value { font-weight: 700; font-size: 16px; letter-spacing: -0.2px;}
+        .list-value { font-weight: 700; font-size: 17px; letter-spacing: -0.2px;}
 
-        /* YENİ: PILL (HAP) ETİKET STİLLERİ */
-        .pill-badge { padding: 4px 10px; border-radius: 12px; font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; letter-spacing: -0.2px; }
+        /* YENİ: PILL (HAP) ETİKET STİLLERİ (İnce İyileştirme) */
+        .pill-badge { padding: 5px 12px; border-radius: 14px; font-size: 14px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; letter-spacing: -0.2px; box-shadow: inset 0 1px 1px rgba(255,255,255,0.05);}
         .pill-red { background: rgba(244, 63, 94, 0.15); color: var(--rose); border: 1px solid rgba(244, 63, 94, 0.2); }
         .pill-green { background: rgba(16, 185, 129, 0.15); color: var(--emerald); border: 1px solid rgba(16, 185, 129, 0.2); }
         .pill-gray { background: rgba(148, 163, 184, 0.15); color: #cbd5e1; border: 1px solid rgba(148, 163, 184, 0.2); }
 
-        .progress-group { margin-top: 18px; }
-        .progress-label-group { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 13px; font-weight: 500; color: #cbd5e1;}
-        .progress-container { width: 100%; background-color: rgba(0,0,0,0.3); border-radius: 10px; height: 8px; overflow: hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);}
-        .progress-bar { height: 100%; border-radius: 10px; transition: width 1s cubic-bezier(0.1, 0.5, 0.1, 1); }
+        .progress-group { margin-top: 20px; }
+        .progress-label-group { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 14px; font-weight: 500; color: #cbd5e1;}
+        .progress-container { width: 100%; background-color: rgba(0,0,0,0.3); border-radius: 12px; height: 10px; overflow: hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);}
+        .progress-bar { height: 100%; border-radius: 12px; transition: width 1s cubic-bezier(0.1, 0.5, 0.1, 1); position: relative;}
+        
+        /* YENİ: IŞILTILI BARLAR İÇİN PULSE EFEKTİ */
+        @keyframes shimmerPulse { 0% { opacity: 0.8; } 50% { opacity: 1; box-shadow: 0 0 15px currentColor;} 100% { opacity: 0.8; } }
 
-        .t-row { display: flex; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid var(--border-color); align-items: center;}
+        .t-row { display: flex; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid var(--border-color); align-items: center;}
         .t-row:last-child { border-bottom: none; padding-bottom: 0; }
         .t-details { flex-grow: 1; }
-        .t-name { font-weight: 600; font-size: 15px; color: #e2e8f0;}
-        .t-meta { font-size: 12px; color: var(--text-muted); margin-top: 4px; font-weight: 500;}
-        .t-amt { font-weight: 700; font-size: 16px; text-align: right; letter-spacing: -0.3px;}
+        .t-name { font-weight: 600; font-size: 16px; color: #e2e8f0;}
+        .t-meta { font-size: 13px; color: var(--text-muted); margin-top: 5px; font-weight: 500;}
+        .t-amt { font-weight: 700; font-size: 17px; text-align: right; letter-spacing: -0.3px;}
 
         .text-green { color: var(--emerald); } .text-red { color: var(--rose); } .text-blue { color: var(--blue); } .text-gray { color: var(--text-muted); }
         
-        .chart-box { height: 220px; width: 100%; position: relative; margin: 10px 0;}
+        .chart-box { height: 230px; width: 100%; position: relative; margin: 12px 0;}
         .card-urgent { background: linear-gradient(180deg, rgba(244,63,94,0.1) 0%, rgba(30,41,59,0.4) 100%); border-top: 1px solid rgba(244,63,94,0.2); }
 
-        .budget-module { text-align: center; padding: 4px 0; }
-        .budget-amount { font-size: 36px; font-weight: 800; margin-bottom: 4px; letter-spacing: -1.2px; color: #fff;}
-        .budget-subtitle { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; font-weight: 500;}
-        .budget-progress-container { position: relative; width: 100%; height: 18px; background-color: rgba(0,0,0,0.3); border-radius: 10px; overflow: hidden; margin-bottom: 14px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);}
-        .budget-progress-bar { height: 100%; border-radius: 10px; background: var(--brand-gradient); width: 0%; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 12px rgba(99, 102, 241, 0.6);}
-        #budgetPercent { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 11px; font-weight: 800; color: #ffffff; letter-spacing: 0.5px; text-shadow: 0 1px 2px rgba(0,0,0,0.5);}
-        .budget-footer { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; color: #cbd5e1; }
+        .budget-module { text-align: center; padding: 6px 0; }
+        .budget-amount { font-size: 38px; font-weight: 800; margin-bottom: 6px; letter-spacing: -1.2px; color: #fff;}
+        .budget-subtitle { font-size: 14px; color: var(--text-muted); margin-bottom: 22px; font-weight: 500;}
+        .budget-progress-container { position: relative; width: 100%; height: 20px; background-color: rgba(0,0,0,0.3); border-radius: 12px; overflow: hidden; margin-bottom: 16px; box-shadow: inset 0 1px 4px rgba(0,0,0,0.5);}
+        .budget-progress-bar { 
+            height: 100%; 
+            border-radius: 12px; 
+            background: var(--brand-gradient); 
+            width: 0%; 
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); 
+            box-shadow: 0 0 14px rgba(99, 102, 241, 0.6);
+            animation: shimmerPulse 2.5s infinite linear;
+        }
+        #budgetPercent { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); font-size: 12px; font-weight: 800; color: #ffffff; letter-spacing: 0.5px; text-shadow: 0 1px 2px rgba(0,0,0,0.5);}
+        .budget-footer { display: flex; justify-content: space-between; font-size: 14px; font-weight: 600; color: #cbd5e1; }
 
-        .trend-badge { font-size: 11px; padding: 6px 12px; border-radius: 8px; display: inline-flex; font-weight: 600; margin-top: 12px; }
+        .trend-badge { font-size: 12px; padding: 7px 14px; border-radius: 10px; display: inline-flex; font-weight: 600; margin-top: 14px; }
         .trend-good { background-color: rgba(16, 185, 129, 0.15); color: var(--emerald); border: 1px solid rgba(16, 185, 129, 0.2);}
         .trend-bad { background-color: rgba(244, 63, 94, 0.15); color: var(--rose); border: 1px solid rgba(244, 63, 94, 0.2);}
 
         /* YENİ: ANİMASYONLU SVG OKLAR (CHEVRON) */
-        .accordion-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding-bottom: 2px; -webkit-tap-highlight-color: transparent;}
-        .accordion-header h3 { margin-bottom: 0; pointer-events: none; color: #e2e8f0; font-size: 13px;}
-        .chevron-icon { width: 20px; height: 20px; color: var(--text-muted); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); pointer-events: none; }
+        .accordion-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding-bottom: 4px; -webkit-tap-highlight-color: transparent;}
+        .accordion-header h3 { margin-bottom: 0; pointer-events: none; color: #e2e8f0; font-size: 14px;}
+        .chevron-icon { width: 22px; height: 22px; color: var(--text-muted); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); pointer-events: none; }
         .accordion-header:active .chevron-icon { opacity: 0.7; }
-        .accordion-content { overflow: hidden; transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease; max-height: 1200px; opacity: 1; margin-top: 16px; }
+        .accordion-content { overflow: hidden; transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease; max-height: 1200px; opacity: 1; margin-top: 18px; }
         .card.collapsed .accordion-content { max-height: 0; opacity: 0; margin-top: 0; }
         .card.collapsed .chevron-icon { transform: rotate(-90deg); }
     </style>
@@ -158,7 +182,7 @@
             <h1>Finans Merkezi</h1>
             <div class="system-status">
                 <span id="baglanti-durumu" style="color: var(--amber);"><span class="spinner"></span>Bağlanıyor</span>
-                <span class="update-time" id="last-update" class="tabular-nums">Bekleniyor</span>
+                <span class="update-time tabular-nums" id="last-update">Bekleniyor</span>
             </div>
         </div>
         <div class="time-selector" id="time-filters">
@@ -193,7 +217,7 @@
         <div class="dashboard-grid-2">
             <div class="card grid-card card-urgent">
                 <h3 style="color: var(--rose);">
-                    <svg class="card-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c0 0-5 6.5-5 11a5 5 0 0 0 10 0c0-4.5-5-11-5-11Z"/><path d="M12 13a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"/></svg>
+                    <svg class="card-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c0 0-5 6.5-5 11a5 5 0 0 0 10 0c0-4.5-5-11-5-11Z"/><path d="M12 13a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"/></svg>
                     Can Yakan
                 </h3>
                 <div class="stat-sub-text text-red tabular-nums" id="val-borc-acil">₺ 0,00</div>
@@ -202,7 +226,7 @@
             </div>
             <div class="card grid-card">
                 <h3>
-                    <svg class="card-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    <svg class="card-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                     Planlı
                 </h3>
                 <div class="stat-sub-text text-gray tabular-nums" id="val-borc-planli" style="color:#cbd5e1;">₺ 0,00</div>
@@ -213,7 +237,7 @@
         <div class="card accordion" id="acc-bankalar">
             <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
                 <h3>
-                    <svg class="card-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                    <svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
                     Banka Hesaplarım
                 </h3>
                 <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
@@ -243,7 +267,7 @@
         <div class="card accordion" id="acc-kredi-karti">
             <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
                 <h3>
-                    <svg class="card-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                    <svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
                     Kredi Kartı Durumu
                 </h3>
                 <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
@@ -273,17 +297,17 @@
             <div class="accordion-content">
                 <div class="progress-group" style="margin-top: 0;">
                     <div class="progress-label-group">
-                        <span>Nev Kredisi <span style="font-size:11px; color:var(--text-muted); font-weight:normal; margin-left:6px;" id="val-nev-kalan" class="tabular-nums"></span></span>
+                        <span>Nev Kredisi <span style="font-size:12px; color:var(--text-muted); font-weight:normal; margin-left:7px;" id="val-nev-kalan" class="tabular-nums"></span></span>
                         <span id="val-nev-yuzde" class="tabular-nums" style="color:var(--emerald); font-weight:700;">%0</span>
                     </div>
-                    <div class="progress-container"><div class="progress-bar" id="bar-nev" style="width: 0%; background-color: var(--emerald); box-shadow: 0 0 12px rgba(16, 185, 129, 0.5);"></div></div>
+                    <div class="progress-container"><div class="progress-bar" id="bar-nev" style="width: 0%; background-color: var(--emerald); box-shadow: 0 0 14px rgba(16, 185, 129, 0.5); animation: shimmerPulse 2.5s infinite linear;"></div></div>
                 </div>
                 <div class="progress-group">
                     <div class="progress-label-group">
-                        <span>Getir Kredisi <span style="font-size:11px; color:var(--text-muted); font-weight:normal; margin-left:6px;" id="val-getir-kalan" class="tabular-nums"></span></span>
+                        <span>Getir Kredisi <span style="font-size:12px; color:var(--text-muted); font-weight:normal; margin-left:7px;" id="val-getir-kalan" class="tabular-nums"></span></span>
                         <span id="val-getir-yuzde" class="tabular-nums" style="color:var(--blue); font-weight:700;">%0</span>
                     </div>
-                    <div class="progress-container"><div class="progress-bar" id="bar-getir" style="width: 0%; background-color: var(--blue); box-shadow: 0 0 12px rgba(59, 130, 246, 0.5);"></div></div>
+                    <div class="progress-container"><div class="progress-bar" id="bar-getir" style="width: 0%; background-color: var(--blue); box-shadow: 0 0 14px rgba(59, 130, 246, 0.5); animation: shimmerPulse 2.5s infinite linear;"></div></div>
                 </div>
             </div>
         </div>
@@ -294,7 +318,7 @@
                 <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
             <div class="accordion-content" id="yaklasan-listesi">
-                <div style="text-align:center; color:var(--text-muted); font-size: 14px; padding: 10px 0;"><span class="spinner" style="border-left-color: var(--text-muted);"></span>Analiz ediliyor...</div>
+                <div style="text-align:center; color:var(--text-muted); font-size: 15px; padding: 12px 0;"><span class="spinner" style="border-left-color: var(--text-muted);"></span>Analiz ediliyor...</div>
             </div>
         </div>
 
@@ -304,7 +328,7 @@
                 <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
             <div class="accordion-content" id="sabitler-listesi">
-                <div style="text-align:center; color:var(--text-muted); font-size: 14px; padding: 10px 0;"><span class="spinner" style="border-left-color: var(--text-muted);"></span>Yükleniyor...</div>
+                <div style="text-align:center; color:var(--text-muted); font-size: 15px; padding: 12px 0;"><span class="spinner" style="border-left-color: var(--text-muted);"></span>Yükleniyor...</div>
             </div>
         </div>
 
@@ -314,7 +338,7 @@
                 <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
             <div class="accordion-content" id="islem-listesi">
-                <div style="text-align:center; padding: 15px 0;"><span class="spinner" style="border-left-color: var(--text-muted);"></span>Yükleniyor</div>
+                <div style="text-align:center; padding: 18px 0;"><span class="spinner" style="border-left-color: var(--text-muted);"></span>Yükleniyor</div>
             </div>
         </div>
     </div> 
@@ -517,10 +541,7 @@
                         bankaDOM.innerHTML = "";
                         data.bankalar.forEach(banka => {
                             let bakiyeDegeri = parseFloat(banka.bakiye) || 0;
-                            
-                            // Hap Etiket (Pill Badge) Mantığı
                             let pillClass = bakiyeDegeri < 0 ? "pill-red" : (bakiyeDegeri > 0 ? "pill-green" : "pill-gray");
-                            
                             let ikon = (banka.isim || "").toLowerCase().includes("nakit") 
                                 ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px; opacity:0.8;"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M12 12h.01"/><path d="M17 12h.01"/><path d="M7 12h.01"/></svg>` 
                                 : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px; opacity:0.8;"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>`;
@@ -580,11 +601,8 @@
                         data.tumSabitlerListe.forEach(sabit => {
                             let checkIcon = sabit.odendiMi ? '<span style="color:var(--emerald); margin-left:8px; font-size:14px; text-shadow: 0 0 6px rgba(16, 185, 129, 0.4);">✓</span>' : '';
                             let opacityStyle = sabit.odendiMi ? 'opacity: 0.4;' : '';
-                            
-                            // Süre ve Yöntem İçin Hap Etiketler
                             let kalanMetin = (sabit.kalanAy === "Süresiz" || !sabit.kalanAy) ? "Süresiz" : sabit.kalanAy + " Ay Kaldı";
                             let badgeClass = (sabit.kalanAy === "Süresiz" || !sabit.kalanAy) ? "pill-gray" : "pill-red";
-                            
                             sabitlerDOM.innerHTML += `
                                 <div class="list-row" style="${opacityStyle} border-bottom: 1px solid var(--border-color); padding: 16px 0;">
                                     <div style="display:flex; flex-direction:column; gap:6px;">
@@ -609,12 +627,8 @@
                             listeDOM.innerHTML += `<div class="t-row"><div class="t-details"><div class="t-name">${islem.kalem}</div><div class="t-meta tabular-nums">${islem.tarih} • ${islem.odeme}</div></div><div class="t-amt tabular-nums ${renk}">${isaret} ${formatTL(islem.tutar)}</div></div>`;
                         });
                     } else { listeDOM.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding: 15px 0;">Henüz işlem yok</div>`; }
-                    
                     grafigiCizDoughnut(data.pastaGrafik, data.buAyToplamGider);
-
-                } else { 
-                    throw new Error("API hatası: " + (data.message || "Bilinmeyen Hata")); 
-                }
+                } else { throw new Error("API hatası: " + (data.message || "Bilinmeyen Hata")); }
             } catch (error) { 
                 console.error("Hata Yakalandı:", error);
                 durumEl.innerText = "Bağlantı veya URL Hatası"; 
@@ -625,31 +639,25 @@
         function grafigiCizDoughnut(kategoriData, totalExpense) {
             const canvas = document.getElementById('expenseChart'); if(!canvas) return; const ctx = canvas.getContext('2d');
             if(expenseChartInstance) { expenseChartInstance.destroy(); }
-            
             if(!kategoriData || kategoriData.length === 0) {
                 ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.font = '600 13px Inter, sans-serif'; ctx.fillStyle = '#94a3b8'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
                 ctx.fillText('Bu ay henüz harcama kaydı yok 🎉', canvas.width / 2, canvas.height / 2); return;
             }
-
             const labels = kategoriData.map(item => item.isim); const values = kategoriData.map(item => item.toplam);
             const colors = ['#3b82f6', '#f43f5e', '#10b981', '#f59e0b', '#8b5cf6'];
-
             const centerTextPlugin = {
                 id: 'centerText',
                 beforeDraw: function(chart) {
                     var width = chart.width, height = chart.height, ctx = chart.ctx;
                     ctx.restore();
-                    
                     var fontSize = (height / 110).toFixed(2);
                     ctx.font = "bold " + fontSize + "em Inter, sans-serif";
                     ctx.textBaseline = "middle";
                     ctx.fillStyle = "#ffffff";
-                    
                     var text = "₺" + new Intl.NumberFormat('tr-TR', {maximumFractionDigits: 0}).format(totalExpense);
                     var textX = Math.round((width - ctx.measureText(text).width) / 2);
                     var textY = height / 2;
                     ctx.fillText(text, textX, textY);
-                    
                     ctx.font = "600 " + (fontSize*0.35) + "em Inter, sans-serif";
                     ctx.fillStyle = "#94a3b8";
                     var subText = "Toplam Harcama";
@@ -658,37 +666,17 @@
                     ctx.save();
                 }
             };
-
             expenseChartInstance = new Chart(ctx, {
                 type: 'doughnut', 
-                data: { 
-                    labels: labels, 
-                    datasets: [{ 
-                        data: values, 
-                        backgroundColor: colors, 
-                        borderWidth: 0,
-                        hoverOffset: 6
-                    }] 
-                },
+                data: { labels: labels, datasets: [{ data: values, backgroundColor: colors, borderWidth: 0, hoverOffset: 6 }] },
                 options: { 
-                    responsive: true, 
-                    maintainAspectRatio: false, 
-                    cutout: '75%',
-                    layout: { padding: 10 },
+                    responsive: true, maintainAspectRatio: false, cutout: '75%', layout: { padding: 10 },
                     plugins: { 
                         legend: { display: false }, 
                         tooltip: { 
-                            backgroundColor: 'rgba(15, 23, 42, 0.95)', 
-                            titleFont: {family: 'Inter', size: 14}, 
-                            bodyFont: {family: 'Inter', size: 13, weight: 'bold'}, 
-                            padding: 12, 
-                            cornerRadius: 12, 
-                            callbacks: { 
-                                label: function(context) { 
-                                    let para = new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2 }).format(context.raw);
-                                    return ' ₺' + para; 
-                                } 
-                            } 
+                            backgroundColor: 'rgba(15, 23, 42, 0.95)', titleFont: {family: 'Inter', size: 14}, 
+                            bodyFont: {family: 'Inter', size: 13, weight: 'bold'}, padding: 12, cornerRadius: 12, 
+                            callbacks: { label: function(context) { let para = new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2 }).format(context.raw); return ' ₺' + para; } } 
                         } 
                     } 
                 },
