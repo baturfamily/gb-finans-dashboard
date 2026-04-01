@@ -36,7 +36,6 @@
             background-image: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.12) 0%, transparent 60%);
             background-attachment: fixed;
             color: var(--text-main); 
-            /* Alt Boşluk İyileştirmesi (Home Indicator) */
             padding-bottom: calc(env(safe-area-inset-bottom) + 20px); 
             overflow-y: auto; 
             overscroll-behavior-y: contain; 
@@ -58,19 +57,15 @@
         .header-section h1 { font-size: 32px; font-weight: 800; letter-spacing: -1px; margin-bottom: 4px; background: linear-gradient(to right, #fff, #cbd5e1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .system-status { font-size: 12px; font-weight: 500; display: flex; justify-content: space-between; align-items: center; margin-top: 10px; color: var(--text-muted);}
 
-        /* ZAMAN FİLTRESİ (FADE EFEKTİ İLE) */
         .time-selector-wrapper { position: relative; margin-top: 16px; }
-        .time-selector-wrapper::after {
-            content: ''; position: absolute; right: 0; top: 0; bottom: 0; width: 40px;
-            background: linear-gradient(to right, rgba(15, 17, 21, 0), rgba(15, 17, 21, 0.95)); pointer-events: none;
-        }
+        .time-selector-wrapper::after { content: ''; position: absolute; right: 0; top: 0; bottom: 0; width: 40px; background: linear-gradient(to right, rgba(15, 17, 21, 0), rgba(15, 17, 21, 0.95)); pointer-events: none; }
         .time-selector { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; padding-right: 40px; }
         .time-selector::-webkit-scrollbar { display: none; }
         .time-btn { padding: 8px 20px; border-radius: 24px; background: rgba(255,255,255,0.03); color: var(--text-muted); font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; white-space: nowrap; border: 1px solid rgba(255,255,255,0.05);}
         .time-btn.active { background: var(--brand-gradient); color: #fff; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4); border-color: transparent; font-weight: 700;}
         
         .content-container { padding: 0 20px; }
-        .trend-box { font-size: 12px; font-weight: 700; margin-top: 10px; display: inline-block; letter-spacing: 0.3px; transition: 0.3s ease;}
+        .trend-box { font-size: 12px; font-weight: 700; margin-top: 10px; display: inline-flex; letter-spacing: 0.3px; transition: 0.3s ease;}
 
         .card { 
             background: var(--panel-bg); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
@@ -79,10 +74,7 @@
             border-radius: 26px; margin-bottom: 16px; padding: 24px; box-shadow: var(--panel-shadow); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .card:active { transform: scale(0.99); border-color: rgba(255,255,255,0.15); }
-
-        /* AKORDEON AÇILIŞ VURGUSU */
         .card.accordion:not(.collapsed) { background: rgba(35, 48, 67, 0.65); border-top: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 15px 50px rgba(0, 0, 0, 0.45); }
-
         .card h3 { color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 16px; font-weight: 600; display: flex; align-items: center;}
         .card-icon { margin-right: 8px; opacity: 0.8; }
 
@@ -90,16 +82,40 @@
         .main-stats::before { content: ''; position: absolute; top: -50px; left: 50%; transform: translateX(-50%); width: 150px; height: 150px; background: var(--brand-gradient); filter: blur(80px); opacity: 0.3; pointer-events: none;}
         .amount-large { font-size: 46px; font-weight: 800; letter-spacing: -1.5px; margin-top: 8px; color: #FFFFFF; text-shadow: 0 2px 10px rgba(0,0,0,0.5); position: relative; z-index: 1;}
 
-        /* GİZLİLİK MODU (BLUR) STİLLERİ */
+        /* SEÇENEK B: GİZLİLİK MODU (SKELETON BANT) STİLLERİ */
         .privacy-btn { position: absolute; top: 16px; right: 16px; color: var(--text-muted); padding: 8px; border-radius: 50%; background: rgba(255,255,255,0.05); cursor: pointer; transition: all 0.2s ease; z-index: 10; display: flex; align-items: center; justify-content: center; }
         .privacy-btn:active { transform: scale(0.9); }
-        .privacy-mode .sensitive-data { filter: blur(7px); opacity: 0.6; pointer-events: none; transition: all 0.3s ease; }
-        .sensitive-data { transition: all 0.3s ease; }
+        .sensitive-data { transition: all 0.2s ease; }
+        
+        .privacy-mode .sensitive-data {
+            color: transparent !important;
+            text-shadow: none !important;
+            background-color: rgba(148, 163, 184, 0.15) !important;
+            border-radius: 6px !important;
+            display: inline-block;
+            background-image: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent) !important;
+            background-size: 200% 100% !important;
+            animation: skeleton-shimmer 2.5s infinite linear !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+        .privacy-mode .sensitive-data * { opacity: 0 !important; } /* İçindeki TL simgesi vb. görünmesin */
+        .privacy-mode canvas.sensitive-data {
+            filter: blur(20px) grayscale(50%); opacity: 0.3; background: none !important; animation: none !important;
+        }
+        @keyframes skeleton-shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
 
-        .dashboard-grid-2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; margin-bottom: 16px; }
-        .grid-card { padding: 18px 12px; display: flex; flex-direction: column; justify-content: center; min-width: 0; overflow: hidden; }
-        .grid-card h3 { margin-bottom: 10px; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
-        .stat-sub-text { font-size: clamp(16px, 5vw, 24px); font-weight: 700; letter-spacing: -0.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; width: 100%;}
+        /* YENİ: BİRLEŞTİRİLMİŞ FİNANSAL ÖZET KARTI (2x2 GRID) */
+        .summary-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            background: rgba(0,0,0,0.2); border-radius: 18px;
+            border: 1px solid rgba(255,255,255,0.04); overflow: hidden;
+        }
+        .summary-item { padding: 18px 16px; display: flex; flex-direction: column; justify-content: center; min-width: 0; }
+        .summary-item.br-right { border-right: 1px solid rgba(255,255,255,0.05); }
+        .summary-item.br-bottom { border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .summary-label { font-size: 12px; color: var(--text-muted); font-weight: 600; margin-bottom: 8px; display: flex; align-items: center; white-space: nowrap;}
+        .summary-val { font-size: clamp(16px, 4.5vw, 20px); font-weight: 700; letter-spacing: -0.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: inline-block;}
 
         .list-row { display: flex; justify-content: space-between; align-items: center; padding: 18px 0; border-bottom: 1px solid var(--border-color); }
         .list-row:last-child { border-bottom: none; padding-bottom: 0; }
@@ -126,7 +142,6 @@
 
         .text-green { color: var(--emerald); } .text-red { color: var(--rose); } .text-blue { color: var(--blue); } .text-gray { color: var(--text-muted); }
         .chart-box { height: 230px; width: 100%; position: relative; margin: 12px 0;}
-        .card-urgent { background: linear-gradient(180deg, rgba(244,63,94,0.1) 0%, rgba(30,41,59,0.4) 100%); border-top: 1px solid rgba(244,63,94,0.2); }
 
         .budget-module { text-align: center; padding: 6px 0; }
         .budget-amount { font-size: clamp(34px, 8vw, 38px); font-weight: 800; margin-bottom: 6px; letter-spacing: -1.2px; color: #fff;}
@@ -136,7 +151,7 @@
         #budgetPercent { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); font-size: 12px; font-weight: 800; color: #ffffff; letter-spacing: 0.5px; text-shadow: 0 1px 2px rgba(0,0,0,0.5);}
         .budget-footer { display: flex; justify-content: space-between; font-size: 14px; font-weight: 600; color: #cbd5e1; }
 
-        .trend-badge { font-size: 12px; padding: 7px 14px; border-radius: 10px; display: inline-flex; font-weight: 600; margin-top: 14px; }
+        .trend-badge { font-size: 12px; padding: 7px 14px; border-radius: 10px; display: inline-flex; font-weight: 600; margin-top: 8px; }
         .trend-good { background-color: rgba(16, 185, 129, 0.15); color: var(--emerald); border: 1px solid rgba(16, 185, 129, 0.2);}
         .trend-bad { background-color: rgba(244, 63, 94, 0.15); color: var(--rose); border: 1px solid rgba(244, 63, 94, 0.2);}
 
@@ -182,38 +197,37 @@
             </div>
             <h3>Net Servet</h3>
             <div class="amount-large tabular-nums sensitive-data" id="val-net-servet"><span style="font-size:0.7em; opacity:0.6;">₺</span> 0<span style="font-size:0.7em; opacity:0.6;">,00</span></div>
-            <div class="trend-box tabular-nums sensitive-data" id="trend-net-servet"></div>
+            <div class="trend-box tabular-nums sensitive-data" id="trend-net-servet" style="margin-top:14px;"></div>
         </div>
 
-        <div class="dashboard-grid-2">
-            <div class="card grid-card">
-                <h3>Kasa</h3>
-                <div class="stat-sub-text text-green tabular-nums sensitive-data" id="val-kasa">₺ 0,00</div>
-            </div>
-            <div class="card grid-card">
-                <h3>Genel Borç</h3>
-                <div class="stat-sub-text tabular-nums sensitive-data" id="val-borc">₺ 0,00</div>
-                <div class="trend-box tabular-nums sensitive-data" id="trend-borc" style="margin-top:4px; font-size:11px;"></div>
-            </div>
-        </div>
-
-        <div class="dashboard-grid-2">
-            <div class="card grid-card card-urgent">
-                <h3 style="color: var(--rose);">
-                    <svg class="card-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c0 0-5 6.5-5 11a5 5 0 0 0 10 0c0-4.5-5-11-5-11Z"/><path d="M12 13a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"/></svg>
-                    Can Yakan
-                </h3>
-                <div class="stat-sub-text text-red tabular-nums sensitive-data" id="val-borc-acil">₺ 0,00</div>
-                <div class="trend-box tabular-nums sensitive-data" id="trend-can-yakan" style="margin-top:4px; font-size:11px;"></div>
-                <div class="tabular-nums sensitive-data" style="font-size: 11px; margin-top: 8px; color: rgba(244,63,94,0.8); font-weight: 600;" id="val-tahmini-faiz">Faiz (+%5): ₺ 0,00</div>
-            </div>
-            <div class="card grid-card">
-                <h3>
-                    <svg class="card-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                    Planlı
-                </h3>
-                <div class="stat-sub-text text-gray tabular-nums sensitive-data" id="val-borc-planli" style="color:#cbd5e1;">₺ 0,00</div>
-                <div class="trend-box tabular-nums sensitive-data" id="trend-planli" style="margin-top:4px; font-size:11px;"></div>
+        <div class="card">
+            <h3>
+                <svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>
+                Finansal Özet
+            </h3>
+            <div class="summary-grid">
+                <div class="summary-item br-right br-bottom">
+                    <span class="summary-label">Kasa</span>
+                    <span class="summary-val text-green tabular-nums sensitive-data" id="val-kasa">₺ 0,00</span>
+                </div>
+                <div class="summary-item br-bottom">
+                    <span class="summary-label">Genel Borç</span>
+                    <span class="summary-val tabular-nums sensitive-data" id="val-borc">₺ 0,00</span>
+                    <div class="trend-box tabular-nums sensitive-data" id="trend-borc" style="font-size:10px; margin-top:6px;"></div>
+                </div>
+                <div class="summary-item br-right">
+                    <span class="summary-label" style="color:var(--rose);">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;"><path d="M12 2c0 0-5 6.5-5 11a5 5 0 0 0 10 0c0-4.5-5-11-5-11Z"/><path d="M12 13a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"/></svg>
+                        Can Yakan
+                    </span>
+                    <span class="summary-val text-red tabular-nums sensitive-data" id="val-borc-acil">₺ 0,00</span>
+                    <span class="tabular-nums sensitive-data" style="font-size: 10px; margin-top: 6px; color: rgba(244,63,94,0.8); font-weight: 600;" id="val-tahmini-faiz">Faiz (+%5): ₺ 0,00</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Planlı</span>
+                    <span class="summary-val text-gray tabular-nums sensitive-data" id="val-borc-planli" style="color:#cbd5e1;">₺ 0,00</span>
+                    <div class="trend-box tabular-nums sensitive-data" id="trend-planli" style="font-size:10px; margin-top:6px;"></div>
+                </div>
             </div>
         </div>
 
@@ -231,7 +245,10 @@
         </div>
 
         <div class="card">
-            <h3 style="text-align: center; margin-bottom: 16px;">Aylık Gider & Bütçe</h3>
+            <h3 style="text-align: center; margin-bottom: 16px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right:4px;"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 15h0M2 9.5h20"/></svg>
+                Aylık Gider & Bütçe
+            </h3>
             <div class="budget-module">
                 <div class="budget-amount tabular-nums sensitive-data" id="aylikGider">Yükleniyor...</div>
                 <div class="budget-subtitle">Bu Ayki Toplam Harcama</div>
@@ -264,7 +281,10 @@
 
         <div class="card accordion" id="acc-harcama-grafik">
             <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
-                <h3 style="text-align: center; width: 100%;">Aylık Gider Dağılımı</h3>
+                <h3 style="text-align: center; width: 100%;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right:4px;"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+                    Aylık Gider Dağılımı
+                </h3>
                 <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
             <div class="accordion-content">
@@ -440,13 +460,19 @@
             const ids = ['trend-net-servet', 'trend-borc', 'trend-can-yakan', 'trend-planli'];
             
             if (days === 0) {
-                ids.forEach(id => document.getElementById(id).innerHTML = "");
+                ids.forEach(id => {
+                    let el = document.getElementById(id);
+                    if(el) el.innerHTML = "";
+                });
                 return;
             }
 
             if(!window.tarihceData || window.tarihceData.length < 2) {
-                const msg = `<span style="color:var(--text-muted); font-weight:500;">Veri toplanıyor ⏳</span>`;
-                ids.forEach(id => document.getElementById(id).innerHTML = msg);
+                const msg = `<span style="color:var(--text-muted); font-weight:500;">Veri yok</span>`;
+                ids.forEach(id => {
+                    let el = document.getElementById(id);
+                    if(el) el.innerHTML = msg;
+                });
                 return;
             }
 
@@ -486,7 +512,7 @@
             if(!el) return;
             
             if (Math.abs(diff) < 1) {
-                el.innerHTML = `<span style="color:var(--text-muted); font-weight:500;">━ Değişim yok</span>`;
+                el.innerHTML = `<span style="color:var(--text-muted); font-weight:500;">━ Sabit</span>`;
                 return;
             }
 
@@ -501,7 +527,7 @@
                 icon = "▼";
             }
 
-            el.innerHTML = `<span style="color:${color}; background:color-mix(in srgb, ${color} 15%, transparent); padding: 5px 10px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); border: 1px solid color-mix(in srgb, ${color} 30%, transparent);">${icon} ₺${formattedDiff}</span>`;
+            el.innerHTML = `<span style="color:${color}; background:color-mix(in srgb, ${color} 15%, transparent); padding: 3px 6px; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); border: 1px solid color-mix(in srgb, ${color} 30%, transparent);">${icon} ₺${formattedDiff}</span>`;
         }
 
         async function verileriCek() {
@@ -533,7 +559,16 @@
                     document.getElementById('val-kasa').innerHTML = formatTL(data.toplamKasa);
                     document.getElementById('val-borc').innerHTML = formatTL(data.toplamBorc);
                     document.getElementById('val-borc-acil').innerHTML = formatTL(data.toplamCanYakan);
-                    document.getElementById('val-tahmini-faiz').innerHTML = "Faiz (+%5): " + formatTL(data.tahminiFaiz);
+                    
+                    // Tahmini faiz alanı için format ve styling
+                    let faizDOM = document.getElementById('val-tahmini-faiz');
+                    if(data.tahminiFaiz > 0) {
+                        faizDOM.innerHTML = "Faiz (+%5): " + formatTL(data.tahminiFaiz);
+                        faizDOM.style.display = "block";
+                    } else {
+                        faizDOM.style.display = "none";
+                    }
+                    
                     document.getElementById('val-borc-planli').innerHTML = formatTL(data.toplamPlanli);
                     
                     document.getElementById('val-kart-toplam').innerHTML = formatTL(data.kartToplam);
