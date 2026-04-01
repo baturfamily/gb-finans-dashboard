@@ -22,7 +22,6 @@
             --amber: #f59e0b;
             --brand-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
             
-            /* UI/UX: Daha Derin "Glass" Efekti */
             --panel-bg: rgba(30, 41, 59, 0.45); 
             --panel-border: rgba(255, 255, 255, 0.08);
             --panel-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
@@ -48,7 +47,6 @@
 
         #pull-indicator { height: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 13px; color: var(--text-muted); transition: height 0.2s ease; font-weight: 500; background: var(--bg-dark);}
 
-        /* YAPISKAN ÜST MENÜ */
         .top-container {
             position: sticky;
             top: 0;
@@ -59,7 +57,7 @@
             padding: 20px 20px 10px 20px;
             padding-top: calc(env(safe-area-inset-top) + 20px);
             border-bottom: 1px solid rgba(255,255,255,0.05);
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
 
         .header-section { text-align: left; }
@@ -89,32 +87,35 @@
             box-shadow: var(--panel-shadow); 
             transition: transform 0.2s ease, border-color 0.2s ease;
         }
-        .card:active { transform: scale(0.98); border-color: rgba(255,255,255,0.15); }
-        
-        .card h3 { color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 16px; font-weight: 600; display: flex; align-items: center;}
+        .card:active { transform: scale(0.99); border-color: rgba(255,255,255,0.15); }
+        .card h3 { color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; font-weight: 700; display: flex; align-items: center;}
         .card-icon { margin-right: 8px; opacity: 0.8; }
 
+        @keyframes moveGradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
         .main-stats { 
             display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; 
             padding: 30px 0; border: 1px solid rgba(99, 102, 241, 0.2); 
             background: linear-gradient(180deg, rgba(30,41,59,0.7) 0%, rgba(15,17,21,0.5) 100%); 
             position: relative; overflow: hidden;
         }
-        .main-stats::before { content: ''; position: absolute; top: -50px; left: 50%; transform: translateX(-50%); width: 150px; height: 150px; background: var(--brand-gradient); filter: blur(80px); opacity: 0.3; pointer-events: none;}
+        .main-stats::before { 
+            content: ''; position: absolute; top: -50px; left: 50%; transform: translateX(-50%); 
+            width: 150px; height: 150px; background: var(--brand-gradient); filter: blur(80px); opacity: 0.3; pointer-events: none;
+            background-size: 200% 200%; animation: moveGradient 10s ease infinite;
+        }
         .amount-large { font-size: clamp(38px, 10vw, 46px); font-weight: 800; letter-spacing: -1.5px; margin-top: 8px; color: #FFFFFF; text-shadow: 0 2px 10px rgba(0,0,0,0.5); position: relative; z-index: 1;}
 
-        /* DÜZELTME: TAŞMA SORUNU KESİN OLARAK ÇÖZÜLDÜ */
-        .dashboard-grid-2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; margin-bottom: 16px; }
-        .grid-card { padding: 18px 14px; display: flex; flex-direction: column; justify-content: center; min-width: 0; }
+        .dashboard-grid-2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; margin-bottom: 16px; }
+        .grid-card { padding: 18px 14px; display: flex; flex-direction: column; justify-content: center; min-width: 0;}
         .grid-card h3 { margin-bottom: 10px; font-size: 11px;}
-        .stat-sub-text { font-size: clamp(16px, 4.5vw, 24px); font-weight: 700; letter-spacing: -0.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; width: 100%; }
+        .stat-sub-text { font-size: clamp(16px, 5vw, 22px); font-weight: 700; letter-spacing: -0.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; width: 100%;}
 
         .list-row { display: flex; justify-content: space-between; align-items: center; padding: 18px 0; border-bottom: 1px solid var(--border-color); }
         .list-row:last-child { border-bottom: none; padding-bottom: 0; }
         .list-label { font-size: 15px; color: #e2e8f0; font-weight: 500; display:flex; align-items:center;}
         .list-value { font-weight: 700; font-size: 17px; letter-spacing: -0.2px;}
 
-        .pill-badge { padding: 5px 12px; border-radius: 14px; font-size: 14px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; letter-spacing: -0.2px; box-shadow: inset 0 1px 1px rgba(255,255,255,0.05);}
+        .pill-badge { padding: 5px 12px; border-radius: 12px; font-size: 14px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; letter-spacing: -0.2px; box-shadow: inset 0 1px 1px rgba(255,255,255,0.05);}
         .pill-red { background: rgba(244, 63, 94, 0.15); color: var(--rose); border: 1px solid rgba(244, 63, 94, 0.2); }
         .pill-green { background: rgba(16, 185, 129, 0.15); color: var(--emerald); border: 1px solid rgba(16, 185, 129, 0.2); }
         .pill-gray { background: rgba(148, 163, 184, 0.15); color: #cbd5e1; border: 1px solid rgba(148, 163, 184, 0.2); }
@@ -123,15 +124,13 @@
         .progress-label-group { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 14px; font-weight: 500; color: #cbd5e1;}
         .progress-container { width: 100%; background-color: rgba(0,0,0,0.3); border-radius: 12px; height: 10px; overflow: hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);}
         .progress-bar { height: 100%; border-radius: 12px; transition: width 1s cubic-bezier(0.1, 0.5, 0.1, 1); position: relative;}
-        
         @keyframes shimmerPulse { 0% { opacity: 0.8; } 50% { opacity: 1; box-shadow: 0 0 15px currentColor;} 100% { opacity: 0.8; } }
 
         .t-row { display: flex; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid var(--border-color); align-items: center;}
         .t-row:last-child { border-bottom: none; padding-bottom: 0; }
-        .t-details { flex-grow: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 10px; }
+        .t-details { flex-grow: 1; padding-right: 10px; min-width: 0;}
         .t-name { font-weight: 600; font-size: 16px; color: #e2e8f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
         .t-meta { font-size: 13px; color: var(--text-muted); margin-top: 5px; font-weight: 500;}
-        .t-amt { font-weight: 700; font-size: 17px; text-align: right; letter-spacing: -0.3px; flex-shrink: 0;}
 
         .text-green { color: var(--emerald); } .text-red { color: var(--rose); } .text-blue { color: var(--blue); } .text-gray { color: var(--text-muted); }
         
@@ -139,7 +138,7 @@
         .card-urgent { background: linear-gradient(180deg, rgba(244,63,94,0.1) 0%, rgba(30,41,59,0.4) 100%); border-top: 1px solid rgba(244,63,94,0.2); }
 
         .budget-module { text-align: center; padding: 6px 0; }
-        .budget-amount { font-size: clamp(32px, 8vw, 38px); font-weight: 800; margin-bottom: 6px; letter-spacing: -1.2px; color: #fff;}
+        .budget-amount { font-size: clamp(34px, 8vw, 38px); font-weight: 800; margin-bottom: 6px; letter-spacing: -1.2px; color: #fff;}
         .budget-subtitle { font-size: 14px; color: var(--text-muted); margin-bottom: 22px; font-weight: 500;}
         .budget-progress-container { position: relative; width: 100%; height: 20px; background-color: rgba(0,0,0,0.3); border-radius: 12px; overflow: hidden; margin-bottom: 16px; box-shadow: inset 0 1px 4px rgba(0,0,0,0.5);}
         .budget-progress-bar { height: 100%; border-radius: 12px; background: var(--brand-gradient); width: 0%; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 14px rgba(99, 102, 241, 0.6); animation: shimmerPulse 2.5s infinite linear; }
@@ -489,10 +488,11 @@
 
         async function verileriCek() {
             const durumEl = document.getElementById('baglanti-durumu');
-            durumEl.innerHTML = '<span class="spinner" style="border-left-color: var(--amber);"></span>Yükleniyor';
+            durumEl.innerHTML = '<span class="spinner" style="border-left-color: var(--amber);"></span>Bağlanıyor';
             durumEl.style.color = "var(--amber)";
             
             try {
+                // YÜKLEME SORUNUNU ÇÖZEN ORİJİNAL, HIZLI VE TEMİZ FETCH METODU
                 const response = await fetch(API_URL);
                 const data = await response.json();
 
@@ -533,7 +533,6 @@
 
                     updateTrends(0, document.querySelector('.time-btn.active'));
 
-                    // BANKALAR LİSTESİ (Pill Badge Tasarımı)
                     const bankaDOM = document.getElementById('banka-listesi');
                     if (data.bankalar && data.bankalar.length > 0) {
                         bankaDOM.innerHTML = "";
@@ -550,11 +549,8 @@
                                 <span class="pill-badge tabular-nums ${pillClass}">${formatTL(bakiyeDegeri)}</span>
                             </div>`;
                         });
-                    } else { 
-                        bankaDOM.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding: 15px 0;">Veri bulunamadı.</div>`; 
-                    }
+                    } else { bankaDOM.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding: 15px 0;">Veri bulunamadı.</div>`; }
 
-                    // Bütçe ve Harcama
                     if(data.buAyToplamGider !== undefined) {
                         document.getElementById('aylikGider').innerHTML = formatTL(data.buAyToplamGider);
                         const bakiyeDOM = document.getElementById('kalanBakiye'), budgetBarDOM = document.getElementById('budgetBar'), percentDOM = document.getElementById('budgetPercent');
@@ -584,7 +580,6 @@
                         } else { trendDOM.className = "trend-badge"; trendDOM.innerText = "Geçen ay verisi yok"; trendDOM.style.background = "rgba(255,255,255,0.04)"; trendDOM.style.border = "none"; trendDOM.style.color = "var(--text-muted)"; }
                     }
 
-                    // Yaklaşan Ödemeler
                     const yaklasanDOM = document.getElementById('yaklasan-listesi');
                     if(data.yaklasanOdemeler && data.yaklasanOdemeler.length > 0) {
                         yaklasanDOM.innerHTML = "";
@@ -592,7 +587,6 @@
                         yaklasanDOM.innerHTML += `<div style="text-align:right; margin-top:14px; font-size:13px; color:var(--text-muted); padding-right:5px;">Toplam Çıkış: <span class="tabular-nums" style="color:#fff; font-weight:800; font-size:16px; letter-spacing:-0.2px;">${formatTL(data.yaklasanToplam)}</span></div>`;
                     } else { yaklasanDOM.innerHTML = `<div style="text-align:center; color:var(--emerald); font-size: 14px; padding: 20px 0; font-weight: 600;">Planlı ödeme yok <svg width="18" style="vertical-align:middle; margin-left:4px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/></svg></div>`; }
 
-                    // Sabitler (Pill Badge Tasarımı)
                     const sabitlerDOM = document.getElementById('sabitler-listesi');
                     if(data.tumSabitlerListe && data.tumSabitlerListe.length > 0) {
                         sabitlerDOM.innerHTML = "";
@@ -616,20 +610,32 @@
                         });
                     } else { sabitlerDOM.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size: 13px; padding: 15px 0;">Kayıtlı sabit ödeme bulunamadı.</div>`; }
 
-                    // Son İşlemler
                     const listeDOM = document.getElementById('islem-listesi');
                     if(data.sonIslemler && data.sonIslemler.length > 0) {
                         listeDOM.innerHTML = "";
                         data.sonIslemler.forEach(islem => {
-                            let renk = islem.tur === "Gelir" ? "text-green" : ""; let isaret = islem.tur === "Gelir" ? "+" : "-";
-                            listeDOM.innerHTML += `<div class="t-row"><div class="t-details"><div class="t-name">${islem.kalem}</div><div class="t-meta tabular-nums">${islem.tarih} • ${islem.odeme}</div></div><div class="t-amt tabular-nums ${renk}">${isaret} ${formatTL(islem.tutar)}</div></div>`;
+                            let isaret = islem.tur === "Gelir" ? "+" : "-";
+                            let bgClass = islem.tur === "Gelir" ? "rgba(16, 185, 129, 0.15)" : "rgba(244, 63, 94, 0.15)";
+                            let colorClass = islem.tur === "Gelir" ? "var(--emerald)" : "var(--rose)";
+                            
+                            listeDOM.innerHTML += `
+                            <div class="t-row">
+                                <div class="t-details">
+                                    <div class="t-name">${islem.kalem}</div>
+                                    <div class="t-meta tabular-nums">${islem.tarih} • ${islem.odeme}</div>
+                                </div>
+                                <div class="t-amt tabular-nums" style="background:${bgClass}; color:${colorClass}; padding:6px 10px; border-radius:10px; font-size:15px; font-weight:700;">
+                                    ${isaret} ${formatTL(islem.tutar)}
+                                </div>
+                            </div>`;
                         });
                     } else { listeDOM.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding: 15px 0;">Henüz işlem yok</div>`; }
+                    
                     grafigiCizDoughnut(data.pastaGrafik, data.buAyToplamGider);
                 } else { throw new Error("API hatası: " + (data.message || "Bilinmeyen Hata")); }
             } catch (error) { 
                 console.error("Hata Yakalandı:", error);
-                durumEl.innerText = "Bağlantı veya URL Hatası"; 
+                durumEl.innerText = "Bağlantı Koptu"; 
                 durumEl.style.color = "var(--rose)"; 
             }
         }
@@ -639,7 +645,7 @@
             if(expenseChartInstance) { expenseChartInstance.destroy(); }
             if(!kategoriData || kategoriData.length === 0) {
                 ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.font = '600 13px Inter, sans-serif'; ctx.fillStyle = '#94a3b8'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-                ctx.fillText('Bu ay henüz harcama kaydı yok', canvas.width / 2, canvas.height / 2); return;
+                ctx.fillText('Bu ay henüz harcama kaydı yok 🎉', canvas.width / 2, canvas.height / 2); return;
             }
             const labels = kategoriData.map(item => item.isim); const values = kategoriData.map(item => item.toplam);
             const colors = ['#3b82f6', '#f43f5e', '#10b981', '#f59e0b', '#8b5cf6'];
