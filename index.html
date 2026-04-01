@@ -29,7 +29,7 @@
         .header-section h1 { font-size: 30px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 2px; }
         .system-status { font-size: 12px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; margin-top: 14px; color: var(--text-muted);}
 
-        /* YENİ: ZAMAN FİLTRESİ STİLLERİ */
+        /* ZAMAN FİLTRESİ STİLLERİ */
         .time-selector { display: flex; gap: 10px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
         .time-selector::-webkit-scrollbar { display: none; }
         .time-btn { padding: 8px 18px; border-radius: 20px; background: rgba(255,255,255,0.06); color: var(--text-muted); font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.3s; white-space: nowrap; border: 1px solid rgba(255,255,255,0.02);}
@@ -101,7 +101,8 @@
     </div>
 
     <div class="time-selector" id="time-filters">
-        <div class="time-btn active" onclick="updateTrends(7, this)">1 Hafta</div>
+        <div class="time-btn active" onclick="updateTrends(0, this)">Güncel</div>
+        <div class="time-btn" onclick="updateTrends(7, this)">1 Hafta</div>
         <div class="time-btn" onclick="updateTrends(30, this)">1 Ay</div>
         <div class="time-btn" onclick="updateTrends(90, this)">3 Ay</div>
         <div class="time-btn" onclick="updateTrends(180, this)">6 Ay</div>
@@ -246,7 +247,6 @@
         const API_URL = "https://script.google.com/macros/s/AKfycbwMd0e-v5_8CZ5jvNNvqHrxwMGMWrP6OSZBErj0SBT6MIXqQ1edtrh-3CP2DixePGsLuw/exec"; // LÜTFEN KENDİ YENİ LİNKİNİZİ YAPIŞTIRIN
         let expenseChartInstance = null;
         
-        // Verileri globalde tutalım ki filtre tuşlarına basınca yeniden hesaplayalım
         window.tarihceData = [];
         window.currentStats = {};
 
@@ -316,15 +316,19 @@
             window.requestAnimationFrame(step);
         }
 
-        // --- YENİ ZAMAN MAKİNESİ (Tarihçe Analiz Motoru) ---
+        // --- GÜNCEL EKLENMİŞ ZAMAN MAKİNESİ ---
         function updateTrends(days, btnElement) {
-            // Buton rengini aktif yap
             document.querySelectorAll('.time-btn').forEach(btn => btn.classList.remove('active'));
             if(btnElement) btnElement.classList.add('active');
 
             const ids = ['trend-net-servet', 'trend-borc', 'trend-can-yakan', 'trend-planli'];
             
-            // Eğer tarihçe boşsa veya sadece 1 günlük (bugün) veri varsa uyarı ver
+            // Eğer "Güncel" butonuna basıldıysa (0 gün), kıyaslama kutularını temizle
+            if (days === 0) {
+                ids.forEach(id => document.getElementById(id).innerHTML = "");
+                return;
+            }
+
             if(!window.tarihceData || window.tarihceData.length < 2) {
                 const msg = `<span style="color:var(--text-muted); font-weight:500;">Veri toplanıyor ⏳</span>`;
                 ids.forEach(id => document.getElementById(id).innerHTML = msg);
@@ -337,7 +341,6 @@
             let bestRow = null;
             let minDiff = Infinity;
 
-            // Tarihçedeki en uygun eski tarihi bul
             window.tarihceData.forEach(row => {
                 const rowDate = new Date(row[0]);
                 if(isNaN(rowDate.getTime())) return; 
@@ -356,7 +359,6 @@
             const pastCanYakan = parseSaha(bestRow[3]);
             const pastPlanli = parseSaha(bestRow[4]);
 
-            // Trend Rozetlerini Çiz (isDebt=true ise artışlar Kırmızı, azalışlar Yeşil olur)
             renderTrend('trend-net-servet', window.currentStats.netServet, pastServet, false); 
             renderTrend('trend-borc', window.currentStats.toplamBorc, pastBorc, true); 
             renderTrend('trend-can-yakan', window.currentStats.toplamCanYakan, pastCanYakan, true);
@@ -403,7 +405,6 @@
                     const now = new Date();
                     document.getElementById('last-update').innerText = "Son: " + now.toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'});
 
-                    // Mevcut değerleri global değişkene kaydet (Trend hesabı için)
                     window.tarihceData = data.tarihce || [];
                     window.currentStats = {
                         netServet: parseSaha(data.netServet),
@@ -432,8 +433,8 @@
                     document.getElementById('bar-getir').style.width = (data.getirYuzde || 0) + "%";
                     document.getElementById('val-getir-kalan').innerText = "(Kalan: " + formatTL(data.getirKalan || 0) + ")";
 
-                    // İlk Açılışta 1 Haftalık Trendi Göster
-                    updateTrends(7, document.querySelector('.time-btn.active'));
+                    // İlk açılışta GÜNCEL sekmesini tetikle (0 gün - kıyaslama yok)
+                    updateTrends(0, document.querySelector('.time-btn.active'));
 
                     // BANKALAR LİSTESİ
                     const bankaDOM = document.getElementById('banka-listesi');
