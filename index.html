@@ -234,13 +234,35 @@
                             Can Yakan
                         </span>
                         <span class="summary-val text-red tabular-nums sensitive-data" id="val-borc-acil">₺ 0,00</span>
-                        <span class="tabular-nums sensitive-data" style="font-size: 11px; margin-top: 10px; color: var(--amber); background: rgba(245, 158, 11, 0.15); padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(245, 158, 11, 0.2); display: inline-flex; width: fit-content;" id="val-tahmini-faiz">Faiz (+%5): ₺ 0,00</span>
                         <div class="trend-box tabular-nums sensitive-data" id="trend-can-yakan" style="font-size:11px; margin-top:6px;"></div>
                     </div>
                     <div class="summary-item">
                         <span class="summary-label">Planlı</span>
                         <span class="summary-val text-gray tabular-nums sensitive-data" id="val-borc-planli" style="color:#cbd5e1;">₺ 0,00</span>
                         <div class="trend-box tabular-nums sensitive-data" id="trend-planli" style="font-size:11px; margin-top:6px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card accordion" id="acc-faiz-durumu">
+            <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
+                <h3 style="color: var(--amber);">
+                    <svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    Faiz Yükü & Analizi
+                </h3>
+                <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+            <div class="accordion-content">
+                <div class="summary-grid">
+                    <div class="summary-item br-right">
+                        <span class="summary-label" style="color:var(--amber);">Güncel Yük (Bu Ay)</span>
+                        <span class="summary-val text-red tabular-nums sensitive-data" id="val-tahmini-faiz">₺ 0,00</span>
+                        <div class="trend-box tabular-nums sensitive-data" id="trend-faiz" style="font-size:11px; margin-top:6px;"></div>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Bugüne Kadar Ödenen</span>
+                        <span class="summary-val tabular-nums sensitive-data" id="val-toplam-odenen-faiz" style="color:#cbd5e1;">₺ 0,00</span>
                     </div>
                 </div>
             </div>
@@ -497,7 +519,8 @@
             document.querySelectorAll('.time-btn').forEach(btn => btn.classList.remove('active'));
             if(btnElement) btnElement.classList.add('active');
 
-            const ids = ['trend-net-servet', 'trend-borc', 'trend-can-yakan', 'trend-planli'];
+            // YENİ: trend-faiz EKLENDİ
+            const ids = ['trend-net-servet', 'trend-borc', 'trend-can-yakan', 'trend-planli', 'trend-faiz'];
             
             if (days === 0) {
                 ids.forEach(id => {
@@ -539,11 +562,14 @@
             const pastBorc = parseSaha(bestRow[2]);
             const pastCanYakan = parseSaha(bestRow[3]);
             const pastPlanli = parseSaha(bestRow[4]);
+            // YENİ: Geçmiş faiz sütunu (Eğer yoksa güncel faizi baz alsın hata vermesin diye eklendi)
+            const pastFaiz = bestRow.length > 5 ? parseSaha(bestRow[5]) : window.currentStats.tahminiFaiz;
 
             renderTrend('trend-net-servet', window.currentStats.netServet, pastServet, false); 
             renderTrend('trend-borc', window.currentStats.toplamBorc, pastBorc, true); 
             renderTrend('trend-can-yakan', window.currentStats.toplamCanYakan, pastCanYakan, true);
             renderTrend('trend-planli', window.currentStats.toplamPlanli, pastPlanli, true);
+            renderTrend('trend-faiz', window.currentStats.tahminiFaiz, pastFaiz, true); // YENİ EKLENDİ
         }
 
         function renderTrend(elementId, current, past, isDebt) {
@@ -591,7 +617,8 @@
                         netServet: parseSaha(data.netServet),
                         toplamBorc: parseSaha(data.toplamBorc),
                         toplamCanYakan: parseSaha(data.toplamCanYakan),
-                        toplamPlanli: parseSaha(data.toplamPlanli)
+                        toplamPlanli: parseSaha(data.toplamPlanli),
+                        tahminiFaiz: parseSaha(data.tahminiFaiz) // YENİ EKLENDİ
                     };
 
                     animateValue("val-net-servet", window.currentStats.netServet, 1200);
@@ -599,16 +626,11 @@
                     document.getElementById('val-kasa').innerHTML = formatTL(data.toplamKasa);
                     document.getElementById('val-borc').innerHTML = formatTL(data.toplamBorc);
                     document.getElementById('val-borc-acil').innerHTML = formatTL(data.toplamCanYakan);
-                    
-                    let faizDOM = document.getElementById('val-tahmini-faiz');
-                    if(data.tahminiFaiz > 0) {
-                        faizDOM.innerHTML = "Faiz (+%5): " + formatTL(data.tahminiFaiz);
-                        faizDOM.style.display = "inline-flex";
-                    } else {
-                        faizDOM.style.display = "none";
-                    }
-                    
                     document.getElementById('val-borc-planli').innerHTML = formatTL(data.toplamPlanli);
+                    
+                    // YENİ FAIZ KARTI VERİLERİ DOLDURULUYOR
+                    document.getElementById('val-tahmini-faiz').innerHTML = formatTL(data.tahminiFaiz || 0);
+                    document.getElementById('val-toplam-odenen-faiz').innerHTML = formatTL(data.toplamOdenenFaiz || 0);
                     
                     document.getElementById('val-kart-toplam').innerHTML = formatTL(data.kartToplam);
                     document.getElementById('val-kart-buay').innerHTML = formatTL(data.kartBuAy);
@@ -780,12 +802,13 @@
                 plugins: [centerTextPlugin] 
             });
         }
-        // Uygulama her ön plana (ekrana) geldiğinde verileri otomatik yenile
-document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "visible") {
-        verileriCek();
-    }
-});
+
+        document.addEventListener("visibilitychange", () => {
+            if (document.visibilityState === "visible") {
+                verileriCek();
+            }
+        });
+
         verileriCek();
     </script>
 </body>
