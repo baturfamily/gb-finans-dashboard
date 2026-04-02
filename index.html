@@ -57,7 +57,6 @@
         .header-section h1 { font-size: 32px; font-weight: 800; letter-spacing: -1px; margin: 0; background: linear-gradient(to right, #fff, #cbd5e1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .system-status { font-size: 12px; font-weight: 500; display: flex; justify-content: space-between; align-items: center; margin-top: 10px; color: var(--text-muted);}
 
-        /* GİZLİLİK BUTONU - YENİ YERİ İÇİN GÜNCELLENDİ */
         .privacy-btn { color: var(--text-muted); padding: 8px; border-radius: 50%; background: rgba(255,255,255,0.05); cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; }
         .privacy-btn:active { transform: scale(0.9); }
 
@@ -104,21 +103,20 @@
             box-shadow: none !important;
         }
         .privacy-mode .sensitive-data * { opacity: 0 !important; }
-        .privacy-mode canvas.sensitive-data {
-            filter: blur(20px) grayscale(50%); opacity: 0.3; background: none !important; animation: none !important;
-        }
+        .privacy-mode canvas.sensitive-data { filter: blur(20px) grayscale(50%); opacity: 0.3; background: none !important; animation: none !important; }
         @keyframes skeleton-shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
 
+        /* BÜYÜTÜLEN FİNANSAL ÖZET KARTI (GÜNCEL) */
         .summary-grid {
             display: grid; grid-template-columns: 1fr 1fr;
             background: rgba(0,0,0,0.2); border-radius: 18px;
             border: 1px solid rgba(255,255,255,0.04); overflow: hidden;
         }
-        .summary-item { padding: 18px 16px; display: flex; flex-direction: column; justify-content: center; min-width: 0; }
+        .summary-item { padding: 22px 16px; display: flex; flex-direction: column; justify-content: center; min-width: 0; }
         .summary-item.br-right { border-right: 1px solid rgba(255,255,255,0.05); }
         .summary-item.br-bottom { border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .summary-label { font-size: 12px; color: var(--text-muted); font-weight: 600; margin-bottom: 8px; display: flex; align-items: center; white-space: nowrap;}
-        .summary-val { font-size: clamp(16px, 4.5vw, 20px); font-weight: 700; letter-spacing: -0.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: inline-block;}
+        .summary-label { font-size: 14px; color: var(--text-muted); font-weight: 600; margin-bottom: 10px; display: flex; align-items: center; white-space: nowrap; letter-spacing: -0.2px;}
+        .summary-val { font-size: clamp(19px, 6vw, 25px); font-weight: 700; letter-spacing: -0.8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: inline-block;}
 
         .list-row { display: flex; justify-content: space-between; align-items: center; padding: 18px 0; border-bottom: 1px solid var(--border-color); }
         .list-row:last-child { border-bottom: none; padding-bottom: 0; }
@@ -229,20 +227,20 @@
                     <div class="summary-item br-bottom">
                         <span class="summary-label">Genel Borç</span>
                         <span class="summary-val tabular-nums sensitive-data" id="val-borc">₺ 0,00</span>
-                        <div class="trend-box tabular-nums sensitive-data" id="trend-borc" style="font-size:10px; margin-top:6px;"></div>
+                        <div class="trend-box tabular-nums sensitive-data" id="trend-borc" style="font-size:12px; margin-top:8px;"></div>
                     </div>
                     <div class="summary-item br-right">
                         <span class="summary-label" style="color:var(--rose);">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;"><path d="M12 2c0 0-5 6.5-5 11a5 5 0 0 0 10 0c0-4.5-5-11-5-11Z"/><path d="M12 13a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"/></svg>
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:5px;"><path d="M12 2c0 0-5 6.5-5 11a5 5 0 0 0 10 0c0-4.5-5-11-5-11Z"/><path d="M12 13a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"/></svg>
                             Can Yakan
                         </span>
                         <span class="summary-val text-red tabular-nums sensitive-data" id="val-borc-acil">₺ 0,00</span>
-                        <span class="tabular-nums sensitive-data" style="font-size: 10px; margin-top: 8px; color: var(--amber); background: rgba(245, 158, 11, 0.15); padding: 3px 6px; border-radius: 6px; border: 1px solid rgba(245, 158, 11, 0.2); display: inline-flex; width: fit-content;" id="val-tahmini-faiz">Faiz (+%5): ₺ 0,00</span>
+                        <span class="tabular-nums sensitive-data" style="font-size: 11px; margin-top: 10px; color: var(--amber); background: rgba(245, 158, 11, 0.15); padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(245, 158, 11, 0.2); display: inline-flex; width: fit-content;" id="val-tahmini-faiz">Faiz (+%5): ₺ 0,00</span>
                     </div>
                     <div class="summary-item">
                         <span class="summary-label">Planlı</span>
                         <span class="summary-val text-gray tabular-nums sensitive-data" id="val-borc-planli" style="color:#cbd5e1;">₺ 0,00</span>
-                        <div class="trend-box tabular-nums sensitive-data" id="trend-planli" style="font-size:10px; margin-top:6px;"></div>
+                        <div class="trend-box tabular-nums sensitive-data" id="trend-planli" style="font-size:12px; margin-top:8px;"></div>
                     </div>
                 </div>
             </div>
