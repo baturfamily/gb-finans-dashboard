@@ -53,8 +53,13 @@
         }
 
         .header-section { text-align: left; position: relative;}
-        .header-section h1 { font-size: 32px; font-weight: 800; letter-spacing: -1px; margin-bottom: 4px; background: linear-gradient(to right, #fff, #cbd5e1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .header-top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+        .header-section h1 { font-size: 32px; font-weight: 800; letter-spacing: -1px; margin: 0; background: linear-gradient(to right, #fff, #cbd5e1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .system-status { font-size: 12px; font-weight: 500; display: flex; justify-content: space-between; align-items: center; margin-top: 10px; color: var(--text-muted);}
+
+        /* GİZLİLİK BUTONU - YENİ YERİ İÇİN GÜNCELLENDİ */
+        .privacy-btn { color: var(--text-muted); padding: 8px; border-radius: 50%; background: rgba(255,255,255,0.05); cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; }
+        .privacy-btn:active { transform: scale(0.9); }
 
         .time-selector-wrapper { position: relative; margin-top: 16px; }
         .time-selector-wrapper::after { content: ''; position: absolute; right: 0; top: 0; bottom: 0; width: 40px; background: linear-gradient(to right, rgba(15, 17, 21, 0), rgba(15, 17, 21, 0.95)); pointer-events: none; }
@@ -85,10 +90,7 @@
         .main-stats .accordion-content { display: flex; flex-direction: column; align-items: center; margin-top: 10px; }
         .amount-large { font-size: 46px; font-weight: 800; letter-spacing: -1.5px; margin-top: 8px; color: #FFFFFF; text-shadow: 0 2px 10px rgba(0,0,0,0.5); position: relative; z-index: 1;}
 
-        .privacy-btn { position: absolute; top: 18px; left: 16px; color: var(--text-muted); padding: 8px; border-radius: 50%; background: rgba(255,255,255,0.05); cursor: pointer; transition: all 0.2s ease; z-index: 10; display: flex; align-items: center; justify-content: center; }
-        .privacy-btn:active { transform: scale(0.9); }
         .sensitive-data { transition: all 0.2s ease; }
-        
         .privacy-mode .sensitive-data {
             color: transparent !important;
             text-shadow: none !important;
@@ -171,7 +173,14 @@
 
     <div class="top-container">
         <div class="header-section">
-            <h1>Finans Merkezi</h1>
+            <div class="header-top-row">
+                <h1>Finans Merkezi</h1>
+                <div class="privacy-btn" onclick="togglePrivacy(event)">
+                    <svg id="privacy-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>
+                    </svg>
+                </div>
+            </div>
             <div class="system-status">
                 <span id="baglanti-durumu" style="color: var(--amber);"><span class="spinner"></span>Bağlanıyor</span>
                 <span class="update-time tabular-nums" id="last-update">Bekleniyor</span>
@@ -191,12 +200,6 @@
 
     <div class="content-container">
         <div class="card main-stats accordion" id="acc-net-servet">
-            <div class="privacy-btn" onclick="togglePrivacy(event)">
-                <svg id="privacy-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>
-                </svg>
-            </div>
-            
             <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
                 <h3 style="color: rgba(255,255,255,0.7);">Net Servet</h3>
                 <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
