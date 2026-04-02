@@ -780,6 +780,12 @@
                 plugins: [centerTextPlugin] 
             });
         }
+        // Uygulama her ön plana (ekrana) geldiğinde verileri otomatik yenile
+document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") {
+        verileriCek();
+    }
+});
         verileriCek();
     </script>
 </body>
