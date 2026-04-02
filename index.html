@@ -106,18 +106,15 @@
         .privacy-mode canvas.sensitive-data { filter: blur(20px) grayscale(50%); opacity: 0.3; background: none !important; animation: none !important; }
         @keyframes skeleton-shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
 
-        /* OPTİMİZE EDİLMİŞ FİNANSAL ÖZET KARTI */
         .summary-grid {
             display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
             background: rgba(0,0,0,0.2); border-radius: 18px;
             border: 1px solid rgba(255,255,255,0.04); overflow: hidden;
         }
-        /* Padding'i daralttık ki rakamlara yer kalsın */
         .summary-item { padding: 18px 12px; display: flex; flex-direction: column; justify-content: center; min-width: 0; }
         .summary-item.br-right { border-right: 1px solid rgba(255,255,255,0.05); }
         .summary-item.br-bottom { border-bottom: 1px solid rgba(255,255,255,0.05); }
         .summary-label { font-size: 13px; color: var(--text-muted); font-weight: 600; margin-bottom: 8px; display: flex; align-items: center; white-space: nowrap; letter-spacing: -0.2px;}
-        /* Rakamların fontunu esnek (clamp) yaptık, artık asla taşmaz */
         .summary-val { font-size: clamp(15px, 4.5vw, 20px); font-weight: 700; letter-spacing: -0.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: inline-block;}
 
         .list-row { display: flex; justify-content: space-between; align-items: center; padding: 18px 0; border-bottom: 1px solid var(--border-color); }
@@ -419,6 +416,27 @@
             if(element.id) { localStorage.setItem(element.id, element.classList.contains("collapsed") ? "1" : "0"); }
         }
 
+        // YENİ: TÜRKÇE EK BULMA FONKSİYONU
+        function turkceEkBul(sayi) {
+            sayi = parseInt(sayi);
+            const sonRakam = sayi % 10;
+            const sonIkiRakam = sayi % 100;
+
+            if (sayi === 0) return "'ı";
+            if (sonIkiRakam === 10 || sonIkiRakam === 30 || sonIkiRakam === 40 || sonIkiRakam === 60 || sonIkiRakam === 90) return "'u";
+            if (sonIkiRakam === 50 || sonIkiRakam === 80) return "'i";
+            if (sonIkiRakam === 20 || sonIkiRakam === 70) return "'si";
+
+            switch (sonRakam) {
+                case 1: case 5: case 8: return "'i";
+                case 2: case 7: return "'si";
+                case 3: case 4: return "'ü";
+                case 6: return "'sı";
+                case 9: return "'u";
+                default: return "'u"; 
+            }
+        }
+
         let touchStart = 0;
         const pullIndicator = document.getElementById('pull-indicator');
         
@@ -656,7 +674,8 @@
                     const yaklasanDOM = document.getElementById('yaklasan-listesi');
                     if(data.yaklasanOdemeler && data.yaklasanOdemeler.length > 0) {
                         yaklasanDOM.innerHTML = "";
-                        data.yaklasanOdemeler.forEach(islem => { yaklasanDOM.innerHTML += `<div class="list-row"><span class="list-label">Ayın ${islem.gun}'ü - ${islem.kalem}</span><span class="list-value tabular-nums text-red">${formatTL(islem.tutar)}</span></div>`; });
+                        // BURADA GÜNCELLEME YAPILDI: turkceEkBul() KULLANILDI
+                        data.yaklasanOdemeler.forEach(islem => { yaklasanDOM.innerHTML += `<div class="list-row"><span class="list-label">Ayın ${islem.gun}${turkceEkBul(islem.gun)} - ${islem.kalem}</span><span class="list-value tabular-nums text-red">${formatTL(islem.tutar)}</span></div>`; });
                         yaklasanDOM.innerHTML += `<div style="text-align:right; margin-top:14px; font-size:13px; color:var(--text-muted); padding-right:5px;">Toplam Çıkış: <span class="tabular-nums" style="color:#fff; font-weight:800; font-size:16px; letter-spacing:-0.2px;">${formatTL(data.yaklasanToplam)}</span></div>`;
                     } else { yaklasanDOM.innerHTML = `<div style="text-align:center; color:var(--emerald); font-size: 14px; padding: 20px 0; font-weight: 600;">Planlı ödeme yok <svg width="18" style="vertical-align:middle; margin-left:4px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/></svg></div>`; }
 
@@ -668,10 +687,11 @@
                             let opacityStyle = sabit.odendiMi ? 'opacity: 0.4;' : '';
                             let kalanMetin = (sabit.kalanAy === "Süresiz" || !sabit.kalanAy) ? "Süresiz" : sabit.kalanAy + " Ay Kaldı";
                             let badgeClass = (sabit.kalanAy === "Süresiz" || !sabit.kalanAy) ? "pill-gray" : "pill-red";
+                            // BURADA GÜNCELLEME YAPILDI: turkceEkBul() KULLANILDI
                             sabitlerDOM.innerHTML += `
                                 <div class="list-row" style="${opacityStyle} border-bottom: 1px solid var(--border-color); padding: 16px 0;">
                                     <div style="display:flex; flex-direction:column; gap:6px;">
-                                        <span class="list-label" style="font-size:15px; color:#f8fafc;">Ayın ${sabit.gun}'ü - ${sabit.kalem} ${checkIcon}</span>
+                                        <span class="list-label" style="font-size:15px; color:#f8fafc;">Ayın ${sabit.gun}${turkceEkBul(sabit.gun)} - ${sabit.kalem} ${checkIcon}</span>
                                         <div style="display:flex; gap:6px; align-items:center;">
                                             <span style="font-size:11px; font-weight:700; color:var(--text-muted); background:rgba(255,255,255,0.05); padding:2px 6px; border-radius:6px; border:1px solid rgba(255,255,255,0.05);">${sabit.yontem}</span>
                                             <span class="pill-badge tabular-nums ${badgeClass}" style="font-size:10px; padding:2px 6px; border-radius:6px;">${kalanMetin}</span>
