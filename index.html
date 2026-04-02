@@ -235,6 +235,7 @@
                         </span>
                         <span class="summary-val text-red tabular-nums sensitive-data" id="val-borc-acil">₺ 0,00</span>
                         <span class="tabular-nums sensitive-data" style="font-size: 11px; margin-top: 10px; color: var(--amber); background: rgba(245, 158, 11, 0.15); padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(245, 158, 11, 0.2); display: inline-flex; width: fit-content;" id="val-tahmini-faiz">Faiz (+%5): ₺ 0,00</span>
+                        <div class="trend-box tabular-nums sensitive-data" id="trend-can-yakan" style="font-size:11px; margin-top:6px;"></div>
                     </div>
                     <div class="summary-item">
                         <span class="summary-label">Planlı</span>
@@ -416,7 +417,6 @@
             if(element.id) { localStorage.setItem(element.id, element.classList.contains("collapsed") ? "1" : "0"); }
         }
 
-        // YENİ: TÜRKÇE EK BULMA FONKSİYONU
         function turkceEkBul(sayi) {
             sayi = parseInt(sayi);
             const sonRakam = sayi % 10;
@@ -674,7 +674,6 @@
                     const yaklasanDOM = document.getElementById('yaklasan-listesi');
                     if(data.yaklasanOdemeler && data.yaklasanOdemeler.length > 0) {
                         yaklasanDOM.innerHTML = "";
-                        // BURADA GÜNCELLEME YAPILDI: turkceEkBul() KULLANILDI
                         data.yaklasanOdemeler.forEach(islem => { yaklasanDOM.innerHTML += `<div class="list-row"><span class="list-label">Ayın ${islem.gun}${turkceEkBul(islem.gun)} - ${islem.kalem}</span><span class="list-value tabular-nums text-red">${formatTL(islem.tutar)}</span></div>`; });
                         yaklasanDOM.innerHTML += `<div style="text-align:right; margin-top:14px; font-size:13px; color:var(--text-muted); padding-right:5px;">Toplam Çıkış: <span class="tabular-nums" style="color:#fff; font-weight:800; font-size:16px; letter-spacing:-0.2px;">${formatTL(data.yaklasanToplam)}</span></div>`;
                     } else { yaklasanDOM.innerHTML = `<div style="text-align:center; color:var(--emerald); font-size: 14px; padding: 20px 0; font-weight: 600;">Planlı ödeme yok <svg width="18" style="vertical-align:middle; margin-left:4px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/></svg></div>`; }
@@ -687,7 +686,6 @@
                             let opacityStyle = sabit.odendiMi ? 'opacity: 0.4;' : '';
                             let kalanMetin = (sabit.kalanAy === "Süresiz" || !sabit.kalanAy) ? "Süresiz" : sabit.kalanAy + " Ay Kaldı";
                             let badgeClass = (sabit.kalanAy === "Süresiz" || !sabit.kalanAy) ? "pill-gray" : "pill-red";
-                            // BURADA GÜNCELLEME YAPILDI: turkceEkBul() KULLANILDI
                             sabitlerDOM.innerHTML += `
                                 <div class="list-row" style="${opacityStyle} border-bottom: 1px solid var(--border-color); padding: 16px 0;">
                                     <div style="display:flex; flex-direction:column; gap:6px;">
