@@ -281,31 +281,6 @@
             </div>
         </div>
 
-        <div class="card accordion" id="acc-aylik-butce">
-            <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
-                <h3 style="text-align: center; width: 100%;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right:4px;"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 15h0M2 9.5h20"/></svg>
-                    Aylık Gider & Bütçe
-                </h3>
-                <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </div>
-            <div class="accordion-content">
-                <div class="budget-module">
-                    <div class="budget-amount tabular-nums sensitive-data" id="aylikGider">Yükleniyor...</div>
-                    <div class="budget-subtitle">Bu Ayki Toplam Harcama</div>
-                    <div class="budget-progress-container">
-                        <div class="budget-progress-bar" id="budgetBar"></div>
-                        <div id="budgetPercent" class="tabular-nums">%0</div>
-                    </div>
-                    <div class="budget-footer tabular-nums sensitive-data">
-                        <span id="butceDurum">Gelir: ₺0,00</span>
-                        <span id="kalanBakiye">Kalan: ₺0,00</span>
-                    </div>
-                    <div id="aylikTrend" class="trend-badge tabular-nums" style="display: none;"></div>
-                </div>
-            </div>
-        </div>
-
         <div class="card accordion" id="acc-kredi-karti">
             <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
                 <h3>
@@ -318,19 +293,6 @@
                 <div class="list-row"><span class="list-label">Toplam Borç</span><span class="list-value tabular-nums" id="val-kart-toplam">₺ 0,00</span></div>
                 <div class="list-row"><span class="list-label">Bu Ay (24'ü)</span><span class="list-value text-red tabular-nums" id="val-kart-buay">₺ 0,00</span></div>
                 <div class="list-row"><span class="list-label">Gelecek Ay</span><span class="list-value text-blue tabular-nums" id="val-kart-gelecek">₺ 0,00</span></div>
-            </div>
-        </div>
-
-        <div class="card accordion" id="acc-harcama-grafik">
-            <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
-                <h3 style="text-align: center; width: 100%;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right:4px;"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
-                    Aylık Gider Dağılımı
-                </h3>
-                <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </div>
-            <div class="accordion-content">
-                <div class="chart-box"><canvas id="expenseChart" class="sensitive-data"></canvas></div>
             </div>
         </div>
 
@@ -357,6 +319,44 @@
                     </div>
                     <div class="progress-container"><div class="progress-bar" id="bar-getir" style="width: 0%; background-color: var(--blue); box-shadow: 0 0 14px rgba(59, 130, 246, 0.5); animation: shimmerPulse 2.5s infinite linear;"></div></div>
                 </div>
+            </div>
+        </div>
+
+        <div class="card accordion" id="acc-aylik-butce">
+            <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
+                <h3 style="text-align: center; width: 100%;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right:4px;"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 15h0M2 9.5h20"/></svg>
+                    Aylık Gider & Bütçe
+                </h3>
+                <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+            <div class="accordion-content">
+                <div class="budget-module">
+                    <div class="budget-amount tabular-nums sensitive-data" id="aylikGider">Yükleniyor...</div>
+                    <div class="budget-subtitle">Bu Ayki Toplam Harcama</div>
+                    <div class="budget-progress-container">
+                        <div class="budget-progress-bar" id="budgetBar"></div>
+                        <div id="budgetPercent" class="tabular-nums">%0</div>
+                    </div>
+                    <div class="budget-footer tabular-nums sensitive-data">
+                        <span id="butceDurum">Gelir: ₺0,00</span>
+                        <span id="kalanBakiye">Kalan: ₺0,00</span>
+                    </div>
+                    <div id="aylikTrend" class="trend-badge tabular-nums" style="display: none;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card accordion" id="acc-harcama-grafik">
+            <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
+                <h3 style="text-align: center; width: 100%;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right:4px;"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+                    Aylık Gider Dağılımı
+                </h3>
+                <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+            <div class="accordion-content">
+                <div class="chart-box"><canvas id="expenseChart" class="sensitive-data"></canvas></div>
             </div>
         </div>
 
@@ -519,7 +519,6 @@
             document.querySelectorAll('.time-btn').forEach(btn => btn.classList.remove('active'));
             if(btnElement) btnElement.classList.add('active');
 
-            // YENİ: trend-faiz EKLENDİ
             const ids = ['trend-net-servet', 'trend-borc', 'trend-can-yakan', 'trend-planli', 'trend-faiz'];
             
             if (days === 0) {
@@ -562,14 +561,13 @@
             const pastBorc = parseSaha(bestRow[2]);
             const pastCanYakan = parseSaha(bestRow[3]);
             const pastPlanli = parseSaha(bestRow[4]);
-            // YENİ: Geçmiş faiz sütunu (Eğer yoksa güncel faizi baz alsın hata vermesin diye eklendi)
             const pastFaiz = bestRow.length > 5 ? parseSaha(bestRow[5]) : window.currentStats.tahminiFaiz;
 
             renderTrend('trend-net-servet', window.currentStats.netServet, pastServet, false); 
             renderTrend('trend-borc', window.currentStats.toplamBorc, pastBorc, true); 
             renderTrend('trend-can-yakan', window.currentStats.toplamCanYakan, pastCanYakan, true);
             renderTrend('trend-planli', window.currentStats.toplamPlanli, pastPlanli, true);
-            renderTrend('trend-faiz', window.currentStats.tahminiFaiz, pastFaiz, true); // YENİ EKLENDİ
+            renderTrend('trend-faiz', window.currentStats.tahminiFaiz, pastFaiz, true); 
         }
 
         function renderTrend(elementId, current, past, isDebt) {
@@ -618,7 +616,7 @@
                         toplamBorc: parseSaha(data.toplamBorc),
                         toplamCanYakan: parseSaha(data.toplamCanYakan),
                         toplamPlanli: parseSaha(data.toplamPlanli),
-                        tahminiFaiz: parseSaha(data.tahminiFaiz) // YENİ EKLENDİ
+                        tahminiFaiz: parseSaha(data.tahminiFaiz) 
                     };
 
                     animateValue("val-net-servet", window.currentStats.netServet, 1200);
@@ -628,7 +626,6 @@
                     document.getElementById('val-borc-acil').innerHTML = formatTL(data.toplamCanYakan);
                     document.getElementById('val-borc-planli').innerHTML = formatTL(data.toplamPlanli);
                     
-                    // YENİ FAIZ KARTI VERİLERİ DOLDURULUYOR
                     document.getElementById('val-tahmini-faiz').innerHTML = formatTL(data.tahminiFaiz || 0);
                     document.getElementById('val-toplam-odenen-faiz').innerHTML = formatTL(data.toplamOdenenFaiz || 0);
                     
