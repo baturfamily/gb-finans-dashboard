@@ -188,6 +188,7 @@
         <div class="time-selector-wrapper">
             <div class="time-selector" id="time-filters">
                 <div class="time-btn active" onclick="updateTrends(0, this)">Güncel</div>
+                <div class="time-btn" onclick="updateTrends(1, this)">1 Gün</div>
                 <div class="time-btn" onclick="updateTrends(7, this)">1 Hafta</div>
                 <div class="time-btn" onclick="updateTrends(30, this)">1 Ay</div>
                 <div class="time-btn" onclick="updateTrends(90, this)">3 Ay</div>
@@ -730,9 +731,18 @@
                             if (kalanGun < 0) kalanGun += daysInMonth;
                             
                             let badgeRenk = kalanGun <= 2 ? "background: rgba(244, 63, 94, 0.15); color: var(--rose);" : "background: rgba(255,255,255,0.05); color: #cbd5e1;";
-                            let kalanMetinHTML = `<span style="font-size:10px; font-weight:700; padding:2px 6px; border-radius:6px; margin-left:8px; border:1px solid rgba(255,255,255,0.05); ${badgeRenk}">${kalanGun === 0 ? "Bugün" : kalanGun + " gün kaldı"}</span>`;
+                            let kalanMetinHTML = `<span style="font-size:10px; font-weight:700; padding:2px 6px; border-radius:6px; border:1px solid rgba(255,255,255,0.05); ${badgeRenk}">${kalanGun === 0 ? "Bugün" : kalanGun + " gün kaldı"}</span>`;
                             
-                            yaklasanDOM.innerHTML += `<div class="list-row"><span class="list-label">Ayın ${islem.gun}${turkceEkBul(islem.gun)} - ${islem.kalem} ${kalanMetinHTML}</span><span class="list-value tabular-nums text-red">${formatTL(islem.tutar)}</span></div>`; 
+                            yaklasanDOM.innerHTML += `
+                            <div class="list-row" style="padding: 14px 0;">
+                                <div style="display:flex; flex-direction:column; gap:6px; min-width:0; padding-right:10px;">
+                                    <span class="list-label" style="font-size:15px; color:#f8fafc; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Ayın ${islem.gun}${turkceEkBul(islem.gun)} - ${islem.kalem}</span>
+                                    <div style="display:flex;">
+                                        ${kalanMetinHTML}
+                                    </div>
+                                </div>
+                                <span class="list-value tabular-nums text-red" style="flex-shrink:0;">${formatTL(islem.tutar)}</span>
+                            </div>`; 
                         });
                         yaklasanDOM.innerHTML += `<div style="text-align:right; margin-top:14px; font-size:13px; color:var(--text-muted); padding-right:5px; border-top: 1px solid var(--border-color); padding-top: 12px;">Toplam Çıkış: <span class="tabular-nums" style="color:#fff; font-weight:800; font-size:16px; letter-spacing:-0.2px;">${formatTL(data.yaklasanToplam)}</span></div>`;
                     } else { yaklasanDOM.innerHTML = `<div style="text-align:center; color:var(--emerald); font-size: 14px; padding: 20px 0; font-weight: 600;">Planlı ödeme yok <svg width="18" style="vertical-align:middle; margin-left:4px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/></svg></div>`; }
