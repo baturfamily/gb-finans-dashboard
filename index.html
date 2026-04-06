@@ -164,7 +164,7 @@
         .card.collapsed .accordion-content { max-height: 0; opacity: 0; margin-top: 0; }
         .card.collapsed .chevron-icon { transform: rotate(-90deg); }
         
-        /* Özel Scrollbar Sınıfı - Sabitler İçin */
+        /* Özel Scrollbar Sınıfı */
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
@@ -298,7 +298,13 @@
                 <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
             <div class="accordion-content sensitive-data">
-                <div class="list-row"><span class="list-label">Toplam Borç</span><span class="list-value tabular-nums" id="val-kart-toplam">₺ 0,00</span></div>
+                <div class="list-row" style="align-items:flex-start;">
+                    <span class="list-label" style="margin-top:2px;">Toplam Borç</span>
+                    <div style="text-align:right;">
+                        <span class="list-value tabular-nums" id="val-kart-toplam" style="display:block;">₺ 0,00</span>
+                        <div class="trend-box tabular-nums sensitive-data" id="trend-kart" style="font-size:11px; margin-top:4px;"></div>
+                    </div>
+                </div>
                 <div class="list-row"><span class="list-label">Bu Ay (24'ü)</span><span class="list-value text-red tabular-nums" id="val-kart-buay">₺ 0,00</span></div>
                 <div class="list-row"><span class="list-label">Gelecek Ay</span><span class="list-value text-blue tabular-nums" id="val-kart-gelecek">₺ 0,00</span></div>
             </div>
@@ -353,6 +359,13 @@
                     <div id="aylikTrend" class="trend-badge tabular-nums" style="display: none;"></div>
                     
                     <div id="aylik-harcama-detay" class="sensitive-data" style="margin-top: 20px; text-align: left; border-top: 1px solid var(--border-color); padding-top: 16px;"></div>
+
+                    <div id="aylik-islemler-alani" class="sensitive-data" style="margin-top: 20px; text-align: left; border-top: 1px solid var(--border-color); padding-top: 16px;">
+                        <div style="font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:10px; text-transform:uppercase; letter-spacing:0.5px;">Bu Ayki Tüm İşlemler</div>
+                        <div class="custom-scrollbar" id="aylik-islemler-container" style="max-height: 250px; overflow-y: auto; overflow-x: hidden; padding-right: 8px; overscroll-behavior: contain;">
+                            </div>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -532,7 +545,7 @@
             document.querySelectorAll('.time-btn').forEach(btn => btn.classList.remove('active'));
             if(btnElement) btnElement.classList.add('active');
 
-            const ids = ['trend-net-servet', 'trend-borc', 'trend-can-yakan', 'trend-planli', 'trend-faiz'];
+            const ids = ['trend-net-servet', 'trend-borc', 'trend-can-yakan', 'trend-planli', 'trend-faiz', 'trend-kasa', 'trend-kart'];
             
             if (days === 0) {
                 ids.forEach(id => {
@@ -575,12 +588,18 @@
             const pastCanYakan = parseSaha(bestRow[3]);
             const pastPlanli = parseSaha(bestRow[4]);
             const pastFaiz = bestRow.length > 5 ? parseSaha(bestRow[5]) : window.currentStats.tahminiFaiz;
+            
+            // Not: Tarihçe sayfasında 7. ve 8. sütunlar olarak "Kasa" ve "Kart Borcu" eklenmiş olmalı. Yoksa güncel veriyi (sabit) gösterir.
+            const pastKasa = bestRow.length > 6 && bestRow[6] !== "" ? parseSaha(bestRow[6]) : window.currentStats.toplamKasa;
+            const pastKart = bestRow.length > 7 && bestRow[7] !== "" ? parseSaha(bestRow[7]) : window.currentStats.kartToplam;
 
             renderTrend('trend-net-servet', window.currentStats.netServet, pastServet, false); 
             renderTrend('trend-borc', window.currentStats.toplamBorc, pastBorc, true); 
             renderTrend('trend-can-yakan', window.currentStats.toplamCanYakan, pastCanYakan, true);
             renderTrend('trend-planli', window.currentStats.toplamPlanli, pastPlanli, true);
             renderTrend('trend-faiz', window.currentStats.tahminiFaiz, pastFaiz, true); 
+            renderTrend('trend-kasa', window.currentStats.toplamKasa, pastKasa, false); 
+            renderTrend('trend-kart', window.currentStats.kartToplam, pastKart, true); 
         }
 
         function renderTrend(elementId, current, past, isDebt) {
@@ -629,7 +648,9 @@
                         toplamBorc: parseSaha(data.toplamBorc),
                         toplamCanYakan: parseSaha(data.toplamCanYakan),
                         toplamPlanli: parseSaha(data.toplamPlanli),
-                        tahminiFaiz: parseSaha(data.tahminiFaiz) 
+                        tahminiFaiz: parseSaha(data.tahminiFaiz),
+                        toplamKasa: parseSaha(data.toplamKasa),
+                        kartToplam: parseSaha(data.kartToplam)
                     };
 
                     animateValue("val-net-servet", window.currentStats.netServet, 1200);
@@ -654,8 +675,6 @@
                     document.getElementById('bar-ziraat').style.width = (data.ziraatYuzde || 0) + "%";
                     document.getElementById('val-ziraat-kalan').innerHTML = "(Kalan: " + formatTL(data.ziraatKalan || 0) + ")";
 
-                    updateTrends(0, document.querySelector('.time-btn.active'));
-
                     const bankaDOM = document.getElementById('banka-listesi');
                     if (data.bankalar && data.bankalar.length > 0) {
                         bankaDOM.innerHTML = "";
@@ -677,8 +696,9 @@
                         });
                         
                         bankaDOM.innerHTML += `
-                        <div style="text-align:right; margin-top:14px; font-size:13px; color:var(--text-muted); padding-right:5px; border-top: 1px solid var(--border-color); padding-top: 12px;">
-                            Toplam Kasa: <span class="tabular-nums" style="color:#fff; font-weight:800; font-size:16px; letter-spacing:-0.2px;">${formatTL(toplamBanka)}</span>
+                        <div style="margin-top:14px; font-size:13px; color:var(--text-muted); border-top: 1px solid var(--border-color); padding-top: 12px; display: flex; justify-content: space-between; align-items: center;">
+                            <div><span id="trend-kasa" class="trend-box tabular-nums sensitive-data" style="margin-top:0; font-size:11px;"></span></div>
+                            <div>Toplam Kasa: <span class="tabular-nums" style="color:#fff; font-weight:800; font-size:16px; letter-spacing:-0.2px;">${formatTL(toplamBanka)}</span></div>
                         </div>`;
                     } else { bankaDOM.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding: 15px 0;">Veri bulunamadı.</div>`; }
 
@@ -722,6 +742,32 @@
                             });
                         } else {
                             detayDOM.innerHTML += `<div style="color:var(--text-muted); font-size:13px; text-align:center; padding: 10px 0;">Harcama kaydı yok.</div>`;
+                        }
+                        
+                        // Bütçe kartına aylık işlemleri ekliyoruz (Varsayılan olarak "buAyIslemler" veya "sonIslemler"i kullanır)
+                        let aylikIslemlerDOM = document.getElementById('aylik-islemler-container');
+                        let islemData = data.buAyIslemler || data.sonIslemler; // API'den buAyIslemler gelirse onu, gelmezse son işlemleri kullanır.
+                        
+                        if(islemData && islemData.length > 0) {
+                            aylikIslemlerDOM.innerHTML = "";
+                            islemData.forEach(islem => {
+                                let isaret = islem.tur === "Gelir" ? "+" : "-";
+                                let bgClass = islem.tur === "Gelir" ? "rgba(16, 185, 129, 0.15)" : "rgba(244, 63, 94, 0.15)";
+                                let colorClass = islem.tur === "Gelir" ? "var(--emerald)" : "var(--rose)";
+                                
+                                aylikIslemlerDOM.innerHTML += `
+                                <div class="t-row" style="padding: 12px 0;">
+                                    <div class="t-details" style="min-width:0; padding-right:10px;">
+                                        <div class="t-name" style="font-size:14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${islem.kalem}</div>
+                                        <div class="t-meta tabular-nums" style="font-size:11px;">${islem.tarih} • ${islem.odeme}</div>
+                                    </div>
+                                    <div class="t-amt tabular-nums" style="background:${bgClass}; color:${colorClass}; padding:4px 8px; border-radius:8px; font-size:13px; font-weight:700; flex-shrink:0;">
+                                        ${isaret} ${formatTL(islem.tutar)}
+                                    </div>
+                                </div>`;
+                            });
+                        } else {
+                            aylikIslemlerDOM.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding: 15px 0; font-size:13px;">Bu ay henüz işlem kaydı yok.</div>`;
                         }
                     }
 
@@ -826,6 +872,7 @@
                         });
                     } else { listeDOM.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding: 15px 0;">Henüz işlem yok</div>`; }
                     
+                    updateTrends(0, document.querySelector('.time-btn.active')); // Trendleri sondan yükle
                     grafigiCizDoughnut(data.pastaGrafik, data.buAyToplamGider);
                 } else { 
                     throw new Error("API hatası: " + (data.message || "Bilinmeyen Hata")); 
