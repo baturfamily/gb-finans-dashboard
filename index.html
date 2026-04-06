@@ -751,13 +751,19 @@
                     if(data.tumSabitlerListe && data.tumSabitlerListe.length > 0) {
                         sabitlerDOM.innerHTML = "";
                         let toplamSabit = 0;
+                        let odenenSabit = 0;
+                        let odenecekSabit = 0;
                         
                         data.tumSabitlerListe.forEach(sabit => {
-                            toplamSabit += parseFloat(sabit.tutar) || 0;
+                            let tutar = parseFloat(sabit.tutar) || 0;
+                            toplamSabit += tutar;
+                            if(sabit.odendiMi) { odenenSabit += tutar; } else { odenecekSabit += tutar; }
+                            
                             let checkIcon = sabit.odendiMi ? '<span style="color:var(--emerald); margin-left:8px; font-size:14px; text-shadow: 0 0 6px rgba(16, 185, 129, 0.4);">✓</span>' : '';
                             let opacityStyle = sabit.odendiMi ? 'opacity: 0.4;' : '';
                             let kalanMetin = (sabit.kalanAy === "Süresiz" || !sabit.kalanAy) ? "Süresiz" : sabit.kalanAy + " Ay Kaldı";
                             let badgeClass = (sabit.kalanAy === "Süresiz" || !sabit.kalanAy) ? "pill-gray" : "pill-red";
+                            
                             sabitlerDOM.innerHTML += `
                                 <div class="list-row" style="${opacityStyle} border-bottom: 1px solid var(--border-color); padding: 16px 0;">
                                     <div style="display:flex; flex-direction:column; gap:6px;">
@@ -767,14 +773,25 @@
                                             <span class="pill-badge tabular-nums ${badgeClass}" style="font-size:10px; padding:2px 6px; border-radius:6px;">${kalanMetin}</span>
                                         </div>
                                     </div>
-                                    <span class="list-value tabular-nums" style="font-weight:800;">${formatTL(sabit.tutar)}</span>
+                                    <span class="list-value tabular-nums" style="font-weight:800;">${formatTL(tutar)}</span>
                                 </div>
                             `;
                         });
                         
                         sabitlerDOM.innerHTML += `
-                        <div style="text-align:right; margin-top:14px; font-size:13px; color:var(--text-muted); padding-right:5px; border-top: 1px solid var(--border-color); padding-top: 12px;">
-                            Toplam Sabit: <span class="tabular-nums" style="color:#fff; font-weight:800; font-size:16px; letter-spacing:-0.2px;">${formatTL(toplamSabit)}</span>
+                        <div style="margin-top:14px; font-size:13px; color:var(--text-muted); border-top: 1px solid var(--border-color); padding-top: 12px; display:flex; flex-direction:column; gap:8px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <span>Ödenen:</span>
+                                <span class="tabular-nums" style="color:var(--emerald); font-weight:600;">${formatTL(odenenSabit)}</span>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <span>Ödenecek:</span>
+                                <span class="tabular-nums" style="color:var(--rose); font-weight:600;">${formatTL(odenecekSabit)}</span>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px; padding-top:10px; border-top: 1px dashed rgba(255,255,255,0.1);">
+                                <span style="font-weight:600; color:#cbd5e1;">Toplam Sabit:</span>
+                                <span class="tabular-nums" style="color:#fff; font-weight:800; font-size:16px; letter-spacing:-0.2px;">${formatTL(toplamSabit)}</span>
+                            </div>
                         </div>`;
                     } else { sabitlerDOM.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size: 13px; padding: 15px 0;">Kayıtlı sabit ödeme bulunamadı.</div>`; }
 
