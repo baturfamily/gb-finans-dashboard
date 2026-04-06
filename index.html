@@ -163,6 +163,11 @@
         .accordion-content { overflow: hidden; transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease; max-height: 1200px; opacity: 1; margin-top: 18px; }
         .card.collapsed .accordion-content { max-height: 0; opacity: 0; margin-top: 0; }
         .card.collapsed .chevron-icon { transform: rotate(-90deg); }
+        
+        /* Özel Scrollbar Sınıfı - Sabitler İçin */
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
     </style>
 </head>
 <body>
@@ -749,10 +754,11 @@
 
                     const sabitlerDOM = document.getElementById('sabitler-listesi');
                     if(data.tumSabitlerListe && data.tumSabitlerListe.length > 0) {
-                        sabitlerDOM.innerHTML = "";
                         let toplamSabit = 0;
                         let odenenSabit = 0;
                         let odenecekSabit = 0;
+                        
+                        let htmlIcerik = `<div class="custom-scrollbar" style="max-height: 350px; overflow-y: auto; overflow-x: hidden; padding-right: 8px; overscroll-behavior: contain; margin-bottom: 4px;">`;
                         
                         data.tumSabitlerListe.forEach(sabit => {
                             let tutar = parseFloat(sabit.tutar) || 0;
@@ -764,7 +770,7 @@
                             let kalanMetin = (sabit.kalanAy === "Süresiz" || !sabit.kalanAy) ? "Süresiz" : sabit.kalanAy + " Ay Kaldı";
                             let badgeClass = (sabit.kalanAy === "Süresiz" || !sabit.kalanAy) ? "pill-gray" : "pill-red";
                             
-                            sabitlerDOM.innerHTML += `
+                            htmlIcerik += `
                                 <div class="list-row" style="${opacityStyle} border-bottom: 1px solid var(--border-color); padding: 16px 0;">
                                     <div style="display:flex; flex-direction:column; gap:6px;">
                                         <span class="list-label" style="font-size:15px; color:#f8fafc;">Ayın ${sabit.gun}${turkceEkBul(sabit.gun)} - ${sabit.kalem} ${checkIcon}</span>
@@ -778,7 +784,9 @@
                             `;
                         });
                         
-                        sabitlerDOM.innerHTML += `
+                        htmlIcerik += `</div>`; // Kaydirilabilir alani kapat
+                        
+                        htmlIcerik += `
                         <div style="margin-top:14px; font-size:13px; color:var(--text-muted); border-top: 1px solid var(--border-color); padding-top: 12px; display:flex; flex-direction:column; gap:8px;">
                             <div style="display:flex; justify-content:space-between; align-items:center;">
                                 <span>Ödenen:</span>
@@ -793,6 +801,8 @@
                                 <span class="tabular-nums" style="color:#fff; font-weight:800; font-size:16px; letter-spacing:-0.2px;">${formatTL(toplamSabit)}</span>
                             </div>
                         </div>`;
+                        
+                        sabitlerDOM.innerHTML = htmlIcerik;
                     } else { sabitlerDOM.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size: 13px; padding: 15px 0;">Kayıtlı sabit ödeme bulunamadı.</div>`; }
 
                     const listeDOM = document.getElementById('islem-listesi');
