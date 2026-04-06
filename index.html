@@ -731,7 +731,7 @@
                             else { trendDOM.className = "trend-badge tabular-nums"; trendDOM.innerText = "Geçen ayla aynı ━"; trendDOM.style.background = "rgba(255,255,255,0.06)"; border = "1px solid rgba(255,255,255,0.02)"; trendDOM.style.color = "#fff"; }
                         } else { trendDOM.className = "trend-badge"; trendDOM.innerText = "Geçen ay verisi yok"; trendDOM.style.background = "rgba(255,255,255,0.04)"; trendDOM.style.border = "none"; trendDOM.style.color = "var(--text-muted)"; }
                         
-                        // Bütçe kartına aylık işlemleri ekliyoruz (Varsayılan olarak "buAyIslemler" veya "sonIslemler"i kullanır)
+                        // Bütçe kartına aylık işlemleri ekliyoruz
                         let aylikIslemlerDOM = document.getElementById('aylik-islemler-container');
                         let islemData = data.buAyIslemler || data.sonIslemler; // API'den buAyIslemler gelirse onu, gelmezse son işlemleri kullanır.
                         
