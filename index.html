@@ -357,8 +357,6 @@
                         <span id="kalanBakiye">Kalan: ₺0,00</span>
                     </div>
                     <div id="aylikTrend" class="trend-badge tabular-nums" style="display: none;"></div>
-                    
-                    <div id="aylik-harcama-detay" class="sensitive-data" style="margin-top: 20px; text-align: left; border-top: 1px solid var(--border-color); padding-top: 16px;"></div>
 
                     <div id="aylik-islemler-alani" class="sensitive-data" style="margin-top: 20px; text-align: left; border-top: 1px solid var(--border-color); padding-top: 16px;">
                         <div style="font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:10px; text-transform:uppercase; letter-spacing:0.5px;">Bu Ayki Tüm İşlemler</div>
@@ -430,8 +428,11 @@
         window.tarihceData = [];
         window.currentStats = {};
 
-        const bugunTarih = new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
-        document.getElementById('header-date').innerText = bugunTarih;
+        const gunler = ["Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi"];
+        const bugun = new Date();
+        const bugunTarih = bugun.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
+        const gunIsmi = gunler[bugun.getDay()];
+        document.getElementById('header-date').innerText = bugunTarih + " " + gunIsmi;
 
         const EYE_OPEN = `<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>`;
         const EYE_CLOSED = `<path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/>`;
@@ -729,20 +730,6 @@
                             else if (fark < 0) { trendDOM.className = "trend-badge tabular-nums trend-good"; trendDOM.innerText = "Geçen aya göre %" + yuzde + " az ↓"; } 
                             else { trendDOM.className = "trend-badge tabular-nums"; trendDOM.innerText = "Geçen ayla aynı ━"; trendDOM.style.background = "rgba(255,255,255,0.06)"; border = "1px solid rgba(255,255,255,0.02)"; trendDOM.style.color = "#fff"; }
                         } else { trendDOM.className = "trend-badge"; trendDOM.innerText = "Geçen ay verisi yok"; trendDOM.style.background = "rgba(255,255,255,0.04)"; trendDOM.style.border = "none"; trendDOM.style.color = "var(--text-muted)"; }
-                        
-                        let detayDOM = document.getElementById('aylik-harcama-detay');
-                        detayDOM.innerHTML = '<div style="font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Bu Ayın Gider Dağılımı</div>';
-                        if (data.pastaGrafik && data.pastaGrafik.length > 0) {
-                            data.pastaGrafik.forEach(item => {
-                                detayDOM.innerHTML += `
-                                <div class="list-row" style="padding: 10px 0;">
-                                    <span class="list-label" style="font-size:14px;">${item.isim}</span>
-                                    <span class="list-value tabular-nums" style="font-size:15px; font-weight:600;">${formatTL(item.toplam)}</span>
-                                </div>`;
-                            });
-                        } else {
-                            detayDOM.innerHTML += `<div style="color:var(--text-muted); font-size:13px; text-align:center; padding: 10px 0;">Harcama kaydı yok.</div>`;
-                        }
                         
                         // Bütçe kartına aylık işlemleri ekliyoruz (Varsayılan olarak "buAyIslemler" veya "sonIslemler"i kullanır)
                         let aylikIslemlerDOM = document.getElementById('aylik-islemler-container');
