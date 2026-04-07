@@ -263,14 +263,31 @@
             </div>
             <div class="accordion-content">
                 <div class="summary-grid">
-                    <div class="summary-item br-right">
-                        <span class="summary-label" style="color:var(--amber);">Güncel Yük (Bu Ay)</span>
+                    <div class="summary-item br-right br-bottom">
+                        <span class="summary-label" style="color:var(--amber);">Tahmini Yük (Bu Ay)</span>
                         <span class="summary-val text-red tabular-nums sensitive-data" id="val-tahmini-faiz">₺ 0,00</span>
                         <div class="trend-box tabular-nums sensitive-data" id="trend-faiz" style="font-size:11px; margin-top:6px;"></div>
                     </div>
-                    <div class="summary-item">
-                        <span class="summary-label">Bugüne Kadar Ödenen</span>
+                    <div class="summary-item br-bottom">
+                        <span class="summary-label">01.04.2026'dan İtibaren Toplam</span>
                         <span class="summary-val tabular-nums sensitive-data" id="val-toplam-odenen-faiz" style="color:#cbd5e1;">₺ 0,00</span>
+                    </div>
+                    
+                    <div class="summary-item" style="grid-column: span 2; padding: 16px 12px 12px 12px;">
+                        <span class="summary-label" style="margin-bottom: 12px; color:#e2e8f0; font-size:12px; text-transform:uppercase; letter-spacing:0.5px;">Bu Ay Gerçekleşen (Ödenen) Faizler</span>
+                        
+                        <div class="list-row" style="padding: 8px 0; border-bottom: 1px dashed rgba(255,255,255,0.05);">
+                            <span class="list-label" style="font-size:14px; color:var(--text-muted);">YapıKredi KMH</span>
+                            <span class="list-value tabular-nums text-red" style="font-size:15px;" id="val-faiz-yk">₺ 0,00</span>
+                        </div>
+                        <div class="list-row" style="padding: 8px 0; border-bottom: 1px dashed rgba(255,255,255,0.05);">
+                            <span class="list-label" style="font-size:14px; color:var(--text-muted);">İş Bankası KMH</span>
+                            <span class="list-value tabular-nums text-red" style="font-size:15px;" id="val-faiz-is">₺ 0,00</span>
+                        </div>
+                        <div class="list-row" style="padding: 8px 0; border: none;">
+                            <span class="list-label" style="font-size:14px; color:var(--text-muted);">Kredi Kartı Faizi</span>
+                            <span class="list-value tabular-nums text-red" style="font-size:15px;" id="val-faiz-kk">₺ 0,00</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -566,7 +583,9 @@
             }
 
             const now = new Date();
-            const targetDate = new Date(now.getTime() - (days * 24 * 60 * 60 * 1000));
+            // Gece 12'yi (gün başlangıcını) baz al
+            const midnightToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const targetTime = midnightToday.getTime() - ((days - 1) * 24 * 60 * 60 * 1000);
             
             let bestRow = null;
             let minDiff = Infinity;
@@ -575,7 +594,7 @@
                 const rowDate = new Date(row[0]);
                 if(isNaN(rowDate.getTime())) return; 
                 
-                const diff = Math.abs(rowDate.getTime() - targetDate.getTime());
+                const diff = Math.abs(rowDate.getTime() - targetTime);
                 if(diff < minDiff) {
                     minDiff = diff;
                     bestRow = row;
@@ -590,7 +609,6 @@
             const pastPlanli = parseSaha(bestRow[4]);
             const pastFaiz = bestRow.length > 5 ? parseSaha(bestRow[5]) : window.currentStats.tahminiFaiz;
             
-            // Not: Tarihçe sayfasında 7. ve 8. sütunlar olarak "Kasa" ve "Kart Borcu" eklenmiş olmalı. Yoksa güncel veriyi (sabit) gösterir.
             const pastKasa = bestRow.length > 6 && bestRow[6] !== "" ? parseSaha(bestRow[6]) : window.currentStats.toplamKasa;
             const pastKart = bestRow.length > 7 && bestRow[7] !== "" ? parseSaha(bestRow[7]) : window.currentStats.kartToplam;
 
@@ -664,6 +682,11 @@
                     document.getElementById('val-tahmini-faiz').innerHTML = formatTL(data.tahminiFaiz || 0);
                     document.getElementById('val-toplam-odenen-faiz').innerHTML = formatTL(data.toplamOdenenFaiz || 0);
                     
+                    // Faiz kırılımları
+                    document.getElementById('val-faiz-yk').innerHTML = formatTL(data.faizYKB || 0);
+                    document.getElementById('val-faiz-is').innerHTML = formatTL(data.faizIs || 0);
+                    document.getElementById('val-faiz-kk').innerHTML = formatTL(data.faizKK || 0);
+
                     document.getElementById('val-kart-toplam').innerHTML = formatTL(data.kartToplam);
                     document.getElementById('val-kart-buay').innerHTML = formatTL(data.kartBuAy);
                     document.getElementById('val-kart-gelecek').innerHTML = formatTL(data.kartGelecek);
@@ -731,9 +754,8 @@
                             else { trendDOM.className = "trend-badge tabular-nums"; trendDOM.innerText = "Geçen ayla aynı ━"; trendDOM.style.background = "rgba(255,255,255,0.06)"; border = "1px solid rgba(255,255,255,0.02)"; trendDOM.style.color = "#fff"; }
                         } else { trendDOM.className = "trend-badge"; trendDOM.innerText = "Geçen ay verisi yok"; trendDOM.style.background = "rgba(255,255,255,0.04)"; trendDOM.style.border = "none"; trendDOM.style.color = "var(--text-muted)"; }
                         
-                        // Bütçe kartına aylık işlemleri ekliyoruz
                         let aylikIslemlerDOM = document.getElementById('aylik-islemler-container');
-                        let islemData = data.buAyIslemler || data.sonIslemler; // API'den buAyIslemler gelirse onu, gelmezse son işlemleri kullanır.
+                        let islemData = data.buAyIslemler || data.sonIslemler; 
                         
                         if(islemData && islemData.length > 0) {
                             aylikIslemlerDOM.innerHTML = "";
@@ -817,7 +839,7 @@
                             `;
                         });
                         
-                        htmlIcerik += `</div>`; // Kaydirilabilir alani kapat
+                        htmlIcerik += `</div>`; 
                         
                         htmlIcerik += `
                         <div style="margin-top:14px; font-size:13px; color:var(--text-muted); border-top: 1px solid var(--border-color); padding-top: 12px; display:flex; flex-direction:column; gap:8px;">
@@ -859,7 +881,7 @@
                         });
                     } else { listeDOM.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding: 15px 0;">Henüz işlem yok</div>`; }
                     
-                    updateTrends(0, document.querySelector('.time-btn.active')); // Trendleri sondan yükle
+                    updateTrends(0, document.querySelector('.time-btn.active')); 
                     grafigiCizDoughnut(data.pastaGrafik, data.buAyToplamGider);
                 } else { 
                     throw new Error("API hatası: " + (data.message || "Bilinmeyen Hata")); 
