@@ -213,6 +213,12 @@
             <div class="accordion-content">
                 <div class="amount-large tabular-nums sensitive-data" id="val-net-servet"><span style="font-size:0.7em; opacity:0.6;">₺</span> 0<span style="font-size:0.7em; opacity:0.6;">,00</span></div>
                 <div class="trend-box tabular-nums sensitive-data" id="trend-net-servet" style="margin-top:14px;"></div>
+                
+                <div id="varlik-dagilimi-alani" class="sensitive-data" style="margin-top: 20px; width: 100%; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px; text-align: left;">
+                    <div style="font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:12px; text-transform:uppercase; letter-spacing:0.5px;">Varlık Dağılımı</div>
+                    <div id="varlik-listesi">
+                        </div>
+                </div>
             </div>
         </div>
 
@@ -322,6 +328,16 @@
                         <div class="trend-box tabular-nums sensitive-data" id="trend-kart" style="font-size:11px; margin-top:4px;"></div>
                     </div>
                 </div>
+                
+                <div class="list-row" style="border-bottom: 1px dashed rgba(255,255,255,0.05); padding-bottom: 14px; margin-bottom: 6px;">
+                    <div style="display:flex; flex-direction:column; width:100%;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                            <span class="list-label" style="font-size: 14px; color:var(--text-muted);">Dönem İçi Harcama (Bu Ay)</span>
+                            <span class="list-value tabular-nums text-amber" style="font-size: 15px;" id="val-kart-donemici">₺ 0,00</span>
+                        </div>
+                    </div>
+                </div>
+                
                 <div class="list-row"><span class="list-label">Bu Ay (24'ü)</span><span class="list-value text-red tabular-nums" id="val-kart-buay">₺ 0,00</span></div>
                 <div class="list-row"><span class="list-label">Gelecek Ay</span><span class="list-value text-blue tabular-nums" id="val-kart-gelecek">₺ 0,00</span></div>
             </div>
@@ -373,7 +389,24 @@
                         <span id="butceDurum">Gelir: ₺0,00</span>
                         <span id="kalanBakiye">Kalan: ₺0,00</span>
                     </div>
+                    <div id="tasarruf-orani-badge" class="trend-badge tabular-nums" style="background: rgba(59, 130, 246, 0.15); color: var(--blue); border: 1px solid rgba(59, 130, 246, 0.2); margin-top: 8px;">Tasarruf: %0</div>
                     <div id="aylikTrend" class="trend-badge tabular-nums" style="display: none;"></div>
+
+                    <div class="budget-footer tabular-nums sensitive-data" style="margin-top: 16px; padding-top: 14px; border-top: 1px dashed rgba(255,255,255,0.1); flex-direction: column; gap: 8px; text-align: left;">
+                        <div style="font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Ay Sonu Nakit Akışı</div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="font-size:14px; color:#cbd5e1;">Mevcut Kalan:</span>
+                            <span id="mevcutKalanProjek" style="color: #fff; font-weight: 600; font-size:14px;">₺0,00</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="font-size:14px; color:var(--text-muted);">Ödenecek Sabitler:</span>
+                            <span id="gelecekSabitler" style="color: var(--rose); font-weight: 600; font-size:14px;">-₺0,00</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); padding: 10px 12px; border-radius: 8px; margin-top: 4px; border: 1px solid rgba(255,255,255,0.05);">
+                            <span style="color: #f8fafc; font-size: 14px; font-weight:600;">Gerçek Özgür Para:</span>
+                            <span id="ozgurPara" style="font-size: 17px; font-weight: 800;">₺0,00</span>
+                        </div>
+                    </div>
 
                     <div id="aylik-islemler-alani" class="sensitive-data" style="margin-top: 20px; text-align: left; border-top: 1px solid var(--border-color); padding-top: 16px;">
                         <div style="font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:10px; text-transform:uppercase; letter-spacing:0.5px;">Bu Ayki Tüm İşlemler</div>
@@ -583,7 +616,6 @@
             }
 
             const now = new Date();
-            // Gece 12'yi (gün başlangıcını) baz al
             const midnightToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
             const targetTime = midnightToday.getTime() - ((days - 1) * 24 * 60 * 60 * 1000);
             
@@ -674,6 +706,43 @@
 
                     animateValue("val-net-servet", window.currentStats.netServet, 1200);
 
+                    // YENİ: Varlık Dağılımı Doldurma
+                    let toplamVarlik = data.toplamKasa;
+                    if (data.varliklarListe && data.varliklarListe.length > 0) {
+                        data.varliklarListe.forEach(v => { toplamVarlik += v.deger; });
+                    }
+                    
+                    let varlikHTML = `<div class="list-row" style="padding: 8px 0; border:none;">
+                        <div style="width: 100%;">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                                <span class="list-label" style="font-size:14px; color:var(--text-muted);">Nakit (Kasa) <span style="font-size:11px; margin-left:6px; color:#cbd5e1;">%${toplamVarlik > 0 ? Math.round((data.toplamKasa / toplamVarlik) * 100) : 0}</span></span>
+                                <span class="list-value tabular-nums" style="font-size:14px;">${formatTL(data.toplamKasa)}</span>
+                            </div>
+                            <div style="width: 100%; background: rgba(255,255,255,0.05); height: 4px; border-radius: 2px; overflow: hidden;">
+                                <div style="width: ${toplamVarlik > 0 ? Math.round((data.toplamKasa / toplamVarlik) * 100) : 0}%; background: var(--emerald); height: 100%; border-radius: 2px;"></div>
+                            </div>
+                        </div>
+                    </div>`;
+                    
+                    if (data.varliklarListe && data.varliklarListe.length > 0) {
+                        data.varliklarListe.forEach(v => {
+                            let yuzde = toplamVarlik > 0 ? Math.round((v.deger / toplamVarlik) * 100) : 0;
+                            varlikHTML += `
+                            <div class="list-row" style="padding: 8px 0; border:none;">
+                                <div style="width: 100%;">
+                                    <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                                        <span class="list-label" style="font-size:14px; color:var(--text-muted);">${v.isim} <span style="font-size:11px; margin-left:6px; color:#cbd5e1;">%${yuzde}</span></span>
+                                        <span class="list-value tabular-nums" style="font-size:14px;">${formatTL(v.deger)}</span>
+                                    </div>
+                                    <div style="width: 100%; background: rgba(255,255,255,0.05); height: 4px; border-radius: 2px; overflow: hidden;">
+                                        <div style="width: ${yuzde}%; background: var(--blue); height: 100%; border-radius: 2px;"></div>
+                                    </div>
+                                </div>
+                            </div>`;
+                        });
+                    }
+                    document.getElementById('varlik-listesi').innerHTML = varlikHTML;
+
                     document.getElementById('val-kasa').innerHTML = formatTL(data.toplamKasa);
                     document.getElementById('val-borc').innerHTML = formatTL(data.toplamBorc);
                     document.getElementById('val-borc-acil').innerHTML = formatTL(data.toplamCanYakan);
@@ -687,7 +756,9 @@
                     document.getElementById('val-faiz-is').innerHTML = formatTL(data.faizIs || 0);
                     document.getElementById('val-faiz-kk').innerHTML = formatTL(data.faizKK || 0);
 
+                    // Kart Verileri
                     document.getElementById('val-kart-toplam').innerHTML = formatTL(data.kartToplam);
+                    document.getElementById('val-kart-donemici').innerHTML = formatTL(data.kartDonemIci || 0);
                     document.getElementById('val-kart-buay').innerHTML = formatTL(data.kartBuAy);
                     document.getElementById('val-kart-gelecek').innerHTML = formatTL(data.kartGelecek);
 
@@ -731,6 +802,23 @@
                         const bakiyeDOM = document.getElementById('kalanBakiye'), budgetBarDOM = document.getElementById('budgetBar'), percentDOM = document.getElementById('budgetPercent');
                         document.getElementById('butceDurum').innerHTML = "Gelir: " + formatTL(data.buAyToplamGelir);
                         
+                        let netKalan = data.buAyToplamGelir - data.buAyToplamGider;
+                        
+                        // YENİ: Tasarruf Oranı ve Nakit Akışı Projeksiyonu Hesaplama
+                        let tasarrufOrani = 0;
+                        if(data.buAyToplamGelir > 0 && netKalan > 0) {
+                            tasarrufOrani = Math.round((netKalan / data.buAyToplamGelir) * 100);
+                        }
+                        document.getElementById('tasarruf-orani-badge').innerText = `Tasarruf: %${tasarrufOrani}`;
+                        
+                        document.getElementById('mevcutKalanProjek').innerHTML = formatTL(netKalan);
+                        document.getElementById('gelecekSabitler').innerHTML = "- " + formatTL(data.odenecekSabitToplam || 0);
+                        
+                        let ozgurPara = netKalan - (data.odenecekSabitToplam || 0);
+                        let ozgurParaEl = document.getElementById('ozgurPara');
+                        ozgurParaEl.innerHTML = formatTL(ozgurPara);
+                        ozgurParaEl.style.color = ozgurPara >= 0 ? "var(--emerald)" : "var(--rose)";
+
                         if (data.buAyToplamGelir > 0) {
                             let harcananYuzde = (data.buAyToplamGider / data.buAyToplamGelir) * 100;
                             let kalan = data.buAyToplamGelir - data.buAyToplamGider;
