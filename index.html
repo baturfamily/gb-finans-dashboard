@@ -785,14 +785,21 @@
                             </div>`;
                         });
                     }
+                    
+                    // Varlıklar Toplam Satırı
+                    varlikHTML += `
+                    <div style="margin-top:14px; font-size:13px; color:var(--text-muted); border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 12px; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-weight:600; color:#cbd5e1;">Toplam Varlık:</span>
+                        <span class="tabular-nums" style="color:#fff; font-weight:800; font-size:16px; letter-spacing:-0.2px;">${formatTL(toplamVarlik)}</span>
+                    </div>`;
+                    
                     document.getElementById('varlik-listesi').innerHTML = varlikHTML;
 
-                    // --- YENİ: Borç Dağılımı ---
+                    // --- Borç Dağılımı ---
                     let toplamBorcDagilim = data.toplamBorc || 0;
                     let borcHTML = '';
 
                     if (data.borclarListe && data.borclarListe.length > 0) {
-                        // Borçları en yüksekten en düşüğe sırala
                         data.borclarListe.sort((a, b) => b.tutar - a.tutar);
 
                         data.borclarListe.forEach(b => {
@@ -810,6 +817,14 @@
                                 </div>
                             </div>`;
                         });
+                        
+                        // Borçlar Toplam Satırı
+                        borcHTML += `
+                        <div style="margin-top:14px; font-size:13px; color:var(--text-muted); border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 12px; display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-weight:600; color:#cbd5e1;">Toplam Borç:</span>
+                            <span class="tabular-nums" style="color:#fff; font-weight:800; font-size:16px; letter-spacing:-0.2px;">${formatTL(toplamBorcDagilim)}</span>
+                        </div>`;
+                        
                     } else {
                         borcHTML = `<div style="text-align:center; color:var(--emerald); font-size:13px; padding:10px 0;">Sıfır Borç! 🎉</div>`;
                     }
