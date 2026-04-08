@@ -160,7 +160,7 @@
         .accordion-header h3 { margin-bottom: 0; pointer-events: none; color: #e2e8f0; font-size: 14px;}
         .chevron-icon { width: 22px; height: 22px; color: var(--text-muted); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); pointer-events: none; }
         .accordion-header:active .chevron-icon { opacity: 0.7; }
-        .accordion-content { overflow: hidden; transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease; max-height: 1200px; opacity: 1; margin-top: 18px; }
+        .accordion-content { overflow: hidden; transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease; max-height: 2000px; opacity: 1; margin-top: 18px; }
         .card.collapsed .accordion-content { max-height: 0; opacity: 0; margin-top: 0; }
         .card.collapsed .chevron-icon { transform: rotate(-90deg); }
         
@@ -227,6 +227,13 @@
                     <div id="varlik-listesi">
                         </div>
                 </div>
+
+                <div id="borc-dagilimi-alani" class="sensitive-data" style="margin-top: 20px; width: 100%; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px; text-align: left;">
+                    <div style="font-size:12px; font-weight:600; color:var(--rose); margin-bottom:12px; text-transform:uppercase; letter-spacing:0.5px;">Borç Dağılımı</div>
+                    <div id="borc-listesi">
+                        </div>
+                </div>
+
             </div>
         </div>
 
@@ -575,7 +582,6 @@
             return `<span style="font-size:0.75em; opacity:0.75; font-weight:600; margin-right:2px;">₺</span>${parts[0]}<span style="font-size:0.75em; opacity:0.75; font-weight:600;">,${parts[1]}</span>`;
         }
 
-        // YENİ: Dolar Formatı
         function formatUSD(sayi) {
             if (isNaN(sayi) || sayi === null || sayi === "") return `<span style="font-size:0.8em; opacity:0.7; font-weight:600; margin-right:2px;">$</span>0<span style="font-size:0.8em; opacity:0.7; font-weight:600;">,00</span>`;
             let formatted = new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(sayi);
@@ -608,7 +614,6 @@
             window.requestAnimationFrame(step);
         }
 
-        // YENİ: Dolar Animasyonu
         function animateValueUSD(id, endValue, duration) {
             const obj = document.getElementById(id);
             if(!obj || isNaN(endValue)) return;
@@ -677,7 +682,6 @@
             const pastKasa = bestRow.length > 6 && bestRow[6] !== "" ? parseSaha(bestRow[6]) : window.currentStats.toplamKasa;
             const pastKart = bestRow.length > 7 && bestRow[7] !== "" ? parseSaha(bestRow[7]) : window.currentStats.kartToplam;
             
-            // Eğer geçmişte Dolar serveti kaydedilmemişse, şimdiki kurdan bölerek bir referans yarat (hata vermemesi için)
             const pastServetUSD = bestRow.length > 8 && bestRow[8] !== "" ? parseSaha(bestRow[8]) : (window.currentStats.usdRate > 0 ? (pastServet / window.currentStats.usdRate) : window.currentStats.netServetUSD);
 
             renderTrend('trend-net-servet', window.currentStats.netServet, pastServet, false); 
@@ -746,6 +750,7 @@
                     animateValue("val-net-servet", window.currentStats.netServet, 1200);
                     animateValueUSD("val-net-servet-usd", window.currentStats.netServetUSD, 1200);
 
+                    // --- Varlık Dağılımı ---
                     let toplamVarlik = data.toplamKasa;
                     if (data.varliklarListe && data.varliklarListe.length > 0) {
                         data.varliklarListe.forEach(v => { toplamVarlik += v.deger; });
@@ -781,6 +786,34 @@
                         });
                     }
                     document.getElementById('varlik-listesi').innerHTML = varlikHTML;
+
+                    // --- YENİ: Borç Dağılımı ---
+                    let toplamBorcDagilim = data.toplamBorc || 0;
+                    let borcHTML = '';
+
+                    if (data.borclarListe && data.borclarListe.length > 0) {
+                        // Borçları en yüksekten en düşüğe sırala
+                        data.borclarListe.sort((a, b) => b.tutar - a.tutar);
+
+                        data.borclarListe.forEach(b => {
+                            let yuzde = toplamBorcDagilim > 0 ? Math.round((b.tutar / toplamBorcDagilim) * 100) : 0;
+                            borcHTML += `
+                            <div class="list-row" style="padding: 8px 0; border:none;">
+                                <div style="width: 100%;">
+                                    <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                                        <span class="list-label" style="font-size:14px; color:var(--text-muted);">${b.isim} <span style="font-size:11px; margin-left:6px; color:var(--rose); opacity: 0.8;">%${yuzde}</span></span>
+                                        <span class="list-value tabular-nums text-red" style="font-size:14px;">${formatTL(b.tutar)}</span>
+                                    </div>
+                                    <div style="width: 100%; background: rgba(255,255,255,0.05); height: 4px; border-radius: 2px; overflow: hidden;">
+                                        <div style="width: ${yuzde}%; background: var(--rose); height: 100%; border-radius: 2px;"></div>
+                                    </div>
+                                </div>
+                            </div>`;
+                        });
+                    } else {
+                        borcHTML = `<div style="text-align:center; color:var(--emerald); font-size:13px; padding:10px 0;">Sıfır Borç! 🎉</div>`;
+                    }
+                    document.getElementById('borc-listesi').innerHTML = borcHTML;
 
                     document.getElementById('val-kasa').innerHTML = formatTL(data.toplamKasa);
                     document.getElementById('val-borc').innerHTML = formatTL(data.toplamBorc);
