@@ -156,7 +156,7 @@
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
 
-        /* FAB ve Modal Stilleri */
+        /* FAB ve Modal Stilleri - Yenilendi */
         .fab-btn {
             position: fixed; bottom: calc(env(safe-area-inset-bottom) + 20px); right: 20px; z-index: 999;
             width: 60px; height: 60px; border-radius: 30px; background: var(--brand-gradient);
@@ -198,14 +198,16 @@
         .action-card svg { margin-bottom: 6px; color: var(--blue); }
         .action-card span { display: block; font-size: 12px; font-weight: 600; color: #e2e8f0; }
 
-        .form-group { margin-bottom: 16px; text-align: left; }
+        .form-group { margin-bottom: 16px; text-align: left; position: relative; }
         .form-group label { display: block; font-size: 13px; color: var(--text-muted); font-weight: 600; margin-bottom: 6px; }
         .form-control {
             width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1);
             color: #fff; padding: 14px; border-radius: 12px; font-size: 15px; outline: none; transition: border 0.2s;
+            -webkit-appearance: none;
         }
         .form-control[type="datetime-local"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
         .form-control:focus { border-color: var(--blue); }
+        .form-control.error { border-color: var(--rose); animation: shake 0.4s; }
         .form-control option { background: var(--bg-dark); }
         
         .btn-submit {
@@ -218,12 +220,24 @@
 
         .form-section { display: none; animation: fadeIn 0.3s; }
         .form-section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-5px);} 75% {transform: translateX(5px);} }
 
-        .back-link { font-size: 13px; color: var(--text-muted); text-decoration: underline; cursor: pointer; margin-bottom: 15px; display: inline-block; }
+        /* Yeni Eklenen UI Elementleri */
+        .back-link { 
+            font-size: 14px; color: var(--blue); font-weight: 600; cursor: pointer; 
+            margin-bottom: 18px; display: inline-flex; align-items: center; gap: 4px;
+        }
+        .back-link:active { opacity: 0.7; }
+        .quick-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+        .tag-pill { background: rgba(255,255,255,0.05); color: #cbd5e1; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; }
+        .tag-pill:active { background: var(--brand-gradient); color: white; border-color: transparent;}
+        .swap-btn { position: absolute; right: 10px; top: 32px; background: rgba(255,255,255,0.1); border: none; color: #fff; width: 34px; height: 34px; border-radius: 17px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 2;}
+        .swap-btn:active { transform: scale(0.9); background: rgba(255,255,255,0.2); }
+        
         .inline-action-btn { background: rgba(16, 185, 129, 0.15); color: var(--emerald); border: 1px solid rgba(16, 185, 129, 0.3); padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; margin-left: 8px;}
         .inline-action-btn:active { background: rgba(16, 185, 129, 0.3); }
-        .undo-btn { background: rgba(244, 63, 94, 0.15); color: var(--rose); padding: 10px 16px; border-radius: 12px; font-size: 13px; font-weight: 600; border: 1px solid rgba(244, 63, 94, 0.3); width: 100%; margin-top: 5px; text-align: center; cursor:pointer;}
+        .undo-btn { background: rgba(244, 63, 94, 0.15); color: var(--rose); padding: 12px 16px; border-radius: 12px; font-size: 13px; font-weight: 600; border: 1px solid rgba(244, 63, 94, 0.3); width: 100%; margin-top: 5px; text-align: center; cursor:pointer;}
         .undo-btn:active { transform: scale(0.98); }
     </style>
 </head>
@@ -490,71 +504,85 @@
             </div>
 
             <div id="section-harcama" class="form-section">
-                <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')">← Geri Dön</span>
+                <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Geri Dön</span>
                 <div class="form-group"><label>Tarih ve Saat</label><input type="datetime-local" id="h-tarih" class="form-control"></div>
                 <div class="form-group"><label>İşlem Türü</label><select id="h-tur" class="form-control"><option value="Gider">Gider (Harcama)</option><option value="Gelir">Gelir</option></select></div>
-                <div class="form-group"><label>Kalem (Nereye harcadın?)</label><input type="text" id="h-kalem" class="form-control" placeholder="Örn: Market"></div>
+                <div class="form-group">
+                    <label>Kalem (Nereye harcadın?)</label>
+                    <input type="text" id="h-kalem" class="form-control" placeholder="Örn: Market">
+                    <div class="quick-tags">
+                        <span class="tag-pill" onclick="fillInput('h-kalem', 'Market')">Market</span>
+                        <span class="tag-pill" onclick="fillInput('h-kalem', 'Fatura')">Fatura</span>
+                        <span class="tag-pill" onclick="fillInput('h-kalem', 'Akaryakıt')">Akaryakıt</span>
+                        <span class="tag-pill" onclick="fillInput('h-kalem', 'Yemek')">Yemek</span>
+                        <span class="tag-pill" onclick="fillInput('h-kalem', 'Kişisel')">Kişisel</span>
+                    </div>
+                </div>
                 <div class="form-group"><label>Ödeme Yöntemi</label><select id="h-yontem" class="form-control"><option value="Kredi Kartı">Kredi Kartı</option><option value="Ziraat">Ziraat</option><option value="İsbankasi">İş Bankası</option><option value="Yapıkredi">YapıKredi</option><option value="Nakit">Nakit</option></select></div>
-                <div class="form-group"><label>Tutar (₺)</label><input type="number" step="0.01" id="h-tutar" class="form-control" placeholder="Örn: 1500.50"></div>
+                <div class="form-group"><label>Tutar (₺)</label><input type="text" inputmode="decimal" id="h-tutar" class="form-control" placeholder="Örn: 1500,50"></div>
                 <button class="btn-submit" id="btn-submit-harcama" onclick="submitHarcama()">Kaydet</button>
             </div>
 
             <div id="section-sabit-onayla" class="form-section">
-                <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')">← Geri Dön</span>
+                <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Geri Dön</span>
                 <div class="form-group"><label>Ödenecek Sabit Kural</label><select id="so-kural" class="form-control"></select></div>
                 <div class="form-group"><label>Paranın Çıktığı Yer</label><select id="so-yontem" class="form-control"><option value="Kredi Kartı">Kredi Kartı</option><option value="Ziraat">Ziraat</option><option value="İsbankasi">İş Bankası</option><option value="Yapıkredi">YapıKredi</option><option value="Nakit">Nakit</option></select></div>
                 <button class="btn-submit" id="btn-submit-sabit-onayla" onclick="submitSabitOnayla()">Ödemeyi Onayla</button>
             </div>
 
             <div id="section-borc-ode" class="form-section">
-                <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')">← Geri Dön</span>
+                <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Geri Dön</span>
                 <div class="form-group"><label>Tarih ve Saat</label><input type="datetime-local" id="bo-tarih" class="form-control"></div>
                 <div class="form-group"><label>Hangi Borcu Ödüyorsun?</label><input type="text" id="bo-isim" list="borclar-datalist" class="form-control" placeholder="Borç adı..."></div>
-                <div class="form-group"><label>Ödenen Tutar (₺)</label><input type="number" step="0.01" id="bo-tutar" class="form-control"></div>
+                <div class="form-group"><label>Ödenen Tutar (₺)</label><input type="text" inputmode="decimal" id="bo-tutar" class="form-control" placeholder="Örn: 500"></div>
                 <div class="form-group"><label>Paranın Çıktığı Yer</label><select id="bo-yontem" class="form-control"><option value="Ziraat">Ziraat</option><option value="İsbankasi">İş Bankası</option><option value="Yapıkredi">YapıKredi</option><option value="Nakit">Nakit</option></select></div>
                 <button class="btn-submit" id="btn-submit-borc-ode" onclick="submitBorcOde()">Borcu Öde</button>
             </div>
 
             <div id="section-transfer" class="form-section">
-                <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')">← Geri Dön</span>
+                <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Geri Dön</span>
                 <div class="form-group"><label>Tarih ve Saat</label><input type="datetime-local" id="t-tarih" class="form-control"></div>
-                <div class="form-group"><label>Çıkış Yapılan Hesap (Gönderen)</label><select id="t-cikis" class="form-control"><option value="İsbankasi">İş Bankası</option><option value="Ziraat">Ziraat</option><option value="Yapıkredi">YapıKredi</option><option value="Nakit">Nakit</option><option value="Kredi Kartı">Kredi Kartı Nakit Avans</option></select></div>
-                <div class="form-group"><label>Giriş Yapılan Hesap (Alan)</label><select id="t-giris" class="form-control"><option value="Ziraat">Ziraat</option><option value="İsbankasi">İş Bankası</option><option value="Yapıkredi">YapıKredi</option><option value="Nakit">Nakit</option></select></div>
-                <div class="form-group"><label>Transfer Tutarı (₺)</label><input type="number" step="0.01" id="t-tutar" class="form-control"></div>
+                <div class="form-group" style="position:relative;">
+                    <label>Çıkış Yapılan (Gönderen)</label>
+                    <select id="t-cikis" class="form-control"><option value="İsbankasi">İş Bankası</option><option value="Ziraat">Ziraat</option><option value="Yapıkredi">YapıKredi</option><option value="Nakit">Nakit</option><option value="Kredi Kartı">Kredi Kartı Nakit Avans</option></select>
+                    <button class="swap-btn" onclick="swapTransfer()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 10v12"/><path d="M15 10v12"/><path d="m3 14 4-4 4 4"/><path d="m19 14-4-4-4 4"/></svg></button>
+                </div>
+                <div class="form-group"><label>Giriş Yapılan (Alan)</label><select id="t-giris" class="form-control"><option value="Ziraat">Ziraat</option><option value="İsbankasi">İş Bankası</option><option value="Yapıkredi">YapıKredi</option><option value="Nakit">Nakit</option></select></div>
+                <div class="form-group"><label>Transfer Tutarı (₺)</label><input type="text" inputmode="decimal" id="t-tutar" class="form-control" placeholder="Örn: 2500"></div>
                 <button class="btn-submit" id="btn-submit-transfer" onclick="submitTransfer()">Transfer Yap</button>
             </div>
 
             <div id="section-borc-guncelle" class="form-section">
-                <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')">← Geri Dön</span>
+                <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Geri Dön</span>
                 <div class="form-group"><label>Borç Adı</label><input type="text" id="bg-isim" list="borclar-datalist" class="form-control" placeholder="Kime / Nereye borçlusun?"></div>
-                <div class="form-group"><label>Yeni Kalan Tutar (₺)</label><input type="number" step="0.01" id="bg-tutar" class="form-control"></div>
+                <div class="form-group"><label>Yeni Kalan Tutar (₺)</label><input type="text" inputmode="decimal" id="bg-tutar" class="form-control"></div>
                 <button class="btn-submit" id="btn-submit-borc-guncelle" onclick="submitBorcGuncelle()">Borcu Güncelle</button>
             </div>
 
             <div id="section-yeni-sabit" class="form-section">
-                <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')">← Geri Dön</span>
+                <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Geri Dön</span>
                 <div class="form-group"><label>Tür</label><select id="ys-tur" class="form-control"><option value="Gider">Gider</option><option value="Gelir">Gelir</option></select></div>
                 <div class="form-group"><label>Sabit Kalem Adı</label><input type="text" id="ys-kalem" class="form-control" placeholder="Örn: Kira, Netflix"></div>
                 <div class="form-group"><label>Ödeme Yöntemi</label><select id="ys-yontem" class="form-control"><option value="Kredi Kartı">Kredi Kartı</option><option value="Ziraat">Ziraat</option><option value="İsbankasi">İş Bankası</option><option value="Yapıkredi">YapıKredi</option></select></div>
-                <div class="form-group"><label>Tutar (₺)</label><input type="number" step="0.01" id="ys-tutar" class="form-control"></div>
+                <div class="form-group"><label>Tutar (₺)</label><input type="text" inputmode="decimal" id="ys-tutar" class="form-control"></div>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                    <div class="form-group"><label>Ayın Kaçı?</label><input type="number" id="ys-gun" class="form-control" placeholder="1-31"></div>
+                    <div class="form-group"><label>Ayın Kaçı?</label><input type="text" inputmode="numeric" id="ys-gun" class="form-control" placeholder="1-31"></div>
                     <div class="form-group"><label>Kaç Ay Sürecek?</label><input type="text" id="ys-sure" class="form-control" placeholder="Sayı veya Süresiz"></div>
                 </div>
                 <button class="btn-submit" id="btn-submit-yeni-sabit" onclick="submitYeniSabit()">Sabit Ekle</button>
             </div>
 
             <div id="section-sabit-guncelle" class="form-section">
-                <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')">← Geri Dön</span>
+                <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Geri Dön</span>
                 <div class="form-group"><label>Güncellenecek Kural</label><select id="sg-kural" class="form-control"></select></div>
-                <div class="form-group"><label>Yeni Tutar Ne Kadar? (₺) <span style="font-size:11px; font-weight:normal; color:var(--rose);">(İptal için 0 yazın)</span></label><input type="number" step="0.01" id="sg-tutar" class="form-control"></div>
+                <div class="form-group"><label>Yeni Tutar Ne Kadar? (₺) <span style="font-size:11px; font-weight:normal; color:var(--rose);">(İptal için 0 yazın)</span></label><input type="text" inputmode="decimal" id="sg-tutar" class="form-control"></div>
                 <button class="btn-submit" id="btn-submit-sabit-guncelle" onclick="submitSabitGuncelle()">Güncelle / İptal Et</button>
             </div>
 
             <div id="section-varlik-guncelle" class="form-section">
-                <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')">← Geri Dön</span>
+                <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Geri Dön</span>
                 <div class="form-group"><label>Varlık Adı</label><input type="text" id="vg-isim" list="varliklar-datalist" class="form-control" placeholder="Örn: Ev, Araba"></div>
-                <div class="form-group"><label>Güncel Değer (₺)</label><input type="number" step="0.01" id="vg-deger" class="form-control" placeholder="Sıfırlamak için 0"></div>
+                <div class="form-group"><label>Güncel Değer (₺)</label><input type="text" inputmode="decimal" id="vg-deger" class="form-control" placeholder="Sıfırlamak için 0"></div>
                 <button class="btn-submit" id="btn-submit-varlik-guncelle" onclick="submitVarlikGuncelle()">Varlığı Güncelle</button>
             </div>
 
@@ -570,8 +598,11 @@
         const EYE_OPEN = `<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>`;
         const EYE_CLOSED = `<path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/>`;
 
+        // Haptik (Titreşim) Eklentisi
+        function vibe() { if (navigator.vibrate) navigator.vibrate(40); }
+
         function checkPrivacyState() { if (localStorage.getItem('privacyMode') === "1") { document.body.classList.add('privacy-mode'); document.getElementById('privacy-icon').innerHTML = EYE_CLOSED; } }
-        function togglePrivacy(e) { if(e) e.stopPropagation(); const body = document.body; body.classList.toggle('privacy-mode'); const isPrivacy = body.classList.contains('privacy-mode'); localStorage.setItem('privacyMode', isPrivacy ? "1" : "0"); document.getElementById('privacy-icon').innerHTML = isPrivacy ? EYE_CLOSED : EYE_OPEN; }
+        function togglePrivacy(e) { if(e) e.stopPropagation(); vibe(); const body = document.body; body.classList.toggle('privacy-mode'); const isPrivacy = body.classList.contains('privacy-mode'); localStorage.setItem('privacyMode', isPrivacy ? "1" : "0"); document.getElementById('privacy-icon').innerHTML = isPrivacy ? EYE_CLOSED : EYE_OPEN; }
         function initAccordions() { document.querySelectorAll('.accordion').forEach(el => { if (el.id && localStorage.getItem(el.id) === "1") el.classList.add("collapsed"); }); checkPrivacyState(); }
         document.addEventListener("DOMContentLoaded", initAccordions);
         function toggleAccordion(element) { element.classList.toggle("collapsed"); if(element.id) { localStorage.setItem(element.id, element.classList.contains("collapsed") ? "1" : "0"); } }
@@ -580,7 +611,7 @@
         let touchStart = 0; const pullIndicator = document.getElementById('pull-indicator');
         document.addEventListener('touchstart', e => { if (window.scrollY <= 0 && !document.getElementById('action-modal').classList.contains('active')) touchStart = e.touches[0].pageY; }, {passive: true});
         document.addEventListener('touchmove', e => { if (window.scrollY <= 0 && touchStart > 0) { const diff = e.touches[0].pageY - touchStart; if (diff > 0) { const h = Math.min(diff * 0.4, 60); pullIndicator.style.height = h + 'px'; if (h > 50) pullIndicator.innerHTML = '<span class="spinner"></span> Bırakın güncellensin'; else pullIndicator.innerHTML = 'Aşağı çek...'; } } }, {passive: true});
-        document.addEventListener('touchend', async e => { if (parseInt(pullIndicator.style.height) > 50) { pullIndicator.innerHTML = '<span class="spinner"></span> Güncelleniyor...'; await verileriCek(); } pullIndicator.style.height = '0px'; touchStart = 0; });
+        document.addEventListener('touchend', async e => { if (parseInt(pullIndicator.style.height) > 50) { pullIndicator.innerHTML = '<span class="spinner"></span> Güncelleniyor...'; vibe(); await verileriCek(); } pullIndicator.style.height = '0px'; touchStart = 0; });
 
         function formatTL(sayi) { if (isNaN(sayi) || sayi === null || sayi === "") return `<span style="font-size:0.7em; opacity:0.6; font-weight:600;">₺</span>0<span style="font-size:0.7em; opacity:0.6; font-weight:600;">,00</span>`; let formatted = new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(sayi); let parts = formatted.split(','); return `<span style="font-size:0.75em; opacity:0.75; font-weight:600; margin-right:2px;">₺</span>${parts[0]}<span style="font-size:0.75em; opacity:0.75; font-weight:600;">,${parts[1]}</span>`; }
         function formatUSD(sayi) { if (isNaN(sayi) || sayi === null || sayi === "") return `<span style="font-size:0.8em; opacity:0.7; font-weight:600; margin-right:2px;">$</span>0<span style="font-size:0.8em; opacity:0.7; font-weight:600;">,00</span>`; let formatted = new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(sayi); let parts = formatted.split(','); return `<span style="font-size:0.8em; opacity:0.7; font-weight:600; margin-right:2px;">$</span>${parts[0]}<span style="font-size:0.8em; opacity:0.7; font-weight:600;">,${parts[1]}</span>`; }
@@ -611,23 +642,18 @@
             el.innerHTML = `<span style="color:${color}; background:color-mix(in srgb, ${color} 15%, transparent); padding: 3px 6px; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); border: 1px solid color-mix(in srgb, ${color} 30%, transparent);">${icon} ${symbol}${formattedDiff}</span>`;
         }
 
-        // --- YENİ: TARİH FORMATLAMA SİSTEMİ ---
-        // Bilgisayardan gelen zamanı Sheets formatına ("DD.MM.YYYY HH:mm") çevirir.
         function getFormattedDateTime(inputId) {
-            const val = document.getElementById(inputId).value;
-            if(!val) return "";
-            const d = new Date(val);
+            const val = document.getElementById(inputId).value; if(!val) return ""; const d = new Date(val);
             return `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth()+1).padStart(2, '0')}.${d.getFullYear()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
         }
 
-        // HTML5 Date picker'ı o anki gerçek yerel saatle doldurur
         function setNow(inputId) {
-            const now = new Date();
-            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            const now = new Date(); now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
             document.getElementById(inputId).value = now.toISOString().slice(0,16);
         }
 
         function toggleModal() {
+            vibe();
             const modal = document.getElementById('action-modal'); const btn = document.getElementById('fab-btn');
             modal.classList.toggle('active'); btn.classList.toggle('open');
             if(modal.classList.contains('active')) showSection('section-menu', 'Ne yapmak istersin?');
@@ -636,42 +662,68 @@
         function closeModalOnOutside(e) { if(e.target.id === 'action-modal') toggleModal(); }
 
         function showSection(id, title) {
+            vibe();
             document.querySelectorAll('.form-section').forEach(el => el.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             document.getElementById('modal-title').innerText = title;
-            // Input Temizliği ve Saati Otomatik Doldurma
-            if(id === 'section-harcama') { document.getElementById('h-kalem').value = ''; document.getElementById('h-tutar').value = ''; setNow('h-tarih'); }
-            if(id === 'section-transfer') { document.getElementById('t-tutar').value = ''; setNow('t-tarih'); }
-            if(id === 'section-borc-ode') { document.getElementById('bo-isim').value = ''; document.getElementById('bo-tutar').value = ''; setNow('bo-tarih'); }
-            if(id === 'section-borc-guncelle') { document.getElementById('bg-isim').value = ''; document.getElementById('bg-tutar').value = ''; }
-            if(id === 'section-yeni-sabit') { document.getElementById('ys-kalem').value = ''; document.getElementById('ys-tutar').value = ''; document.getElementById('ys-gun').value = ''; document.getElementById('ys-sure').value = ''; }
-            if(id === 'section-sabit-guncelle') { document.getElementById('sg-tutar').value = ''; }
-            if(id === 'section-varlik-guncelle') { document.getElementById('vg-isim').value = ''; document.getElementById('vg-deger').value = ''; }
+            // Tüm inputları ve hata classlarını temizle
+            document.querySelectorAll('.form-control').forEach(el => { el.value = ''; el.classList.remove('error'); });
+            
+            if(id === 'section-harcama') setNow('h-tarih');
+            if(id === 'section-transfer') setNow('t-tarih');
+            if(id === 'section-borc-ode') setNow('bo-tarih');
+            
+            // Seçim kutularının varsayılan değerlerini ver
+            if(document.getElementById('h-tur')) document.getElementById('h-tur').value = "Gider";
+            if(document.getElementById('h-yontem')) document.getElementById('h-yontem').value = "Kredi Kartı";
+            if(document.getElementById('t-cikis')) document.getElementById('t-cikis').value = "İsbankasi";
+            if(document.getElementById('t-giris')) document.getElementById('t-giris').value = "Ziraat";
         }
 
+        function fillInput(id, text) { vibe(); document.getElementById(id).value = text; }
+
+        function swapTransfer() {
+            vibe();
+            const c = document.getElementById('t-cikis'); const g = document.getElementById('t-giris');
+            const temp = c.value; c.value = g.value; g.value = temp;
+        }
+
+        function markError(id) {
+            const el = document.getElementById(id);
+            el.classList.add('error');
+            setTimeout(() => el.classList.remove('error'), 400);
+        }
+
+        // BAĞLANTI HATASINI ÇÖZEN EN KRİTİK GÜNCELLEME (HEADERS KALDIRILDI)
         async function apiIstekAt(payload, buttonId) {
             const btn = document.getElementById(buttonId); const originalText = btn.innerHTML;
-            btn.innerHTML = `<span class="spinner"></span> İşleniyor...`; btn.disabled = true;
+            btn.innerHTML = `<span class="spinner"></span> İşleniyor...`; btn.disabled = true; vibe();
             try {
-                const response = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(payload) });
+                const response = await fetch(API_URL, { 
+                    method: 'POST', 
+                    body: JSON.stringify(payload) // CORS preflight'ı önlemek için headers silindi
+                });
                 const result = await response.json();
                 if(result.status === "success") {
+                    vibe();
                     btn.innerHTML = `✓ Başarılı!`; btn.style.background = "var(--emerald)";
-                    setTimeout(() => { toggleModal(); verileriCek(); btn.innerHTML = originalText; btn.style.background = ""; btn.disabled = false; }, 1000);
+                    setTimeout(() => { toggleModal(); verileriCek(); btn.innerHTML = originalText; btn.style.background = ""; btn.disabled = false; }, 800);
                 } else { alert("Hata: " + result.message); btn.innerHTML = originalText; btn.disabled = false; }
-            } catch (error) { alert("Bağlantı hatası!"); btn.innerHTML = originalText; btn.disabled = false; }
+            } catch (error) { 
+                console.error(error); alert("Bağlantı sorunu! (Script yayın URL'sini kontrol edin)"); btn.innerHTML = originalText; btn.disabled = false; 
+            }
         }
 
-        // 1. Yeni Harcama/Gelir
         function submitHarcama() {
             const kalem = document.getElementById('h-kalem').value.trim(), tutar = document.getElementById('h-tutar').value;
-            if(!kalem || !tutar) return alert("Lütfen kalem ve tutar girin.");
+            let err = false;
+            if(!kalem) { markError('h-kalem'); err = true; } if(!tutar) { markError('h-tutar'); err = true; }
+            if(err) return;
             apiIstekAt({ action: "yeni_hareket", tur: document.getElementById('h-tur').value, kategori: "Değişken", kalem: kalem, yontem: document.getElementById('h-yontem').value, tutar: tutar, tarih: getFormattedDateTime('h-tarih') }, 'btn-submit-harcama');
         }
         
-        // 2 & 7. API'den listeyi çekerek menü açan fonksiyon
         async function loadSabitlerAndShow(sectionId, selectId, title) {
-            const ev = event.currentTarget; const orig = ev.innerHTML; ev.innerHTML = `<span class="spinner"></span>...`;
+            const ev = event.currentTarget; const orig = ev.innerHTML; ev.innerHTML = `<span class="spinner"></span>...`; vibe();
             try {
                 const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: "sabitleri_getir" }) });
                 const result = await res.json();
@@ -685,62 +737,55 @@
             ev.innerHTML = orig;
         }
         
-        // 2. Sabit Onayla
         function submitSabitOnayla() {
             const kuralSatir = document.getElementById('so-kural').value;
-            if(!kuralSatir) return alert("Onaylanacak kural yok.");
+            if(!kuralSatir) { markError('so-kural'); return; }
             apiIstekAt({ action: "sabit_onayla", satir: kuralSatir, kullanilan_yontem: document.getElementById('so-yontem').value }, 'btn-submit-sabit-onayla');
         }
         
-        // 3. Borç Öde
         function submitBorcOde() {
             const isim = document.getElementById('bo-isim').value.trim(), tutar = document.getElementById('bo-tutar').value;
-            if(!isim || !tutar) return alert("Boş alan bırakmayın.");
+            let err = false; if(!isim) { markError('bo-isim'); err = true; } if(!tutar) { markError('bo-tutar'); err = true; } if(err) return;
             apiIstekAt({ action: "borc_ode", borc_adi: isim, tutar: tutar, yontem: document.getElementById('bo-yontem').value, tarih: getFormattedDateTime('bo-tarih') }, 'btn-submit-borc-ode');
         }
         
-        // 4. Transfer Yap
         function submitTransfer() {
             const cikis = document.getElementById('t-cikis').value, giris = document.getElementById('t-giris').value, tutar = document.getElementById('t-tutar').value;
-            if(!tutar || cikis === giris) return alert("Geçerli tutar ve farklı hesaplar seçin.");
+            if(!tutar) return markError('t-tutar');
+            if(cikis === giris) { markError('t-cikis'); markError('t-giris'); alert("Farklı hesaplar seçin."); return; }
             apiIstekAt({ action: "transfer_yap", transfer_yeri: giris, yontem: cikis, tutar: tutar, tarih: getFormattedDateTime('t-tarih') }, 'btn-submit-transfer');
         }
         
-        // 5. Borç Güncelle
         function submitBorcGuncelle() {
             const isim = document.getElementById('bg-isim').value.trim(), tutar = document.getElementById('bg-tutar').value;
-            if(!isim || tutar === "") return alert("İsim ve yeni tutarı girin.");
+            let err = false; if(!isim) { markError('bg-isim'); err = true; } if(tutar === "") { markError('bg-tutar'); err = true; } if(err) return;
             apiIstekAt({ action: "borc_guncelle", borc_adi: isim, tutar: tutar }, 'btn-submit-borc-guncelle');
         }
         
-        // 6. Yeni Sabit Ekle
         function submitYeniSabit() {
             const kalem = document.getElementById('ys-kalem').value.trim(), tutar = document.getElementById('ys-tutar').value, gun = document.getElementById('ys-gun').value, sure = document.getElementById('ys-sure').value;
-            if(!kalem || !tutar || !gun || !sure) return alert("Tüm alanları doldurun.");
+            let err = false; if(!kalem) {markError('ys-kalem'); err=true;} if(!tutar) {markError('ys-tutar'); err=true;} if(!gun) {markError('ys-gun'); err=true;} if(!sure) {markError('ys-sure'); err=true;} if(err) return;
             apiIstekAt({ action: "yeni_sabit", tur: document.getElementById('ys-tur').value, kalem: kalem, yontem: document.getElementById('ys-yontem').value, tutar: tutar, odeme_gunu: gun, kalan_ay: sure }, 'btn-submit-yeni-sabit');
         }
         
-        // 7. Sabit Güncelle
         function submitSabitGuncelle() {
             const kuralSatir = document.getElementById('sg-kural').value, tutar = document.getElementById('sg-tutar').value;
-            if(!kuralSatir || tutar === "") return alert("Kural ve yeni tutar (iptal için 0) girin.");
+            let err = false; if(!kuralSatir) {markError('sg-kural'); err=true;} if(tutar === "") {markError('sg-tutar'); err=true;} if(err) return;
             apiIstekAt({ action: "sabit_guncelle", satir: kuralSatir, yeni_tutar: tutar }, 'btn-submit-sabit-guncelle');
         }
         
-        // 8. Varlık Güncelle
         function submitVarlikGuncelle() {
             const isim = document.getElementById('vg-isim').value.trim(), deger = document.getElementById('vg-deger').value;
-            if(!isim || deger === "") return alert("Varlık adı ve değeri (sıfırlamak için 0) girin.");
+            let err = false; if(!isim) {markError('vg-isim'); err=true;} if(deger === "") {markError('vg-deger'); err=true;} if(err) return;
             apiIstekAt({ action: "varlik_guncelle", varlik_adi: isim, deger: deger }, 'btn-submit-varlik-guncelle');
         }
         
-        // 9. Geri Al
         async function geriAl() {
-            if(!confirm("Emin misin? Son işlem tamamen silinecek.")) return;
+            vibe(); if(!confirm("Emin misin? Son işlem tamamen silinecek.")) return;
             const btn = document.querySelector('.undo-btn'); const orig = btn.innerHTML; btn.innerHTML = `<span class="spinner"></span>...`;
             try {
                 const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: "geri_al" }) }); const r = await res.json();
-                if(r.status === "success") { btn.innerHTML = "✓ Geri Alındı"; setTimeout(() => { toggleModal(); verileriCek(); btn.innerHTML = orig; }, 1000); }
+                if(r.status === "success") { vibe(); btn.innerHTML = "✓ Geri Alındı"; setTimeout(() => { toggleModal(); verileriCek(); btn.innerHTML = orig; }, 1000); }
             } catch(e) { btn.innerHTML = orig; }
         }
 
@@ -758,7 +803,7 @@
                     animateValue("val-net-servet", window.currentStats.netServet, 1200);
                     animateValueUSD("val-net-servet-usd", window.currentStats.netServetUSD, 1200);
 
-                    // --- Form Datalistlerini Doldurma (Borçlar ve Varlıklar Otomatik Tamamlansın) ---
+                    // Form Datalistlerini Doldurma
                     let borcDL = document.getElementById('borclar-datalist'); let varlikDL = document.getElementById('varliklar-datalist');
                     borcDL.innerHTML = ''; varlikDL.innerHTML = '';
                     if(data.borclarListe) data.borclarListe.forEach(b => borcDL.innerHTML += `<option value="${b.isim}">`);
