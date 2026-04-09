@@ -236,8 +236,8 @@
         }
         .undo-btn:active { transform: scale(0.98); }
 
-        /* KAYMA SORUNU İÇİN PADDING EKLENDİ VE ARTIRILDI (250px) */
-        .form-section { display: none; animation: fadeIn 0.3s; padding-bottom: 250px; }
+        /* KAYMA SORUNU İÇİN PADDING ARTIRILDI */
+        .form-section { display: none; animation: fadeIn 0.3s; padding-bottom: 180px; }
         .form-section.active { display: block; }
         
         @keyframes fadeIn { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
@@ -1273,9 +1273,39 @@
             const optionsDiv = document.createElement('div');
             optionsDiv.className = 'custom-options custom-scrollbar';
             
-            // YENİ: Kaydırma çakışmasını engelleme (Scroll Bleed)
-            optionsDiv.addEventListener('touchmove', (e) => e.stopPropagation(), { passive: true });
-            optionsDiv.addEventListener('wheel', (e) => e.stopPropagation(), { passive: true });
+            // YENİ: Kaydırma çakışmasını (Scroll Bleed) akıllıca engelleme (Kesilme yapmaz)
+            let touchStartY = 0;
+            optionsDiv.addEventListener('touchstart', (e) => {
+                touchStartY = e.touches[0].pageY;
+            }, { passive: true });
+
+            optionsDiv.addEventListener('touchmove', (e) => {
+                const touchY = e.touches[0].pageY;
+                const touchDiff = touchY - touchStartY;
+                const isScrollingUp = touchDiff > 0; // Parmak aşağı iniyor, içerik yukarı
+                const isScrollingDown = touchDiff < 0; // Parmak yukarı çıkıyor, içerik aşağı
+
+                const isAtTop = optionsDiv.scrollTop === 0;
+                const isAtBottom = optionsDiv.scrollHeight - optionsDiv.scrollTop <= optionsDiv.clientHeight + 1;
+
+                // Sınırlara ulaşıldığında Modal'ın kaymasını engelle
+                if ((isScrollingUp && isAtTop) || (isScrollingDown && isAtBottom)) {
+                    e.preventDefault();
+                } else {
+                    e.stopPropagation();
+                }
+                touchStartY = touchY;
+            }, { passive: false });
+
+            optionsDiv.addEventListener('wheel', (e) => {
+                const isAtTop = optionsDiv.scrollTop === 0;
+                const isAtBottom = optionsDiv.scrollHeight - optionsDiv.scrollTop <= optionsDiv.clientHeight + 1;
+                if ((e.deltaY < 0 && isAtTop) || (e.deltaY > 0 && isAtBottom)) {
+                    e.preventDefault();
+                } else {
+                    e.stopPropagation();
+                }
+            }, { passive: false });
 
             Array.from(select.options).forEach(option => {
                 const optDiv = document.createElement('div');
@@ -1290,11 +1320,6 @@
                     optionsDiv.querySelectorAll('.custom-option').forEach(o => o.classList.remove('selected'));
                     optDiv.classList.add('selected');
                     wrapper.classList.remove('open');
-                    
-                    // YENİ: Seçim yapıldığında pencere kaydırmasını geri aç
-                    const mc = document.querySelector('.modal-content');
-                    if(mc) mc.style.overflowY = 'auto';
-
                     select.dispatchEvent(new Event('change')); 
                 });
                 optionsDiv.appendChild(optDiv);
@@ -1307,11 +1332,15 @@
                     if(w !== wrapper) w.classList.remove('open');
                 });
                 wrapper.classList.toggle('open');
-
-                // YENİ: Açılır liste açıldığında ana pencerenin kaymasını kilitler
-                const mc = document.querySelector('.modal-content');
-                if(mc) {
-                    mc.style.overflowY = wrapper.classList.contains('open') ? 'hidden' : 'auto';
+                
+                // Menü açıldığında hafifçe kaydırarak listeyi ekrana oturt (Kesilmeyi önler)
+                if(wrapper.classList.contains('open')) {
+                    setTimeout(() => {
+                        const rect = optionsDiv.getBoundingClientRect();
+                        if (rect.bottom > window.innerHeight) {
+                            optionsDiv.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                        }
+                    }, 50);
                 }
             });
             
@@ -1329,9 +1358,6 @@
             
             document.addEventListener('click', () => {
                 document.querySelectorAll('.custom-select-wrapper.open').forEach(w => w.classList.remove('open'));
-                // YENİ: Ekranda boş bir yere tıklanırsa pencere kaydırmasını geri aç
-                const mc = document.querySelector('.modal-content');
-                if(mc) mc.style.overflowY = 'auto';
             });
         }
         initCustomSelects();
