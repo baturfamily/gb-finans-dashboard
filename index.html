@@ -1188,6 +1188,23 @@
             });
         }
         initCustomSelects();
+
+        // iOS Klavye Oklarını (< >) Gizleme / Devre Dışı Bırakma Motoru
+        const formInputs = document.querySelectorAll('input.form-control');
+        formInputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                // Odaklanılan dışındaki tüm kutuları klavye sırasından çıkar
+                formInputs.forEach(otherInput => {
+                    if (otherInput !== input) otherInput.setAttribute('tabindex', '-1');
+                });
+            });
+            input.addEventListener('blur', () => {
+                // Odak kaybolunca her şeyi normale döndür
+                formInputs.forEach(otherInput => {
+                    otherInput.removeAttribute('tabindex');
+                });
+            });
+        });
     </script>
 </body>
 </html>
