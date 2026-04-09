@@ -36,13 +36,12 @@
             background-image: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.12) 0%, transparent 60%);
             background-attachment: fixed;
             color: var(--text-main); 
-            padding-bottom: calc(env(safe-area-inset-bottom) + 100px); /* Buton için boşluk */
+            padding-bottom: calc(env(safe-area-inset-bottom) + 100px); 
             overflow-y: auto; 
             overscroll-behavior-y: contain; 
         }
 
         .tabular-nums { font-variant-numeric: tabular-nums; }
-
         .spinner { border: 2px solid rgba(255,255,255,0.1); border-left-color: var(--text-main); border-radius: 50%; width: 14px; height: 14px; animation: spin 1s linear infinite; display: inline-block; margin-right: 6px; vertical-align: middle; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
@@ -92,26 +91,15 @@
 
         .sensitive-data { transition: all 0.2s ease; }
         .privacy-mode .sensitive-data {
-            color: transparent !important;
-            text-shadow: none !important;
-            background-color: rgba(148, 163, 184, 0.15) !important;
-            border-radius: 6px !important;
-            display: inline-block;
-            background-image: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent) !important;
-            background-size: 200% 100% !important;
-            animation: skeleton-shimmer 2.5s infinite linear !important;
-            border: none !important;
-            box-shadow: none !important;
+            color: transparent !important; text-shadow: none !important; background-color: rgba(148, 163, 184, 0.15) !important;
+            border-radius: 6px !important; display: inline-block; background-image: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent) !important;
+            background-size: 200% 100% !important; animation: skeleton-shimmer 2.5s infinite linear !important; border: none !important; box-shadow: none !important;
         }
         .privacy-mode .sensitive-data * { opacity: 0 !important; }
         .privacy-mode canvas.sensitive-data { filter: blur(20px) grayscale(50%); opacity: 0.3; background: none !important; animation: none !important; }
         @keyframes skeleton-shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
 
-        .summary-grid {
-            display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-            background: rgba(0,0,0,0.2); border-radius: 18px;
-            border: 1px solid rgba(255,255,255,0.04); overflow: hidden;
-        }
+        .summary-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); background: rgba(0,0,0,0.2); border-radius: 18px; border: 1px solid rgba(255,255,255,0.04); overflow: hidden; }
         .summary-item { padding: 18px 12px; display: flex; flex-direction: column; justify-content: center; min-width: 0; }
         .summary-item.br-right { border-right: 1px solid rgba(255,255,255,0.05); }
         .summary-item.br-bottom { border-bottom: 1px solid rgba(255,255,255,0.05); }
@@ -168,7 +156,7 @@
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
 
-        /* YENİ: Floating Action Button (FAB) ve Modal Stilleri */
+        /* FAB ve Modal Stilleri */
         .fab-btn {
             position: fixed; bottom: calc(env(safe-area-inset-bottom) + 20px); right: 20px; z-index: 999;
             width: 60px; height: 60px; border-radius: 30px; background: var(--brand-gradient);
@@ -204,11 +192,11 @@
         .action-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
         .action-card {
             background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);
-            padding: 16px; border-radius: 16px; text-align: center; cursor: pointer; transition: all 0.2s;
+            padding: 14px; border-radius: 16px; text-align: center; cursor: pointer; transition: all 0.2s;
         }
         .action-card:active { background: rgba(255,255,255,0.08); transform: scale(0.98); }
-        .action-card svg { margin-bottom: 8px; color: var(--blue); }
-        .action-card span { display: block; font-size: 13px; font-weight: 600; color: #e2e8f0; }
+        .action-card svg { margin-bottom: 6px; color: var(--blue); }
+        .action-card span { display: block; font-size: 12px; font-weight: 600; color: #e2e8f0; }
 
         .form-group { margin-bottom: 16px; text-align: left; }
         .form-group label { display: block; font-size: 13px; color: var(--text-muted); font-weight: 600; margin-bottom: 6px; }
@@ -232,25 +220,25 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .back-link { font-size: 13px; color: var(--text-muted); text-decoration: underline; cursor: pointer; margin-bottom: 15px; display: inline-block; }
-
-        /* Kısayol butonları onayla vs. */
         .inline-action-btn { background: rgba(16, 185, 129, 0.15); color: var(--emerald); border: 1px solid rgba(16, 185, 129, 0.3); padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; margin-left: 8px;}
         .inline-action-btn:active { background: rgba(16, 185, 129, 0.3); }
-        .undo-btn { background: rgba(244, 63, 94, 0.15); color: var(--rose); padding: 8px 16px; border-radius: 12px; font-size: 13px; font-weight: 600; border: 1px solid rgba(244, 63, 94, 0.3); width: 100%; margin-top: 10px; text-align: center; cursor:pointer;}
+        .undo-btn { background: rgba(244, 63, 94, 0.15); color: var(--rose); padding: 10px 16px; border-radius: 12px; font-size: 13px; font-weight: 600; border: 1px solid rgba(244, 63, 94, 0.3); width: 100%; margin-top: 5px; text-align: center; cursor:pointer;}
+        .undo-btn:active { transform: scale(0.98); }
     </style>
 </head>
 <body>
 
     <div id="pull-indicator">Aşağı çek...</div>
 
+    <datalist id="borclar-datalist"></datalist>
+    <datalist id="varliklar-datalist"></datalist>
+
     <div class="top-container">
         <div class="header-section">
             <div class="header-top-row">
                 <h1>Finans Merkezi</h1>
                 <div class="privacy-btn" onclick="togglePrivacy(event)">
-                    <svg id="privacy-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>
-                    </svg>
+                    <svg id="privacy-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
                 </div>
             </div>
             <div id="header-date" style="font-size: 14px; font-weight: 500; color: #cbd5e1; margin-bottom: 2px;"></div>
@@ -278,11 +266,9 @@
                 <h3 style="color: rgba(255,255,255,0.7);">Net Servet</h3>
                 <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
-
             <div class="accordion-content">
                 <div class="amount-large tabular-nums sensitive-data" id="val-net-servet"><span style="font-size:0.7em; opacity:0.6;">₺</span> 0<span style="font-size:0.7em; opacity:0.6;">,00</span></div>
                 <div class="trend-box tabular-nums sensitive-data" id="trend-net-servet" style="margin-top:14px;"></div>
-                
                 <div class="sensitive-data" style="margin-top: 16px; padding-top: 12px; border-top: 1px dashed rgba(255,255,255,0.1); display: flex; flex-direction: column; align-items: center; gap: 6px;">
                     <div style="font-size: 11px; color: var(--text-muted); font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">Dolar Bazında Servet</div>
                     <div style="display: flex; align-items: center; gap: 10px;">
@@ -290,12 +276,10 @@
                         <div class="trend-box tabular-nums" id="trend-net-servet-usd" style="margin-top:0; font-size: 11px;"></div>
                     </div>
                 </div>
-
                 <div id="varlik-dagilimi-alani" class="sensitive-data" style="margin-top: 20px; width: 100%; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px; text-align: left;">
                     <div style="font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:12px; text-transform:uppercase; letter-spacing:0.5px;">Varlık Dağılımı</div>
                     <div id="varlik-listesi"></div>
                 </div>
-
                 <div id="borc-dagilimi-alani" class="sensitive-data" style="margin-top: 20px; width: 100%; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px; text-align: left;">
                     <div style="font-size:12px; font-weight:600; color:var(--rose); margin-bottom:12px; text-transform:uppercase; letter-spacing:0.5px;">Borç Dağılımı</div>
                     <div id="borc-listesi"></div>
@@ -305,76 +289,33 @@
 
         <div class="card accordion" id="acc-finansal-ozet">
             <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
-                <h3>
-                    <svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>
-                    Finansal Özet
-                </h3>
+                <h3><svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg> Finansal Özet</h3>
                 <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
-            
             <div class="accordion-content">
                 <div class="summary-grid">
-                    <div class="summary-item br-right br-bottom">
-                        <span class="summary-label">Kasa</span>
-                        <span class="summary-val text-green tabular-nums sensitive-data" id="val-kasa">₺ 0,00</span>
-                    </div>
-                    <div class="summary-item br-bottom">
-                        <span class="summary-label">Genel Borç</span>
-                        <span class="summary-val tabular-nums sensitive-data" id="val-borc">₺ 0,00</span>
-                        <div class="trend-box tabular-nums sensitive-data" id="trend-borc" style="font-size:11px; margin-top:6px;"></div>
-                    </div>
-                    <div class="summary-item br-right">
-                        <span class="summary-label" style="color:var(--rose);">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:5px;"><path d="M12 2c0 0-5 6.5-5 11a5 5 0 0 0 10 0c0-4.5-5-11-5-11Z"/><path d="M12 13a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"/></svg>
-                            Can Yakan
-                        </span>
-                        <span class="summary-val text-red tabular-nums sensitive-data" id="val-borc-acil">₺ 0,00</span>
-                        <div class="trend-box tabular-nums sensitive-data" id="trend-can-yakan" style="font-size:11px; margin-top:6px;"></div>
-                    </div>
-                    <div class="summary-item">
-                        <span class="summary-label">Planlı</span>
-                        <span class="summary-val text-gray tabular-nums sensitive-data" id="val-borc-planli" style="color:#cbd5e1;">₺ 0,00</span>
-                        <div class="trend-box tabular-nums sensitive-data" id="trend-planli" style="font-size:11px; margin-top:6px;"></div>
-                    </div>
+                    <div class="summary-item br-right br-bottom"><span class="summary-label">Kasa</span><span class="summary-val text-green tabular-nums sensitive-data" id="val-kasa">₺ 0,00</span></div>
+                    <div class="summary-item br-bottom"><span class="summary-label">Genel Borç</span><span class="summary-val tabular-nums sensitive-data" id="val-borc">₺ 0,00</span><div class="trend-box tabular-nums sensitive-data" id="trend-borc" style="font-size:11px; margin-top:6px;"></div></div>
+                    <div class="summary-item br-right"><span class="summary-label" style="color:var(--rose);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:5px;"><path d="M12 2c0 0-5 6.5-5 11a5 5 0 0 0 10 0c0-4.5-5-11-5-11Z"/><path d="M12 13a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"/></svg> Can Yakan</span><span class="summary-val text-red tabular-nums sensitive-data" id="val-borc-acil">₺ 0,00</span><div class="trend-box tabular-nums sensitive-data" id="trend-can-yakan" style="font-size:11px; margin-top:6px;"></div></div>
+                    <div class="summary-item"><span class="summary-label">Planlı</span><span class="summary-val text-gray tabular-nums sensitive-data" id="val-borc-planli" style="color:#cbd5e1;">₺ 0,00</span><div class="trend-box tabular-nums sensitive-data" id="trend-planli" style="font-size:11px; margin-top:6px;"></div></div>
                 </div>
             </div>
         </div>
 
         <div class="card accordion" id="acc-faiz-durumu">
             <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
-                <h3 style="color: var(--amber);">
-                    <svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                    Faiz Yükü & Analizi
-                </h3>
+                <h3 style="color: var(--amber);"><svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> Faiz Yükü & Analizi</h3>
                 <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
             <div class="accordion-content">
                 <div class="summary-grid">
-                    <div class="summary-item br-right br-bottom">
-                        <span class="summary-label" style="color:var(--amber);">Tahmini Yük (Bu Ay)</span>
-                        <span class="summary-val text-red tabular-nums sensitive-data" id="val-tahmini-faiz">₺ 0,00</span>
-                        <div class="trend-box tabular-nums sensitive-data" id="trend-faiz" style="font-size:11px; margin-top:6px;"></div>
-                    </div>
-                    <div class="summary-item br-bottom">
-                        <span class="summary-label" style="white-space: normal; line-height: 1.3; font-size: 12px; margin-bottom: 4px;">01.04.2026'dan İtibaren Toplam</span>
-                        <span class="summary-val tabular-nums sensitive-data" id="val-toplam-odenen-faiz" style="color:#cbd5e1;">₺ 0,00</span>
-                    </div>
-                    
+                    <div class="summary-item br-right br-bottom"><span class="summary-label" style="color:var(--amber);">Tahmini Yük (Bu Ay)</span><span class="summary-val text-red tabular-nums sensitive-data" id="val-tahmini-faiz">₺ 0,00</span><div class="trend-box tabular-nums sensitive-data" id="trend-faiz" style="font-size:11px; margin-top:6px;"></div></div>
+                    <div class="summary-item br-bottom"><span class="summary-label" style="white-space: normal; line-height: 1.3; font-size: 12px; margin-bottom: 4px;">01.04.2026'dan İtibaren Toplam</span><span class="summary-val tabular-nums sensitive-data" id="val-toplam-odenen-faiz" style="color:#cbd5e1;">₺ 0,00</span></div>
                     <div class="summary-item" style="grid-column: span 2; padding: 16px 12px 12px 12px;">
                         <span class="summary-label" style="margin-bottom: 12px; color:#e2e8f0; font-size:12px; text-transform:uppercase; letter-spacing:0.5px;">Bu Ay Gerçekleşen (Ödenen) Faizler</span>
-                        
-                        <div class="list-row" style="padding: 8px 0; border-bottom: 1px dashed rgba(255,255,255,0.05);">
-                            <span class="list-label" style="font-size:14px; color:var(--text-muted);">YapıKredi KMH</span>
-                            <span class="list-value tabular-nums text-red" style="font-size:15px;" id="val-faiz-yk">₺ 0,00</span>
-                        </div>
-                        <div class="list-row" style="padding: 8px 0; border-bottom: 1px dashed rgba(255,255,255,0.05);">
-                            <span class="list-label" style="font-size:14px; color:var(--text-muted);">İş Bankası KMH</span>
-                            <span class="list-value tabular-nums text-red" style="font-size:15px;" id="val-faiz-is">₺ 0,00</span>
-                        </div>
-                        <div class="list-row" style="padding: 8px 0; border: none;">
-                            <span class="list-label" style="font-size:14px; color:var(--text-muted);">Kredi Kartı Faizi</span>
-                            <span class="list-value tabular-nums text-red" style="font-size:15px;" id="val-faiz-kk">₺ 0,00</span>
-                        </div>
+                        <div class="list-row" style="padding: 8px 0; border-bottom: 1px dashed rgba(255,255,255,0.05);"><span class="list-label" style="font-size:14px; color:var(--text-muted);">YapıKredi KMH</span><span class="list-value tabular-nums text-red" style="font-size:15px;" id="val-faiz-yk">₺ 0,00</span></div>
+                        <div class="list-row" style="padding: 8px 0; border-bottom: 1px dashed rgba(255,255,255,0.05);"><span class="list-label" style="font-size:14px; color:var(--text-muted);">İş Bankası KMH</span><span class="list-value tabular-nums text-red" style="font-size:15px;" id="val-faiz-is">₺ 0,00</span></div>
+                        <div class="list-row" style="padding: 8px 0; border: none;"><span class="list-label" style="font-size:14px; color:var(--text-muted);">Kredi Kartı Faizi</span><span class="list-value tabular-nums text-red" style="font-size:15px;" id="val-faiz-kk">₺ 0,00</span></div>
                     </div>
                 </div>
             </div>
@@ -382,10 +323,7 @@
 
         <div class="card accordion" id="acc-bankalar">
             <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
-                <h3>
-                    <svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-                    Banka Hesaplarım
-                </h3>
+                <h3><svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg> Banka Hesaplarım</h3>
                 <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
             <div class="accordion-content sensitive-data" id="banka-listesi">
@@ -395,30 +333,19 @@
 
         <div class="card accordion" id="acc-kredi-karti">
             <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
-                <h3>
-                    <svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-                    Kredi Kartı Durumu
-                </h3>
+                <h3><svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> Kredi Kartı Durumu</h3>
                 <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
             <div class="accordion-content sensitive-data">
                 <div class="list-row" style="align-items:flex-start;">
                     <span class="list-label" style="margin-top:2px;">Toplam Borç</span>
-                    <div style="text-align:right;">
-                        <span class="list-value tabular-nums" id="val-kart-toplam" style="display:block;">₺ 0,00</span>
-                        <div class="trend-box tabular-nums sensitive-data" id="trend-kart" style="font-size:11px; margin-top:4px;"></div>
-                    </div>
+                    <div style="text-align:right;"><span class="list-value tabular-nums" id="val-kart-toplam" style="display:block;">₺ 0,00</span><div class="trend-box tabular-nums sensitive-data" id="trend-kart" style="font-size:11px; margin-top:4px;"></div></div>
                 </div>
-                
                 <div class="list-row" style="border-bottom: 1px dashed rgba(255,255,255,0.05); padding-bottom: 14px; margin-bottom: 6px;">
                     <div style="display:flex; flex-direction:column; width:100%;">
-                        <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
-                            <span class="list-label" style="font-size: 14px; color:var(--text-muted);">Dönem İçi Harcama (Bu Ay)</span>
-                            <span class="list-value tabular-nums text-amber" style="font-size: 15px;" id="val-kart-donemici">₺ 0,00</span>
-                        </div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span class="list-label" style="font-size: 14px; color:var(--text-muted);">Dönem İçi Harcama (Bu Ay)</span><span class="list-value tabular-nums text-amber" style="font-size: 15px;" id="val-kart-donemici">₺ 0,00</span></div>
                     </div>
                 </div>
-                
                 <div class="list-row"><span class="list-label">Bu Ay (24'ü)</span><span class="list-value text-red tabular-nums" id="val-kart-buay">₺ 0,00</span></div>
                 <div class="list-row"><span class="list-label">Gelecek Ay</span><span class="list-value text-blue tabular-nums" id="val-kart-gelecek">₺ 0,00</span></div>
             </div>
@@ -426,25 +353,16 @@
 
         <div class="card accordion" id="acc-kredi-ilerleme">
             <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
-                <h3>
-                    <svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-                    Kredi İlerlemeleri
-                </h3>
+                <h3><svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg> Kredi İlerlemeleri</h3>
                 <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
             <div class="accordion-content sensitive-data">
                 <div class="progress-group" style="margin-top: 0;">
-                    <div class="progress-label-group">
-                        <span>Nev Kredisi <span style="font-size:12px; color:var(--text-muted); font-weight:normal; margin-left:7px;" id="val-nev-kalan" class="tabular-nums"></span></span>
-                        <span id="val-nev-yuzde" class="tabular-nums" style="color:var(--emerald); font-weight:700;">%0</span>
-                    </div>
+                    <div class="progress-label-group"><span>Nev Kredisi <span style="font-size:12px; color:var(--text-muted); font-weight:normal; margin-left:7px;" id="val-nev-kalan" class="tabular-nums"></span></span><span id="val-nev-yuzde" class="tabular-nums" style="color:var(--emerald); font-weight:700;">%0</span></div>
                     <div class="progress-container"><div class="progress-bar" id="bar-nev" style="width: 0%; background-color: var(--emerald); box-shadow: 0 0 14px rgba(16, 185, 129, 0.5); animation: shimmerPulse 2.5s infinite linear;"></div></div>
                 </div>
                 <div class="progress-group">
-                    <div class="progress-label-group">
-                        <span>Ziraat Kredisi <span style="font-size:12px; color:var(--text-muted); font-weight:normal; margin-left:7px;" id="val-ziraat-kalan" class="tabular-nums"></span></span>
-                        <span id="val-ziraat-yuzde" class="tabular-nums" style="color:var(--blue); font-weight:700;">%0</span>
-                    </div>
+                    <div class="progress-label-group"><span>Ziraat Kredisi <span style="font-size:12px; color:var(--text-muted); font-weight:normal; margin-left:7px;" id="val-ziraat-kalan" class="tabular-nums"></span></span><span id="val-ziraat-yuzde" class="tabular-nums" style="color:var(--blue); font-weight:700;">%0</span></div>
                     <div class="progress-container"><div class="progress-bar" id="bar-ziraat" style="width: 0%; background-color: var(--blue); box-shadow: 0 0 14px rgba(59, 130, 246, 0.5); animation: shimmerPulse 2.5s infinite linear;"></div></div>
                 </div>
             </div>
@@ -452,41 +370,23 @@
 
         <div class="card accordion" id="acc-aylik-butce">
             <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
-                <h3 style="text-align: center; width: 100%;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right:4px;"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 15h0M2 9.5h20"/></svg>
-                    Aylık Gider & Bütçe
-                </h3>
+                <h3 style="text-align: center; width: 100%;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right:4px;"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 15h0M2 9.5h20"/></svg> Aylık Gider & Bütçe</h3>
                 <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
             <div class="accordion-content">
                 <div class="budget-module">
                     <div class="budget-amount tabular-nums sensitive-data" id="aylikGider">Yükleniyor...</div>
                     <div class="budget-subtitle">Bu Ayki Toplam Harcama</div>
-                    <div class="budget-progress-container">
-                        <div class="budget-progress-bar" id="budgetBar"></div>
-                        <div id="budgetPercent" class="tabular-nums">%0</div>
-                    </div>
-                    <div class="budget-footer tabular-nums sensitive-data">
-                        <span id="butceDurum">Gelir: ₺0,00</span>
-                        <span id="kalanBakiye">Kalan: ₺0,00</span>
-                    </div>
+                    <div class="budget-progress-container"><div class="budget-progress-bar" id="budgetBar"></div><div id="budgetPercent" class="tabular-nums">%0</div></div>
+                    <div class="budget-footer tabular-nums sensitive-data"><span id="butceDurum">Gelir: ₺0,00</span><span id="kalanBakiye">Kalan: ₺0,00</span></div>
                     <div id="tasarruf-orani-badge" class="trend-badge tabular-nums" style="background: rgba(59, 130, 246, 0.15); color: var(--blue); border: 1px solid rgba(59, 130, 246, 0.2); margin-top: 8px;">Tasarruf: %0</div>
                     <div id="aylikTrend" class="trend-badge tabular-nums" style="display: none;"></div>
 
                     <div class="budget-footer tabular-nums sensitive-data" style="margin-top: 16px; padding-top: 14px; border-top: 1px dashed rgba(255,255,255,0.1); flex-direction: column; gap: 8px; text-align: left;">
                         <div style="font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Ay Sonu Nakit Akışı</div>
-                        <div style="display: flex; justify-content: space-between;">
-                            <span style="font-size:14px; color:#cbd5e1;">Mevcut Kalan:</span>
-                            <span id="mevcutKalanProjek" style="color: #fff; font-weight: 600; font-size:14px;">₺0,00</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between;">
-                            <span style="font-size:14px; color:var(--text-muted);">Ödenecek Sabitler:</span>
-                            <span id="gelecekSabitler" style="color: var(--rose); font-weight: 600; font-size:14px;">-₺0,00</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); padding: 10px 12px; border-radius: 8px; margin-top: 4px; border: 1px solid rgba(255,255,255,0.05);">
-                            <span style="color: #f8fafc; font-size: 14px; font-weight:600;">Gerçek Özgür Para:</span>
-                            <span id="ozgurPara" style="font-size: 17px; font-weight: 800;">₺0,00</span>
-                        </div>
+                        <div style="display: flex; justify-content: space-between;"><span style="font-size:14px; color:#cbd5e1;">Mevcut Kalan:</span><span id="mevcutKalanProjek" style="color: #fff; font-weight: 600; font-size:14px;">₺0,00</span></div>
+                        <div style="display: flex; justify-content: space-between;"><span style="font-size:14px; color:var(--text-muted);">Ödenecek Sabitler:</span><span id="gelecekSabitler" style="color: var(--rose); font-weight: 600; font-size:14px;">-₺0,00</span></div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); padding: 10px 12px; border-radius: 8px; margin-top: 4px; border: 1px solid rgba(255,255,255,0.05);"><span style="color: #f8fafc; font-size: 14px; font-weight:600;">Gerçek Özgür Para:</span><span id="ozgurPara" style="font-size: 17px; font-weight: 800;">₺0,00</span></div>
                     </div>
 
                     <div id="aylik-islemler-alani" class="sensitive-data" style="margin-top: 20px; text-align: left; border-top: 1px solid var(--border-color); padding-top: 16px;">
@@ -499,23 +399,15 @@
 
         <div class="card accordion" id="acc-harcama-grafik">
             <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
-                <h3 style="text-align: center; width: 100%;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right:4px;"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
-                    Aylık Gider Dağılımı
-                </h3>
+                <h3 style="text-align: center; width: 100%;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right:4px;"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg> Aylık Gider Dağılımı</h3>
                 <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
-            <div class="accordion-content">
-                <div class="chart-box"><canvas id="expenseChart" class="sensitive-data"></canvas></div>
-            </div>
+            <div class="accordion-content"><div class="chart-box"><canvas id="expenseChart" class="sensitive-data"></canvas></div></div>
         </div>
 
         <div class="card accordion" id="acc-yaklasan">
             <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
-                <h3>
-                    <svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                    Yaklaşan Ödemeler (7 Gün)
-                </h3>
+                <h3><svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Yaklaşan Ödemeler (7 Gün)</h3>
                 <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
             <div class="accordion-content sensitive-data" id="yaklasan-listesi">
@@ -525,10 +417,7 @@
 
         <div class="card accordion" id="acc-tum-sabitler">
             <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
-                <h3>
-                    <svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 22v-6h6"/></svg>
-                    Tüm Sabit Ödemelerim
-                </h3>
+                <h3><svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 22v-6h6"/></svg> Tüm Sabit Ödemelerim</h3>
                 <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
             <div class="accordion-content sensitive-data" id="sabitler-listesi">
@@ -538,10 +427,7 @@
 
         <div class="card accordion" id="acc-son-islemler">
             <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
-                <h3>
-                    <svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-                    Son 10 İşlem
-                </h3>
+                <h3><svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg> Son 10 İşlem</h3>
                 <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
             <div class="accordion-content sensitive-data" id="islem-listesi">
@@ -551,10 +437,7 @@
     </div> 
 
     <div class="fab-btn" id="fab-btn" onclick="toggleModal()">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="12" y1="5" x2="12" y2="19"></line>
-            <line x1="5" y1="12" x2="19" y2="12"></line>
-        </svg>
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
     </div>
 
     <div class="modal-overlay" id="action-modal" onclick="closeModalOnOutside(event)">
@@ -566,77 +449,111 @@
 
             <div id="section-menu" class="form-section active">
                 <div class="action-grid">
-                    <div class="action-card" onclick="showSection('section-harcama', 'Yeni Harcama / Gelir')">
+                    <div class="action-card" onclick="showSection('section-harcama', 'Yeni Gider / Gelir')">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>
-                        <span>Gelir / Gider</span>
+                        <span>Yeni Gider/Gelir</span>
                     </div>
-                    <div class="action-card" onclick="showSection('section-transfer', 'Hesaplar Arası Transfer')">
+                    <div class="action-card" onclick="loadSabitlerAndShow('section-sabit-onayla', 'so-kural', 'Günü Gelen Ödemeyi Onayla')">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        <span>Ödemeyi Onayla</span>
+                    </div>
+                    <div class="action-card" onclick="showSection('section-borc-ode', 'Borç / Kredi Kartı Öde')">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                        <span>Borç Öde</span>
+                    </div>
+                    <div class="action-card" onclick="showSection('section-transfer', 'Kendi Hesabına Transfer Yap')">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg>
-                        <span>Transfer</span>
+                        <span>Transfer Yap</span>
+                    </div>
+                    <div class="action-card" onclick="showSection('section-borc-guncelle', 'Borç Ekle / Güncelle')">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+                        <span>Borç Ekle/Güncelle</span>
+                    </div>
+                    <div class="action-card" onclick="showSection('section-yeni-sabit', 'Yeni Sabit Kural Ekle')">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/></svg>
+                        <span>Yeni Sabit Ekle</span>
+                    </div>
+                    <div class="action-card" onclick="loadSabitlerAndShow('section-sabit-guncelle', 'sg-kural', 'Sabit Kural Güncelle / İptal')">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                        <span>Sabiti Güncelle</span>
+                    </div>
+                    <div class="action-card" onclick="showSection('section-varlik-guncelle', 'Varlık Değeri Güncelle')">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                        <span>Varlık Güncelle</span>
                     </div>
                 </div>
                 <div class="undo-btn" onclick="geriAl()">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle; margin-right:4px;"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>
-                    Son İşlemi İptal Et (Geri Al)
+                    Son İşlemi Geri Al
                 </div>
             </div>
 
             <div id="section-harcama" class="form-section">
                 <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')">← Geri Dön</span>
-                <div class="form-group">
-                    <label>İşlem Türü</label>
-                    <select id="h-tur" class="form-control" onchange="updateKategori()">
-                        <option value="Gider">Gider (Harcama)</option>
-                        <option value="Gelir">Gelir</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Kalem (Nereye harcadın? / Nereden geldi?)</label>
-                    <input type="text" id="h-kalem" class="form-control" placeholder="Örn: Market, Maaş, Akaryakıt...">
-                </div>
-                <div class="form-group">
-                    <label>Ödeme Yöntemi / Banka</label>
-                    <select id="h-yontem" class="form-control">
-                        <option value="Kredi Kartı">Kredi Kartı</option>
-                        <option value="Ziraat">Ziraat</option>
-                        <option value="İsbankasi">İş Bankası</option>
-                        <option value="Yapıkredi">YapıKredi</option>
-                        <option value="Nakit">Nakit</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Tutar (₺)</label>
-                    <input type="number" step="0.01" id="h-tutar" class="form-control" placeholder="Örn: 1500.50">
-                </div>
+                <div class="form-group"><label>Tarih</label><select id="h-tarih" class="form-control"><option value="bugun">Bugün</option><option value="dun">Dün</option></select></div>
+                <div class="form-group"><label>İşlem Türü</label><select id="h-tur" class="form-control"><option value="Gider">Gider (Harcama)</option><option value="Gelir">Gelir</option></select></div>
+                <div class="form-group"><label>Kalem (Nereye harcadın?)</label><input type="text" id="h-kalem" class="form-control" placeholder="Örn: Market"></div>
+                <div class="form-group"><label>Ödeme Yöntemi</label><select id="h-yontem" class="form-control"><option value="Kredi Kartı">Kredi Kartı</option><option value="Ziraat">Ziraat</option><option value="İsbankasi">İş Bankası</option><option value="Yapıkredi">YapıKredi</option><option value="Nakit">Nakit</option></select></div>
+                <div class="form-group"><label>Tutar (₺)</label><input type="number" step="0.01" id="h-tutar" class="form-control" placeholder="Örn: 1500.50"></div>
                 <button class="btn-submit" id="btn-submit-harcama" onclick="submitHarcama()">Kaydet</button>
+            </div>
+
+            <div id="section-sabit-onayla" class="form-section">
+                <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')">← Geri Dön</span>
+                <div class="form-group"><label>Ödenecek Sabit Kural</label><select id="so-kural" class="form-control"></select></div>
+                <div class="form-group"><label>Paranın Çıktığı Yer</label><select id="so-yontem" class="form-control"><option value="Kredi Kartı">Kredi Kartı</option><option value="Ziraat">Ziraat</option><option value="İsbankasi">İş Bankası</option><option value="Yapıkredi">YapıKredi</option><option value="Nakit">Nakit</option></select></div>
+                <button class="btn-submit" id="btn-submit-sabit-onayla" onclick="submitSabitOnayla()">Ödemeyi Onayla</button>
+            </div>
+
+            <div id="section-borc-ode" class="form-section">
+                <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')">← Geri Dön</span>
+                <div class="form-group"><label>Tarih</label><select id="bo-tarih" class="form-control"><option value="bugun">Bugün</option><option value="dun">Dün</option></select></div>
+                <div class="form-group"><label>Hangi Borcu Ödüyorsun?</label><input type="text" id="bo-isim" list="borclar-datalist" class="form-control" placeholder="Borç adı..."></div>
+                <div class="form-group"><label>Ödenen Tutar (₺)</label><input type="number" step="0.01" id="bo-tutar" class="form-control"></div>
+                <div class="form-group"><label>Paranın Çıktığı Yer</label><select id="bo-yontem" class="form-control"><option value="Ziraat">Ziraat</option><option value="İsbankasi">İş Bankası</option><option value="Yapıkredi">YapıKredi</option><option value="Nakit">Nakit</option></select></div>
+                <button class="btn-submit" id="btn-submit-borc-ode" onclick="submitBorcOde()">Borcu Öde</button>
             </div>
 
             <div id="section-transfer" class="form-section">
                 <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')">← Geri Dön</span>
-                <div class="form-group">
-                    <label>Çıkış Yapılan Hesap (Gönderen)</label>
-                    <select id="t-cikis" class="form-control">
-                        <option value="İsbankasi">İş Bankası</option>
-                        <option value="Ziraat">Ziraat</option>
-                        <option value="Yapıkredi">YapıKredi</option>
-                        <option value="Nakit">Nakit</option>
-                        <option value="Kredi Kartı">Kredi Kartı Nakit Avans</option>
-                    </select>
+                <div class="form-group"><label>Çıkış Yapılan Hesap (Gönderen)</label><select id="t-cikis" class="form-control"><option value="İsbankasi">İş Bankası</option><option value="Ziraat">Ziraat</option><option value="Yapıkredi">YapıKredi</option><option value="Nakit">Nakit</option><option value="Kredi Kartı">Kredi Kartı Nakit Avans</option></select></div>
+                <div class="form-group"><label>Giriş Yapılan Hesap (Alan)</label><select id="t-giris" class="form-control"><option value="Ziraat">Ziraat</option><option value="İsbankasi">İş Bankası</option><option value="Yapıkredi">YapıKredi</option><option value="Nakit">Nakit</option></select></div>
+                <div class="form-group"><label>Transfer Tutarı (₺)</label><input type="number" step="0.01" id="t-tutar" class="form-control"></div>
+                <button class="btn-submit" id="btn-submit-transfer" onclick="submitTransfer()">Transfer Yap</button>
+            </div>
+
+            <div id="section-borc-guncelle" class="form-section">
+                <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')">← Geri Dön</span>
+                <div class="form-group"><label>Borç Adı</label><input type="text" id="bg-isim" list="borclar-datalist" class="form-control" placeholder="Kime / Nereye borçlusun?"></div>
+                <div class="form-group"><label>Yeni Kalan Tutar (₺)</label><input type="number" step="0.01" id="bg-tutar" class="form-control"></div>
+                <button class="btn-submit" id="btn-submit-borc-guncelle" onclick="submitBorcGuncelle()">Borcu Güncelle</button>
+            </div>
+
+            <div id="section-yeni-sabit" class="form-section">
+                <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')">← Geri Dön</span>
+                <div class="form-group"><label>Tür</label><select id="ys-tur" class="form-control"><option value="Gider">Gider</option><option value="Gelir">Gelir</option></select></div>
+                <div class="form-group"><label>Sabit Kalem Adı</label><input type="text" id="ys-kalem" class="form-control" placeholder="Örn: Kira, Netflix"></div>
+                <div class="form-group"><label>Ödeme Yöntemi</label><select id="ys-yontem" class="form-control"><option value="Kredi Kartı">Kredi Kartı</option><option value="Ziraat">Ziraat</option><option value="İsbankasi">İş Bankası</option><option value="Yapıkredi">YapıKredi</option></select></div>
+                <div class="form-group"><label>Tutar (₺)</label><input type="number" step="0.01" id="ys-tutar" class="form-control"></div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                    <div class="form-group"><label>Ayın Kaçı?</label><input type="number" id="ys-gun" class="form-control" placeholder="1-31"></div>
+                    <div class="form-group"><label>Kaç Ay Sürecek?</label><input type="text" id="ys-sure" class="form-control" placeholder="Sayı veya Süresiz"></div>
                 </div>
-                <div class="form-group">
-                    <label>Giriş Yapılan Hesap (Alan)</label>
-                    <select id="t-giris" class="form-control">
-                        <option value="Ziraat">Ziraat</option>
-                        <option value="İsbankasi">İş Bankası</option>
-                        <option value="Yapıkredi">YapıKredi</option>
-                        <option value="Nakit">Nakit Cüzdan</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Transfer Tutarı (₺)</label>
-                    <input type="number" step="0.01" id="t-tutar" class="form-control" placeholder="Örn: 5000">
-                </div>
-                <button class="btn-submit" id="btn-submit-transfer" onclick="submitTransfer()">Transferi Kaydet</button>
+                <button class="btn-submit" id="btn-submit-yeni-sabit" onclick="submitYeniSabit()">Sabit Ekle</button>
+            </div>
+
+            <div id="section-sabit-guncelle" class="form-section">
+                <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')">← Geri Dön</span>
+                <div class="form-group"><label>Güncellenecek Kural</label><select id="sg-kural" class="form-control"></select></div>
+                <div class="form-group"><label>Yeni Tutar Ne Kadar? (₺) <span style="font-size:11px; font-weight:normal; color:var(--rose);">(İptal için 0 yazın)</span></label><input type="number" step="0.01" id="sg-tutar" class="form-control"></div>
+                <button class="btn-submit" id="btn-submit-sabit-guncelle" onclick="submitSabitGuncelle()">Güncelle / İptal Et</button>
+            </div>
+
+            <div id="section-varlik-guncelle" class="form-section">
+                <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')">← Geri Dön</span>
+                <div class="form-group"><label>Varlık Adı</label><input type="text" id="vg-isim" list="varliklar-datalist" class="form-control" placeholder="Örn: Ev, Araba"></div>
+                <div class="form-group"><label>Güncel Değer (₺)</label><input type="number" step="0.01" id="vg-deger" class="form-control" placeholder="Sıfırlamak için 0"></div>
+                <button class="btn-submit" id="btn-submit-varlik-guncelle" onclick="submitVarlikGuncelle()">Varlığı Güncelle</button>
             </div>
 
         </div>
@@ -645,215 +562,57 @@
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbyf4VwhjJ7fpf82W-56eWCRQEsmkMlGDP5FZmWN8NJwwaCU_zkDA-N103srUOJ6gd0wnQ/exec"; 
         
-        let expenseChartInstance = null;
-        window.tarihceData = [];
-        window.currentStats = {};
-
+        let expenseChartInstance = null; window.tarihceData = []; window.currentStats = {};
         const gunler = ["Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi"];
-        const bugun = new Date();
-        const bugunTarih = bugun.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
-        const gunIsmi = gunler[bugun.getDay()];
-        document.getElementById('header-date').innerText = bugunTarih + " " + gunIsmi;
-
+        const bugun = new Date(); document.getElementById('header-date').innerText = bugun.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }) + " " + gunler[bugun.getDay()];
         const EYE_OPEN = `<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>`;
         const EYE_CLOSED = `<path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/>`;
 
-        function checkPrivacyState() {
-            if (localStorage.getItem('privacyMode') === "1") {
-                document.body.classList.add('privacy-mode');
-                document.getElementById('privacy-icon').innerHTML = EYE_CLOSED;
-            }
-        }
-        
-        function togglePrivacy(e) {
-            if(e) e.stopPropagation(); 
-            const body = document.body;
-            body.classList.toggle('privacy-mode');
-            const isPrivacy = body.classList.contains('privacy-mode');
-            localStorage.setItem('privacyMode', isPrivacy ? "1" : "0");
-            document.getElementById('privacy-icon').innerHTML = isPrivacy ? EYE_CLOSED : EYE_OPEN;
-        }
-
-        function initAccordions() {
-            document.querySelectorAll('.accordion').forEach(el => {
-                if (el.id && localStorage.getItem(el.id) === "1") el.classList.add("collapsed");
-            });
-            checkPrivacyState();
-        }
+        function checkPrivacyState() { if (localStorage.getItem('privacyMode') === "1") { document.body.classList.add('privacy-mode'); document.getElementById('privacy-icon').innerHTML = EYE_CLOSED; } }
+        function togglePrivacy(e) { if(e) e.stopPropagation(); const body = document.body; body.classList.toggle('privacy-mode'); const isPrivacy = body.classList.contains('privacy-mode'); localStorage.setItem('privacyMode', isPrivacy ? "1" : "0"); document.getElementById('privacy-icon').innerHTML = isPrivacy ? EYE_CLOSED : EYE_OPEN; }
+        function initAccordions() { document.querySelectorAll('.accordion').forEach(el => { if (el.id && localStorage.getItem(el.id) === "1") el.classList.add("collapsed"); }); checkPrivacyState(); }
         document.addEventListener("DOMContentLoaded", initAccordions);
+        function toggleAccordion(element) { element.classList.toggle("collapsed"); if(element.id) { localStorage.setItem(element.id, element.classList.contains("collapsed") ? "1" : "0"); } }
+        function turkceEkBul(sayi) { sayi = parseInt(sayi); const sonRakam = sayi % 10; const sonIkiRakam = sayi % 100; if (sayi === 0) return "'ı"; if ([10,30,40,60,90].includes(sonIkiRakam)) return "'u"; if ([50,80].includes(sonIkiRakam)) return "'i"; if ([20,70].includes(sonIkiRakam)) return "'si"; switch (sonRakam) { case 1: case 5: case 8: return "'i"; case 2: case 7: return "'si"; case 3: case 4: return "'ü"; case 6: return "'sı"; case 9: return "'u"; default: return "'u"; } }
 
-        function toggleAccordion(element) {
-            element.classList.toggle("collapsed");
-            if(element.id) { localStorage.setItem(element.id, element.classList.contains("collapsed") ? "1" : "0"); }
-        }
-
-        function turkceEkBul(sayi) {
-            sayi = parseInt(sayi);
-            const sonRakam = sayi % 10;
-            const sonIkiRakam = sayi % 100;
-            if (sayi === 0) return "'ı";
-            if (sonIkiRakam === 10 || sonIkiRakam === 30 || sonIkiRakam === 40 || sonIkiRakam === 60 || sonIkiRakam === 90) return "'u";
-            if (sonIkiRakam === 50 || sonIkiRakam === 80) return "'i";
-            if (sonIkiRakam === 20 || sonIkiRakam === 70) return "'si";
-            switch (sonRakam) {
-                case 1: case 5: case 8: return "'i";
-                case 2: case 7: return "'si";
-                case 3: case 4: return "'ü";
-                case 6: return "'sı";
-                case 9: return "'u";
-                default: return "'u"; 
-            }
-        }
-
-        let touchStart = 0;
-        const pullIndicator = document.getElementById('pull-indicator');
-        
+        let touchStart = 0; const pullIndicator = document.getElementById('pull-indicator');
         document.addEventListener('touchstart', e => { if (window.scrollY <= 0 && !document.getElementById('action-modal').classList.contains('active')) touchStart = e.touches[0].pageY; }, {passive: true});
-        document.addEventListener('touchmove', e => {
-            if (window.scrollY <= 0 && touchStart > 0) {
-                const diff = e.touches[0].pageY - touchStart;
-                if (diff > 0) {
-                    const h = Math.min(diff * 0.4, 60);
-                    pullIndicator.style.height = h + 'px';
-                    if (h > 50) { pullIndicator.innerHTML = '<span class="spinner"></span> Bırakın güncellensin'; } 
-                    else { pullIndicator.innerHTML = 'Aşağı çek...'; }
-                }
-            }
-        }, {passive: true});
-        
-        document.addEventListener('touchend', async e => {
-            if (parseInt(pullIndicator.style.height) > 50) {
-                pullIndicator.innerHTML = '<span class="spinner"></span> Güncelleniyor...';
-                await verileriCek(); 
-            }
-            pullIndicator.style.height = '0px'; touchStart = 0;
-        });
+        document.addEventListener('touchmove', e => { if (window.scrollY <= 0 && touchStart > 0) { const diff = e.touches[0].pageY - touchStart; if (diff > 0) { const h = Math.min(diff * 0.4, 60); pullIndicator.style.height = h + 'px'; if (h > 50) pullIndicator.innerHTML = '<span class="spinner"></span> Bırakın güncellensin'; else pullIndicator.innerHTML = 'Aşağı çek...'; } } }, {passive: true});
+        document.addEventListener('touchend', async e => { if (parseInt(pullIndicator.style.height) > 50) { pullIndicator.innerHTML = '<span class="spinner"></span> Güncelleniyor...'; await verileriCek(); } pullIndicator.style.height = '0px'; touchStart = 0; });
 
-        function formatTL(sayi) {
-            if (isNaN(sayi) || sayi === null || sayi === "") return `<span style="font-size:0.7em; opacity:0.6; font-weight:600;">₺</span>0<span style="font-size:0.7em; opacity:0.6; font-weight:600;">,00</span>`;
-            let formatted = new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(sayi);
-            let parts = formatted.split(',');
-            return `<span style="font-size:0.75em; opacity:0.75; font-weight:600; margin-right:2px;">₺</span>${parts[0]}<span style="font-size:0.75em; opacity:0.75; font-weight:600;">,${parts[1]}</span>`;
-        }
+        function formatTL(sayi) { if (isNaN(sayi) || sayi === null || sayi === "") return `<span style="font-size:0.7em; opacity:0.6; font-weight:600;">₺</span>0<span style="font-size:0.7em; opacity:0.6; font-weight:600;">,00</span>`; let formatted = new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(sayi); let parts = formatted.split(','); return `<span style="font-size:0.75em; opacity:0.75; font-weight:600; margin-right:2px;">₺</span>${parts[0]}<span style="font-size:0.75em; opacity:0.75; font-weight:600;">,${parts[1]}</span>`; }
+        function formatUSD(sayi) { if (isNaN(sayi) || sayi === null || sayi === "") return `<span style="font-size:0.8em; opacity:0.7; font-weight:600; margin-right:2px;">$</span>0<span style="font-size:0.8em; opacity:0.7; font-weight:600;">,00</span>`; let formatted = new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(sayi); let parts = formatted.split(','); return `<span style="font-size:0.8em; opacity:0.7; font-weight:600; margin-right:2px;">$</span>${parts[0]}<span style="font-size:0.8em; opacity:0.7; font-weight:600;">,${parts[1]}</span>`; }
+        const parseSaha = (val) => { if(typeof val === 'number') return val; if(!val) return 0; let s = val.toString().replace(/₺/g, "").replace(/\s/g, ""); if(s.indexOf('.') !== -1 && s.indexOf(',') !== -1) s = s.replace(/\./g, "").replace(",", "."); else if(s.indexOf(',') !== -1) s = s.replace(",", "."); return parseFloat(s) || 0; };
 
-        function formatUSD(sayi) {
-            if (isNaN(sayi) || sayi === null || sayi === "") return `<span style="font-size:0.8em; opacity:0.7; font-weight:600; margin-right:2px;">$</span>0<span style="font-size:0.8em; opacity:0.7; font-weight:600;">,00</span>`;
-            let formatted = new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(sayi);
-            let parts = formatted.split(',');
-            return `<span style="font-size:0.8em; opacity:0.7; font-weight:600; margin-right:2px;">$</span>${parts[0]}<span style="font-size:0.8em; opacity:0.7; font-weight:600;">,${parts[1]}</span>`;
-        }
-
-        const parseSaha = (val) => {
-            if(typeof val === 'number') return val;
-            if(!val) return 0;
-            let s = val.toString().replace(/₺/g, "").replace(/\s/g, "");
-            if(s.indexOf('.') !== -1 && s.indexOf(',') !== -1) s = s.replace(/\./g, "").replace(",", ".");
-            else if(s.indexOf(',') !== -1) s = s.replace(",", ".");
-            return parseFloat(s) || 0;
-        };
-
-        function animateValue(id, endValue, duration) {
-            const obj = document.getElementById(id);
-            if(!obj || isNaN(endValue)) return;
-            let startTimestamp = null;
-            const step = (timestamp) => {
-                if (!startTimestamp) startTimestamp = timestamp;
-                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-                const easeProgress = 1 - Math.pow(1 - progress, 4); 
-                const currentVal = endValue * easeProgress;
-                obj.innerHTML = formatTL(currentVal); 
-                if (progress < 1) { window.requestAnimationFrame(step); } 
-                else { obj.innerHTML = formatTL(endValue); }
-            };
-            window.requestAnimationFrame(step);
-        }
-
-        function animateValueUSD(id, endValue, duration) {
-            const obj = document.getElementById(id);
-            if(!obj || isNaN(endValue)) return;
-            let startTimestamp = null;
-            const step = (timestamp) => {
-                if (!startTimestamp) startTimestamp = timestamp;
-                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-                const easeProgress = 1 - Math.pow(1 - progress, 4); 
-                const currentVal = endValue * easeProgress;
-                obj.innerHTML = formatUSD(currentVal); 
-                if (progress < 1) { window.requestAnimationFrame(step); } 
-                else { obj.innerHTML = formatUSD(endValue); }
-            };
-            window.requestAnimationFrame(step);
-        }
+        function animateValue(id, endValue, duration) { const obj = document.getElementById(id); if(!obj || isNaN(endValue)) return; let startTimestamp = null; const step = (timestamp) => { if (!startTimestamp) startTimestamp = timestamp; const progress = Math.min((timestamp - startTimestamp) / duration, 1); const easeProgress = 1 - Math.pow(1 - progress, 4); const currentVal = endValue * easeProgress; obj.innerHTML = formatTL(currentVal); if (progress < 1) window.requestAnimationFrame(step); else obj.innerHTML = formatTL(endValue); }; window.requestAnimationFrame(step); }
+        function animateValueUSD(id, endValue, duration) { const obj = document.getElementById(id); if(!obj || isNaN(endValue)) return; let startTimestamp = null; const step = (timestamp) => { if (!startTimestamp) startTimestamp = timestamp; const progress = Math.min((timestamp - startTimestamp) / duration, 1); const easeProgress = 1 - Math.pow(1 - progress, 4); const currentVal = endValue * easeProgress; obj.innerHTML = formatUSD(currentVal); if (progress < 1) window.requestAnimationFrame(step); else obj.innerHTML = formatUSD(endValue); }; window.requestAnimationFrame(step); }
 
         function updateTrends(days, btnElement) {
-            document.querySelectorAll('.time-btn').forEach(btn => btn.classList.remove('active'));
-            if(btnElement) btnElement.classList.add('active');
-
+            document.querySelectorAll('.time-btn').forEach(btn => btn.classList.remove('active')); if(btnElement) btnElement.classList.add('active');
             const ids = ['trend-net-servet', 'trend-net-servet-usd', 'trend-borc', 'trend-can-yakan', 'trend-planli', 'trend-faiz', 'trend-kasa', 'trend-kart'];
-            
-            if (days === 0) {
-                ids.forEach(id => { let el = document.getElementById(id); if(el) el.innerHTML = ""; });
-                return;
-            }
-
-            if(!window.tarihceData || window.tarihceData.length < 2) {
-                const msg = `<span style="color:var(--text-muted); font-weight:500;">Veri yok</span>`;
-                ids.forEach(id => { let el = document.getElementById(id); if(el) el.innerHTML = msg; });
-                return;
-            }
-
-            const now = new Date();
-            const midnightToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-            const targetTime = midnightToday.getTime() - ((days - 1) * 24 * 60 * 60 * 1000);
-            
+            if (days === 0) { ids.forEach(id => { let el = document.getElementById(id); if(el) el.innerHTML = ""; }); return; }
+            if(!window.tarihceData || window.tarihceData.length < 2) { const msg = `<span style="color:var(--text-muted); font-weight:500;">Veri yok</span>`; ids.forEach(id => { let el = document.getElementById(id); if(el) el.innerHTML = msg; }); return; }
+            const now = new Date(); const midnightToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()); const targetTime = midnightToday.getTime() - ((days - 1) * 24 * 60 * 60 * 1000);
             let bestRow = null; let minDiff = Infinity;
-
-            window.tarihceData.forEach(row => {
-                const rowDate = new Date(row[0]);
-                if(isNaN(rowDate.getTime())) return; 
-                
-                const diff = Math.abs(rowDate.getTime() - targetTime);
-                if(diff < minDiff) { minDiff = diff; bestRow = row; }
-            });
-
+            window.tarihceData.forEach(row => { const rowDate = new Date(row[0]); if(isNaN(rowDate.getTime())) return; const diff = Math.abs(rowDate.getTime() - targetTime); if(diff < minDiff) { minDiff = diff; bestRow = row; } });
             if(!bestRow) return;
-
-            const pastServet = parseSaha(bestRow[1]); const pastBorc = parseSaha(bestRow[2]);
-            const pastCanYakan = parseSaha(bestRow[3]); const pastPlanli = parseSaha(bestRow[4]);
-            const pastFaiz = bestRow.length > 5 ? parseSaha(bestRow[5]) : window.currentStats.tahminiFaiz;
-            const pastKasa = bestRow.length > 6 && bestRow[6] !== "" ? parseSaha(bestRow[6]) : window.currentStats.toplamKasa;
-            const pastKart = bestRow.length > 7 && bestRow[7] !== "" ? parseSaha(bestRow[7]) : window.currentStats.kartToplam;
-            const pastServetUSD = bestRow.length > 8 && bestRow[8] !== "" ? parseSaha(bestRow[8]) : (window.currentStats.usdRate > 0 ? (pastServet / window.currentStats.usdRate) : window.currentStats.netServetUSD);
-
-            renderTrend('trend-net-servet', window.currentStats.netServet, pastServet, false); 
-            renderTrend('trend-net-servet-usd', window.currentStats.netServetUSD, pastServetUSD, false, '$'); 
-            renderTrend('trend-borc', window.currentStats.toplamBorc, pastBorc, true); 
-            renderTrend('trend-can-yakan', window.currentStats.toplamCanYakan, pastCanYakan, true);
-            renderTrend('trend-planli', window.currentStats.toplamPlanli, pastPlanli, true);
-            renderTrend('trend-faiz', window.currentStats.tahminiFaiz, pastFaiz, true); 
-            renderTrend('trend-kasa', window.currentStats.toplamKasa, pastKasa, false); 
-            renderTrend('trend-kart', window.currentStats.kartToplam, pastKart, true); 
+            renderTrend('trend-net-servet', window.currentStats.netServet, parseSaha(bestRow[1]), false); renderTrend('trend-net-servet-usd', window.currentStats.netServetUSD, bestRow.length > 8 && bestRow[8] !== "" ? parseSaha(bestRow[8]) : (window.currentStats.usdRate > 0 ? (parseSaha(bestRow[1]) / window.currentStats.usdRate) : window.currentStats.netServetUSD), false, '$'); 
+            renderTrend('trend-borc', window.currentStats.toplamBorc, parseSaha(bestRow[2]), true); renderTrend('trend-can-yakan', window.currentStats.toplamCanYakan, parseSaha(bestRow[3]), true); renderTrend('trend-planli', window.currentStats.toplamPlanli, parseSaha(bestRow[4]), true); renderTrend('trend-faiz', window.currentStats.tahminiFaiz, bestRow.length > 5 ? parseSaha(bestRow[5]) : window.currentStats.tahminiFaiz, true); renderTrend('trend-kasa', window.currentStats.toplamKasa, bestRow.length > 6 && bestRow[6] !== "" ? parseSaha(bestRow[6]) : window.currentStats.toplamKasa, false); renderTrend('trend-kart', window.currentStats.kartToplam, bestRow.length > 7 && bestRow[7] !== "" ? parseSaha(bestRow[7]) : window.currentStats.kartToplam, true); 
         }
 
         function renderTrend(elementId, current, past, isDebt, symbol = '₺') {
-            const diff = current - past;
-            const el = document.getElementById(elementId);
-            if(!el) return;
-            
+            const diff = current - past; const el = document.getElementById(elementId); if(!el) return;
             if (Math.abs(diff) < 1) { el.innerHTML = `<span style="color:var(--text-muted); font-weight:500;">━ Sabit</span>`; return; }
-
             const formattedDiff = new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(Math.abs(diff));
             let color = (diff > 0) ? (isDebt ? "var(--rose)" : "var(--emerald)") : (isDebt ? "var(--emerald)" : "var(--rose)");
             let icon = (diff > 0) ? "▲" : "▼";
-
             el.innerHTML = `<span style="color:${color}; background:color-mix(in srgb, ${color} 15%, transparent); padding: 3px 6px; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); border: 1px solid color-mix(in srgb, ${color} 30%, transparent);">${icon} ${symbol}${formattedDiff}</span>`;
         }
 
-        // --- YENİ: VERİ GÖNDERME FONKSİYONLARI ---
+        // --- YENİ: MODAL VE API İŞLEMLERİ (9 ADIM) ---
         function toggleModal() {
-            const modal = document.getElementById('action-modal');
-            const btn = document.getElementById('fab-btn');
-            modal.classList.toggle('active');
-            btn.classList.toggle('open');
+            const modal = document.getElementById('action-modal'); const btn = document.getElementById('fab-btn');
+            modal.classList.toggle('active'); btn.classList.toggle('open');
             if(modal.classList.contains('active')) showSection('section-menu', 'Ne yapmak istersin?');
         }
 
@@ -863,228 +622,143 @@
             document.querySelectorAll('.form-section').forEach(el => el.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             document.getElementById('modal-title').innerText = title;
-            // Inputları temizle
-            if(id === 'section-harcama') { document.getElementById('h-kalem').value = ''; document.getElementById('h-tutar').value = ''; }
+            // Input Temizliği
+            if(id === 'section-harcama') { document.getElementById('h-kalem').value = ''; document.getElementById('h-tutar').value = ''; document.getElementById('h-tarih').value = 'bugun'; }
             if(id === 'section-transfer') { document.getElementById('t-tutar').value = ''; }
+            if(id === 'section-borc-ode') { document.getElementById('bo-isim').value = ''; document.getElementById('bo-tutar').value = ''; document.getElementById('bo-tarih').value = 'bugun'; }
+            if(id === 'section-borc-guncelle') { document.getElementById('bg-isim').value = ''; document.getElementById('bg-tutar').value = ''; }
+            if(id === 'section-yeni-sabit') { document.getElementById('ys-kalem').value = ''; document.getElementById('ys-tutar').value = ''; document.getElementById('ys-gun').value = ''; document.getElementById('ys-sure').value = ''; }
+            if(id === 'section-sabit-guncelle') { document.getElementById('sg-tutar').value = ''; }
+            if(id === 'section-varlik-guncelle') { document.getElementById('vg-isim').value = ''; document.getElementById('vg-deger').value = ''; }
         }
 
-        function updateKategori() {
-            // İleride gerekirse kategori dinamiği eklenebilir. Şu an Değişken/Sabit işini otomatik halledebiliriz veya basit tutarız.
+        function getTarihIcin(secim) {
+            if(secim === "bugun") return ""; 
+            let d = new Date(); d.setDate(d.getDate() - 1);
+            return `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${d.getFullYear()} 12:00`;
         }
 
         async function apiIstekAt(payload, buttonId) {
-            const btn = document.getElementById(buttonId);
-            const originalText = btn.innerHTML;
-            btn.innerHTML = `<span class="spinner"></span> İşleniyor...`;
-            btn.disabled = true;
-
+            const btn = document.getElementById(buttonId); const originalText = btn.innerHTML;
+            btn.innerHTML = `<span class="spinner"></span> İşleniyor...`; btn.disabled = true;
             try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'text/plain' }, // CORS için plain text
-                    body: JSON.stringify(payload)
-                });
-                
+                const response = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(payload) });
                 const result = await response.json();
-                
                 if(result.status === "success") {
-                    btn.innerHTML = `✓ Başarılı!`;
-                    btn.style.background = "var(--emerald)";
+                    btn.innerHTML = `✓ Başarılı!`; btn.style.background = "var(--emerald)";
                     setTimeout(() => { toggleModal(); verileriCek(); btn.innerHTML = originalText; btn.style.background = ""; btn.disabled = false; }, 1000);
-                } else {
-                    alert("Hata: " + result.message);
-                    btn.innerHTML = originalText; btn.disabled = false;
-                }
-            } catch (error) {
-                alert("Bağlantı hatası!");
-                console.error(error);
-                btn.innerHTML = originalText; btn.disabled = false;
-            }
+                } else { alert("Hata: " + result.message); btn.innerHTML = originalText; btn.disabled = false; }
+            } catch (error) { alert("Bağlantı hatası!"); btn.innerHTML = originalText; btn.disabled = false; }
         }
 
+        // 1
         function submitHarcama() {
-            const tur = document.getElementById('h-tur').value;
-            const kalem = document.getElementById('h-kalem').value.trim();
-            const yontem = document.getElementById('h-yontem').value;
-            const tutar = document.getElementById('h-tutar').value;
-
-            if(!kalem || !tutar) { alert("Lütfen kalem ve tutar girin."); return; }
-
-            const payload = {
-                action: "yeni_hareket", tur: tur, kategori: "Değişken",
-                kalem: kalem, yontem: yontem, tutar: parseFloat(tutar)
-            };
-            apiIstekAt(payload, 'btn-submit-harcama');
+            const kalem = document.getElementById('h-kalem').value.trim(), tutar = document.getElementById('h-tutar').value;
+            if(!kalem || !tutar) return alert("Lütfen kalem ve tutar girin.");
+            apiIstekAt({ action: "yeni_hareket", tur: document.getElementById('h-tur').value, kategori: "Değişken", kalem: kalem, yontem: document.getElementById('h-yontem').value, tutar: tutar, tarih: getTarihIcin(document.getElementById('h-tarih').value) }, 'btn-submit-harcama');
         }
-
-        function submitTransfer() {
-            const cikis = document.getElementById('t-cikis').value;
-            const giris = document.getElementById('t-giris').value;
-            const tutar = document.getElementById('t-tutar').value;
-
-            if(!tutar) { alert("Lütfen tutar girin."); return; }
-            if(cikis === giris) { alert("Farklı hesaplar seçmelisiniz."); return; }
-
-            const payload = {
-                action: "transfer_yap", transfer_yeri: giris,
-                yontem: cikis, tutar: parseFloat(tutar)
-            };
-            apiIstekAt(payload, 'btn-submit-transfer');
-        }
-
-        async function geriAl() {
-            if(!confirm("Emin misin? Son işlem log dosyasından silinecek.")) return;
-            const btn = document.querySelector('.undo-btn');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = `<span class="spinner"></span> Siliniyor...`;
-            
+        // 2 & 7 (API'den listeyi çekerek menü açan fonksiyon)
+        async function loadSabitlerAndShow(sectionId, selectId, title) {
+            const ev = event.currentTarget; const orig = ev.innerHTML; ev.innerHTML = `<span class="spinner"></span>...`;
             try {
-                const response = await fetch(API_URL, {
-                    method: 'POST', body: JSON.stringify({ action: "geri_al" })
-                });
-                const result = await response.json();
+                const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: "sabitleri_getir" }) });
+                const result = await res.json();
                 if(result.status === "success") {
-                    btn.innerHTML = "✓ Geri Alındı";
-                    setTimeout(() => { toggleModal(); verileriCek(); btn.innerHTML = originalText; }, 1000);
+                    const sel = document.getElementById(selectId); sel.innerHTML = "";
+                    result.data.forEach(k => { sel.innerHTML += `<option value="${k.satir}">${k.kalem} - ₺${k.tutar} (${k.kalan_ay} Ay)</option>`; });
+                    if(result.data.length === 0) sel.innerHTML = `<option value="">Aktif kural bulunamadı.</option>`;
+                    showSection(sectionId, title);
                 }
-            } catch(e) { alert("Hata!"); btn.innerHTML = originalText; }
+            } catch(e) { alert("Sabitler çekilemedi."); }
+            ev.innerHTML = orig;
         }
-
-        // Hızlı Sabit Onaylama Fonksiyonu
-        async function hizliSabitOnayla(satir, yontem) {
-            if(!confirm("Bu ödemeyi onaylamak istiyor musun? Ana borçtan düşülecek.")) return;
-            
-            const payload = { action: "sabit_onayla", satir: satir, kullanilan_yontem: yontem };
-            document.getElementById('baglanti-durumu').innerHTML = '<span class="spinner" style="border-left-color: var(--amber);"></span>Ödeniyor...';
-            
+        function submitSabitOnayla() {
+            const kuralSatir = document.getElementById('so-kural').value;
+            if(!kuralSatir) return alert("Onaylanacak kural yok.");
+            apiIstekAt({ action: "sabit_onayla", satir: kuralSatir, kullanilan_yontem: document.getElementById('so-yontem').value }, 'btn-submit-sabit-onayla');
+        }
+        // 3
+        function submitBorcOde() {
+            const isim = document.getElementById('bo-isim').value.trim(), tutar = document.getElementById('bo-tutar').value;
+            if(!isim || !tutar) return alert("Boş alan bırakmayın.");
+            apiIstekAt({ action: "borc_ode", borc_adi: isim, tutar: tutar, yontem: document.getElementById('bo-yontem').value, tarih: getTarihIcin(document.getElementById('bo-tarih').value) }, 'btn-submit-borc-ode');
+        }
+        // 4
+        function submitTransfer() {
+            const cikis = document.getElementById('t-cikis').value, giris = document.getElementById('t-giris').value, tutar = document.getElementById('t-tutar').value;
+            if(!tutar || cikis === giris) return alert("Geçerli tutar ve farklı hesaplar seçin.");
+            apiIstekAt({ action: "transfer_yap", transfer_yeri: giris, yontem: cikis, tutar: tutar }, 'btn-submit-transfer');
+        }
+        // 5
+        function submitBorcGuncelle() {
+            const isim = document.getElementById('bg-isim').value.trim(), tutar = document.getElementById('bg-tutar').value;
+            if(!isim || tutar === "") return alert("İsim ve yeni tutarı girin.");
+            apiIstekAt({ action: "borc_guncelle", borc_adi: isim, tutar: tutar }, 'btn-submit-borc-guncelle');
+        }
+        // 6
+        function submitYeniSabit() {
+            const kalem = document.getElementById('ys-kalem').value.trim(), tutar = document.getElementById('ys-tutar').value, gun = document.getElementById('ys-gun').value, sure = document.getElementById('ys-sure').value;
+            if(!kalem || !tutar || !gun || !sure) return alert("Tüm alanları doldurun.");
+            apiIstekAt({ action: "yeni_sabit", tur: document.getElementById('ys-tur').value, kalem: kalem, yontem: document.getElementById('ys-yontem').value, tutar: tutar, odeme_gunu: gun, kalan_ay: sure }, 'btn-submit-yeni-sabit');
+        }
+        // 7
+        function submitSabitGuncelle() {
+            const kuralSatir = document.getElementById('sg-kural').value, tutar = document.getElementById('sg-tutar').value;
+            if(!kuralSatir || tutar === "") return alert("Kural ve yeni tutar (iptal için 0) girin.");
+            apiIstekAt({ action: "sabit_guncelle", satir: kuralSatir, yeni_tutar: tutar }, 'btn-submit-sabit-guncelle');
+        }
+        // 8
+        function submitVarlikGuncelle() {
+            const isim = document.getElementById('vg-isim').value.trim(), deger = document.getElementById('vg-deger').value;
+            if(!isim || deger === "") return alert("Varlık adı ve değeri (sıfırlamak için 0) girin.");
+            apiIstekAt({ action: "varlik_guncelle", varlik_adi: isim, deger: deger }, 'btn-submit-varlik-guncelle');
+        }
+        // 9
+        async function geriAl() {
+            if(!confirm("Emin misin? Son işlem tamamen silinecek.")) return;
+            const btn = document.querySelector('.undo-btn'); const orig = btn.innerHTML; btn.innerHTML = `<span class="spinner"></span>...`;
             try {
-                const response = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
-                const result = await response.json();
-                if(result.status === "success") { await verileriCek(); }
-            } catch (e) { alert("Onaylama başarısız oldu."); verileriCek(); }
+                const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: "geri_al" }) }); const r = await res.json();
+                if(r.status === "success") { btn.innerHTML = "✓ Geri Alındı"; setTimeout(() => { toggleModal(); verileriCek(); btn.innerHTML = orig; }, 1000); }
+            } catch(e) { btn.innerHTML = orig; }
         }
-        // ------------------------------------------
 
         async function verileriCek() {
-            const durumEl = document.getElementById('baglanti-durumu');
-            durumEl.innerHTML = '<span class="spinner" style="border-left-color: var(--amber);"></span>Bağlanıyor';
-            durumEl.style.color = "var(--amber)";
-            
+            const durumEl = document.getElementById('baglanti-durumu'); durumEl.innerHTML = '<span class="spinner" style="border-left-color: var(--amber);"></span>Bağlanıyor'; durumEl.style.color = "var(--amber)";
             try {
-                const response = await fetch(API_URL);
-                const data = await response.json();
-
+                const response = await fetch(API_URL); const data = await response.json();
                 if(data.durum === "basarili") {
-                    durumEl.innerText = "Senkronize Edildi";
-                    durumEl.style.color = "var(--text-muted)";
-                    
-                    const now = new Date();
-                    document.getElementById('last-update').innerText = "Son: " + now.toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'});
+                    durumEl.innerText = "Senkronize Edildi"; durumEl.style.color = "var(--text-muted)";
+                    document.getElementById('last-update').innerText = "Son: " + new Date().toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'});
 
                     window.tarihceData = data.tarihce || [];
-                    window.currentStats = {
-                        netServet: parseSaha(data.netServet), toplamBorc: parseSaha(data.toplamBorc),
-                        toplamCanYakan: parseSaha(data.toplamCanYakan), toplamPlanli: parseSaha(data.toplamPlanli),
-                        tahminiFaiz: parseSaha(data.tahminiFaiz), toplamKasa: parseSaha(data.toplamKasa),
-                        kartToplam: parseSaha(data.kartToplam), netServetUSD: parseSaha(data.netServetUSD), usdRate: data.usdRate || 1
-                    };
+                    window.currentStats = { netServet: parseSaha(data.netServet), toplamBorc: parseSaha(data.toplamBorc), toplamCanYakan: parseSaha(data.toplamCanYakan), toplamPlanli: parseSaha(data.toplamPlanli), tahminiFaiz: parseSaha(data.tahminiFaiz), toplamKasa: parseSaha(data.toplamKasa), kartToplam: parseSaha(data.kartToplam), netServetUSD: parseSaha(data.netServetUSD), usdRate: data.usdRate || 1 };
 
                     animateValue("val-net-servet", window.currentStats.netServet, 1200);
                     animateValueUSD("val-net-servet-usd", window.currentStats.netServetUSD, 1200);
 
-                    // --- Varlık Dağılımı ---
+                    // Form Datalistlerini Doldurma (Borçlar ve Varlıklar Otomatik Tamamlansın Diye)
+                    let borcDL = document.getElementById('borclar-datalist'); let varlikDL = document.getElementById('varliklar-datalist');
+                    borcDL.innerHTML = ''; varlikDL.innerHTML = '';
+                    if(data.borclarListe) data.borclarListe.forEach(b => borcDL.innerHTML += `<option value="${b.isim}">`);
+                    if(data.varliklarListe) data.varliklarListe.forEach(v => varlikDL.innerHTML += `<option value="${v.isim}">`);
+
                     let toplamVarlik = data.toplamKasa;
-                    if (data.varliklarListe && data.varliklarListe.length > 0) { data.varliklarListe.forEach(v => { toplamVarlik += v.deger; }); }
-                    
-                    let varlikHTML = `<div class="list-row" style="padding: 8px 0; border:none;">
-                        <div style="width: 100%;">
-                            <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                                <span class="list-label" style="font-size:14px; color:var(--text-muted);">Nakit (Kasa) <span style="font-size:11px; margin-left:6px; color:#cbd5e1;">%${toplamVarlik > 0 ? Math.round((data.toplamKasa / toplamVarlik) * 100) : 0}</span></span>
-                                <span class="list-value tabular-nums" style="font-size:14px;">${formatTL(data.toplamKasa)}</span>
-                            </div>
-                            <div style="width: 100%; background: rgba(255,255,255,0.05); height: 4px; border-radius: 2px; overflow: hidden;">
-                                <div style="width: ${toplamVarlik > 0 ? Math.round((data.toplamKasa / toplamVarlik) * 100) : 0}%; background: var(--emerald); height: 100%; border-radius: 2px;"></div>
-                            </div>
-                        </div>
-                    </div>`;
-                    
-                    if (data.varliklarListe && data.varliklarListe.length > 0) {
-                        data.varliklarListe.forEach(v => {
-                            let yuzde = toplamVarlik > 0 ? Math.round((v.deger / toplamVarlik) * 100) : 0;
-                            varlikHTML += `
-                            <div class="list-row" style="padding: 8px 0; border:none;">
-                                <div style="width: 100%;">
-                                    <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                                        <span class="list-label" style="font-size:14px; color:var(--text-muted);">${v.isim} <span style="font-size:11px; margin-left:6px; color:#cbd5e1;">%${yuzde}</span></span>
-                                        <span class="list-value tabular-nums" style="font-size:14px;">${formatTL(v.deger)}</span>
-                                    </div>
-                                    <div style="width: 100%; background: rgba(255,255,255,0.05); height: 4px; border-radius: 2px; overflow: hidden;">
-                                        <div style="width: ${yuzde}%; background: var(--blue); height: 100%; border-radius: 2px;"></div>
-                                    </div>
-                                </div>
-                            </div>`;
-                        });
-                    }
-                    varlikHTML += `
-                    <div style="margin-top:14px; font-size:13px; color:var(--text-muted); border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 12px; display: flex; justify-content: space-between; align-items: center;">
-                        <span style="font-weight:600; color:#cbd5e1;">Toplam Varlık:</span>
-                        <span class="tabular-nums" style="color:#fff; font-weight:800; font-size:16px; letter-spacing:-0.2px;">${formatTL(toplamVarlik)}</span>
-                    </div>`;
+                    if (data.varliklarListe) { data.varliklarListe.forEach(v => { toplamVarlik += v.deger; }); }
+                    let varlikHTML = `<div class="list-row" style="padding: 8px 0; border:none;"><div style="width: 100%;"><div style="display:flex; justify-content:space-between; margin-bottom:6px;"><span class="list-label" style="font-size:14px; color:var(--text-muted);">Nakit (Kasa) <span style="font-size:11px; margin-left:6px; color:#cbd5e1;">%${toplamVarlik > 0 ? Math.round((data.toplamKasa / toplamVarlik) * 100) : 0}</span></span><span class="list-value tabular-nums" style="font-size:14px;">${formatTL(data.toplamKasa)}</span></div><div style="width: 100%; background: rgba(255,255,255,0.05); height: 4px; border-radius: 2px; overflow: hidden;"><div style="width: ${toplamVarlik > 0 ? Math.round((data.toplamKasa / toplamVarlik) * 100) : 0}%; background: var(--emerald); height: 100%; border-radius: 2px;"></div></div></div></div>`;
+                    if (data.varliklarListe) { data.varliklarListe.forEach(v => { let yuzde = toplamVarlik > 0 ? Math.round((v.deger / toplamVarlik) * 100) : 0; varlikHTML += `<div class="list-row" style="padding: 8px 0; border:none;"><div style="width: 100%;"><div style="display:flex; justify-content:space-between; margin-bottom:6px;"><span class="list-label" style="font-size:14px; color:var(--text-muted);">${v.isim} <span style="font-size:11px; margin-left:6px; color:#cbd5e1;">%${yuzde}</span></span><span class="list-value tabular-nums" style="font-size:14px;">${formatTL(v.deger)}</span></div><div style="width: 100%; background: rgba(255,255,255,0.05); height: 4px; border-radius: 2px; overflow: hidden;"><div style="width: ${yuzde}%; background: var(--blue); height: 100%; border-radius: 2px;"></div></div></div></div>`; }); }
+                    varlikHTML += `<div style="margin-top:14px; font-size:13px; color:var(--text-muted); border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 12px; display: flex; justify-content: space-between; align-items: center;"><span style="font-weight:600; color:#cbd5e1;">Toplam Varlık:</span><span class="tabular-nums" style="color:#fff; font-weight:800; font-size:16px; letter-spacing:-0.2px;">${formatTL(toplamVarlik)}</span></div>`;
                     document.getElementById('varlik-listesi').innerHTML = varlikHTML;
 
-                    // --- Borç Dağılımı ---
-                    let toplamBorcDagilim = data.toplamBorc || 0;
-                    let borcHTML = '';
-
+                    let toplamBorcDagilim = data.toplamBorc || 0; let borcHTML = '';
                     if (data.borclarListe && data.borclarListe.length > 0) {
                         data.borclarListe.sort((a, b) => b.tutar - a.tutar);
-                        data.borclarListe.forEach(b => {
-                            let yuzde = toplamBorcDagilim > 0 ? Math.round((b.tutar / toplamBorcDagilim) * 100) : 0;
-                            borcHTML += `
-                            <div class="list-row" style="padding: 8px 0; border:none;">
-                                <div style="width: 100%;">
-                                    <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                                        <span class="list-label" style="font-size:14px; color:var(--text-muted);">${b.isim} <span style="font-size:11px; margin-left:6px; color:var(--rose); opacity: 0.8;">%${yuzde}</span></span>
-                                        <span class="list-value tabular-nums text-red" style="font-size:14px;">${formatTL(b.tutar)}</span>
-                                    </div>
-                                    <div style="width: 100%; background: rgba(255,255,255,0.05); height: 4px; border-radius: 2px; overflow: hidden;">
-                                        <div style="width: ${yuzde}%; background: var(--rose); height: 100%; border-radius: 2px;"></div>
-                                    </div>
-                                </div>
-                            </div>`;
-                        });
-                        borcHTML += `
-                        <div style="margin-top:14px; font-size:13px; color:var(--text-muted); border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 12px; display: flex; justify-content: space-between; align-items: center;">
-                            <span style="font-weight:600; color:#cbd5e1;">Toplam Borç:</span>
-                            <span class="tabular-nums" style="color:#fff; font-weight:800; font-size:16px; letter-spacing:-0.2px;">${formatTL(toplamBorcDagilim)}</span>
-                        </div>`;
+                        data.borclarListe.forEach(b => { let yuzde = toplamBorcDagilim > 0 ? Math.round((b.tutar / toplamBorcDagilim) * 100) : 0; borcHTML += `<div class="list-row" style="padding: 8px 0; border:none;"><div style="width: 100%;"><div style="display:flex; justify-content:space-between; margin-bottom:6px;"><span class="list-label" style="font-size:14px; color:var(--text-muted);">${b.isim} <span style="font-size:11px; margin-left:6px; color:var(--rose); opacity: 0.8;">%${yuzde}</span></span><span class="list-value tabular-nums text-red" style="font-size:14px;">${formatTL(b.tutar)}</span></div><div style="width: 100%; background: rgba(255,255,255,0.05); height: 4px; border-radius: 2px; overflow: hidden;"><div style="width: ${yuzde}%; background: var(--rose); height: 100%; border-radius: 2px;"></div></div></div></div>`; });
+                        borcHTML += `<div style="margin-top:14px; font-size:13px; color:var(--text-muted); border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 12px; display: flex; justify-content: space-between; align-items: center;"><span style="font-weight:600; color:#cbd5e1;">Toplam Borç:</span><span class="tabular-nums" style="color:#fff; font-weight:800; font-size:16px; letter-spacing:-0.2px;">${formatTL(toplamBorcDagilim)}</span></div>`;
                     } else { borcHTML = `<div style="text-align:center; color:var(--emerald); font-size:13px; padding:10px 0;">Sıfır Borç! 🎉</div>`; }
                     document.getElementById('borc-listesi').innerHTML = borcHTML;
 
-                    document.getElementById('val-kasa').innerHTML = formatTL(data.toplamKasa);
-                    document.getElementById('val-borc').innerHTML = formatTL(data.toplamBorc);
-                    document.getElementById('val-borc-acil').innerHTML = formatTL(data.toplamCanYakan);
-                    document.getElementById('val-borc-planli').innerHTML = formatTL(data.toplamPlanli);
-                    
-                    document.getElementById('val-tahmini-faiz').innerHTML = formatTL(data.tahminiFaiz || 0);
-                    document.getElementById('val-toplam-odenen-faiz').innerHTML = formatTL(data.toplamOdenenFaiz || 0);
-                    
-                    document.getElementById('val-faiz-yk').innerHTML = formatTL(data.faizYKB || 0);
-                    document.getElementById('val-faiz-is').innerHTML = formatTL(data.faizIs || 0);
-                    document.getElementById('val-faiz-kk').innerHTML = formatTL(data.faizKK || 0);
-
-                    document.getElementById('val-kart-toplam').innerHTML = formatTL(data.kartToplam);
-                    document.getElementById('val-kart-donemici').innerHTML = formatTL(data.kartDonemIci || 0);
-                    document.getElementById('val-kart-buay').innerHTML = formatTL(data.kartBuAy);
-                    document.getElementById('val-kart-gelecek').innerHTML = formatTL(data.kartGelecek);
-
-                    document.getElementById('val-nev-yuzde').innerText = "%" + (data.nevYuzde || 0);
-                    document.getElementById('bar-nev').style.width = (data.nevYuzde || 0) + "%";
-                    document.getElementById('val-nev-kalan').innerHTML = "(Kalan: " + formatTL(data.nevKalan || 0) + ")";
-
-                    document.getElementById('val-ziraat-yuzde').innerText = "%" + (data.ziraatYuzde || 0);
-                    document.getElementById('bar-ziraat').style.width = (data.ziraatYuzde || 0) + "%";
-                    document.getElementById('val-ziraat-kalan').innerHTML = "(Kalan: " + formatTL(data.ziraatKalan || 0) + ")";
+                    document.getElementById('val-kasa').innerHTML = formatTL(data.toplamKasa); document.getElementById('val-borc').innerHTML = formatTL(data.toplamBorc); document.getElementById('val-borc-acil').innerHTML = formatTL(data.toplamCanYakan); document.getElementById('val-borc-planli').innerHTML = formatTL(data.toplamPlanli); document.getElementById('val-tahmini-faiz').innerHTML = formatTL(data.tahminiFaiz || 0); document.getElementById('val-toplam-odenen-faiz').innerHTML = formatTL(data.toplamOdenenFaiz || 0); document.getElementById('val-faiz-yk').innerHTML = formatTL(data.faizYKB || 0); document.getElementById('val-faiz-is').innerHTML = formatTL(data.faizIs || 0); document.getElementById('val-faiz-kk').innerHTML = formatTL(data.faizKK || 0); document.getElementById('val-kart-toplam').innerHTML = formatTL(data.kartToplam); document.getElementById('val-kart-donemici').innerHTML = formatTL(data.kartDonemIci || 0); document.getElementById('val-kart-buay').innerHTML = formatTL(data.kartBuAy); document.getElementById('val-kart-gelecek').innerHTML = formatTL(data.kartGelecek); document.getElementById('val-nev-yuzde').innerText = "%" + (data.nevYuzde || 0); document.getElementById('bar-nev').style.width = (data.nevYuzde || 0) + "%"; document.getElementById('val-nev-kalan').innerHTML = "(Kalan: " + formatTL(data.nevKalan || 0) + ")"; document.getElementById('val-ziraat-yuzde').innerText = "%" + (data.ziraatYuzde || 0); document.getElementById('bar-ziraat').style.width = (data.ziraatYuzde || 0) + "%"; document.getElementById('val-ziraat-kalan').innerHTML = "(Kalan: " + formatTL(data.ziraatKalan || 0) + ")";
 
                     const bankaDOM = document.getElementById('banka-listesi');
                     if (data.bankalar && data.bankalar.length > 0) {
@@ -1092,20 +766,10 @@
                         data.bankalar.forEach(banka => {
                             let bakiyeDegeri = parseFloat(banka.bakiye) || 0; toplamBanka += bakiyeDegeri;
                             let pillClass = bakiyeDegeri < 0 ? "pill-red" : (bakiyeDegeri > 0 ? "pill-green" : "pill-gray");
-                            let ikon = (banka.isim || "").toLowerCase().includes("nakit") 
-                                ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px; opacity:0.8;"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M12 12h.01"/><path d="M17 12h.01"/><path d="M7 12h.01"/></svg>` 
-                                : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px; opacity:0.8;"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>`;
-                            bankaDOM.innerHTML += `
-                            <div class="list-row">
-                                <span class="list-label" style="font-size:15px; font-weight:600; color:#e2e8f0;">${ikon} ${banka.isim}</span>
-                                <span class="pill-badge tabular-nums ${pillClass}">${formatTL(bakiyeDegeri)}</span>
-                            </div>`;
+                            let ikon = (banka.isim || "").toLowerCase().includes("nakit") ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right:8px; opacity:0.8;"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M12 12h.01"/><path d="M17 12h.01"/><path d="M7 12h.01"/></svg>` : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right:8px; opacity:0.8;"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>`;
+                            bankaDOM.innerHTML += `<div class="list-row"><span class="list-label" style="font-size:15px; font-weight:600; color:#e2e8f0;">${ikon} ${banka.isim}</span><span class="pill-badge tabular-nums ${pillClass}">${formatTL(bakiyeDegeri)}</span></div>`;
                         });
-                        bankaDOM.innerHTML += `
-                        <div style="margin-top:14px; font-size:13px; color:var(--text-muted); border-top: 1px solid var(--border-color); padding-top: 12px; display: flex; justify-content: space-between; align-items: center;">
-                            <div><span id="trend-kasa" class="trend-box tabular-nums sensitive-data" style="margin-top:0; font-size:11px;"></span></div>
-                            <div>Toplam Kasa: <span class="tabular-nums" style="color:#fff; font-weight:800; font-size:16px; letter-spacing:-0.2px;">${formatTL(toplamBanka)}</span></div>
-                        </div>`;
+                        bankaDOM.innerHTML += `<div style="margin-top:14px; font-size:13px; color:var(--text-muted); border-top: 1px solid var(--border-color); padding-top: 12px; display: flex; justify-content: space-between; align-items: center;"><div><span id="trend-kasa" class="trend-box tabular-nums sensitive-data" style="margin-top:0; font-size:11px;"></span></div><div>Toplam Kasa: <span class="tabular-nums" style="color:#fff; font-weight:800; font-size:16px; letter-spacing:-0.2px;">${formatTL(toplamBanka)}</span></div></div>`;
                     } else { bankaDOM.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding: 15px 0;">Veri bulunamadı.</div>`; }
 
                     if(data.buAyToplamGider !== undefined) {
@@ -1113,119 +777,45 @@
                         const bakiyeDOM = document.getElementById('kalanBakiye'), budgetBarDOM = document.getElementById('budgetBar'), percentDOM = document.getElementById('budgetPercent');
                         document.getElementById('butceDurum').innerHTML = "Gelir: " + formatTL(data.buAyToplamGelir);
                         
-                        let netKalan = data.buAyToplamGelir - data.buAyToplamGider;
-                        let tasarrufOrani = (data.buAyToplamGelir > 0 && netKalan > 0) ? Math.round((netKalan / data.buAyToplamGelir) * 100) : 0;
+                        let netKalan = data.buAyToplamGelir - data.buAyToplamGider; let tasarrufOrani = (data.buAyToplamGelir > 0 && netKalan > 0) ? Math.round((netKalan / data.buAyToplamGelir) * 100) : 0;
                         document.getElementById('tasarruf-orani-badge').innerText = `Tasarruf: %${tasarrufOrani}`;
-                        
-                        document.getElementById('mevcutKalanProjek').innerHTML = formatTL(netKalan);
-                        document.getElementById('gelecekSabitler').innerHTML = "- " + formatTL(data.odenecekSabitToplam || 0);
-                        let ozgurPara = netKalan - (data.odenecekSabitToplam || 0);
-                        let ozgurParaEl = document.getElementById('ozgurPara');
-                        ozgurParaEl.innerHTML = formatTL(ozgurPara);
-                        ozgurParaEl.style.color = ozgurPara >= 0 ? "var(--emerald)" : "var(--rose)";
+                        document.getElementById('mevcutKalanProjek').innerHTML = formatTL(netKalan); document.getElementById('gelecekSabitler').innerHTML = "- " + formatTL(data.odenecekSabitToplam || 0);
+                        let ozgurPara = netKalan - (data.odenecekSabitToplam || 0); let ozgurParaEl = document.getElementById('ozgurPara');
+                        ozgurParaEl.innerHTML = formatTL(ozgurPara); ozgurParaEl.style.color = ozgurPara >= 0 ? "var(--emerald)" : "var(--rose)";
 
                         if (data.buAyToplamGelir > 0) {
-                            let harcananYuzde = (data.buAyToplamGider / data.buAyToplamGelir) * 100;
-                            let kalan = data.buAyToplamGelir - data.buAyToplamGider;
-                            percentDOM.innerText = "%" + Math.round(harcananYuzde);
-
-                            if (harcananYuzde > 100) {
-                                budgetBarDOM.style.width = "100%"; budgetBarDOM.style.background = "linear-gradient(90deg, #f43f5e, #fb923c)"; percentDOM.style.color = "#ffffff";
-                                bakiyeDOM.innerHTML = "Aşıldı: " + formatTL(Math.abs(kalan)); bakiyeDOM.style.color = "var(--rose)";
-                            } else {
-                                budgetBarDOM.style.width = harcananYuzde + "%"; budgetBarDOM.style.background = harcananYuzde > 80 ? "linear-gradient(90deg, #f59e0b, #f43f5e)" : "var(--brand-gradient)"; percentDOM.style.color = "#ffffff";
-                                bakiyeDOM.innerHTML = "Kalan: " + formatTL(kalan); bakiyeDOM.style.color = "var(--emerald)";
-                            }
+                            let harcananYuzde = (data.buAyToplamGider / data.buAyToplamGelir) * 100; let kalan = data.buAyToplamGelir - data.buAyToplamGider; percentDOM.innerText = "%" + Math.round(harcananYuzde);
+                            if (harcananYuzde > 100) { budgetBarDOM.style.width = "100%"; budgetBarDOM.style.background = "linear-gradient(90deg, #f43f5e, #fb923c)"; percentDOM.style.color = "#ffffff"; bakiyeDOM.innerHTML = "Aşıldı: " + formatTL(Math.abs(kalan)); bakiyeDOM.style.color = "var(--rose)"; } else { budgetBarDOM.style.width = harcananYuzde + "%"; budgetBarDOM.style.background = harcananYuzde > 80 ? "linear-gradient(90deg, #f59e0b, #f43f5e)" : "var(--brand-gradient)"; percentDOM.style.color = "#ffffff"; bakiyeDOM.innerHTML = "Kalan: " + formatTL(kalan); bakiyeDOM.style.color = "var(--emerald)"; }
                         } else { budgetBarDOM.style.width = "0%"; percentDOM.innerText = "%0"; bakiyeDOM.innerText = "Veri Yok"; }
 
                         const trendDOM = document.getElementById('aylikTrend'); trendDOM.style.display = "inline-flex"; 
-                        if(data.gecenAyToplamGider > 0) {
-                            let fark = data.buAyToplamGider - data.gecenAyToplamGider; let yuzde = Math.abs((fark / data.gecenAyToplamGider) * 100).toFixed(1);
-                            if (fark > 0) { trendDOM.className = "trend-badge tabular-nums trend-bad"; trendDOM.innerText = "Geçen aya göre %" + yuzde + " fazla ↑"; } 
-                            else if (fark < 0) { trendDOM.className = "trend-badge tabular-nums trend-good"; trendDOM.innerText = "Geçen aya göre %" + yuzde + " az ↓"; } 
-                            else { trendDOM.className = "trend-badge tabular-nums"; trendDOM.innerText = "Geçen ayla aynı ━"; trendDOM.style.background = "rgba(255,255,255,0.06)"; border = "1px solid rgba(255,255,255,0.02)"; trendDOM.style.color = "#fff"; }
-                        } else { trendDOM.className = "trend-badge"; trendDOM.innerText = "Geçen ay verisi yok"; trendDOM.style.background = "rgba(255,255,255,0.04)"; trendDOM.style.border = "none"; trendDOM.style.color = "var(--text-muted)"; }
+                        if(data.gecenAyToplamGider > 0) { let fark = data.buAyToplamGider - data.gecenAyToplamGider; let yuzde = Math.abs((fark / data.gecenAyToplamGider) * 100).toFixed(1); if (fark > 0) { trendDOM.className = "trend-badge tabular-nums trend-bad"; trendDOM.innerText = "Geçen aya göre %" + yuzde + " fazla ↑"; } else if (fark < 0) { trendDOM.className = "trend-badge tabular-nums trend-good"; trendDOM.innerText = "Geçen aya göre %" + yuzde + " az ↓"; } else { trendDOM.className = "trend-badge tabular-nums"; trendDOM.innerText = "Geçen ayla aynı ━"; trendDOM.style.background = "rgba(255,255,255,0.06)"; trendDOM.style.color = "#fff"; } } else { trendDOM.className = "trend-badge"; trendDOM.innerText = "Geçen ay verisi yok"; trendDOM.style.background = "rgba(255,255,255,0.04)"; trendDOM.style.color = "var(--text-muted)"; }
                         
-                        let aylikIslemlerDOM = document.getElementById('aylik-islemler-container');
-                        let islemData = data.buAyIslemler || data.sonIslemler; 
-                        if(islemData && islemData.length > 0) {
-                            aylikIslemlerDOM.innerHTML = "";
-                            islemData.forEach(islem => {
-                                let isaret = islem.tur === "Gelir" ? "+" : "-";
-                                let bgClass = islem.tur === "Gelir" ? "rgba(16, 185, 129, 0.15)" : "rgba(244, 63, 94, 0.15)";
-                                let colorClass = islem.tur === "Gelir" ? "var(--emerald)" : "var(--rose)";
-                                aylikIslemlerDOM.innerHTML += `
-                                <div class="t-row" style="padding: 12px 0;">
-                                    <div class="t-details" style="min-width:0; padding-right:10px;">
-                                        <div class="t-name" style="font-size:14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${islem.kalem}</div>
-                                        <div class="t-meta tabular-nums" style="font-size:11px;">${islem.tarih} • ${islem.odeme}</div>
-                                    </div>
-                                    <div class="t-amt tabular-nums" style="background:${bgClass}; color:${colorClass}; padding:4px 8px; border-radius:8px; font-size:13px; font-weight:700; flex-shrink:0;">
-                                        ${isaret} ${formatTL(islem.tutar)}
-                                    </div>
-                                </div>`;
-                            });
-                        } else { aylikIslemlerDOM.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding: 15px 0; font-size:13px;">Bu ay henüz işlem kaydı yok.</div>`; }
+                        let aylikIslemlerDOM = document.getElementById('aylik-islemler-container'); let islemData = data.buAyIslemler || data.sonIslemler; 
+                        if(islemData && islemData.length > 0) { aylikIslemlerDOM.innerHTML = ""; islemData.forEach(islem => { let isaret = islem.tur === "Gelir" ? "+" : "-"; let bgClass = islem.tur === "Gelir" ? "rgba(16, 185, 129, 0.15)" : "rgba(244, 63, 94, 0.15)"; let colorClass = islem.tur === "Gelir" ? "var(--emerald)" : "var(--rose)"; aylikIslemlerDOM.innerHTML += `<div class="t-row" style="padding: 12px 0;"><div class="t-details" style="min-width:0; padding-right:10px;"><div class="t-name" style="font-size:14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${islem.kalem}</div><div class="t-meta tabular-nums" style="font-size:11px;">${islem.tarih} • ${islem.odeme}</div></div><div class="t-amt tabular-nums" style="background:${bgClass}; color:${colorClass}; padding:4px 8px; border-radius:8px; font-size:13px; font-weight:700; flex-shrink:0;">${isaret} ${formatTL(islem.tutar)}</div></div>`; }); } else { aylikIslemlerDOM.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding: 15px 0; font-size:13px;">Bu ay henüz işlem kaydı yok.</div>`; }
                     }
 
                     const yaklasanDOM = document.getElementById('yaklasan-listesi');
                     if(data.yaklasanOdemeler && data.yaklasanOdemeler.length > 0) {
-                        yaklasanDOM.innerHTML = "";
-                        let currentDay = now.getDate(); let daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+                        yaklasanDOM.innerHTML = ""; let currentDay = now.getDate(); let daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
                         data.yaklasanOdemeler.forEach(islem => { 
                             let kalanGun = islem.gun - currentDay; if (kalanGun < 0) kalanGun += daysInMonth;
                             let badgeRenk = kalanGun <= 2 ? "background: rgba(244, 63, 94, 0.15); color: var(--rose);" : "background: rgba(255,255,255,0.05); color: #cbd5e1;";
-                            let kalanMetinHTML = `<span style="font-size:10px; font-weight:700; padding:2px 6px; border-radius:6px; border:1px solid rgba(255,255,255,0.05); ${badgeRenk}">${kalanGun === 0 ? "Bugün" : kalanGun + " gün kaldı"}</span>`;
-                            
-                            // YENİ: Sabit Ödemeyi Liste Üzerinden Hızlıca Onaylama Butonu
-                            let onaylaButonHTML = `<button class="inline-action-btn" onclick="hizliSabitOnayla(BUL_SATIRI, 'Kredi Kartı')">Öde</button>`; 
-                            // Not: Backend'den 'satir' ID'si gelirse burayı dinamik bağlayabiliriz, şimdilik sadece özet liste mantığı.
-                            
-                            yaklasanDOM.innerHTML += `
-                            <div class="list-row" style="padding: 14px 0;">
-                                <div style="display:flex; flex-direction:column; gap:6px; min-width:0; padding-right:10px;">
-                                    <span class="list-label" style="font-size:15px; color:#f8fafc; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Ayın ${islem.gun}${turkceEkBul(islem.gun)} - ${islem.kalem}</span>
-                                    <div style="display:flex;">${kalanMetinHTML}</div>
-                                </div>
-                                <span class="list-value tabular-nums text-red" style="flex-shrink:0;">${formatTL(islem.tutar)}</span>
-                            </div>`; 
+                            yaklasanDOM.innerHTML += `<div class="list-row" style="padding: 14px 0;"><div style="display:flex; flex-direction:column; gap:6px; min-width:0; padding-right:10px;"><span class="list-label" style="font-size:15px; color:#f8fafc; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Ayın ${islem.gun}${turkceEkBul(islem.gun)} - ${islem.kalem}</span><div style="display:flex;"><span style="font-size:10px; font-weight:700; padding:2px 6px; border-radius:6px; border:1px solid rgba(255,255,255,0.05); ${badgeRenk}">${kalanGun === 0 ? "Bugün" : kalanGun + " gün kaldı"}</span></div></div><span class="list-value tabular-nums text-red" style="flex-shrink:0;">${formatTL(islem.tutar)}</span></div>`; 
                         });
                         yaklasanDOM.innerHTML += `<div style="text-align:right; margin-top:14px; font-size:13px; color:var(--text-muted); padding-right:5px; border-top: 1px solid var(--border-color); padding-top: 12px;">Toplam Çıkış: <span class="tabular-nums" style="color:#fff; font-weight:800; font-size:16px; letter-spacing:-0.2px;">${formatTL(data.yaklasanToplam)}</span></div>`;
-                    } else { yaklasanDOM.innerHTML = `<div style="text-align:center; color:var(--emerald); font-size: 14px; padding: 20px 0; font-weight: 600;">Planlı ödeme yok <svg width="18" style="vertical-align:middle; margin-left:4px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/></svg></div>`; }
+                    } else { yaklasanDOM.innerHTML = `<div style="text-align:center; color:var(--emerald); font-size: 14px; padding: 20px 0; font-weight: 600;">Planlı ödeme yok</div>`; }
 
                     const sabitlerDOM = document.getElementById('sabitler-listesi');
                     if(data.tumSabitlerListe && data.tumSabitlerListe.length > 0) {
-                        let toplamSabit = 0; let odenenSabit = 0; let odenecekSabit = 0;
-                        let htmlIcerik = `<div class="custom-scrollbar" style="max-height: 350px; overflow-y: auto; overflow-x: hidden; padding-right: 8px; overscroll-behavior: contain; margin-bottom: 4px;">`;
+                        let toplamSabit = 0; let odenenSabit = 0; let odenecekSabit = 0; let htmlIcerik = `<div class="custom-scrollbar" style="max-height: 350px; overflow-y: auto; overflow-x: hidden; padding-right: 8px; overscroll-behavior: contain; margin-bottom: 4px;">`;
                         data.tumSabitlerListe.forEach(sabit => {
-                            let tutar = parseFloat(sabit.tutar) || 0; toplamSabit += tutar;
-                            if(sabit.odendiMi) { odenenSabit += tutar; } else { odenecekSabit += tutar; }
-                            
-                            let checkIcon = sabit.odendiMi ? '<span style="color:var(--emerald); margin-left:8px; font-size:14px; text-shadow: 0 0 6px rgba(16, 185, 129, 0.4);">✓</span>' : '';
-                            let opacityStyle = sabit.odendiMi ? 'opacity: 0.4;' : '';
-                            let kalanMetin = (sabit.kalanAy === "Süresiz" || !sabit.kalanAy) ? "Süresiz" : sabit.kalanAy + " Ay Kaldı";
-                            let badgeClass = (sabit.kalanAy === "Süresiz" || !sabit.kalanAy) ? "pill-gray" : "pill-red";
-                            
-                            htmlIcerik += `
-                                <div class="list-row" style="${opacityStyle} border-bottom: 1px solid var(--border-color); padding: 16px 0;">
-                                    <div style="display:flex; flex-direction:column; gap:6px;">
-                                        <span class="list-label" style="font-size:15px; color:#f8fafc;">Ayın ${sabit.gun}${turkceEkBul(sabit.gun)} - ${sabit.kalem} ${checkIcon}</span>
-                                        <div style="display:flex; gap:6px; align-items:center;">
-                                            <span style="font-size:11px; font-weight:700; color:var(--text-muted); background:rgba(255,255,255,0.05); padding:2px 6px; border-radius:6px; border:1px solid rgba(255,255,255,0.05);">${sabit.yontem}</span>
-                                            <span class="pill-badge tabular-nums ${badgeClass}" style="font-size:10px; padding:2px 6px; border-radius:6px;">${kalanMetin}</span>
-                                        </div>
-                                    </div>
-                                    <span class="list-value tabular-nums" style="font-weight:800;">${formatTL(tutar)}</span>
-                                </div>`;
+                            let tutar = parseFloat(sabit.tutar) || 0; toplamSabit += tutar; if(sabit.odendiMi) { odenenSabit += tutar; } else { odenecekSabit += tutar; }
+                            let checkIcon = sabit.odendiMi ? '<span style="color:var(--emerald); margin-left:8px; font-size:14px;">✓</span>' : '';
+                            let opacityStyle = sabit.odendiMi ? 'opacity: 0.4;' : ''; let kalanMetin = (sabit.kalanAy === "Süresiz" || !sabit.kalanAy) ? "Süresiz" : sabit.kalanAy + " Ay Kaldı"; let badgeClass = (sabit.kalanAy === "Süresiz" || !sabit.kalanAy) ? "pill-gray" : "pill-red";
+                            htmlIcerik += `<div class="list-row" style="${opacityStyle} border-bottom: 1px solid var(--border-color); padding: 16px 0;"><div style="display:flex; flex-direction:column; gap:6px;"><span class="list-label" style="font-size:15px; color:#f8fafc;">Ayın ${sabit.gun}${turkceEkBul(sabit.gun)} - ${sabit.kalem} ${checkIcon}</span><div style="display:flex; gap:6px; align-items:center;"><span style="font-size:11px; font-weight:700; color:var(--text-muted); background:rgba(255,255,255,0.05); padding:2px 6px; border-radius:6px; border:1px solid rgba(255,255,255,0.05);">${sabit.yontem}</span><span class="pill-badge tabular-nums ${badgeClass}" style="font-size:10px; padding:2px 6px; border-radius:6px;">${kalanMetin}</span></div></div><span class="list-value tabular-nums" style="font-weight:800;">${formatTL(tutar)}</span></div>`;
                         });
-                        htmlIcerik += `</div>
-                        <div style="margin-top:14px; font-size:13px; color:var(--text-muted); border-top: 1px solid var(--border-color); padding-top: 12px; display:flex; flex-direction:column; gap:8px;">
-                            <div style="display:flex; justify-content:space-between; align-items:center;"><span>Ödenen:</span><span class="tabular-nums" style="color:var(--emerald); font-weight:600;">${formatTL(odenenSabit)}</span></div>
-                            <div style="display:flex; justify-content:space-between; align-items:center;"><span>Ödenecek:</span><span class="tabular-nums" style="color:var(--rose); font-weight:600;">${formatTL(odenecekSabit)}</span></div>
-                            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px; padding-top:10px; border-top: 1px dashed rgba(255,255,255,0.1);">
-                                <span style="font-weight:600; color:#cbd5e1;">Toplam Sabit:</span><span class="tabular-nums" style="color:#fff; font-weight:800; font-size:16px; letter-spacing:-0.2px;">${formatTL(toplamSabit)}</span>
-                            </div>
-                        </div>`;
+                        htmlIcerik += `</div><div style="margin-top:14px; font-size:13px; color:var(--text-muted); border-top: 1px solid var(--border-color); padding-top: 12px; display:flex; flex-direction:column; gap:8px;"><div style="display:flex; justify-content:space-between; align-items:center;"><span>Ödenen:</span><span class="tabular-nums" style="color:var(--emerald); font-weight:600;">${formatTL(odenenSabit)}</span></div><div style="display:flex; justify-content:space-between; align-items:center;"><span>Ödenecek:</span><span class="tabular-nums" style="color:var(--rose); font-weight:600;">${formatTL(odenecekSabit)}</span></div><div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px; padding-top:10px; border-top: 1px dashed rgba(255,255,255,0.1);"><span style="font-weight:600; color:#cbd5e1;">Toplam Sabit:</span><span class="tabular-nums" style="color:#fff; font-weight:800; font-size:16px; letter-spacing:-0.2px;">${formatTL(toplamSabit)}</span></div></div>`;
                         sabitlerDOM.innerHTML = htmlIcerik;
                     } else { sabitlerDOM.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size: 13px; padding: 15px 0;">Kayıtlı sabit ödeme bulunamadı.</div>`; }
 
@@ -1233,57 +823,23 @@
                     if(data.sonIslemler && data.sonIslemler.length > 0) {
                         listeDOM.innerHTML = "";
                         data.sonIslemler.forEach(islem => {
-                            let isaret = islem.tur === "Gelir" ? "+" : "-";
-                            let bgClass = islem.tur === "Gelir" ? "rgba(16, 185, 129, 0.15)" : "rgba(244, 63, 94, 0.15)";
-                            let colorClass = islem.tur === "Gelir" ? "var(--emerald)" : "var(--rose)";
-                            listeDOM.innerHTML += `
-                            <div class="t-row">
-                                <div class="t-details" style="min-width:0; padding-right:10px;">
-                                    <div class="t-name" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${islem.kalem}</div>
-                                    <div class="t-meta tabular-nums">${islem.tarih} • ${islem.odeme}</div>
-                                </div>
-                                <div class="t-amt tabular-nums" style="background:${bgClass}; color:${colorClass}; padding:6px 10px; border-radius:10px; font-size:15px; font-weight:700; flex-shrink:0;">
-                                    ${isaret} ${formatTL(islem.tutar)}
-                                </div>
-                            </div>`;
+                            let isaret = islem.tur === "Gelir" ? "+" : "-"; let bgClass = islem.tur === "Gelir" ? "rgba(16, 185, 129, 0.15)" : "rgba(244, 63, 94, 0.15)"; let colorClass = islem.tur === "Gelir" ? "var(--emerald)" : "var(--rose)";
+                            listeDOM.innerHTML += `<div class="t-row"><div class="t-details" style="min-width:0; padding-right:10px;"><div class="t-name" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${islem.kalem}</div><div class="t-meta tabular-nums">${islem.tarih} • ${islem.odeme}</div></div><div class="t-amt tabular-nums" style="background:${bgClass}; color:${colorClass}; padding:6px 10px; border-radius:10px; font-size:15px; font-weight:700; flex-shrink:0;">${isaret} ${formatTL(islem.tutar)}</div></div>`;
                         });
                     } else { listeDOM.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding: 15px 0;">Henüz işlem yok</div>`; }
                     
-                    updateTrends(0, document.querySelector('.time-btn.active')); 
-                    grafigiCizDoughnut(data.pastaGrafik, data.buAyToplamGider);
+                    updateTrends(0, document.querySelector('.time-btn.active')); grafigiCizDoughnut(data.pastaGrafik, data.buAyToplamGider);
                 } else { throw new Error("API hatası"); }
-            } catch (error) { 
-                console.error("Hata Yakalandı:", error);
-                durumEl.innerText = "Bağlantı veya URL Hatası"; durumEl.style.color = "var(--rose)"; 
-            }
+            } catch (error) { document.getElementById('baglanti-durumu').innerText = "Bağlantı Hatası"; document.getElementById('baglanti-durumu').style.color = "var(--rose)"; }
         }
 
         function grafigiCizDoughnut(kategoriData, totalExpense) {
             const canvas = document.getElementById('expenseChart'); if(!canvas) return; const ctx = canvas.getContext('2d');
-            if(expenseChartInstance) { expenseChartInstance.destroy(); }
-            if(!kategoriData || kategoriData.length === 0) {
-                ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.font = '600 13px Inter, sans-serif'; ctx.fillStyle = '#94a3b8'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-                ctx.fillText('Bu ay henüz harcama kaydı yok 🎉', canvas.width / 2, canvas.height / 2); return;
-            }
-            const labels = kategoriData.map(item => item.isim); const values = kategoriData.map(item => item.toplam);
-            const colors = ['#3b82f6', '#f43f5e', '#10b981', '#f59e0b', '#8b5cf6'];
-            const centerTextPlugin = {
-                id: 'centerText',
-                beforeDraw: function(chart) {
-                    var width = chart.width, height = chart.height, ctx = chart.ctx; ctx.restore();
-                    var fontSize = (height / 110).toFixed(2); ctx.font = "bold " + fontSize + "em Inter, sans-serif";
-                    ctx.textBaseline = "middle"; ctx.fillStyle = "#ffffff";
-                    var text = "₺" + new Intl.NumberFormat('tr-TR', {maximumFractionDigits: 0}).format(totalExpense);
-                    var textX = Math.round((width - ctx.measureText(text).width) / 2); var textY = height / 2; ctx.fillText(text, textX, textY);
-                    ctx.font = "600 " + (fontSize*0.35) + "em Inter, sans-serif"; ctx.fillStyle = "#94a3b8";
-                    var subText = "Toplam Harcama"; var subTextX = Math.round((width - ctx.measureText(subText).width) / 2);
-                    ctx.fillText(subText, subTextX, textY + (height*0.15)); ctx.save();
-                }
-            };
-            expenseChartInstance = new Chart(ctx, {
-                type: 'doughnut', data: { labels: labels, datasets: [{ data: values, backgroundColor: colors, borderWidth: 0, hoverOffset: 6 }] },
-                options: { responsive: true, maintainAspectRatio: false, cutout: '75%', layout: { padding: 10 }, plugins: { legend: { display: false }, tooltip: { backgroundColor: 'rgba(15, 23, 42, 0.95)', titleFont: {family: 'Inter', size: 14}, bodyFont: {family: 'Inter', size: 13, weight: 'bold'}, padding: 12, cornerRadius: 12, callbacks: { label: function(context) { let para = new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2 }).format(context.raw); return ' ₺' + para; } } } } }, plugins: [centerTextPlugin] 
-            });
+            if(expenseChartInstance) expenseChartInstance.destroy();
+            if(!kategoriData || kategoriData.length === 0) { ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.font = '600 13px Inter, sans-serif'; ctx.fillStyle = '#94a3b8'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('Bu ay henüz harcama kaydı yok 🎉', canvas.width / 2, canvas.height / 2); return; }
+            const labels = kategoriData.map(item => item.isim); const values = kategoriData.map(item => item.toplam); const colors = ['#3b82f6', '#f43f5e', '#10b981', '#f59e0b', '#8b5cf6'];
+            const centerTextPlugin = { id: 'centerText', beforeDraw: function(chart) { var width = chart.width, height = chart.height, ctx = chart.ctx; ctx.restore(); var fontSize = (height / 110).toFixed(2); ctx.font = "bold " + fontSize + "em Inter, sans-serif"; ctx.textBaseline = "middle"; ctx.fillStyle = "#ffffff"; var text = "₺" + new Intl.NumberFormat('tr-TR', {maximumFractionDigits: 0}).format(totalExpense); var textX = Math.round((width - ctx.measureText(text).width) / 2); var textY = height / 2; ctx.fillText(text, textX, textY); ctx.font = "600 " + (fontSize*0.35) + "em Inter, sans-serif"; ctx.fillStyle = "#94a3b8"; var subText = "Toplam Harcama"; var subTextX = Math.round((width - ctx.measureText(subText).width) / 2); ctx.fillText(subText, subTextX, textY + (height*0.15)); ctx.save(); } };
+            expenseChartInstance = new Chart(ctx, { type: 'doughnut', data: { labels: labels, datasets: [{ data: values, backgroundColor: colors, borderWidth: 0, hoverOffset: 6 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '75%', layout: { padding: 10 }, plugins: { legend: { display: false }, tooltip: { backgroundColor: 'rgba(15, 23, 42, 0.95)', titleFont: {family: 'Inter', size: 14}, bodyFont: {family: 'Inter', size: 13, weight: 'bold'}, padding: 12, cornerRadius: 12, callbacks: { label: function(context) { return ' ₺' + new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2 }).format(context.raw); } } } } }, plugins: [centerTextPlugin] });
         }
 
         document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") verileriCek(); });
