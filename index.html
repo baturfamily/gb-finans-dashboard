@@ -249,6 +249,39 @@
         
         .inline-action-btn { background: rgba(16, 185, 129, 0.15); color: var(--emerald); border: 1px solid rgba(16, 185, 129, 0.3); padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; margin-left: 8px;}
         .inline-action-btn:active { background: rgba(16, 185, 129, 0.3); }
+        /* MODERN AÇILIR MENÜ (CUSTOM SELECT) STİLLERİ */
+.custom-select-wrapper { position: relative; width: 100%; margin-bottom: 16px; }
+.form-group .custom-select-wrapper { margin-bottom: 0; }
+.custom-select-trigger {
+    display: flex; justify-content: space-between; align-items: center;
+    cursor: pointer; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1);
+    color: #fff; padding: 14px; border-radius: 12px; font-size: 15px; transition: all 0.2s;
+    -webkit-tap-highlight-color: transparent;
+}
+.custom-select-trigger:active { background: rgba(255,255,255,0.05); }
+.custom-select-wrapper.open .custom-select-trigger {
+    border-color: var(--blue); box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+.custom-select-wrapper.open .custom-select-trigger svg { transform: rotate(180deg); transition: transform 0.3s ease; }
+.custom-select-trigger svg { transition: transform 0.3s ease; color: var(--text-muted); }
+
+.custom-options {
+    position: absolute; top: calc(100% + 8px); left: 0; right: 0;
+    background: var(--bg-dark); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); z-index: 1000;
+    max-height: 220px; overflow-y: auto; opacity: 0; visibility: hidden;
+    transform: translateY(-10px); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    scrollbar-width: thin; overscroll-behavior: contain;
+}
+.custom-select-wrapper.open .custom-options { opacity: 1; visibility: visible; transform: translateY(0); }
+.custom-option {
+    padding: 14px 16px; font-size: 15px; color: #e2e8f0; cursor: pointer;
+    border-bottom: 1px solid rgba(255,255,255,0.04); transition: background 0.2s;
+}
+.custom-option:last-child { border-bottom: none; }
+.custom-option:hover, .custom-option:active { background: rgba(255,255,255,0.05); }
+.custom-option.selected { color: var(--blue); font-weight: 600; background: rgba(59, 130, 246, 0.1); }
+.text-truncate { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     </style>
 </head>
 <body>
@@ -1090,6 +1123,71 @@
 
         document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") verileriCek(); });
         verileriCek();
+
+        // ESKİ TİP LİSTELERİ MODERN YAPIYA DÖNÜŞTÜREN MOTOR
+        function refreshCustomSelect(select) {
+            if (select.nextElementSibling && select.nextElementSibling.classList.contains('custom-select-wrapper')) {
+                select.nextElementSibling.remove();
+            }
+            select.style.display = 'none'; // Gerçek seçiciyi gizle
+            
+            const wrapper = document.createElement('div');
+            wrapper.className = 'custom-select-wrapper';
+            
+            const trigger = document.createElement('div');
+            trigger.className = 'custom-select-trigger form-control';
+            trigger.innerHTML = `<span class="text-truncate">${select.options[select.selectedIndex]?.text || 'Seçiniz...'}</span>
+                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><polyline points="6 9 12 15 18 9"></polyline></svg>`;
+            
+            const optionsDiv = document.createElement('div');
+            optionsDiv.className = 'custom-options custom-scrollbar';
+            
+            Array.from(select.options).forEach(option => {
+                const optDiv = document.createElement('div');
+                optDiv.className = 'custom-option';
+                optDiv.innerText = option.text;
+                if (option.selected) optDiv.classList.add('selected');
+                
+                optDiv.addEventListener('click', (e) => {
+                    e.stopPropagation(); vibe();
+                    select.value = option.value;
+                    trigger.querySelector('span').innerText = option.text;
+                    optionsDiv.querySelectorAll('.custom-option').forEach(o => o.classList.remove('selected'));
+                    optDiv.classList.add('selected');
+                    wrapper.classList.remove('open');
+                    select.dispatchEvent(new Event('change')); // Senin tetikleyicilerini (Nereden geldi vb.) çalıştırır
+                });
+                optionsDiv.appendChild(optDiv);
+            });
+            
+            trigger.addEventListener('click', (e) => {
+                e.stopPropagation(); vibe();
+                document.activeElement.blur(); // Varsa açık klavyeyi kapat
+                document.querySelectorAll('.custom-select-wrapper.open').forEach(w => {
+                    if(w !== wrapper) w.classList.remove('open');
+                });
+                wrapper.classList.toggle('open');
+            });
+            
+            wrapper.appendChild(trigger);
+            wrapper.appendChild(optionsDiv);
+            select.parentNode.insertBefore(wrapper, select.nextSibling);
+        }
+
+        // Sistemi başlat ve güncellemeleri dinle
+        function initCustomSelects() {
+            document.querySelectorAll('select.form-control').forEach(select => {
+                refreshCustomSelect(select);
+                // Eğer arka planda liste güncellenirse (Örn: Borçlar yüklendiğinde) yeni tasarımı da güncelle
+                new MutationObserver(() => refreshCustomSelect(select)).observe(select, { childList: true });
+            });
+            
+            // Ekranda boş bir yere tıklayınca açık menüleri kapat
+            document.addEventListener('click', () => {
+                document.querySelectorAll('.custom-select-wrapper.open').forEach(w => w.classList.remove('open'));
+            });
+        }
+        initCustomSelects();
     </script>
 </body>
 </html>
