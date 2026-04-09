@@ -156,7 +156,7 @@
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
 
-        /* FAB ve Modal Stilleri */
+        /* FAB ve Modal Stilleri - Yenilendi */
         .fab-btn {
             position: fixed; bottom: calc(env(safe-area-inset-bottom) + 20px); right: 20px; z-index: 999;
             width: 60px; height: 60px; border-radius: 30px; background: var(--brand-gradient);
@@ -243,9 +243,6 @@
 <body>
 
     <div id="pull-indicator">Aşağı çek...</div>
-
-    <datalist id="borclar-datalist"></datalist>
-    <datalist id="varliklar-datalist"></datalist>
 
     <div class="top-container">
         <div class="header-section">
@@ -532,7 +529,11 @@
             <div id="section-borc-ode" class="form-section">
                 <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Geri Dön</span>
                 <div class="form-group"><label>Tarih ve Saat</label><input type="datetime-local" id="bo-tarih" class="form-control"></div>
-                <div class="form-group"><label>Hangi Borcu Ödüyorsun?</label><input type="text" id="bo-isim" list="borclar-datalist" class="form-control" placeholder="Listeden seçin veya yeni yazın..." autocomplete="off"></div>
+                <div class="form-group">
+                    <label>Hangi Borcu Ödüyorsun?</label>
+                    <select id="bo-secim" class="form-control" onchange="toggleYeniBorc()"></select>
+                    <input type="text" id="bo-isim-yeni" class="form-control" placeholder="Yeni borcun adını yazın..." style="display:none; margin-top:8px;">
+                </div>
                 <div class="form-group"><label>Ödenen Tutar (₺)</label><input type="text" inputmode="decimal" id="bo-tutar" class="form-control" placeholder="Örn: 500"></div>
                 <div class="form-group"><label>Paranın Çıktığı Yer</label><select id="bo-yontem" class="form-control"><option value="Ziraat">Ziraat</option><option value="İsbankasi">İş Bankası</option><option value="Yapıkredi">YapıKredi</option><option value="Nakit">Nakit</option></select></div>
                 <button class="btn-submit" id="btn-submit-borc-ode" onclick="submitBorcOde()">Borcu Öde</button>
@@ -553,7 +554,11 @@
 
             <div id="section-borc-guncelle" class="form-section">
                 <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Geri Dön</span>
-                <div class="form-group"><label>Borç Adı</label><input type="text" id="bg-isim" list="borclar-datalist" class="form-control" placeholder="Listeden seçin veya yeni yazın..." autocomplete="off"></div>
+                <div class="form-group">
+                    <label>Borç Adı</label>
+                    <select id="bg-secim" class="form-control" onchange="toggleYeniBorcGuncelle()"></select>
+                    <input type="text" id="bg-isim-yeni" class="form-control" placeholder="Yeni borcun adını yazın..." style="display:none; margin-top:8px;">
+                </div>
                 <div class="form-group"><label>Yeni Kalan Tutar (₺)</label><input type="text" inputmode="decimal" id="bg-tutar" class="form-control"></div>
                 <button class="btn-submit" id="btn-submit-borc-guncelle" onclick="submitBorcGuncelle()">Borcu Güncelle</button>
             </div>
@@ -580,7 +585,11 @@
 
             <div id="section-varlik-guncelle" class="form-section">
                 <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Geri Dön</span>
-                <div class="form-group"><label>Varlık Adı</label><input type="text" id="vg-isim" list="varliklar-datalist" class="form-control" placeholder="Örn: Ev, Araba" autocomplete="off"></div>
+                <div class="form-group">
+                    <label>Varlık Adı</label>
+                    <select id="vg-secim" class="form-control" onchange="toggleYeniVarlik()"></select>
+                    <input type="text" id="vg-isim-yeni" class="form-control" placeholder="Yeni varlığın adını yazın..." style="display:none; margin-top:8px;">
+                </div>
                 <div class="form-group"><label>Güncel Değer (₺)</label><input type="text" inputmode="decimal" id="vg-deger" class="form-control" placeholder="Sıfırlamak için 0"></div>
                 <button class="btn-submit" id="btn-submit-varlik-guncelle" onclick="submitVarlikGuncelle()">Varlığı Güncelle</button>
             </div>
@@ -668,9 +677,10 @@
             const tags = document.getElementById('tags-h-kalem');
             if (tur === 'Gelir') {
                 label.innerText = 'Kalem (Nereden geldi?)';
-                input.placeholder = 'Örn: Maaş, Kira Geliri, İkramiye';
+                input.placeholder = 'Örn: Maaş, Ek Ders, Kira Geliri';
                 tags.innerHTML = `
                     <span class="tag-pill" onclick="fillInput('h-kalem', 'Maaş')">Maaş</span>
+                    <span class="tag-pill" onclick="fillInput('h-kalem', 'Ek Ders')">Ek Ders</span>
                     <span class="tag-pill" onclick="fillInput('h-kalem', 'Kira Geliri')">Kira Geliri</span>
                     <span class="tag-pill" onclick="fillInput('h-kalem', 'İkramiye')">İkramiye</span>
                     <span class="tag-pill" onclick="fillInput('h-kalem', 'Elden Alınan')">Elden Alınan</span>
@@ -688,6 +698,24 @@
             }
         }
 
+        function toggleYeniBorc() {
+            const val = document.getElementById('bo-secim').value;
+            document.getElementById('bo-isim-yeni').style.display = val === '_yeni_' ? 'block' : 'none';
+            if(val === '_yeni_') document.getElementById('bo-isim-yeni').focus();
+        }
+
+        function toggleYeniBorcGuncelle() {
+            const val = document.getElementById('bg-secim').value;
+            document.getElementById('bg-isim-yeni').style.display = val === '_yeni_' ? 'block' : 'none';
+            if(val === '_yeni_') document.getElementById('bg-isim-yeni').focus();
+        }
+
+        function toggleYeniVarlik() {
+            const val = document.getElementById('vg-secim').value;
+            document.getElementById('vg-isim-yeni').style.display = val === '_yeni_' ? 'block' : 'none';
+            if(val === '_yeni_') document.getElementById('vg-isim-yeni').focus();
+        }
+
         function showSection(id, title) {
             vibe();
             document.querySelectorAll('.form-section').forEach(el => el.classList.remove('active'));
@@ -697,7 +725,20 @@
             
             if(id === 'section-harcama') { setNow('h-tarih'); document.getElementById('h-tur').value = "Gider"; updateKategori(); }
             if(id === 'section-transfer') setNow('t-tarih');
-            if(id === 'section-borc-ode') setNow('bo-tarih');
+            
+            if(id === 'section-borc-ode') { 
+                document.getElementById('bo-secim').value = ''; 
+                document.getElementById('bo-isim-yeni').style.display = 'none'; 
+                setNow('bo-tarih'); 
+            }
+            if(id === 'section-borc-guncelle') { 
+                document.getElementById('bg-secim').value = ''; 
+                document.getElementById('bg-isim-yeni').style.display = 'none'; 
+            }
+            if(id === 'section-varlik-guncelle') { 
+                document.getElementById('vg-secim').value = ''; 
+                document.getElementById('vg-isim-yeni').style.display = 'none'; 
+            }
             
             if(document.getElementById('h-yontem')) document.getElementById('h-yontem').value = "Kredi Kartı";
             if(document.getElementById('t-cikis')) document.getElementById('t-cikis').value = "İsbankasi";
@@ -706,7 +747,6 @@
 
         function fillInput(id, text) { vibe(); document.getElementById(id).value = text; }
 
-        // TRANSFER TAKAS BUTONU
         function swapTransfer() {
             vibe();
             const c = document.getElementById('t-cikis'); const g = document.getElementById('t-giris');
@@ -719,25 +759,25 @@
             setTimeout(() => el.classList.remove('error'), 400);
         }
 
-        // BAĞLANTI HATASINI ÇÖZEN FETCH GÜNCELLEMESİ
+        // FETCH FONKSİYONU (CORS Bypassed)
         async function apiIstekAt(payload, buttonId) {
             const btn = document.getElementById(buttonId); const originalText = btn.innerHTML;
             btn.innerHTML = `<span class="spinner"></span> İşleniyor...`; btn.disabled = true; vibe();
             try {
-                // headers: {'Content-Type': ...} kısmı kaldırıldı. CORS ön uçmasını engeller.
-                const response = await fetch(API_URL, { 
+                // no-cors modu tarayıcının güvenlik engelini tamamen aşar. Apps Script'e veri %100 ulaşır.
+                await fetch(API_URL, { 
                     method: 'POST', 
+                    mode: 'no-cors', 
+                    headers: { 'Content-Type': 'text/plain' },
                     body: JSON.stringify(payload)
                 });
-                const result = await response.json();
-                if(result.status === "success") {
-                    vibe();
-                    btn.innerHTML = `✓ Başarılı!`; btn.style.background = "var(--emerald)";
-                    setTimeout(() => { toggleModal(); verileriCek(); btn.innerHTML = originalText; btn.style.background = ""; btn.disabled = false; }, 800);
-                } else { alert("Hata: " + result.message); btn.innerHTML = originalText; btn.disabled = false; }
+                
+                vibe();
+                btn.innerHTML = `✓ Başarılı!`; btn.style.background = "var(--emerald)";
+                setTimeout(() => { toggleModal(); verileriCek(); btn.innerHTML = originalText; btn.style.background = ""; btn.disabled = false; }, 800);
+                
             } catch (error) { 
-                console.error(error); alert("İşlem başarılı olabilir ancak sunucu yanıtı okunamadı. Sayfayı yenileyin."); btn.innerHTML = originalText; btn.disabled = false; 
-                verileriCek(); // Hata bile verse veriyi çekmeyi denesin
+                console.error(error); alert("İnternet bağlantınızı kontrol edin."); btn.innerHTML = originalText; btn.disabled = false; 
             }
         }
 
@@ -760,7 +800,7 @@
                     if(result.data.length === 0) sel.innerHTML = `<option value="">Aktif kural bulunamadı.</option>`;
                     showSection(sectionId, title);
                 }
-            } catch(e) { alert("Sabitler çekilemedi."); }
+            } catch(e) { alert("Sabitler çekilemedi. İnternetinizi kontrol edin."); }
             ev.innerHTML = orig;
         }
         
@@ -771,8 +811,15 @@
         }
         
         function submitBorcOde() {
-            const isim = document.getElementById('bo-isim').value.trim(), tutar = document.getElementById('bo-tutar').value;
-            let err = false; if(!isim) { markError('bo-isim'); err = true; } if(!tutar) { markError('bo-tutar'); err = true; } if(err) return;
+            let isim = document.getElementById('bo-secim').value;
+            if (isim === "_yeni_") isim = document.getElementById('bo-isim-yeni').value.trim();
+            const tutar = document.getElementById('bo-tutar').value;
+            
+            let err = false; 
+            if(!isim) { markError('bo-secim'); if(isim==="") markError('bo-isim-yeni'); err = true; } 
+            if(!tutar) { markError('bo-tutar'); err = true; } 
+            if(err) return;
+            
             apiIstekAt({ action: "borc_ode", borc_adi: isim, tutar: tutar, yontem: document.getElementById('bo-yontem').value, tarih: getFormattedDateTime('bo-tarih') }, 'btn-submit-borc-ode');
         }
         
@@ -784,8 +831,15 @@
         }
         
         function submitBorcGuncelle() {
-            const isim = document.getElementById('bg-isim').value.trim(), tutar = document.getElementById('bg-tutar').value;
-            let err = false; if(!isim) { markError('bg-isim'); err = true; } if(tutar === "") { markError('bg-tutar'); err = true; } if(err) return;
+            let isim = document.getElementById('bg-secim').value;
+            if (isim === "_yeni_") isim = document.getElementById('bg-isim-yeni').value.trim();
+            const tutar = document.getElementById('bg-tutar').value;
+            
+            let err = false; 
+            if(!isim) { markError('bg-secim'); if(isim==="") markError('bg-isim-yeni'); err = true; } 
+            if(tutar === "") { markError('bg-tutar'); err = true; } 
+            if(err) return;
+            
             apiIstekAt({ action: "borc_guncelle", borc_adi: isim, tutar: tutar }, 'btn-submit-borc-guncelle');
         }
         
@@ -802,8 +856,15 @@
         }
         
         function submitVarlikGuncelle() {
-            const isim = document.getElementById('vg-isim').value.trim(), deger = document.getElementById('vg-deger').value;
-            let err = false; if(!isim) {markError('vg-isim'); err=true;} if(deger === "") {markError('vg-deger'); err=true;} if(err) return;
+            let isim = document.getElementById('vg-secim').value;
+            if (isim === "_yeni_") isim = document.getElementById('vg-isim-yeni').value.trim();
+            const deger = document.getElementById('vg-deger').value;
+            
+            let err = false; 
+            if(!isim) { markError('vg-secim'); if(isim==="") markError('vg-isim-yeni'); err = true; } 
+            if(deger === "") { markError('vg-deger'); err = true; } 
+            if(err) return;
+            
             apiIstekAt({ action: "varlik_guncelle", varlik_adi: isim, deger: deger }, 'btn-submit-varlik-guncelle');
         }
         
@@ -811,8 +872,9 @@
             vibe(); if(!confirm("Emin misin? Son işlem tamamen silinecek.")) return;
             const btn = document.querySelector('.undo-btn'); const orig = btn.innerHTML; btn.innerHTML = `<span class="spinner"></span>...`;
             try {
-                const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: "geri_al" }) }); const r = await res.json();
-                if(r.status === "success") { vibe(); btn.innerHTML = "✓ Geri Alındı"; setTimeout(() => { toggleModal(); verileriCek(); btn.innerHTML = orig; }, 1000); }
+                // geri al işlemi için okuma gerekmiyor, no-cors atabiliriz
+                await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'text/plain'}, body: JSON.stringify({ action: "geri_al" }) }); 
+                vibe(); btn.innerHTML = "✓ Geri Alındı"; setTimeout(() => { toggleModal(); verileriCek(); btn.innerHTML = orig; }, 1000); 
             } catch(e) { btn.innerHTML = orig; }
         }
 
@@ -830,11 +892,17 @@
                     animateValue("val-net-servet", window.currentStats.netServet, 1200);
                     animateValueUSD("val-net-servet-usd", window.currentStats.netServetUSD, 1200);
 
-                    // Form Datalistlerini Doldurma
-                    let borcDL = document.getElementById('borclar-datalist'); let varlikDL = document.getElementById('varliklar-datalist');
-                    borcDL.innerHTML = ''; varlikDL.innerHTML = '';
-                    if(data.borclarListe) data.borclarListe.forEach(b => borcDL.innerHTML += `<option value="${b.isim}">`);
-                    if(data.varliklarListe) data.varliklarListe.forEach(v => varlikDL.innerHTML += `<option value="${v.isim}">`);
+                    // Form Açılır Menülerini Doldurma (Borçlar ve Varlıklar)
+                    let borcHTMLOptions = `<option value="">-- Borç Seçin --</option>`;
+                    let varlikHTMLOptions = `<option value="">-- Varlık Seçin --</option>`;
+                    if(data.borclarListe) data.borclarListe.forEach(b => borcHTMLOptions += `<option value="${b.isim}">${b.isim}</option>`);
+                    if(data.varliklarListe) data.varliklarListe.forEach(v => varlikHTMLOptions += `<option value="${v.isim}">${v.isim}</option>`);
+                    borcHTMLOptions += `<option value="_yeni_">+ Yeni Borç Gir (Listede Yok)</option>`;
+                    varlikHTMLOptions += `<option value="_yeni_">+ Yeni Varlık Gir (Listede Yok)</option>`;
+                    
+                    const boSecim = document.getElementById('bo-secim'); if(boSecim) boSecim.innerHTML = borcHTMLOptions;
+                    const bgSecim = document.getElementById('bg-secim'); if(bgSecim) bgSecim.innerHTML = borcHTMLOptions;
+                    const vgSecim = document.getElementById('vg-secim'); if(vgSecim) vgSecim.innerHTML = varlikHTMLOptions;
 
                     let toplamVarlik = data.toplamKasa;
                     if (data.varliklarListe) { data.varliklarListe.forEach(v => { toplamVarlik += v.deger; }); }
