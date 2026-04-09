@@ -204,6 +204,7 @@
             width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1);
             color: #fff; padding: 14px; border-radius: 12px; font-size: 15px; outline: none; transition: border 0.2s;
         }
+        .form-control[type="datetime-local"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
         .form-control:focus { border-color: var(--blue); }
         .form-control option { background: var(--bg-dark); }
         
@@ -461,7 +462,7 @@
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
                         <span>Borç Öde</span>
                     </div>
-                    <div class="action-card" onclick="showSection('section-transfer', 'Kendi Hesabına Transfer Yap')">
+                    <div class="action-card" onclick="showSection('section-transfer', 'Hesaplar Arası Transfer')">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg>
                         <span>Transfer Yap</span>
                     </div>
@@ -490,7 +491,7 @@
 
             <div id="section-harcama" class="form-section">
                 <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')">← Geri Dön</span>
-                <div class="form-group"><label>Tarih</label><select id="h-tarih" class="form-control"><option value="bugun">Bugün</option><option value="dun">Dün</option></select></div>
+                <div class="form-group"><label>Tarih ve Saat</label><input type="datetime-local" id="h-tarih" class="form-control"></div>
                 <div class="form-group"><label>İşlem Türü</label><select id="h-tur" class="form-control"><option value="Gider">Gider (Harcama)</option><option value="Gelir">Gelir</option></select></div>
                 <div class="form-group"><label>Kalem (Nereye harcadın?)</label><input type="text" id="h-kalem" class="form-control" placeholder="Örn: Market"></div>
                 <div class="form-group"><label>Ödeme Yöntemi</label><select id="h-yontem" class="form-control"><option value="Kredi Kartı">Kredi Kartı</option><option value="Ziraat">Ziraat</option><option value="İsbankasi">İş Bankası</option><option value="Yapıkredi">YapıKredi</option><option value="Nakit">Nakit</option></select></div>
@@ -507,7 +508,7 @@
 
             <div id="section-borc-ode" class="form-section">
                 <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')">← Geri Dön</span>
-                <div class="form-group"><label>Tarih</label><select id="bo-tarih" class="form-control"><option value="bugun">Bugün</option><option value="dun">Dün</option></select></div>
+                <div class="form-group"><label>Tarih ve Saat</label><input type="datetime-local" id="bo-tarih" class="form-control"></div>
                 <div class="form-group"><label>Hangi Borcu Ödüyorsun?</label><input type="text" id="bo-isim" list="borclar-datalist" class="form-control" placeholder="Borç adı..."></div>
                 <div class="form-group"><label>Ödenen Tutar (₺)</label><input type="number" step="0.01" id="bo-tutar" class="form-control"></div>
                 <div class="form-group"><label>Paranın Çıktığı Yer</label><select id="bo-yontem" class="form-control"><option value="Ziraat">Ziraat</option><option value="İsbankasi">İş Bankası</option><option value="Yapıkredi">YapıKredi</option><option value="Nakit">Nakit</option></select></div>
@@ -516,6 +517,7 @@
 
             <div id="section-transfer" class="form-section">
                 <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')">← Geri Dön</span>
+                <div class="form-group"><label>Tarih ve Saat</label><input type="datetime-local" id="t-tarih" class="form-control"></div>
                 <div class="form-group"><label>Çıkış Yapılan Hesap (Gönderen)</label><select id="t-cikis" class="form-control"><option value="İsbankasi">İş Bankası</option><option value="Ziraat">Ziraat</option><option value="Yapıkredi">YapıKredi</option><option value="Nakit">Nakit</option><option value="Kredi Kartı">Kredi Kartı Nakit Avans</option></select></div>
                 <div class="form-group"><label>Giriş Yapılan Hesap (Alan)</label><select id="t-giris" class="form-control"><option value="Ziraat">Ziraat</option><option value="İsbankasi">İş Bankası</option><option value="Yapıkredi">YapıKredi</option><option value="Nakit">Nakit</option></select></div>
                 <div class="form-group"><label>Transfer Tutarı (₺)</label><input type="number" step="0.01" id="t-tutar" class="form-control"></div>
@@ -609,7 +611,22 @@
             el.innerHTML = `<span style="color:${color}; background:color-mix(in srgb, ${color} 15%, transparent); padding: 3px 6px; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); border: 1px solid color-mix(in srgb, ${color} 30%, transparent);">${icon} ${symbol}${formattedDiff}</span>`;
         }
 
-        // --- YENİ: MODAL VE API İŞLEMLERİ (9 ADIM) ---
+        // --- YENİ: TARİH FORMATLAMA SİSTEMİ ---
+        // Bilgisayardan gelen zamanı Sheets formatına ("DD.MM.YYYY HH:mm") çevirir.
+        function getFormattedDateTime(inputId) {
+            const val = document.getElementById(inputId).value;
+            if(!val) return "";
+            const d = new Date(val);
+            return `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth()+1).padStart(2, '0')}.${d.getFullYear()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+        }
+
+        // HTML5 Date picker'ı o anki gerçek yerel saatle doldurur
+        function setNow(inputId) {
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            document.getElementById(inputId).value = now.toISOString().slice(0,16);
+        }
+
         function toggleModal() {
             const modal = document.getElementById('action-modal'); const btn = document.getElementById('fab-btn');
             modal.classList.toggle('active'); btn.classList.toggle('open');
@@ -622,20 +639,14 @@
             document.querySelectorAll('.form-section').forEach(el => el.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             document.getElementById('modal-title').innerText = title;
-            // Input Temizliği
-            if(id === 'section-harcama') { document.getElementById('h-kalem').value = ''; document.getElementById('h-tutar').value = ''; document.getElementById('h-tarih').value = 'bugun'; }
-            if(id === 'section-transfer') { document.getElementById('t-tutar').value = ''; }
-            if(id === 'section-borc-ode') { document.getElementById('bo-isim').value = ''; document.getElementById('bo-tutar').value = ''; document.getElementById('bo-tarih').value = 'bugun'; }
+            // Input Temizliği ve Saati Otomatik Doldurma
+            if(id === 'section-harcama') { document.getElementById('h-kalem').value = ''; document.getElementById('h-tutar').value = ''; setNow('h-tarih'); }
+            if(id === 'section-transfer') { document.getElementById('t-tutar').value = ''; setNow('t-tarih'); }
+            if(id === 'section-borc-ode') { document.getElementById('bo-isim').value = ''; document.getElementById('bo-tutar').value = ''; setNow('bo-tarih'); }
             if(id === 'section-borc-guncelle') { document.getElementById('bg-isim').value = ''; document.getElementById('bg-tutar').value = ''; }
             if(id === 'section-yeni-sabit') { document.getElementById('ys-kalem').value = ''; document.getElementById('ys-tutar').value = ''; document.getElementById('ys-gun').value = ''; document.getElementById('ys-sure').value = ''; }
             if(id === 'section-sabit-guncelle') { document.getElementById('sg-tutar').value = ''; }
             if(id === 'section-varlik-guncelle') { document.getElementById('vg-isim').value = ''; document.getElementById('vg-deger').value = ''; }
-        }
-
-        function getTarihIcin(secim) {
-            if(secim === "bugun") return ""; 
-            let d = new Date(); d.setDate(d.getDate() - 1);
-            return `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${d.getFullYear()} 12:00`;
         }
 
         async function apiIstekAt(payload, buttonId) {
@@ -651,13 +662,14 @@
             } catch (error) { alert("Bağlantı hatası!"); btn.innerHTML = originalText; btn.disabled = false; }
         }
 
-        // 1
+        // 1. Yeni Harcama/Gelir
         function submitHarcama() {
             const kalem = document.getElementById('h-kalem').value.trim(), tutar = document.getElementById('h-tutar').value;
             if(!kalem || !tutar) return alert("Lütfen kalem ve tutar girin.");
-            apiIstekAt({ action: "yeni_hareket", tur: document.getElementById('h-tur').value, kategori: "Değişken", kalem: kalem, yontem: document.getElementById('h-yontem').value, tutar: tutar, tarih: getTarihIcin(document.getElementById('h-tarih').value) }, 'btn-submit-harcama');
+            apiIstekAt({ action: "yeni_hareket", tur: document.getElementById('h-tur').value, kategori: "Değişken", kalem: kalem, yontem: document.getElementById('h-yontem').value, tutar: tutar, tarih: getFormattedDateTime('h-tarih') }, 'btn-submit-harcama');
         }
-        // 2 & 7 (API'den listeyi çekerek menü açan fonksiyon)
+        
+        // 2 & 7. API'den listeyi çekerek menü açan fonksiyon
         async function loadSabitlerAndShow(sectionId, selectId, title) {
             const ev = event.currentTarget; const orig = ev.innerHTML; ev.innerHTML = `<span class="spinner"></span>...`;
             try {
@@ -672,48 +684,57 @@
             } catch(e) { alert("Sabitler çekilemedi."); }
             ev.innerHTML = orig;
         }
+        
+        // 2. Sabit Onayla
         function submitSabitOnayla() {
             const kuralSatir = document.getElementById('so-kural').value;
             if(!kuralSatir) return alert("Onaylanacak kural yok.");
             apiIstekAt({ action: "sabit_onayla", satir: kuralSatir, kullanilan_yontem: document.getElementById('so-yontem').value }, 'btn-submit-sabit-onayla');
         }
-        // 3
+        
+        // 3. Borç Öde
         function submitBorcOde() {
             const isim = document.getElementById('bo-isim').value.trim(), tutar = document.getElementById('bo-tutar').value;
             if(!isim || !tutar) return alert("Boş alan bırakmayın.");
-            apiIstekAt({ action: "borc_ode", borc_adi: isim, tutar: tutar, yontem: document.getElementById('bo-yontem').value, tarih: getTarihIcin(document.getElementById('bo-tarih').value) }, 'btn-submit-borc-ode');
+            apiIstekAt({ action: "borc_ode", borc_adi: isim, tutar: tutar, yontem: document.getElementById('bo-yontem').value, tarih: getFormattedDateTime('bo-tarih') }, 'btn-submit-borc-ode');
         }
-        // 4
+        
+        // 4. Transfer Yap
         function submitTransfer() {
             const cikis = document.getElementById('t-cikis').value, giris = document.getElementById('t-giris').value, tutar = document.getElementById('t-tutar').value;
             if(!tutar || cikis === giris) return alert("Geçerli tutar ve farklı hesaplar seçin.");
-            apiIstekAt({ action: "transfer_yap", transfer_yeri: giris, yontem: cikis, tutar: tutar }, 'btn-submit-transfer');
+            apiIstekAt({ action: "transfer_yap", transfer_yeri: giris, yontem: cikis, tutar: tutar, tarih: getFormattedDateTime('t-tarih') }, 'btn-submit-transfer');
         }
-        // 5
+        
+        // 5. Borç Güncelle
         function submitBorcGuncelle() {
             const isim = document.getElementById('bg-isim').value.trim(), tutar = document.getElementById('bg-tutar').value;
             if(!isim || tutar === "") return alert("İsim ve yeni tutarı girin.");
             apiIstekAt({ action: "borc_guncelle", borc_adi: isim, tutar: tutar }, 'btn-submit-borc-guncelle');
         }
-        // 6
+        
+        // 6. Yeni Sabit Ekle
         function submitYeniSabit() {
             const kalem = document.getElementById('ys-kalem').value.trim(), tutar = document.getElementById('ys-tutar').value, gun = document.getElementById('ys-gun').value, sure = document.getElementById('ys-sure').value;
             if(!kalem || !tutar || !gun || !sure) return alert("Tüm alanları doldurun.");
             apiIstekAt({ action: "yeni_sabit", tur: document.getElementById('ys-tur').value, kalem: kalem, yontem: document.getElementById('ys-yontem').value, tutar: tutar, odeme_gunu: gun, kalan_ay: sure }, 'btn-submit-yeni-sabit');
         }
-        // 7
+        
+        // 7. Sabit Güncelle
         function submitSabitGuncelle() {
             const kuralSatir = document.getElementById('sg-kural').value, tutar = document.getElementById('sg-tutar').value;
             if(!kuralSatir || tutar === "") return alert("Kural ve yeni tutar (iptal için 0) girin.");
             apiIstekAt({ action: "sabit_guncelle", satir: kuralSatir, yeni_tutar: tutar }, 'btn-submit-sabit-guncelle');
         }
-        // 8
+        
+        // 8. Varlık Güncelle
         function submitVarlikGuncelle() {
             const isim = document.getElementById('vg-isim').value.trim(), deger = document.getElementById('vg-deger').value;
             if(!isim || deger === "") return alert("Varlık adı ve değeri (sıfırlamak için 0) girin.");
             apiIstekAt({ action: "varlik_guncelle", varlik_adi: isim, deger: deger }, 'btn-submit-varlik-guncelle');
         }
-        // 9
+        
+        // 9. Geri Al
         async function geriAl() {
             if(!confirm("Emin misin? Son işlem tamamen silinecek.")) return;
             const btn = document.querySelector('.undo-btn'); const orig = btn.innerHTML; btn.innerHTML = `<span class="spinner"></span>...`;
@@ -737,7 +758,7 @@
                     animateValue("val-net-servet", window.currentStats.netServet, 1200);
                     animateValueUSD("val-net-servet-usd", window.currentStats.netServetUSD, 1200);
 
-                    // Form Datalistlerini Doldurma (Borçlar ve Varlıklar Otomatik Tamamlansın Diye)
+                    // --- Form Datalistlerini Doldurma (Borçlar ve Varlıklar Otomatik Tamamlansın) ---
                     let borcDL = document.getElementById('borclar-datalist'); let varlikDL = document.getElementById('varliklar-datalist');
                     borcDL.innerHTML = ''; varlikDL.innerHTML = '';
                     if(data.borclarListe) data.borclarListe.forEach(b => borcDL.innerHTML += `<option value="${b.isim}">`);
