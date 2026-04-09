@@ -290,6 +290,38 @@
         .custom-option:hover, .custom-option:active { background: rgba(255,255,255,0.05); }
         .custom-option.selected { color: var(--blue); font-weight: 600; background: rgba(59, 130, 246, 0.1); }
         .text-truncate { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* ÖZEL RAKAM KLAVYESİ (NUMPAD) STİLLERİ */
+        .numpad-container {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: rgba(15, 17, 21, 0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-top-left-radius: 24px; border-top-right-radius: 24px;
+            padding: 16px 20px calc(env(safe-area-inset-bottom) + 16px) 20px;
+            transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000; border-top: 1px solid rgba(255,255,255,0.1); box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+            display: none; /* JS ile görünür yapılacak */
+        }
+        .numpad-container.active { transform: translateY(0); display: block; animation: slideUp 0.3s forwards; }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        
+        .numpad-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding: 0 4px; }
+        .numpad-header span { font-size: 14px; color: var(--text-muted); font-weight: 600; letter-spacing: 0.5px; }
+        .numpad-close { background: var(--emerald); color: #fff; border: none; padding: 8px 20px; border-radius: 14px; font-size: 15px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); transition: transform 0.1s;}
+        .numpad-close:active { transform: scale(0.92); }
+        .numpad-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .num-btn {
+            background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.04);
+            color: #fff; font-size: 26px; font-weight: 500; border-radius: 16px;
+            padding: 12px 0; cursor: pointer; transition: all 0.1s; display: flex; align-items: center; justify-content: center;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .num-btn:active { background: rgba(255,255,255,0.2); transform: scale(0.95); }
+        .num-action-btn { background: rgba(244, 63, 94, 0.15); color: var(--rose); }
+        .num-action-btn:active { background: rgba(244, 63, 94, 0.3); }
+        
+        /* Tutar kutularındaki mavi yanıp sönen imleci (caret) gizle */
+        .fake-input { caret-color: transparent !important; }
+        .fake-input:focus { border-color: var(--blue) !important; background: rgba(59, 130, 246, 0.1) !important; }
     </style>
 </head>
 <body>
@@ -670,6 +702,29 @@
                 <button class="btn-submit" id="btn-submit-yeni-hesap" onclick="submitYeniHesap()">Hesabı Oluştur</button>
             </div>
 
+        </div>
+    </div>
+
+    <div id="custom-numpad" class="numpad-container">
+        <div class="numpad-header">
+            <span id="numpad-title">Tutar Girin</span>
+            <button class="numpad-close" onclick="closeNumPad()">Tamam ✓</button>
+        </div>
+        <div class="numpad-grid">
+            <button class="num-btn" onclick="numpadPress('1')">1</button>
+            <button class="num-btn" onclick="numpadPress('2')">2</button>
+            <button class="num-btn" onclick="numpadPress('3')">3</button>
+            <button class="num-btn" onclick="numpadPress('4')">4</button>
+            <button class="num-btn" onclick="numpadPress('5')">5</button>
+            <button class="num-btn" onclick="numpadPress('6')">6</button>
+            <button class="num-btn" onclick="numpadPress('7')">7</button>
+            <button class="num-btn" onclick="numpadPress('8')">8</button>
+            <button class="num-btn" onclick="numpadPress('9')">9</button>
+            <button class="num-btn" onclick="numpadPress(',')">,</button>
+            <button class="num-btn" onclick="numpadPress('0')">0</button>
+            <button class="num-btn num-action-btn" onclick="numpadDelete()">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path><line x1="18" y1="9" x2="12" y2="15"></line><line x1="12" y1="9" x2="18" y2="15"></line></svg>
+            </button>
         </div>
     </div>
 
@@ -1193,6 +1248,10 @@
             const optionsDiv = document.createElement('div');
             optionsDiv.className = 'custom-options custom-scrollbar';
             
+            // YENİ: Kaydırma çakışmasını engelleme (Scroll Bleed)
+            optionsDiv.addEventListener('touchmove', (e) => e.stopPropagation(), { passive: true });
+            optionsDiv.addEventListener('wheel', (e) => e.stopPropagation(), { passive: true });
+
             Array.from(select.options).forEach(option => {
                 const optDiv = document.createElement('div');
                 optDiv.className = 'custom-option';
@@ -1206,6 +1265,11 @@
                     optionsDiv.querySelectorAll('.custom-option').forEach(o => o.classList.remove('selected'));
                     optDiv.classList.add('selected');
                     wrapper.classList.remove('open');
+                    
+                    // YENİ: Seçim yapıldığında pencere kaydırmasını geri aç
+                    const mc = document.querySelector('.modal-content');
+                    if(mc) mc.style.overflowY = 'auto';
+
                     select.dispatchEvent(new Event('change')); 
                 });
                 optionsDiv.appendChild(optDiv);
@@ -1218,6 +1282,12 @@
                     if(w !== wrapper) w.classList.remove('open');
                 });
                 wrapper.classList.toggle('open');
+
+                // YENİ: Açılır liste açıldığında ana pencerenin kaymasını kilitler
+                const mc = document.querySelector('.modal-content');
+                if(mc) {
+                    mc.style.overflowY = wrapper.classList.contains('open') ? 'hidden' : 'auto';
+                }
             });
             
             wrapper.appendChild(trigger);
@@ -1234,6 +1304,9 @@
             
             document.addEventListener('click', () => {
                 document.querySelectorAll('.custom-select-wrapper.open').forEach(w => w.classList.remove('open'));
+                // YENİ: Ekranda boş bir yere tıklanırsa pencere kaydırmasını geri aç
+                const mc = document.querySelector('.modal-content');
+                if(mc) mc.style.overflowY = 'auto';
             });
         }
         initCustomSelects();
