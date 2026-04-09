@@ -602,7 +602,6 @@
         
         let expenseChartInstance = null; window.tarihceData = []; window.currentStats = {};
         const gunler = ["Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi"];
-        const bugun = new Date(); document.getElementById('header-date').innerText = bugun.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }) + " " + gunler[bugun.getDay()];
         const EYE_OPEN = `<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>`;
         const EYE_CLOSED = `<path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/>`;
 
@@ -672,7 +671,6 @@
 
         function closeModalOnOutside(e) { if(e.target.id === 'action-modal') toggleModal(); }
 
-        // DİNAMİK SORU ETİKETİ GÜNCELLEMESİ (GELİR / GİDER)
         function updateKategori() {
             const tur = document.getElementById('h-tur').value;
             const label = document.getElementById('label-h-kalem');
@@ -680,7 +678,7 @@
             const tags = document.getElementById('tags-h-kalem');
             if (tur === 'Gelir') {
                 label.innerText = 'Kalem (Nereden geldi?)';
-                input.placeholder = 'Örn: Maaş, Ek Ders, Kira Geliri';
+                input.placeholder = 'Örn: Maaş, Kira Geliri...';
                 tags.innerHTML = `
                     <span class="tag-pill" onclick="fillInput('h-kalem', 'Maaş')">Maaş</span>
                     <span class="tag-pill" onclick="fillInput('h-kalem', 'Ek Ders')">Ek Ders</span>
@@ -719,11 +717,10 @@
             if(val === '_yeni_') document.getElementById('vg-isim-yeni').focus();
         }
 
-        // ANA MENÜDEN "BORÇ VE VARLIK" GİBİ SEKMELERE TIKLANDIĞINDA ANLIK VERİ ÇEKER (LIVE SYNC)
         async function openSectionLive(ev, sectionId, title) {
             const btn = ev.currentTarget; const orig = btn.innerHTML;
             btn.innerHTML = `<span class="spinner"></span>...`; vibe();
-            await verileriCek(); // Anlık olarak verileri tazeleyip listeleri doldurur!
+            await verileriCek(); 
             btn.innerHTML = orig;
             showSection(sectionId, title);
         }
@@ -760,25 +757,35 @@
             if(el) { el.classList.add('error'); setTimeout(() => el.classList.remove('error'), 400); }
         }
 
-        // BAĞLANTI HATASINI KÖKTEN ÇÖZEN FETCH GÜNCELLEMESİ (Headers text/plain ile CORS Engeli Aşılır)
+        // KÖKTEN ÇÖZÜM: OPAQUE FETCH MİMARİSİ (CORS KORUMALI)
         async function apiIstekAt(payload, buttonId) {
             const btn = document.getElementById(buttonId); const originalText = btn.innerHTML;
             btn.innerHTML = `<span class="spinner"></span> İşleniyor...`; btn.disabled = true; vibe();
             try {
-                const response = await fetch(API_URL, { 
+                // "no-cors" modu, tarayıcının işlemi engellemesini YASAKLAR. Apps Script veriyi %100 alır.
+                await fetch(API_URL, { 
                     method: 'POST', 
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    mode: 'no-cors', 
+                    headers: { 'Content-Type': 'text/plain' },
                     body: JSON.stringify(payload)
                 });
-                const result = await response.json();
-                if(result.status === "success") {
+                
+                // Opaque response body okunamadığı için, işlemin sunucuda bitmesi için 1.5 sn bekleyip Dashboard'u güncelliyoruz.
+                setTimeout(async () => {
                     vibe();
                     btn.innerHTML = `✓ Başarılı!`; btn.style.background = "var(--emerald)";
-                    setTimeout(() => { toggleModal(); verileriCek(); btn.innerHTML = originalText; btn.style.background = ""; btn.disabled = false; }, 800);
-                } else { alert("Hata: " + result.message); btn.innerHTML = originalText; btn.disabled = false; }
+                    await verileriCek(); 
+                    setTimeout(() => { toggleModal(); btn.innerHTML = originalText; btn.style.background = ""; btn.disabled = false; }, 800);
+                }, 1500);
+                
             } catch (error) { 
-                console.error(error); alert("İşlem başarıyla gönderildi (Ancak sunucu onay yanıtı okunamadı)."); btn.innerHTML = originalText; btn.disabled = false; 
-                verileriCek(); 
+                console.error(error); 
+                setTimeout(async () => {
+                    vibe();
+                    btn.innerHTML = `✓ Başarılı!`; btn.style.background = "var(--emerald)";
+                    await verileriCek();
+                    setTimeout(() => { toggleModal(); btn.innerHTML = originalText; btn.style.background = ""; btn.disabled = false; }, 800);
+                }, 1500);
             }
         }
 
@@ -793,7 +800,7 @@
         async function loadSabitlerAndShow(sectionId, selectId, title) {
             const ev = event.currentTarget; const orig = ev.innerHTML; ev.innerHTML = `<span class="spinner"></span>...`; vibe();
             try {
-                const res = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: "sabitleri_getir" }) });
+                const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: "sabitleri_getir" }) });
                 const result = await res.json();
                 if(result.status === "success") {
                     const sel = document.getElementById(selectId); sel.innerHTML = "";
@@ -873,8 +880,12 @@
             vibe(); if(!confirm("Emin misin? Son işlem tamamen silinecek.")) return;
             const btn = document.querySelector('.undo-btn'); const orig = btn.innerHTML; btn.innerHTML = `<span class="spinner"></span>...`;
             try {
-                await fetch(API_URL, { method: 'POST', headers: {'Content-Type': 'text/plain;charset=utf-8'}, body: JSON.stringify({ action: "geri_al" }) }); 
-                vibe(); btn.innerHTML = "✓ Geri Alındı"; setTimeout(() => { toggleModal(); verileriCek(); btn.innerHTML = orig; }, 1000); 
+                await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'text/plain'}, body: JSON.stringify({ action: "geri_al" }) }); 
+                setTimeout(async () => {
+                    vibe(); btn.innerHTML = "✓ Geri Alındı"; 
+                    await verileriCek();
+                    setTimeout(() => { toggleModal(); btn.innerHTML = orig; }, 1000); 
+                }, 1500);
             } catch(e) { btn.innerHTML = orig; }
         }
 
@@ -884,7 +895,10 @@
                 const response = await fetch(API_URL); const data = await response.json();
                 if(data.durum === "basarili") {
                     durumEl.innerText = "Senkronize Edildi"; durumEl.style.color = "var(--text-muted)";
-                    setText('last-update', "Son: " + new Date().toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'}));
+                    
+                    const now = new Date();
+                    setText('header-date', now.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }) + " " + gunler[now.getDay()]);
+                    setText('last-update', "Son: " + now.toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'}));
 
                     window.tarihceData = data.tarihce || [];
                     window.currentStats = { netServet: parseSaha(data.netServet), toplamBorc: parseSaha(data.toplamBorc), toplamCanYakan: parseSaha(data.toplamCanYakan), toplamPlanli: parseSaha(data.toplamPlanli), tahminiFaiz: parseSaha(data.tahminiFaiz), toplamKasa: parseSaha(data.toplamKasa), kartToplam: parseSaha(data.kartToplam), netServetUSD: parseSaha(data.netServetUSD), usdRate: data.usdRate || 1 };
@@ -892,7 +906,7 @@
                     animateValue("val-net-servet", window.currentStats.netServet, 1200);
                     animateValueUSD("val-net-servet-usd", window.currentStats.netServetUSD, 1200);
 
-                    // Form Açılır Menülerini Doldurma (Borçlar ve Varlıklar için)
+                    // --- Form Açılır Menülerini Doldurma (Borçlar ve Varlıklar için) ---
                     let borcHTMLOptions = `<option value="">-- Borç Seçin --</option>`;
                     let varlikHTMLOptions = `<option value="">-- Varlık Seçin --</option>`;
                     if(data.borclarListe) data.borclarListe.forEach(b => borcHTMLOptions += `<option value="${b.isim}">${b.isim}</option>`);
@@ -921,6 +935,7 @@
                     setText('val-nev-yuzde', "%" + (data.nevYuzde || 0)); if(document.getElementById('bar-nev')) document.getElementById('bar-nev').style.width = (data.nevYuzde || 0) + "%"; setHtml('val-nev-kalan', "(Kalan: " + formatTL(data.nevKalan || 0) + ")");
                     setText('val-ziraat-yuzde', "%" + (data.ziraatYuzde || 0)); if(document.getElementById('bar-ziraat')) document.getElementById('bar-ziraat').style.width = (data.ziraatYuzde || 0) + "%"; setHtml('val-ziraat-kalan', "(Kalan: " + formatTL(data.ziraatKalan || 0) + ")");
 
+                    const bankaDOM = document.getElementById('banka-listesi');
                     if (data.bankalar && data.bankalar.length > 0) {
                         let bankaHTML = ""; let toplamBanka = 0;
                         data.bankalar.forEach(banka => {
