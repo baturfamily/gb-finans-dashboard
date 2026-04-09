@@ -41,6 +41,9 @@
             overscroll-behavior-y: contain; 
         }
 
+        /* iOS Modal Açıkken Arka Plan Kaymasını Engelleme */
+        body.modal-open { overflow: hidden; touch-action: none; }
+
         .tabular-nums { font-variant-numeric: tabular-nums; }
         .spinner { border: 2px solid rgba(255,255,255,0.1); border-left-color: var(--text-main); border-radius: 50%; width: 14px; height: 14px; animation: spin 1s linear infinite; display: inline-block; margin-right: 6px; vertical-align: middle; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -210,13 +213,23 @@
         .form-control.error { border-color: var(--rose); animation: shake 0.4s; }
         .form-control option { background: var(--bg-dark); }
         
+        /* Çakışmayı Önlemek İçin Butonları Daralttık */
         .btn-submit {
-            width: 100%; background: var(--brand-gradient); color: white; border: none;
+            width: calc(100% - 70px); background: var(--brand-gradient); color: white; border: none;
             padding: 16px; border-radius: 14px; font-size: 16px; font-weight: 700;
             cursor: pointer; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3); transition: all 0.2s; margin-top: 10px;
+            display: block; margin-right: auto;
         }
         .btn-submit:active { transform: scale(0.98); }
         .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .undo-btn { 
+            background: rgba(244, 63, 94, 0.15); color: var(--rose); padding: 12px 16px; border-radius: 12px; 
+            font-size: 13px; font-weight: 600; border: 1px solid rgba(244, 63, 94, 0.3); 
+            width: calc(100% - 70px); margin-top: 5px; text-align: center; cursor:pointer;
+            display: block; margin-right: auto;
+        }
+        .undo-btn:active { transform: scale(0.98); }
 
         .form-section { display: none; animation: fadeIn 0.3s; }
         .form-section.active { display: block; }
@@ -236,8 +249,6 @@
         
         .inline-action-btn { background: rgba(16, 185, 129, 0.15); color: var(--emerald); border: 1px solid rgba(16, 185, 129, 0.3); padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; margin-left: 8px;}
         .inline-action-btn:active { background: rgba(16, 185, 129, 0.3); }
-        .undo-btn { background: rgba(244, 63, 94, 0.15); color: var(--rose); padding: 12px 16px; border-radius: 12px; font-size: 13px; font-weight: 600; border: 1px solid rgba(244, 63, 94, 0.3); width: 100%; margin-top: 5px; text-align: center; cursor:pointer;}
-        .undo-btn:active { transform: scale(0.98); }
     </style>
 </head>
 <body>
@@ -665,8 +676,40 @@
         function toggleModal() {
             vibe();
             const modal = document.getElementById('action-modal'); const btn = document.getElementById('fab-btn');
-            modal.classList.toggle('active'); btn.classList.toggle('open');
-            if(modal.classList.contains('active')) showSection('section-menu', 'Ne yapmak istersin?');
+            modal.classList.toggle('active'); 
+            
+            if(modal.classList.contains('active')) {
+                btn.classList.add('open');
+                document.body.classList.add('modal-open'); // Arka plan kaymasını engelle
+                showSection('section-menu', 'Ne yapmak istersin?');
+            } else {
+                btn.classList.remove('open');
+                document.body.classList.remove('modal-open'); // Scroll kilidini kaldır
+                
+                // Formları ve inputları sıfırla
+                document.querySelectorAll('.form-control').forEach(el => { el.value = ''; el.classList.remove('error'); });
+                
+                // Kaydet butonlarını sıfırla
+                document.querySelectorAll('.btn-submit').forEach(b => {
+                    b.style.background = ""; b.disabled = false;
+                    if (b.id === 'btn-submit-harcama') b.innerHTML = 'Kaydet';
+                    else if (b.id === 'btn-submit-sabit-onayla') b.innerHTML = 'Ödemeyi Onayla';
+                    else if (b.id === 'btn-submit-borc-ode') b.innerHTML = 'Borcu Öde';
+                    else if (b.id === 'btn-submit-transfer') b.innerHTML = 'Transfer Yap';
+                    else if (b.id === 'btn-submit-borc-guncelle') b.innerHTML = 'Borcu Güncelle';
+                    else if (b.id === 'btn-submit-yeni-sabit') b.innerHTML = 'Sabit Ekle';
+                    else if (b.id === 'btn-submit-sabit-guncelle') b.innerHTML = 'Güncelle / İptal Et';
+                    else if (b.id === 'btn-submit-varlik-guncelle') b.innerHTML = 'Varlığı Güncelle';
+                });
+                
+                const undoBtn = document.querySelector('.undo-btn');
+                if(undoBtn) undoBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle; margin-right:4px;"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg> Son İşlemi Geri Al`;
+                
+                // FAB butonunu orijinal artı (+) ikonuna geri çevir (Tik işaretini kaldır)
+                btn.innerHTML = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>`;
+                btn.style.background = "var(--brand-gradient)";
+                if(btn.querySelector('svg')) btn.querySelector('svg').style.transform = "";
+            }
         }
 
         function closeModalOnOutside(e) { if(e.target.id === 'action-modal') toggleModal(); }
@@ -757,12 +800,14 @@
             if(el) { el.classList.add('error'); setTimeout(() => el.classList.remove('error'), 400); }
         }
 
-        // KÖKTEN ÇÖZÜM: OPAQUE FETCH MİMARİSİ (CORS KORUMALI)
+        // KÖKTEN ÇÖZÜM: OPAQUE FETCH MİMARİSİ (CORS KORUMALI) + YENİ İOS STANDARTLARI
         async function apiIstekAt(payload, buttonId) {
+            // iOS Klavye kapatma tetikleyicisi
+            if(document.activeElement) { document.activeElement.blur(); }
+            
             const btn = document.getElementById(buttonId); const originalText = btn.innerHTML;
             btn.innerHTML = `<span class="spinner"></span> İşleniyor...`; btn.disabled = true; vibe();
             try {
-                // "no-cors" modu, tarayıcının işlemi engellemesini YASAKLAR. Apps Script veriyi %100 alır.
                 await fetch(API_URL, { 
                     method: 'POST', 
                     mode: 'no-cors', 
@@ -770,21 +815,34 @@
                     body: JSON.stringify(payload)
                 });
                 
-                // Opaque response body okunamadığı için, işlemin sunucuda bitmesi için 1.5 sn bekleyip Dashboard'u güncelliyoruz.
+                // İşlem sunucuda bittiğinde
                 setTimeout(async () => {
                     vibe();
-                    btn.innerHTML = `✓ Başarılı!`; btn.style.background = "var(--emerald)";
+                    btn.innerHTML = `Başarılı ✓`; btn.style.background = "var(--emerald)";
+                    
+                    // Ana FAB butonunu yeşil TİK (✓) işaretine çeviriyoruz
+                    const fabBtn = document.getElementById('fab-btn');
+                    fabBtn.innerHTML = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+                    fabBtn.style.background = "var(--emerald)";
+                    // CSS'teki çarpı rotasyonunu düzeltmek için
+                    if(fabBtn.querySelector('svg')) fabBtn.querySelector('svg').style.transform = "rotate(0deg)";
+                    
                     await verileriCek(); 
-                    setTimeout(() => { toggleModal(); btn.innerHTML = originalText; btn.style.background = ""; btn.disabled = false; }, 800);
+                    // Not: Otomatik kapanmayı sildik. Kullanıcı ✓ (FAB) butonuna basarak menüyü kapatacak ve sistem sıfırlanacak.
                 }, 1500);
                 
             } catch (error) { 
                 console.error(error); 
                 setTimeout(async () => {
                     vibe();
-                    btn.innerHTML = `✓ Başarılı!`; btn.style.background = "var(--emerald)";
+                    btn.innerHTML = `Başarılı ✓`; btn.style.background = "var(--emerald)";
+                    
+                    const fabBtn = document.getElementById('fab-btn');
+                    fabBtn.innerHTML = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+                    fabBtn.style.background = "var(--emerald)";
+                    if(fabBtn.querySelector('svg')) fabBtn.querySelector('svg').style.transform = "rotate(0deg)";
+                    
                     await verileriCek();
-                    setTimeout(() => { toggleModal(); btn.innerHTML = originalText; btn.style.background = ""; btn.disabled = false; }, 800);
                 }, 1500);
             }
         }
@@ -877,14 +935,20 @@
         }
         
         async function geriAl() {
+            if(document.activeElement) { document.activeElement.blur(); } // Klavye kapatma
             vibe(); if(!confirm("Emin misin? Son işlem tamamen silinecek.")) return;
             const btn = document.querySelector('.undo-btn'); const orig = btn.innerHTML; btn.innerHTML = `<span class="spinner"></span>...`;
             try {
                 await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'text/plain'}, body: JSON.stringify({ action: "geri_al" }) }); 
                 setTimeout(async () => {
                     vibe(); btn.innerHTML = "✓ Geri Alındı"; 
+                    
+                    const fabBtn = document.getElementById('fab-btn');
+                    fabBtn.innerHTML = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+                    fabBtn.style.background = "var(--emerald)";
+                    if(fabBtn.querySelector('svg')) fabBtn.querySelector('svg').style.transform = "rotate(0deg)";
+                    
                     await verileriCek();
-                    setTimeout(() => { toggleModal(); btn.innerHTML = orig; }, 1000); 
                 }, 1500);
             } catch(e) { btn.innerHTML = orig; }
         }
