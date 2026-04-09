@@ -219,7 +219,6 @@
         .form-control.error { border-color: var(--rose); animation: shake 0.4s; }
         .form-control option { background: var(--bg-dark); }
         
-        /* Çakışmayı Önlemek İçin Butonları Daralttık */
         .btn-submit {
             width: calc(100% - 70px); background: var(--brand-gradient); color: white; border: none;
             padding: 16px; border-radius: 14px; font-size: 16px; font-weight: 700;
@@ -237,8 +236,10 @@
         }
         .undo-btn:active { transform: scale(0.98); }
 
-        .form-section { display: none; animation: fadeIn 0.3s; }
+        /* KAYMA SORUNU İÇİN PADDING EKLENDİ */
+        .form-section { display: none; animation: fadeIn 0.3s; padding-bottom: 120px; }
         .form-section.active { display: block; }
+        
         @keyframes fadeIn { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
         @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-5px);} 75% {transform: translateX(5px);} }
 
@@ -1048,7 +1049,7 @@
                     setText('last-update', "Son: " + now.toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'}));
 
                     window.tarihceData = data.tarihce || [];
-                    window.currentStats = { netServet: parseSaha(data.netServet), toplamBorc: parseSaha(data.toplamBorc), toplamCanYakan: parseSaha(data.toplamCanYakan), toplamPlanli: parseSaha(data.toplamPlanli), tahminiFaiz: parseSaha(data.tahminiFaiz), toplamKasa: parseSaha(data.toplamKasa), kartToplam: parseSaha(data.kartToplam), netServetUSD: parseSaha(data.netServetUSD), usdRate: data.usdRate || 1 };
+                    window.currentStats = { netServet: data.netServet, toplamBorc: data.toplamBorc, toplamCanYakan: data.toplamCanYakan, toplamPlanli: data.toplamPlanli, tahminiFaiz: data.tahminiFaiz, toplamKasa: data.toplamKasa, kartToplam: data.kartToplam, netServetUSD: data.netServetUSD, usdRate: data.usdRate || 1 };
 
                     animateValue("val-net-servet", window.currentStats.netServet, 1200);
                     animateValueUSD("val-net-servet-usd", window.currentStats.netServetUSD, 1200);
@@ -1179,7 +1180,7 @@
             if (select.nextElementSibling && select.nextElementSibling.classList.contains('custom-select-wrapper')) {
                 select.nextElementSibling.remove();
             }
-            select.style.display = 'none'; // Gerçek seçiciyi gizle
+            select.style.display = 'none'; 
             
             const wrapper = document.createElement('div');
             wrapper.className = 'custom-select-wrapper';
@@ -1205,14 +1206,14 @@
                     optionsDiv.querySelectorAll('.custom-option').forEach(o => o.classList.remove('selected'));
                     optDiv.classList.add('selected');
                     wrapper.classList.remove('open');
-                    select.dispatchEvent(new Event('change')); // Senin tetikleyicilerini (Nereden geldi vb.) çalıştırır
+                    select.dispatchEvent(new Event('change')); 
                 });
                 optionsDiv.appendChild(optDiv);
             });
             
             trigger.addEventListener('click', (e) => {
                 e.stopPropagation(); vibe();
-                document.activeElement.blur(); // Varsa açık klavyeyi kapat
+                document.activeElement.blur(); 
                 document.querySelectorAll('.custom-select-wrapper.open').forEach(w => {
                     if(w !== wrapper) w.classList.remove('open');
                 });
@@ -1228,11 +1229,9 @@
         function initCustomSelects() {
             document.querySelectorAll('select.form-control').forEach(select => {
                 refreshCustomSelect(select);
-                // Eğer arka planda liste güncellenirse (Örn: Borçlar yüklendiğinde) yeni tasarımı da güncelle
                 new MutationObserver(() => refreshCustomSelect(select)).observe(select, { childList: true });
             });
             
-            // Ekranda boş bir yere tıklayınca açık menüleri kapat
             document.addEventListener('click', () => {
                 document.querySelectorAll('.custom-select-wrapper.open').forEach(w => w.classList.remove('open'));
             });
@@ -1243,13 +1242,11 @@
         const formInputs = document.querySelectorAll('input.form-control');
         formInputs.forEach(input => {
             input.addEventListener('focus', () => {
-                // Odaklanılan dışındaki tüm kutuları klavye sırasından çıkar
                 formInputs.forEach(otherInput => {
                     if (otherInput !== input) otherInput.setAttribute('tabindex', '-1');
                 });
             });
             input.addEventListener('blur', () => {
-                // Odak kaybolunca her şeyi normale döndür
                 formInputs.forEach(otherInput => {
                     otherInput.removeAttribute('tabindex');
                 });
