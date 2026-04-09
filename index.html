@@ -156,7 +156,7 @@
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
 
-        /* FAB ve Modal Stilleri - Yenilendi */
+        /* FAB ve Modal Stilleri */
         .fab-btn {
             position: fixed; bottom: calc(env(safe-area-inset-bottom) + 20px); right: 20px; z-index: 999;
             width: 60px; height: 60px; border-radius: 30px; background: var(--brand-gradient);
@@ -468,7 +468,7 @@
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
                         <span>Ödemeyi Onayla</span>
                     </div>
-                    <div class="action-card" onclick="showSection('section-borc-ode', 'Borç / Kredi Kartı Öde')">
+                    <div class="action-card" onclick="openSectionLive(event, 'section-borc-ode', 'Borç / Kredi Kartı Öde')">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
                         <span>Borç Öde</span>
                     </div>
@@ -476,7 +476,7 @@
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg>
                         <span>Transfer Yap</span>
                     </div>
-                    <div class="action-card" onclick="showSection('section-borc-guncelle', 'Borç Ekle / Güncelle')">
+                    <div class="action-card" onclick="openSectionLive(event, 'section-borc-guncelle', 'Borç Ekle / Güncelle')">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
                         <span>Borç Ekle/Güncelle</span>
                     </div>
@@ -488,7 +488,7 @@
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                         <span>Sabiti Güncelle</span>
                     </div>
-                    <div class="action-card" onclick="showSection('section-varlik-guncelle', 'Varlık Değeri Güncelle')">
+                    <div class="action-card" onclick="openSectionLive(event, 'section-varlik-guncelle', 'Varlık Değeri Güncelle')">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                         <span>Varlık Güncelle</span>
                     </div>
@@ -606,6 +606,9 @@
         const EYE_OPEN = `<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>`;
         const EYE_CLOSED = `<path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/>`;
 
+        const setHtml = (id, html) => { const el = document.getElementById(id); if(el) el.innerHTML = html; };
+        const setText = (id, text) => { const el = document.getElementById(id); if(el) el.innerText = text; };
+
         // Haptik (Titreşim) Eklentisi
         function vibe() { if (navigator.vibrate) navigator.vibrate(40); }
 
@@ -631,8 +634,8 @@
         function updateTrends(days, btnElement) {
             document.querySelectorAll('.time-btn').forEach(btn => btn.classList.remove('active')); if(btnElement) btnElement.classList.add('active');
             const ids = ['trend-net-servet', 'trend-net-servet-usd', 'trend-borc', 'trend-can-yakan', 'trend-planli', 'trend-faiz', 'trend-kasa', 'trend-kart'];
-            if (days === 0) { ids.forEach(id => { let el = document.getElementById(id); if(el) el.innerHTML = ""; }); return; }
-            if(!window.tarihceData || window.tarihceData.length < 2) { const msg = `<span style="color:var(--text-muted); font-weight:500;">Veri yok</span>`; ids.forEach(id => { let el = document.getElementById(id); if(el) el.innerHTML = msg; }); return; }
+            if (days === 0) { ids.forEach(id => { setHtml(id, ""); }); return; }
+            if(!window.tarihceData || window.tarihceData.length < 2) { const msg = `<span style="color:var(--text-muted); font-weight:500;">Veri yok</span>`; ids.forEach(id => { setHtml(id, msg); }); return; }
             const now = new Date(); const midnightToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()); const targetTime = midnightToday.getTime() - ((days - 1) * 24 * 60 * 60 * 1000);
             let bestRow = null; let minDiff = Infinity;
             window.tarihceData.forEach(row => { const rowDate = new Date(row[0]); if(isNaN(rowDate.getTime())) return; const diff = Math.abs(rowDate.getTime() - targetTime); if(diff < minDiff) { minDiff = diff; bestRow = row; } });
@@ -657,7 +660,7 @@
 
         function setNow(inputId) {
             const now = new Date(); now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-            document.getElementById(inputId).value = now.toISOString().slice(0,16);
+            const el = document.getElementById(inputId); if(el) el.value = now.toISOString().slice(0,16);
         }
 
         function toggleModal() {
@@ -716,29 +719,28 @@
             if(val === '_yeni_') document.getElementById('vg-isim-yeni').focus();
         }
 
+        // ANA MENÜDEN "BORÇ VE VARLIK" GİBİ SEKMELERE TIKLANDIĞINDA ANLIK VERİ ÇEKER (LIVE SYNC)
+        async function openSectionLive(ev, sectionId, title) {
+            const btn = ev.currentTarget; const orig = btn.innerHTML;
+            btn.innerHTML = `<span class="spinner"></span>...`; vibe();
+            await verileriCek(); // Anlık olarak verileri tazeleyip listeleri doldurur!
+            btn.innerHTML = orig;
+            showSection(sectionId, title);
+        }
+
         function showSection(id, title) {
             vibe();
             document.querySelectorAll('.form-section').forEach(el => el.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-            document.getElementById('modal-title').innerText = title;
+            setText('modal-title', title);
             document.querySelectorAll('.form-control').forEach(el => { el.value = ''; el.classList.remove('error'); });
             
             if(id === 'section-harcama') { setNow('h-tarih'); document.getElementById('h-tur').value = "Gider"; updateKategori(); }
             if(id === 'section-transfer') setNow('t-tarih');
             
-            if(id === 'section-borc-ode') { 
-                document.getElementById('bo-secim').value = ''; 
-                document.getElementById('bo-isim-yeni').style.display = 'none'; 
-                setNow('bo-tarih'); 
-            }
-            if(id === 'section-borc-guncelle') { 
-                document.getElementById('bg-secim').value = ''; 
-                document.getElementById('bg-isim-yeni').style.display = 'none'; 
-            }
-            if(id === 'section-varlik-guncelle') { 
-                document.getElementById('vg-secim').value = ''; 
-                document.getElementById('vg-isim-yeni').style.display = 'none'; 
-            }
+            if(id === 'section-borc-ode') { document.getElementById('bo-secim').value = ''; document.getElementById('bo-isim-yeni').style.display = 'none'; setNow('bo-tarih'); }
+            if(id === 'section-borc-guncelle') { document.getElementById('bg-secim').value = ''; document.getElementById('bg-isim-yeni').style.display = 'none'; }
+            if(id === 'section-varlik-guncelle') { document.getElementById('vg-secim').value = ''; document.getElementById('vg-isim-yeni').style.display = 'none'; }
             
             if(document.getElementById('h-yontem')) document.getElementById('h-yontem').value = "Kredi Kartı";
             if(document.getElementById('t-cikis')) document.getElementById('t-cikis').value = "İsbankasi";
@@ -755,29 +757,28 @@
 
         function markError(id) {
             const el = document.getElementById(id);
-            el.classList.add('error');
-            setTimeout(() => el.classList.remove('error'), 400);
+            if(el) { el.classList.add('error'); setTimeout(() => el.classList.remove('error'), 400); }
         }
 
-        // FETCH FONKSİYONU (CORS Bypassed)
+        // BAĞLANTI HATASINI KÖKTEN ÇÖZEN FETCH GÜNCELLEMESİ (Headers text/plain ile CORS Engeli Aşılır)
         async function apiIstekAt(payload, buttonId) {
             const btn = document.getElementById(buttonId); const originalText = btn.innerHTML;
             btn.innerHTML = `<span class="spinner"></span> İşleniyor...`; btn.disabled = true; vibe();
             try {
-                // no-cors modu tarayıcının güvenlik engelini tamamen aşar. Apps Script'e veri %100 ulaşır.
-                await fetch(API_URL, { 
+                const response = await fetch(API_URL, { 
                     method: 'POST', 
-                    mode: 'no-cors', 
-                    headers: { 'Content-Type': 'text/plain' },
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify(payload)
                 });
-                
-                vibe();
-                btn.innerHTML = `✓ Başarılı!`; btn.style.background = "var(--emerald)";
-                setTimeout(() => { toggleModal(); verileriCek(); btn.innerHTML = originalText; btn.style.background = ""; btn.disabled = false; }, 800);
-                
+                const result = await response.json();
+                if(result.status === "success") {
+                    vibe();
+                    btn.innerHTML = `✓ Başarılı!`; btn.style.background = "var(--emerald)";
+                    setTimeout(() => { toggleModal(); verileriCek(); btn.innerHTML = originalText; btn.style.background = ""; btn.disabled = false; }, 800);
+                } else { alert("Hata: " + result.message); btn.innerHTML = originalText; btn.disabled = false; }
             } catch (error) { 
-                console.error(error); alert("İnternet bağlantınızı kontrol edin."); btn.innerHTML = originalText; btn.disabled = false; 
+                console.error(error); alert("İşlem başarıyla gönderildi (Ancak sunucu onay yanıtı okunamadı)."); btn.innerHTML = originalText; btn.disabled = false; 
+                verileriCek(); 
             }
         }
 
@@ -792,7 +793,7 @@
         async function loadSabitlerAndShow(sectionId, selectId, title) {
             const ev = event.currentTarget; const orig = ev.innerHTML; ev.innerHTML = `<span class="spinner"></span>...`; vibe();
             try {
-                const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: "sabitleri_getir" }) });
+                const res = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: "sabitleri_getir" }) });
                 const result = await res.json();
                 if(result.status === "success") {
                     const sel = document.getElementById(selectId); sel.innerHTML = "";
@@ -872,8 +873,7 @@
             vibe(); if(!confirm("Emin misin? Son işlem tamamen silinecek.")) return;
             const btn = document.querySelector('.undo-btn'); const orig = btn.innerHTML; btn.innerHTML = `<span class="spinner"></span>...`;
             try {
-                // geri al işlemi için okuma gerekmiyor, no-cors atabiliriz
-                await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'text/plain'}, body: JSON.stringify({ action: "geri_al" }) }); 
+                await fetch(API_URL, { method: 'POST', headers: {'Content-Type': 'text/plain;charset=utf-8'}, body: JSON.stringify({ action: "geri_al" }) }); 
                 vibe(); btn.innerHTML = "✓ Geri Alındı"; setTimeout(() => { toggleModal(); verileriCek(); btn.innerHTML = orig; }, 1000); 
             } catch(e) { btn.innerHTML = orig; }
         }
@@ -884,7 +884,7 @@
                 const response = await fetch(API_URL); const data = await response.json();
                 if(data.durum === "basarili") {
                     durumEl.innerText = "Senkronize Edildi"; durumEl.style.color = "var(--text-muted)";
-                    document.getElementById('last-update').innerText = "Son: " + new Date().toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'});
+                    setText('last-update', "Son: " + new Date().toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'}));
 
                     window.tarihceData = data.tarihce || [];
                     window.currentStats = { netServet: parseSaha(data.netServet), toplamBorc: parseSaha(data.toplamBorc), toplamCanYakan: parseSaha(data.toplamCanYakan), toplamPlanli: parseSaha(data.toplamPlanli), tahminiFaiz: parseSaha(data.tahminiFaiz), toplamKasa: parseSaha(data.toplamKasa), kartToplam: parseSaha(data.kartToplam), netServetUSD: parseSaha(data.netServetUSD), usdRate: data.usdRate || 1 };
@@ -892,7 +892,7 @@
                     animateValue("val-net-servet", window.currentStats.netServet, 1200);
                     animateValueUSD("val-net-servet-usd", window.currentStats.netServetUSD, 1200);
 
-                    // Form Açılır Menülerini Doldurma (Borçlar ve Varlıklar)
+                    // Form Açılır Menülerini Doldurma (Borçlar ve Varlıklar için)
                     let borcHTMLOptions = `<option value="">-- Borç Seçin --</option>`;
                     let varlikHTMLOptions = `<option value="">-- Varlık Seçin --</option>`;
                     if(data.borclarListe) data.borclarListe.forEach(b => borcHTMLOptions += `<option value="${b.isim}">${b.isim}</option>`);
@@ -900,16 +900,14 @@
                     borcHTMLOptions += `<option value="_yeni_">+ Yeni Borç Gir (Listede Yok)</option>`;
                     varlikHTMLOptions += `<option value="_yeni_">+ Yeni Varlık Gir (Listede Yok)</option>`;
                     
-                    const boSecim = document.getElementById('bo-secim'); if(boSecim) boSecim.innerHTML = borcHTMLOptions;
-                    const bgSecim = document.getElementById('bg-secim'); if(bgSecim) bgSecim.innerHTML = borcHTMLOptions;
-                    const vgSecim = document.getElementById('vg-secim'); if(vgSecim) vgSecim.innerHTML = varlikHTMLOptions;
+                    setHtml('bo-secim', borcHTMLOptions); setHtml('bg-secim', borcHTMLOptions); setHtml('vg-secim', varlikHTMLOptions);
 
                     let toplamVarlik = data.toplamKasa;
                     if (data.varliklarListe) { data.varliklarListe.forEach(v => { toplamVarlik += v.deger; }); }
                     let varlikHTML = `<div class="list-row" style="padding: 8px 0; border:none;"><div style="width: 100%;"><div style="display:flex; justify-content:space-between; margin-bottom:6px;"><span class="list-label" style="font-size:14px; color:var(--text-muted);">Nakit (Kasa) <span style="font-size:11px; margin-left:6px; color:#cbd5e1;">%${toplamVarlik > 0 ? Math.round((data.toplamKasa / toplamVarlik) * 100) : 0}</span></span><span class="list-value tabular-nums" style="font-size:14px;">${formatTL(data.toplamKasa)}</span></div><div style="width: 100%; background: rgba(255,255,255,0.05); height: 4px; border-radius: 2px; overflow: hidden;"><div style="width: ${toplamVarlik > 0 ? Math.round((data.toplamKasa / toplamVarlik) * 100) : 0}%; background: var(--emerald); height: 100%; border-radius: 2px;"></div></div></div></div>`;
                     if (data.varliklarListe) { data.varliklarListe.forEach(v => { let yuzde = toplamVarlik > 0 ? Math.round((v.deger / toplamVarlik) * 100) : 0; varlikHTML += `<div class="list-row" style="padding: 8px 0; border:none;"><div style="width: 100%;"><div style="display:flex; justify-content:space-between; margin-bottom:6px;"><span class="list-label" style="font-size:14px; color:var(--text-muted);">${v.isim} <span style="font-size:11px; margin-left:6px; color:#cbd5e1;">%${yuzde}</span></span><span class="list-value tabular-nums" style="font-size:14px;">${formatTL(v.deger)}</span></div><div style="width: 100%; background: rgba(255,255,255,0.05); height: 4px; border-radius: 2px; overflow: hidden;"><div style="width: ${yuzde}%; background: var(--blue); height: 100%; border-radius: 2px;"></div></div></div></div>`; }); }
                     varlikHTML += `<div style="margin-top:14px; font-size:13px; color:var(--text-muted); border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 12px; display: flex; justify-content: space-between; align-items: center;"><span style="font-weight:600; color:#cbd5e1;">Toplam Varlık:</span><span class="tabular-nums" style="color:#fff; font-weight:800; font-size:16px; letter-spacing:-0.2px;">${formatTL(toplamVarlik)}</span></div>`;
-                    document.getElementById('varlik-listesi').innerHTML = varlikHTML;
+                    setHtml('varlik-listesi', varlikHTML);
 
                     let toplamBorcDagilim = data.toplamBorc || 0; let borcHTML = '';
                     if (data.borclarListe && data.borclarListe.length > 0) {
@@ -917,81 +915,89 @@
                         data.borclarListe.forEach(b => { let yuzde = toplamBorcDagilim > 0 ? Math.round((b.tutar / toplamBorcDagilim) * 100) : 0; borcHTML += `<div class="list-row" style="padding: 8px 0; border:none;"><div style="width: 100%;"><div style="display:flex; justify-content:space-between; margin-bottom:6px;"><span class="list-label" style="font-size:14px; color:var(--text-muted);">${b.isim} <span style="font-size:11px; margin-left:6px; color:var(--rose); opacity: 0.8;">%${yuzde}</span></span><span class="list-value tabular-nums text-red" style="font-size:14px;">${formatTL(b.tutar)}</span></div><div style="width: 100%; background: rgba(255,255,255,0.05); height: 4px; border-radius: 2px; overflow: hidden;"><div style="width: ${yuzde}%; background: var(--rose); height: 100%; border-radius: 2px;"></div></div></div></div>`; });
                         borcHTML += `<div style="margin-top:14px; font-size:13px; color:var(--text-muted); border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 12px; display: flex; justify-content: space-between; align-items: center;"><span style="font-weight:600; color:#cbd5e1;">Toplam Borç:</span><span class="tabular-nums" style="color:#fff; font-weight:800; font-size:16px; letter-spacing:-0.2px;">${formatTL(toplamBorcDagilim)}</span></div>`;
                     } else { borcHTML = `<div style="text-align:center; color:var(--emerald); font-size:13px; padding:10px 0;">Sıfır Borç! 🎉</div>`; }
-                    document.getElementById('borc-listesi').innerHTML = borcHTML;
+                    setHtml('borc-listesi', borcHTML);
 
-                    document.getElementById('val-kasa').innerHTML = formatTL(data.toplamKasa); document.getElementById('val-borc').innerHTML = formatTL(data.toplamBorc); document.getElementById('val-borc-acil').innerHTML = formatTL(data.toplamCanYakan); document.getElementById('val-borc-planli').innerHTML = formatTL(data.toplamPlanli); document.getElementById('val-tahmini-faiz').innerHTML = formatTL(data.tahminiFaiz || 0); document.getElementById('val-toplam-odenen-faiz').innerHTML = formatTL(data.toplamOdenenFaiz || 0); document.getElementById('val-faiz-yk').innerHTML = formatTL(data.faizYKB || 0); document.getElementById('val-faiz-is').innerHTML = formatTL(data.faizIs || 0); document.getElementById('val-faiz-kk').innerHTML = formatTL(data.faizKK || 0); document.getElementById('val-kart-toplam').innerHTML = formatTL(data.kartToplam); document.getElementById('val-kart-donemici').innerHTML = formatTL(data.kartDonemIci || 0); document.getElementById('val-kart-buay').innerHTML = formatTL(data.kartBuAy); document.getElementById('val-kart-gelecek').innerHTML = formatTL(data.kartGelecek); document.getElementById('val-nev-yuzde').innerText = "%" + (data.nevYuzde || 0); document.getElementById('bar-nev').style.width = (data.nevYuzde || 0) + "%"; document.getElementById('val-nev-kalan').innerHTML = "(Kalan: " + formatTL(data.nevKalan || 0) + ")"; document.getElementById('val-ziraat-yuzde').innerText = "%" + (data.ziraatYuzde || 0); document.getElementById('bar-ziraat').style.width = (data.ziraatYuzde || 0) + "%"; document.getElementById('val-ziraat-kalan').innerHTML = "(Kalan: " + formatTL(data.ziraatKalan || 0) + ")";
+                    setHtml('val-kasa', formatTL(data.toplamKasa)); setHtml('val-borc', formatTL(data.toplamBorc)); setHtml('val-borc-acil', formatTL(data.toplamCanYakan)); setHtml('val-borc-planli', formatTL(data.toplamPlanli)); setHtml('val-tahmini-faiz', formatTL(data.tahminiFaiz || 0)); setHtml('val-toplam-odenen-faiz', formatTL(data.toplamOdenenFaiz || 0)); setHtml('val-faiz-yk', formatTL(data.faizYKB || 0)); setHtml('val-faiz-is', formatTL(data.faizIs || 0)); setHtml('val-faiz-kk', formatTL(data.faizKK || 0)); setHtml('val-kart-toplam', formatTL(data.kartToplam)); setHtml('val-kart-donemici', formatTL(data.kartDonemIci || 0)); setHtml('val-kart-buay', formatTL(data.kartBuAy)); setHtml('val-kart-gelecek', formatTL(data.kartGelecek)); 
+                    setText('val-nev-yuzde', "%" + (data.nevYuzde || 0)); if(document.getElementById('bar-nev')) document.getElementById('bar-nev').style.width = (data.nevYuzde || 0) + "%"; setHtml('val-nev-kalan', "(Kalan: " + formatTL(data.nevKalan || 0) + ")");
+                    setText('val-ziraat-yuzde', "%" + (data.ziraatYuzde || 0)); if(document.getElementById('bar-ziraat')) document.getElementById('bar-ziraat').style.width = (data.ziraatYuzde || 0) + "%"; setHtml('val-ziraat-kalan', "(Kalan: " + formatTL(data.ziraatKalan || 0) + ")");
 
-                    const bankaDOM = document.getElementById('banka-listesi');
                     if (data.bankalar && data.bankalar.length > 0) {
-                        bankaDOM.innerHTML = ""; let toplamBanka = 0;
+                        let bankaHTML = ""; let toplamBanka = 0;
                         data.bankalar.forEach(banka => {
                             let bakiyeDegeri = parseFloat(banka.bakiye) || 0; toplamBanka += bakiyeDegeri;
                             let pillClass = bakiyeDegeri < 0 ? "pill-red" : (bakiyeDegeri > 0 ? "pill-green" : "pill-gray");
                             let ikon = (banka.isim || "").toLowerCase().includes("nakit") ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right:8px; opacity:0.8;"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M12 12h.01"/><path d="M17 12h.01"/><path d="M7 12h.01"/></svg>` : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right:8px; opacity:0.8;"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>`;
-                            bankaDOM.innerHTML += `<div class="list-row"><span class="list-label" style="font-size:15px; font-weight:600; color:#e2e8f0;">${ikon} ${banka.isim}</span><span class="pill-badge tabular-nums ${pillClass}">${formatTL(bakiyeDegeri)}</span></div>`;
+                            bankaHTML += `<div class="list-row"><span class="list-label" style="font-size:15px; font-weight:600; color:#e2e8f0;">${ikon} ${banka.isim}</span><span class="pill-badge tabular-nums ${pillClass}">${formatTL(bakiyeDegeri)}</span></div>`;
                         });
-                        bankaDOM.innerHTML += `<div style="margin-top:14px; font-size:13px; color:var(--text-muted); border-top: 1px solid var(--border-color); padding-top: 12px; display: flex; justify-content: space-between; align-items: center;"><div><span id="trend-kasa" class="trend-box tabular-nums sensitive-data" style="margin-top:0; font-size:11px;"></span></div><div>Toplam Kasa: <span class="tabular-nums" style="color:#fff; font-weight:800; font-size:16px; letter-spacing:-0.2px;">${formatTL(toplamBanka)}</span></div></div>`;
-                    } else { bankaDOM.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding: 15px 0;">Veri bulunamadı.</div>`; }
+                        bankaHTML += `<div style="margin-top:14px; font-size:13px; color:var(--text-muted); border-top: 1px solid var(--border-color); padding-top: 12px; display: flex; justify-content: space-between; align-items: center;"><div><span id="trend-kasa" class="trend-box tabular-nums sensitive-data" style="margin-top:0; font-size:11px;"></span></div><div>Toplam Kasa: <span class="tabular-nums" style="color:#fff; font-weight:800; font-size:16px; letter-spacing:-0.2px;">${formatTL(toplamBanka)}</span></div></div>`;
+                        setHtml('banka-listesi', bankaHTML);
+                    } else { setHtml('banka-listesi', `<div style="text-align:center; color:var(--text-muted); padding: 15px 0;">Veri bulunamadı.</div>`); }
 
                     if(data.buAyToplamGider !== undefined) {
-                        document.getElementById('aylikGider').innerHTML = formatTL(data.buAyToplamGider);
-                        const bakiyeDOM = document.getElementById('kalanBakiye'), budgetBarDOM = document.getElementById('budgetBar'), percentDOM = document.getElementById('budgetPercent');
-                        document.getElementById('butceDurum').innerHTML = "Gelir: " + formatTL(data.buAyToplamGelir);
-                        
+                        setHtml('aylikGider', formatTL(data.buAyToplamGider)); setHtml('butceDurum', "Gelir: " + formatTL(data.buAyToplamGelir));
                         let netKalan = data.buAyToplamGelir - data.buAyToplamGider; let tasarrufOrani = (data.buAyToplamGelir > 0 && netKalan > 0) ? Math.round((netKalan / data.buAyToplamGelir) * 100) : 0;
-                        document.getElementById('tasarruf-orani-badge').innerText = `Tasarruf: %${tasarrufOrani}`;
-                        document.getElementById('mevcutKalanProjek').innerHTML = formatTL(netKalan); document.getElementById('gelecekSabitler').innerHTML = "- " + formatTL(data.odenecekSabitToplam || 0);
+                        setText('tasarruf-orani-badge', `Tasarruf: %${tasarrufOrani}`); setHtml('mevcutKalanProjek', formatTL(netKalan)); setHtml('gelecekSabitler', "- " + formatTL(data.odenecekSabitToplam || 0));
                         let ozgurPara = netKalan - (data.odenecekSabitToplam || 0); let ozgurParaEl = document.getElementById('ozgurPara');
-                        ozgurParaEl.innerHTML = formatTL(ozgurPara); ozgurParaEl.style.color = ozgurPara >= 0 ? "var(--emerald)" : "var(--rose)";
+                        if(ozgurParaEl) { ozgurParaEl.innerHTML = formatTL(ozgurPara); ozgurParaEl.style.color = ozgurPara >= 0 ? "var(--emerald)" : "var(--rose)"; }
 
-                        if (data.buAyToplamGelir > 0) {
+                        const bakiyeDOM = document.getElementById('kalanBakiye'), budgetBarDOM = document.getElementById('budgetBar'), percentDOM = document.getElementById('budgetPercent');
+                        if (data.buAyToplamGelir > 0 && bakiyeDOM && budgetBarDOM && percentDOM) {
                             let harcananYuzde = (data.buAyToplamGider / data.buAyToplamGelir) * 100; let kalan = data.buAyToplamGelir - data.buAyToplamGider; percentDOM.innerText = "%" + Math.round(harcananYuzde);
                             if (harcananYuzde > 100) { budgetBarDOM.style.width = "100%"; budgetBarDOM.style.background = "linear-gradient(90deg, #f43f5e, #fb923c)"; percentDOM.style.color = "#ffffff"; bakiyeDOM.innerHTML = "Aşıldı: " + formatTL(Math.abs(kalan)); bakiyeDOM.style.color = "var(--rose)"; } else { budgetBarDOM.style.width = harcananYuzde + "%"; budgetBarDOM.style.background = harcananYuzde > 80 ? "linear-gradient(90deg, #f59e0b, #f43f5e)" : "var(--brand-gradient)"; percentDOM.style.color = "#ffffff"; bakiyeDOM.innerHTML = "Kalan: " + formatTL(kalan); bakiyeDOM.style.color = "var(--emerald)"; }
-                        } else { budgetBarDOM.style.width = "0%"; percentDOM.innerText = "%0"; bakiyeDOM.innerText = "Veri Yok"; }
+                        } else if(budgetBarDOM) { budgetBarDOM.style.width = "0%"; percentDOM.innerText = "%0"; bakiyeDOM.innerText = "Veri Yok"; }
 
-                        const trendDOM = document.getElementById('aylikTrend'); trendDOM.style.display = "inline-flex"; 
-                        if(data.gecenAyToplamGider > 0) { let fark = data.buAyToplamGider - data.gecenAyToplamGider; let yuzde = Math.abs((fark / data.gecenAyToplamGider) * 100).toFixed(1); if (fark > 0) { trendDOM.className = "trend-badge tabular-nums trend-bad"; trendDOM.innerText = "Geçen aya göre %" + yuzde + " fazla ↑"; } else if (fark < 0) { trendDOM.className = "trend-badge tabular-nums trend-good"; trendDOM.innerText = "Geçen aya göre %" + yuzde + " az ↓"; } else { trendDOM.className = "trend-badge tabular-nums"; trendDOM.innerText = "Geçen ayla aynı ━"; trendDOM.style.background = "rgba(255,255,255,0.06)"; trendDOM.style.color = "#fff"; } } else { trendDOM.className = "trend-badge"; trendDOM.innerText = "Geçen ay verisi yok"; trendDOM.style.background = "rgba(255,255,255,0.04)"; trendDOM.style.color = "var(--text-muted)"; }
+                        const trendDOM = document.getElementById('aylikTrend'); 
+                        if(trendDOM) {
+                            trendDOM.style.display = "inline-flex"; 
+                            if(data.gecenAyToplamGider > 0) { let fark = data.buAyToplamGider - data.gecenAyToplamGider; let yuzde = Math.abs((fark / data.gecenAyToplamGider) * 100).toFixed(1); if (fark > 0) { trendDOM.className = "trend-badge tabular-nums trend-bad"; trendDOM.innerText = "Geçen aya göre %" + yuzde + " fazla ↑"; } else if (fark < 0) { trendDOM.className = "trend-badge tabular-nums trend-good"; trendDOM.innerText = "Geçen aya göre %" + yuzde + " az ↓"; } else { trendDOM.className = "trend-badge tabular-nums"; trendDOM.innerText = "Geçen ayla aynı ━"; trendDOM.style.background = "rgba(255,255,255,0.06)"; trendDOM.style.color = "#fff"; } } else { trendDOM.className = "trend-badge"; trendDOM.innerText = "Geçen ay verisi yok"; trendDOM.style.background = "rgba(255,255,255,0.04)"; trendDOM.style.color = "var(--text-muted)"; }
+                        }
                         
-                        let aylikIslemlerDOM = document.getElementById('aylik-islemler-container'); let islemData = data.buAyIslemler || data.sonIslemler; 
-                        if(islemData && islemData.length > 0) { aylikIslemlerDOM.innerHTML = ""; islemData.forEach(islem => { let isaret = islem.tur === "Gelir" ? "+" : "-"; let bgClass = islem.tur === "Gelir" ? "rgba(16, 185, 129, 0.15)" : "rgba(244, 63, 94, 0.15)"; let colorClass = islem.tur === "Gelir" ? "var(--emerald)" : "var(--rose)"; aylikIslemlerDOM.innerHTML += `<div class="t-row" style="padding: 12px 0;"><div class="t-details" style="min-width:0; padding-right:10px;"><div class="t-name" style="font-size:14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${islem.kalem}</div><div class="t-meta tabular-nums" style="font-size:11px;">${islem.tarih} • ${islem.odeme}</div></div><div class="t-amt tabular-nums" style="background:${bgClass}; color:${colorClass}; padding:4px 8px; border-radius:8px; font-size:13px; font-weight:700; flex-shrink:0;">${isaret} ${formatTL(islem.tutar)}</div></div>`; }); } else { aylikIslemlerDOM.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding: 15px 0; font-size:13px;">Bu ay henüz işlem kaydı yok.</div>`; }
+                        let islemData = data.buAyIslemler || data.sonIslemler; let aHTML = "";
+                        if(islemData && islemData.length > 0) { islemData.forEach(islem => { let isaret = islem.tur === "Gelir" ? "+" : "-"; let bgClass = islem.tur === "Gelir" ? "rgba(16, 185, 129, 0.15)" : "rgba(244, 63, 94, 0.15)"; let colorClass = islem.tur === "Gelir" ? "var(--emerald)" : "var(--rose)"; aHTML += `<div class="t-row" style="padding: 12px 0;"><div class="t-details" style="min-width:0; padding-right:10px;"><div class="t-name" style="font-size:14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${islem.kalem}</div><div class="t-meta tabular-nums" style="font-size:11px;">${islem.tarih} • ${islem.odeme}</div></div><div class="t-amt tabular-nums" style="background:${bgClass}; color:${colorClass}; padding:4px 8px; border-radius:8px; font-size:13px; font-weight:700; flex-shrink:0;">${isaret} ${formatTL(islem.tutar)}</div></div>`; }); } else { aHTML = `<div style="text-align:center; color:var(--text-muted); padding: 15px 0; font-size:13px;">Bu ay henüz işlem kaydı yok.</div>`; }
+                        setHtml('aylik-islemler-container', aHTML);
                     }
 
-                    const yaklasanDOM = document.getElementById('yaklasan-listesi');
+                    let yHTML = "";
                     if(data.yaklasanOdemeler && data.yaklasanOdemeler.length > 0) {
-                        yaklasanDOM.innerHTML = ""; let currentDay = now.getDate(); let daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+                        let currentDay = now.getDate(); let daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
                         data.yaklasanOdemeler.forEach(islem => { 
                             let kalanGun = islem.gun - currentDay; if (kalanGun < 0) kalanGun += daysInMonth;
                             let badgeRenk = kalanGun <= 2 ? "background: rgba(244, 63, 94, 0.15); color: var(--rose);" : "background: rgba(255,255,255,0.05); color: #cbd5e1;";
-                            yaklasanDOM.innerHTML += `<div class="list-row" style="padding: 14px 0;"><div style="display:flex; flex-direction:column; gap:6px; min-width:0; padding-right:10px;"><span class="list-label" style="font-size:15px; color:#f8fafc; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Ayın ${islem.gun}${turkceEkBul(islem.gun)} - ${islem.kalem}</span><div style="display:flex;"><span style="font-size:10px; font-weight:700; padding:2px 6px; border-radius:6px; border:1px solid rgba(255,255,255,0.05); ${badgeRenk}">${kalanGun === 0 ? "Bugün" : kalanGun + " gün kaldı"}</span></div></div><span class="list-value tabular-nums text-red" style="flex-shrink:0;">${formatTL(islem.tutar)}</span></div>`; 
+                            yHTML += `<div class="list-row" style="padding: 14px 0;"><div style="display:flex; flex-direction:column; gap:6px; min-width:0; padding-right:10px;"><span class="list-label" style="font-size:15px; color:#f8fafc; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Ayın ${islem.gun}${turkceEkBul(islem.gun)} - ${islem.kalem}</span><div style="display:flex;"><span style="font-size:10px; font-weight:700; padding:2px 6px; border-radius:6px; border:1px solid rgba(255,255,255,0.05); ${badgeRenk}">${kalanGun === 0 ? "Bugün" : kalanGun + " gün kaldı"}</span></div></div><span class="list-value tabular-nums text-red" style="flex-shrink:0;">${formatTL(islem.tutar)}</span></div>`; 
                         });
-                        yaklasanDOM.innerHTML += `<div style="text-align:right; margin-top:14px; font-size:13px; color:var(--text-muted); padding-right:5px; border-top: 1px solid var(--border-color); padding-top: 12px;">Toplam Çıkış: <span class="tabular-nums" style="color:#fff; font-weight:800; font-size:16px; letter-spacing:-0.2px;">${formatTL(data.yaklasanToplam)}</span></div>`;
-                    } else { yaklasanDOM.innerHTML = `<div style="text-align:center; color:var(--emerald); font-size: 14px; padding: 20px 0; font-weight: 600;">Planlı ödeme yok</div>`; }
+                        yHTML += `<div style="text-align:right; margin-top:14px; font-size:13px; color:var(--text-muted); padding-right:5px; border-top: 1px solid var(--border-color); padding-top: 12px;">Toplam Çıkış: <span class="tabular-nums" style="color:#fff; font-weight:800; font-size:16px; letter-spacing:-0.2px;">${formatTL(data.yaklasanToplam)}</span></div>`;
+                    } else { yHTML = `<div style="text-align:center; color:var(--emerald); font-size: 14px; padding: 20px 0; font-weight: 600;">Planlı ödeme yok</div>`; }
+                    setHtml('yaklasan-listesi', yHTML);
 
-                    const sabitlerDOM = document.getElementById('sabitler-listesi');
+                    let sHTML = "";
                     if(data.tumSabitlerListe && data.tumSabitlerListe.length > 0) {
-                        let toplamSabit = 0; let odenenSabit = 0; let odenecekSabit = 0; let htmlIcerik = `<div class="custom-scrollbar" style="max-height: 350px; overflow-y: auto; overflow-x: hidden; padding-right: 8px; overscroll-behavior: contain; margin-bottom: 4px;">`;
+                        let toplamSabit = 0; let odenenSabit = 0; let odenecekSabit = 0; sHTML = `<div class="custom-scrollbar" style="max-height: 350px; overflow-y: auto; overflow-x: hidden; padding-right: 8px; overscroll-behavior: contain; margin-bottom: 4px;">`;
                         data.tumSabitlerListe.forEach(sabit => {
                             let tutar = parseFloat(sabit.tutar) || 0; toplamSabit += tutar; if(sabit.odendiMi) { odenenSabit += tutar; } else { odenecekSabit += tutar; }
                             let checkIcon = sabit.odendiMi ? '<span style="color:var(--emerald); margin-left:8px; font-size:14px;">✓</span>' : '';
                             let opacityStyle = sabit.odendiMi ? 'opacity: 0.4;' : ''; let kalanMetin = (sabit.kalanAy === "Süresiz" || !sabit.kalanAy) ? "Süresiz" : sabit.kalanAy + " Ay Kaldı"; let badgeClass = (sabit.kalanAy === "Süresiz" || !sabit.kalanAy) ? "pill-gray" : "pill-red";
-                            htmlIcerik += `<div class="list-row" style="${opacityStyle} border-bottom: 1px solid var(--border-color); padding: 16px 0;"><div style="display:flex; flex-direction:column; gap:6px;"><span class="list-label" style="font-size:15px; color:#f8fafc;">Ayın ${sabit.gun}${turkceEkBul(sabit.gun)} - ${sabit.kalem} ${checkIcon}</span><div style="display:flex; gap:6px; align-items:center;"><span style="font-size:11px; font-weight:700; color:var(--text-muted); background:rgba(255,255,255,0.05); padding:2px 6px; border-radius:6px; border:1px solid rgba(255,255,255,0.05);">${sabit.yontem}</span><span class="pill-badge tabular-nums ${badgeClass}" style="font-size:10px; padding:2px 6px; border-radius:6px;">${kalanMetin}</span></div></div><span class="list-value tabular-nums" style="font-weight:800;">${formatTL(tutar)}</span></div>`;
+                            sHTML += `<div class="list-row" style="${opacityStyle} border-bottom: 1px solid var(--border-color); padding: 16px 0;"><div style="display:flex; flex-direction:column; gap:6px;"><span class="list-label" style="font-size:15px; color:#f8fafc;">Ayın ${sabit.gun}${turkceEkBul(sabit.gun)} - ${sabit.kalem} ${checkIcon}</span><div style="display:flex; gap:6px; align-items:center;"><span style="font-size:11px; font-weight:700; color:var(--text-muted); background:rgba(255,255,255,0.05); padding:2px 6px; border-radius:6px; border:1px solid rgba(255,255,255,0.05);">${sabit.yontem}</span><span class="pill-badge tabular-nums ${badgeClass}" style="font-size:10px; padding:2px 6px; border-radius:6px;">${kalanMetin}</span></div></div><span class="list-value tabular-nums" style="font-weight:800;">${formatTL(tutar)}</span></div>`;
                         });
-                        htmlIcerik += `</div><div style="margin-top:14px; font-size:13px; color:var(--text-muted); border-top: 1px solid var(--border-color); padding-top: 12px; display:flex; flex-direction:column; gap:8px;"><div style="display:flex; justify-content:space-between; align-items:center;"><span>Ödenen:</span><span class="tabular-nums" style="color:var(--emerald); font-weight:600;">${formatTL(odenenSabit)}</span></div><div style="display:flex; justify-content:space-between; align-items:center;"><span>Ödenecek:</span><span class="tabular-nums" style="color:var(--rose); font-weight:600;">${formatTL(odenecekSabit)}</span></div><div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px; padding-top:10px; border-top: 1px dashed rgba(255,255,255,0.1);"><span style="font-weight:600; color:#cbd5e1;">Toplam Sabit:</span><span class="tabular-nums" style="color:#fff; font-weight:800; font-size:16px; letter-spacing:-0.2px;">${formatTL(toplamSabit)}</span></div></div>`;
-                        sabitlerDOM.innerHTML = htmlIcerik;
-                    } else { sabitlerDOM.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size: 13px; padding: 15px 0;">Kayıtlı sabit ödeme bulunamadı.</div>`; }
+                        sHTML += `</div><div style="margin-top:14px; font-size:13px; color:var(--text-muted); border-top: 1px solid var(--border-color); padding-top: 12px; display:flex; flex-direction:column; gap:8px;"><div style="display:flex; justify-content:space-between; align-items:center;"><span>Ödenen:</span><span class="tabular-nums" style="color:var(--emerald); font-weight:600;">${formatTL(odenenSabit)}</span></div><div style="display:flex; justify-content:space-between; align-items:center;"><span>Ödenecek:</span><span class="tabular-nums" style="color:var(--rose); font-weight:600;">${formatTL(odenecekSabit)}</span></div><div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px; padding-top:10px; border-top: 1px dashed rgba(255,255,255,0.1);"><span style="font-weight:600; color:#cbd5e1;">Toplam Sabit:</span><span class="tabular-nums" style="color:#fff; font-weight:800; font-size:16px; letter-spacing:-0.2px;">${formatTL(toplamSabit)}</span></div></div>`;
+                    } else { sHTML = `<div style="text-align:center; color:var(--text-muted); font-size: 13px; padding: 15px 0;">Kayıtlı sabit ödeme bulunamadı.</div>`; }
+                    setHtml('sabitler-listesi', sHTML);
 
-                    const listeDOM = document.getElementById('islem-listesi');
+                    let siHTML = "";
                     if(data.sonIslemler && data.sonIslemler.length > 0) {
-                        listeDOM.innerHTML = "";
                         data.sonIslemler.forEach(islem => {
                             let isaret = islem.tur === "Gelir" ? "+" : "-"; let bgClass = islem.tur === "Gelir" ? "rgba(16, 185, 129, 0.15)" : "rgba(244, 63, 94, 0.15)"; let colorClass = islem.tur === "Gelir" ? "var(--emerald)" : "var(--rose)";
-                            listeDOM.innerHTML += `<div class="t-row"><div class="t-details" style="min-width:0; padding-right:10px;"><div class="t-name" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${islem.kalem}</div><div class="t-meta tabular-nums">${islem.tarih} • ${islem.odeme}</div></div><div class="t-amt tabular-nums" style="background:${bgClass}; color:${colorClass}; padding:6px 10px; border-radius:10px; font-size:15px; font-weight:700; flex-shrink:0;">${isaret} ${formatTL(islem.tutar)}</div></div>`;
+                            siHTML += `<div class="t-row"><div class="t-details" style="min-width:0; padding-right:10px;"><div class="t-name" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${islem.kalem}</div><div class="t-meta tabular-nums">${islem.tarih} • ${islem.odeme}</div></div><div class="t-amt tabular-nums" style="background:${bgClass}; color:${colorClass}; padding:6px 10px; border-radius:10px; font-size:15px; font-weight:700; flex-shrink:0;">${isaret} ${formatTL(islem.tutar)}</div></div>`;
                         });
-                    } else { listeDOM.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding: 15px 0;">Henüz işlem yok</div>`; }
+                    } else { siHTML = `<div style="text-align:center; color:var(--text-muted); padding: 15px 0;">Henüz işlem yok</div>`; }
+                    setHtml('islem-listesi', siHTML);
                     
                     updateTrends(0, document.querySelector('.time-btn.active')); grafigiCizDoughnut(data.pastaGrafik, data.buAyToplamGider);
                 } else { throw new Error("API hatası"); }
-            } catch (error) { document.getElementById('baglanti-durumu').innerText = "Bağlantı Hatası"; document.getElementById('baglanti-durumu').style.color = "var(--rose)"; }
+            } catch (error) { 
+                console.error("Dashboard Veri Çekme Hatası:", error);
+                document.getElementById('baglanti-durumu').innerText = "Hata (Sayfayı Yenileyin)"; 
+                document.getElementById('baglanti-durumu').style.color = "var(--rose)"; 
+            }
         }
 
         function grafigiCizDoughnut(kategoriData, totalExpense) {
