@@ -633,7 +633,7 @@
                 <div class="form-group" style="position:relative;">
                     <label>Çıkış Yapılan (Gönderen)</label>
                     <select id="t-cikis" class="form-control"><option value="İsbankasi">İş Bankası</option><option value="Ziraat">Ziraat</option><option value="Yapıkredi">YapıKredi</option><option value="Nakit">Nakit</option></select>
-                    <button class="swap-btn" onclick="swapTransfer()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 10v12"/><path d="M15 10v12"/><path d="m3 14 4-4 4 4"/><path d="m19 14-4-4-4 4"/></svg></button>
+                    <button class="swap-btn" onclick="swapTransfer()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21 16-4 4-4-4"/><path d="M17 20V4"/><path d="m3 8 4-4 4 4"/><path d="M7 4v16"/></svg></button>
                 </div>
                 <div class="form-group"><label>Giriş Yapılan (Alan)</label><select id="t-giris" class="form-control"><option value="Ziraat">Ziraat</option><option value="İsbankasi">İş Bankası</option><option value="Yapıkredi">YapıKredi</option><option value="Nakit">Nakit</option></select></div>
                 <div class="form-group"><label>Transfer Tutarı (₺)</label><input type="text" inputmode="decimal" id="t-tutar" class="form-control" placeholder="Örn: 2500"></div>
@@ -914,7 +914,32 @@
         function swapTransfer() {
             vibe();
             const c = document.getElementById('t-cikis'); const g = document.getElementById('t-giris');
-            const temp = c.value; c.value = g.value; g.value = temp;
+            
+            // Native değerleri değiştir
+            const tempVal = c.value; 
+            c.value = g.value; 
+            g.value = tempVal;
+
+            // Custom UI (Açılır Menü) tetikleyicilerini bul ve yazıları değiştir
+            const cWrapper = c.nextElementSibling;
+            const gWrapper = g.nextElementSibling;
+            
+            if(cWrapper && cWrapper.classList.contains('custom-select-wrapper') && gWrapper) {
+                const cSpan = cWrapper.querySelector('.custom-select-trigger span');
+                const gSpan = gWrapper.querySelector('.custom-select-trigger span');
+                
+                const tempText = cSpan.innerText;
+                cSpan.innerText = gSpan.innerText;
+                gSpan.innerText = tempText;
+
+                // Seçili öğe (selected) sınıflarını da güncelle
+                cWrapper.querySelectorAll('.custom-option').forEach(opt => {
+                    opt.classList.toggle('selected', opt.innerText === cSpan.innerText);
+                });
+                gWrapper.querySelectorAll('.custom-option').forEach(opt => {
+                    opt.classList.toggle('selected', opt.innerText === gSpan.innerText);
+                });
+            }
         }
 
         function markError(id) {
