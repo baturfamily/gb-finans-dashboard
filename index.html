@@ -1404,21 +1404,31 @@
                     varlikHTML += `<div style="margin-top:14px; font-size:13px; color:var(--text-muted); border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 12px; display: flex; justify-content: space-between; align-items: center;"><span style="font-weight:600; color:#cbd5e1;">Toplam Varlık:</span><span class="tabular-nums" style="color:#fff; font-weight:800; font-size:16px; letter-spacing:-0.2px;">${formatTL(toplamVarlik)}</span></div>`;
                     setHtml('varlik-listesi', varlikHTML);
 
-                    let safBorcToplam = 0;
-                    safBorclarListe.forEach(b => safBorcToplam += b.tutar);
+                                        // GÖRSEL DAĞILIM İÇİN TÜM BORÇLARI (KMH DAHİL) KULLANACAĞIZ
+                    let tumBorclarDizisi = data.borclarListe || [];
+                    let gercekBorcToplam = 0;
+                    tumBorclarDizisi.forEach(b => gercekBorcToplam += b.tutar);
                     let borcHTML = '';
                     
-                    if (safBorclarListe.length > 0) {
-                        safBorclarListe.sort((a, b) => b.tutar - a.tutar);
-                        safBorclarListe.forEach(b => { 
-                            let yuzde = safBorcToplam > 0 ? Math.round((b.tutar / safBorcToplam) * 100) : 0; 
-                            borcHTML += `<div class="list-row" style="padding: 8px 0; border:none;"><div style="width: 100%;"><div style="display:flex; justify-content:space-between; margin-bottom:6px;"><span class="list-label" style="font-size:14px; color:var(--text-muted);">${b.isim} <span style="font-size:11px; margin-left:6px; color:var(--rose); opacity: 0.8;">%${yuzde}</span></span><span class="list-value tabular-nums text-red" style="font-size:14px;">${formatTL(b.tutar)}</span></div><div style="width: 100%; background: rgba(255,255,255,0.05); height: 4px; border-radius: 2px; overflow: hidden;"><div style="width: ${yuzde}%; background: var(--rose); height: 100%; border-radius: 2px;"></div></div></div></div>`; 
+                    if (tumBorclarDizisi.length > 0) {
+                        // Büyükten küçüğe sırala
+                        tumBorclarDizisi.sort((a, b) => b.tutar - a.tutar);
+                        tumBorclarDizisi.forEach(b => { 
+                            let yuzde = gercekBorcToplam > 0 ? Math.round((b.tutar / gercekBorcToplam) * 100) : 0; 
+                            
+                            // KMH ise ekstra vurgu yap (Daha koyu kırmızı ve KMH etiketi)
+                            let isKmh = b.isim.includes("(KMH)");
+                            let barColor = isKmh ? "#ef4444" : "var(--rose)"; // KMH için saf kırmızı
+                            let labelStyle = isKmh ? "color:#fca5a5; font-weight:600;" : "color:var(--text-muted);";
+                            
+                            borcHTML += `<div class="list-row" style="padding: 8px 0; border:none;"><div style="width: 100%;"><div style="display:flex; justify-content:space-between; margin-bottom:6px;"><span class="list-label" style="font-size:14px; ${labelStyle}">${b.isim} <span style="font-size:11px; margin-left:6px; color:${barColor}; opacity: 0.9;">%${yuzde}</span></span><span class="list-value tabular-nums text-red" style="font-size:14px;">${formatTL(b.tutar)}</span></div><div style="width: 100%; background: rgba(255,255,255,0.05); height: 4px; border-radius: 2px; overflow: hidden;"><div style="width: ${yuzde}%; background: ${barColor}; height: 100%; border-radius: 2px;"></div></div></div></div>`; 
                         });
-                        borcHTML += `<div style="margin-top:14px; font-size:13px; color:var(--text-muted); border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 12px; display: flex; justify-content: space-between; align-items: center;"><span style="font-weight:600; color:#cbd5e1;">Dağılım Toplamı:</span><span class="tabular-nums" style="color:#fff; font-weight:800; font-size:16px; letter-spacing:-0.2px;">${formatTL(safBorcToplam)}</span></div>`;
+                        borcHTML += `<div style="margin-top:14px; font-size:13px; color:var(--text-muted); border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 12px; display: flex; justify-content: space-between; align-items: center;"><span style="font-weight:600; color:#cbd5e1;">Gerçek Borç Yükü:</span><span class="tabular-nums" style="color:#fff; font-weight:800; font-size:16px; letter-spacing:-0.2px;">${formatTL(gercekBorcToplam)}</span></div>`;
                     } else { 
                         borcHTML = `<div style="text-align:center; color:var(--emerald); font-size:13px; padding:10px 0;">Sıfır Borç! 🎉</div>`; 
                     }
                     setHtml('borc-listesi', borcHTML);
+
 
                     setHtml('val-kasa', formatTL(data.toplamKasa)); setHtml('val-borc', formatTL(data.toplamBorc)); setHtml('val-borc-acil', formatTL(data.toplamCanYakan)); setHtml('val-borc-planli', formatTL(data.toplamPlanli)); setHtml('val-tahmini-faiz', formatTL(data.tahminiFaiz || 0)); setHtml('val-toplam-odenen-faiz', formatTL(data.toplamOdenenFaiz || 0)); setHtml('val-faiz-yk', formatTL(data.faizYKB || 0)); setHtml('val-faiz-is', formatTL(data.faizIs || 0)); setHtml('val-faiz-kk', formatTL(data.faizKK || 0)); setHtml('val-kart-toplam', formatTL(data.kartToplam)); setHtml('val-kart-donemici', formatTL(data.kartDonemIci || 0)); setHtml('val-kart-buay', formatTL(data.kartBuAy)); setHtml('val-kart-gelecek', formatTL(data.kartGelecek)); 
                     setText('val-nev-yuzde', "%" + (data.nevYuzde || 0)); if(document.getElementById('bar-nev')) document.getElementById('bar-nev').style.width = (data.nevYuzde || 0) + "%"; setHtml('val-nev-kalan', "(Kalan: " + formatTL(data.nevKalan || 0) + ")");
