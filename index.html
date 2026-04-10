@@ -421,12 +421,12 @@
                         </div>
                     </div>
                     <div style="background: var(--panel-bg); padding: 14px; display:flex; justify-content:space-between; align-items:center;">
-                        <span style="font-size:13px; color:var(--text-muted); font-weight:500;">Kesinleşmiş Ekstre <span style="font-size:10px; color:var(--rose); opacity:0.8; margin-left:4px;">(ÖDENECEK)</span></span>
-                        <span id="val-kart-buay" class="tabular-nums" style="font-size:16px; font-weight:700; color:var(--rose);">₺0,00</span>
+                        <span style="font-size:13px; color:var(--text-muted); font-weight:500;">Dönem İçi <span style="font-size:10px; color:var(--rose); opacity:0.8; margin-left:4px;">(BU AYIN 24'Ü)</span></span>
+                        <span id="val-kart-donemici" class="tabular-nums" style="font-size:16px; font-weight:700; color:var(--rose);">₺0,00</span>
                     </div>
                     <div style="background: var(--panel-bg); padding: 14px; display:flex; justify-content:space-between; align-items:center;">
-                        <span style="font-size:13px; color:var(--text-muted); font-weight:500;">Dönem İçi <span style="font-size:10px; color:var(--amber); opacity:0.8; margin-left:4px;">(GELECEK AY)</span></span>
-                        <span id="val-kart-donemici" class="tabular-nums" style="font-size:16px; font-weight:700; color:var(--amber);">₺0,00</span>
+                        <span style="font-size:13px; color:var(--text-muted); font-weight:500;">Gelecek Dönem <span style="font-size:10px; color:var(--amber); opacity:0.8; margin-left:4px;">(SONRAKİ AYIN 24'Ü)</span></span>
+                        <span id="val-kart-gelecek" class="tabular-nums" style="font-size:16px; font-weight:700; color:var(--amber);">₺0,00</span>
                     </div>
                 </div>
             </div>
@@ -856,7 +856,6 @@
                 if (rawStr instanceof Date) return rawStr.getTime();
                 let s = rawStr.toString().trim();
                 
-                // Eğer manuel "09.04.2026" formatında girildiyse (Saf zırh)
                 if (s.includes('.')) {
                     let parts = s.split(' ')[0].split('.');
                     if (parts.length === 3) {
@@ -1117,7 +1116,6 @@
             }
         }
 
-        // ================= KART İŞLEMLERİ BUTONLARI =================
         function submitYeniKart() {
             const isim = document.getElementById('yk-isim').value.trim();
             const limit = document.getElementById('yk-limit').value;
@@ -1170,9 +1168,7 @@
 
             apiIstekAt({ action: "kart_borcu_ode", kart_adi: kartIsmi, tutar: tutar, yontem: yontem, tarih: getFormattedDateTime('kbo-tarih') }, 'btn-submit-kart-borc-ode');
         }
-        // =============================================================
 
-        // 🌟 YENİ: TAKSİT VERİSİNİ ALAN HARCAMA GÖNDERİCİ 🌟
         function submitHarcama() {
             const kalem = document.getElementById('h-kalem').value.trim();
             const tutar = document.getElementById('h-tutar').value;
@@ -1186,16 +1182,7 @@
             if(!yontem) { markError('h-yontem'); err = true; }
             if(err) return;
 
-            apiIstekAt({ 
-                action: "yeni_hareket", 
-                tur: tur, 
-                kategori: "Değişken", 
-                kalem: kalem, 
-                yontem: yontem, 
-                tutar: tutar, 
-                taksit: taksit, // SİSTEME EKLENEN YENİ GÜÇ
-                tarih: getFormattedDateTime('h-tarih') 
-            }, 'btn-submit-harcama');
+            apiIstekAt({ action: "yeni_hareket", tur: tur, kategori: "Değişken", kalem: kalem, yontem: yontem, tutar: tutar, taksit: taksit, tarih: getFormattedDateTime('h-tarih') }, 'btn-submit-harcama');
         }
 
         async function loadSabitlerAndShow(sectionId, selectId, title) {
@@ -1488,8 +1475,6 @@
                     animateValue("val-net-servet", window.currentStats.netServet, 1200);
                     animateValueUSD("val-net-servet-usd", window.currentStats.netServetUSD, 1200);
 
-                    // ============================================================================
-                    // 🌟 DİNAMİK HESAP/BANKA & KART MENÜSÜ OLUŞTURUCU 🌟
                     if (data.bankalar && data.bankalar.length > 0) {
                         let hesapOptions = "";
                         let kartOptions = `<option value="">-- Kart Seçin --</option>`;
@@ -1537,7 +1522,6 @@
                             }
                         });
                     }
-                    // ============================================================================
 
                     let safBorclarListe = data.borclarListe ? data.borclarListe.filter(b => !b.isim.includes("(KMH)")) : [];
 
@@ -1582,7 +1566,6 @@
                     }
                     setHtml('borc-listesi', borcHTML);
 
-
                     setHtml('val-kasa', formatTL(data.toplamKasa)); setHtml('val-borc', formatTL(data.toplamBorc)); setHtml('val-borc-acil', formatTL(data.toplamCanYakan)); setHtml('val-borc-planli', formatTL(data.toplamPlanli)); setHtml('val-tahmini-faiz', formatTL(data.tahminiFaiz || 0)); setHtml('val-toplam-odenen-faiz', formatTL(data.toplamOdenenFaiz || 0)); setHtml('val-faiz-yk', formatTL(data.faizYKB || 0)); setHtml('val-faiz-is', formatTL(data.faizIs || 0)); setHtml('val-faiz-kk', formatTL(data.faizKK || 0)); 
                     
                     // KART BEYNİ YANSIMALARI
@@ -1592,8 +1575,9 @@
                     setText('val-kart-doluluk', "%" + (data.kartDoluluk || 0) + " Dolu");
                     if(document.getElementById('bar-kart-limit')) document.getElementById('bar-kart-limit').style.width = (data.kartDoluluk || 0) + "%";
 
-                    setHtml('val-kart-buay', formatTL(data.kartBuAy)); 
+                    // 15'İ KURALINA GÖRE HESAPLANAN DÖNEM İÇİ VE GELECEK
                     setHtml('val-kart-donemici', formatTL(data.kartDonemIci)); 
+                    setHtml('val-kart-gelecek', formatTL(data.kartGelecek)); 
 
                     setText('val-nev-yuzde', "%" + (data.nevYuzde || 0)); if(document.getElementById('bar-nev')) document.getElementById('bar-nev').style.width = (data.nevYuzde || 0) + "%"; setHtml('val-nev-kalan', "(Kalan: " + formatTL(data.nevKalan || 0) + ")");
                     setText('val-ziraat-yuzde', "%" + (data.ziraatYuzde || 0)); if(document.getElementById('bar-ziraat')) document.getElementById('bar-ziraat').style.width = (data.ziraatYuzde || 0) + "%"; setHtml('val-ziraat-kalan', "(Kalan: " + formatTL(data.ziraatKalan || 0) + ")");
