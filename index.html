@@ -87,7 +87,7 @@
         .main-stats::before { content: ''; position: absolute; top: -50px; left: 50%; transform: translateX(-50%); width: 150px; height: 150px; background: var(--brand-gradient); filter: blur(80px); opacity: 0.3; pointer-events: none;}
         .main-stats .accordion-header { justify-content: center; position: relative; }
         .main-stats .accordion-header h3 { margin-bottom: 0; }
-        .main-stats .chevron-icon { absolute; right: 0; }
+        .main-stats .chevron-icon { position: absolute; right: 0; }
         .main-stats .accordion-content { display: flex; flex-direction: column; align-items: center; margin-top: 10px; }
         .amount-large { font-size: 46px; font-weight: 800; letter-spacing: -1.5px; margin-top: 8px; color: #FFFFFF; text-shadow: 0 2px 10px rgba(0,0,0,0.5); position: relative; z-index: 1;}
 
@@ -753,7 +753,7 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbyf4VwhjJ7fpf82W-56eWCRQEsmkMlGDP5FZmWN8NJwwaCU_zkDA-N103srUOJ6gd0wnQ/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbwcq1kR6nC0hTz-dFvXqA504h-fXy42oRk80y2Q88S1B70zQ-h83_8/exec"; 
         
         let expenseChartInstance = null; window.tarihceData = []; window.currentStats = {};
         const gunler = ["Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi"];
@@ -979,7 +979,7 @@
         async function verileriCek() {
             const durumEl = document.getElementById('baglanti-durumu'); durumEl.innerHTML = '<span class="spinner"></span>Bağlanıyor';
             try {
-                const response = await fetch(API_URL); const data = await response.json();
+                const response = await fetch(API_URL + "?nocache=" + new Date().getTime()); const data = await response.json();
                 if(data.durum === "basarili") {
                     durumEl.innerText = "Senkronize Edildi"; durumEl.style.color = "var(--text-muted)";
                     const now = new Date();
@@ -1062,7 +1062,11 @@
                     setHtml('islem-listesi', siH);
                     updateTrends(0, document.querySelector('.time-btn.active')); grafigiCizDoughnut(data.pastaGrafik, data.buAyToplamGider);
                 }
-            } catch (e) { durumEl.innerText = "Bağlantı Hatası!"; durumEl.style.color = "var(--rose)"; }
+            } catch (e) { 
+                console.error(e);
+                durumEl.innerText = "Bağlantı Hatası!"; 
+                durumEl.style.color = "var(--rose)"; 
+            }
         }
 
         function grafigiCizDoughnut(kategoriData, totalExpense) {
