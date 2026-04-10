@@ -1096,7 +1096,7 @@
             row.className = 'parca-satiri';
             row.style.cssText = "display: grid; grid-template-columns: 1.5fr 1fr auto; gap: 8px; margin-bottom: 10px; align-items: start;";
             
-            // Modern Select ve Input yapısı
+            // onkeyup yerine oninput eklendi (iOS'ta anlık tepki için)
             row.innerHTML = `
                 <select class="form-control parca-hesap" style="padding: 10px; font-size: 13px;">
                     <option value="Ziraat">Ziraat</option>
@@ -1105,7 +1105,7 @@
                     <option value="Kredi Kartı">Kredi Kartı</option>
                     <option value="Nakit">Nakit</option>
                 </select>
-                <input type="text" inputmode="decimal" class="form-control parca-tutar" placeholder="Tutar" onkeyup="hesaplaKalanParcali()" style="padding: 10px; font-size: 14px;">
+                <input type="text" inputmode="decimal" class="form-control parca-tutar" placeholder="Tutar" oninput="hesaplaKalanParcali()" style="padding: 10px; font-size: 14px;">
                 <button onclick="this.parentElement.remove(); hesaplaKalanParcali();" style="background: rgba(244, 63, 94, 0.15); border: none; color: var(--rose); width: 38px; height: 38px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                 </button>
