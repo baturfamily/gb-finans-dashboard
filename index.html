@@ -818,7 +818,7 @@
         function closeModalOnOutside(e) { if(e.target.id === 'action-modal') toggleModal(); }
 
         function updateKategori() {
-            const tur = document.getElementById('h-tur').value;
+            const tur = getCustomVal('h-tur');
             const label = document.getElementById('label-h-kalem');
             const input = document.getElementById('h-kalem');
             const tags = document.getElementById('tags-h-kalem');
@@ -846,19 +846,19 @@
         }
 
         function toggleYeniBorc() {
-            const val = document.getElementById('bo-secim').value;
+            const val = getCustomVal('bo-secim');
             document.getElementById('bo-isim-yeni').style.display = val === '_yeni_' ? 'block' : 'none';
             if(val === '_yeni_') document.getElementById('bo-isim-yeni').focus();
         }
 
         function toggleYeniBorcGuncelle() {
-            const val = document.getElementById('bg-secim').value;
+            const val = getCustomVal('bg-secim');
             document.getElementById('bg-isim-yeni').style.display = val === '_yeni_' ? 'block' : 'none';
             if(val === '_yeni_') document.getElementById('bg-isim-yeni').focus();
         }
 
         function toggleYeniVarlik() {
-            const val = document.getElementById('vg-secim').value;
+            const val = getCustomVal('vg-secim');
             document.getElementById('vg-isim-yeni').style.display = val === '_yeni_' ? 'block' : 'none';
             if(val === '_yeni_') document.getElementById('vg-isim-yeni').focus();
         }
@@ -926,6 +926,24 @@
             if(el) { el.classList.add('error'); setTimeout(() => el.classList.remove('error'), 400); }
         }
 
+        // 🌟 KESİN ÇÖZÜM ZIRHI: Arayüzdeki güncel seçimi güvenle okuyan fonksiyon 🌟
+        function getCustomVal(id) {
+            const el = document.getElementById(id);
+            if(!el) return "";
+            let val = el.value;
+            // Eğer native select boş kaldıysa, ekranda yazan span text'ini zorla al!
+            if (!val || val.trim() === "") {
+                const span = el.parentElement.querySelector('.custom-select-trigger span');
+                if (span && span.innerText !== "Seçiniz...") {
+                    // Borç/Varlık listesindeki "Nev Kredisi - ₺17.650" formatını böl, sadece ismi al
+                    let rawText = span.innerText.trim();
+                    if(rawText.includes(" - ₺")) return rawText.split(" - ₺")[0].trim();
+                    return rawText;
+                }
+            }
+            return val.trim();
+        }
+
         async function apiIstekAt(payload, buttonId) {
             if(document.activeElement) { document.activeElement.blur(); }
             
@@ -968,11 +986,18 @@
         }
 
         function submitHarcama() {
-            const kalem = document.getElementById('h-kalem').value.trim(), tutar = document.getElementById('h-tutar').value;
+            const kalem = document.getElementById('h-kalem').value.trim();
+            const tutar = document.getElementById('h-tutar').value;
+            const tur = getCustomVal('h-tur');
+            const yontem = getCustomVal('h-yontem');
+
             let err = false;
-            if(!kalem) { markError('h-kalem'); err = true; } if(!tutar) { markError('h-tutar'); err = true; }
+            if(!kalem) { markError('h-kalem'); err = true; } 
+            if(!tutar) { markError('h-tutar'); err = true; }
+            if(!yontem) { markError('h-yontem'); err = true; }
             if(err) return;
-            apiIstekAt({ action: "yeni_hareket", tur: document.getElementById('h-tur').value, kategori: "Değişken", kalem: kalem, yontem: document.getElementById('h-yontem').value, tutar: tutar, tarih: getFormattedDateTime('h-tarih') }, 'btn-submit-harcama');
+
+            apiIstekAt({ action: "yeni_hareket", tur: tur, kategori: "Değişken", kalem: kalem, yontem: yontem, tutar: tutar, tarih: getFormattedDateTime('h-tarih') }, 'btn-submit-harcama');
         }
 
         async function loadSabitlerAndShow(sectionId, selectId, title) {
@@ -1000,7 +1025,7 @@
         }
 
         function toggleParcaliOdeme() {
-            const sekil = document.getElementById('so-odeme-sekli').value;
+            const sekil = getCustomVal('so-odeme-sekli');
             const tekAlan = document.getElementById('so-tek-hesap-alani');
             const parcaliAlan = document.getElementById('so-parcali-hesap-alani');
             const container = document.getElementById('so-parcalar-container');
@@ -1026,13 +1051,13 @@
             row.className = 'parca-satiri';
             row.style.cssText = "display: grid; grid-template-columns: 1.5fr 1fr auto; gap: 8px; margin-bottom: 10px; align-items: start;";
             
+            // Buraya dinamik hesap menülerini ekliyoruz
+            const yontemSelect = document.getElementById('h-yontem');
+            const dinamikSecenekler = yontemSelect ? yontemSelect.innerHTML : `<option value="Kredi Kartı">Kredi Kartı</option><option value="Ziraat">Ziraat</option><option value="İş Bankası">İş Bankası</option><option value="Nakit">Nakit</option>`;
+
             row.innerHTML = `
                 <select class="form-control parca-hesap" style="padding: 10px; font-size: 13px;">
-                    <option value="Ziraat">Ziraat</option>
-                    <option value="İş Bankası">İş Bankası</option>
-                    <option value="Yapıkredi">YapıKredi</option>
-                    <option value="Kredi Kartı">Kredi Kartı</option>
-                    <option value="Nakit">Nakit</option>
+                    ${dinamikSecenekler}
                 </select>
                 <input type="text" inputmode="decimal" class="form-control parca-tutar" placeholder="Tutar" oninput="hesaplaKalanParcali()" style="padding: 10px; font-size: 14px;">
                 <button onclick="this.parentElement.remove(); hesaplaKalanParcali();" style="background: rgba(244, 63, 94, 0.15); border: none; color: var(--rose); width: 38px; height: 38px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
@@ -1044,7 +1069,7 @@
         }
 
         function hesaplaKalanParcali() {
-            const sekil = document.getElementById('so-odeme-sekli').value;
+            const sekil = getCustomVal('so-odeme-sekli');
             if(sekil !== 'parcali') return;
 
             const kuralSelect = document.getElementById('so-kural');
@@ -1092,8 +1117,8 @@
         }
         
         function submitSabitOnayla() {
-            const kuralSatir = document.getElementById('so-kural').value;
-            const sekil = document.getElementById('so-odeme-sekli').value;
+            const kuralSatir = getCustomVal('so-kural');
+            const sekil = getCustomVal('so-odeme-sekli');
             
             if(!kuralSatir) { markError('so-kural'); return; }
 
@@ -1140,11 +1165,7 @@
                 
                 payload.parcalar = parcalar;
             } else {
-                let tekYontem = document.getElementById('so-yontem').value;
-                if(!tekYontem || tekYontem.trim() === "") {
-                   const tekSpan = document.getElementById('so-tek-hesap-alani').querySelector('.custom-select-trigger span');
-                   if(tekSpan) tekYontem = tekSpan.innerText;
-                }
+                let tekYontem = getCustomVal('so-yontem');
                 payload.kullanilan_yontem = fixBankaIsmi(tekYontem);
             }
 
@@ -1152,23 +1173,10 @@
         }
         
         function submitBorcOde() {
-            const secimEl = document.getElementById('bo-secim');
-            const yontemEl = document.getElementById('bo-yontem');
-            
-            let isim = secimEl.value;
-            if(!isim || isim.trim() === "") {
-                const spanTxt = secimEl.parentElement.querySelector('.custom-select-trigger span');
-                if(spanTxt) isim = spanTxt.innerText;
-            }
-
+            let isim = getCustomVal('bo-secim');
             if (isim === "_yeni_") isim = document.getElementById('bo-isim-yeni').value.trim();
             
-            let yontem = yontemEl.value;
-            if(!yontem || yontem.trim() === "") {
-                const spanTxt = yontemEl.parentElement.querySelector('.custom-select-trigger span');
-                if(spanTxt) yontem = spanTxt.innerText;
-            }
-
+            let yontem = getCustomVal('bo-yontem');
             const tutar = document.getElementById('bo-tutar').value;
             
             const fixBanka = (i) => {
@@ -1182,6 +1190,7 @@
             let err = false; 
             if(!isim || isim === "Seçiniz...") { markError('bo-secim'); err = true; } 
             if(!tutar) { markError('bo-tutar'); err = true; } 
+            if(!yontem) { markError('bo-yontem'); err = true; } 
             if(err) return;
             
             apiIstekAt({ 
@@ -1194,14 +1203,16 @@
         }
         
         function submitTransfer() {
-            const cikis = document.getElementById('t-cikis').value, giris = document.getElementById('t-giris').value, tutar = document.getElementById('t-tutar').value;
+            const cikis = getCustomVal('t-cikis'), giris = getCustomVal('t-giris'), tutar = document.getElementById('t-tutar').value;
             if(!tutar) return markError('t-tutar');
+            if(!cikis) return markError('t-cikis');
+            if(!giris) return markError('t-giris');
             if(cikis === giris) { markError('t-cikis'); markError('t-giris'); alert("Farklı hesaplar seçin."); return; }
             apiIstekAt({ action: "transfer_yap", transfer_yeri: giris, yontem: cikis, tutar: tutar, tarih: getFormattedDateTime('t-tarih') }, 'btn-submit-transfer');
         }
         
         function submitBorcGuncelle() {
-            let isim = document.getElementById('bg-secim').value;
+            let isim = getCustomVal('bg-secim');
             if (isim === "_yeni_") isim = document.getElementById('bg-isim-yeni').value.trim();
             const tutar = document.getElementById('bg-tutar').value;
             
@@ -1215,18 +1226,21 @@
         
         function submitYeniSabit() {
             const kalem = document.getElementById('ys-kalem').value.trim(), tutar = document.getElementById('ys-tutar').value, gun = document.getElementById('ys-gun').value, sure = document.getElementById('ys-sure').value;
-            let err = false; if(!kalem) {markError('ys-kalem'); err=true;} if(!tutar) {markError('ys-tutar'); err=true;} if(!gun) {markError('ys-gun'); err=true;} if(!sure) {markError('ys-sure'); err=true;} if(err) return;
-            apiIstekAt({ action: "yeni_sabit", tur: document.getElementById('ys-tur').value, kalem: kalem, yontem: document.getElementById('ys-yontem').value, tutar: tutar, odeme_gunu: gun, kalan_ay: sure }, 'btn-submit-yeni-sabit');
+            const tur = getCustomVal('ys-tur');
+            const yontem = getCustomVal('ys-yontem');
+            
+            let err = false; if(!kalem) {markError('ys-kalem'); err=true;} if(!tutar) {markError('ys-tutar'); err=true;} if(!gun) {markError('ys-gun'); err=true;} if(!sure) {markError('ys-sure'); err=true;} if(!yontem) {markError('ys-yontem'); err=true;} if(err) return;
+            apiIstekAt({ action: "yeni_sabit", tur: tur, kalem: kalem, yontem: yontem, tutar: tutar, odeme_gunu: gun, kalan_ay: sure }, 'btn-submit-yeni-sabit');
         }
         
         function submitSabitGuncelle() {
-            const kuralSatir = document.getElementById('sg-kural').value, tutar = document.getElementById('sg-tutar').value;
+            const kuralSatir = getCustomVal('sg-kural'), tutar = document.getElementById('sg-tutar').value;
             let err = false; if(!kuralSatir) {markError('sg-kural'); err=true;} if(tutar === "") {markError('sg-tutar'); err=true;} if(err) return;
             apiIstekAt({ action: "sabit_guncelle", satir: kuralSatir, yeni_tutar: tutar }, 'btn-submit-sabit-guncelle');
         }
         
         function submitVarlikGuncelle() {
-            let isim = document.getElementById('vg-secim').value;
+            let isim = getCustomVal('vg-secim');
             if (isim === "_yeni_") isim = document.getElementById('vg-isim-yeni').value.trim();
             const deger = document.getElementById('vg-deger').value;
             
@@ -1241,6 +1255,7 @@
         function submitYeniHesap() {
             const isim = document.getElementById('yh-isim').value.trim();
             const bakiye = document.getElementById('yh-bakiye').value;
+            const tur = getCustomVal('yh-tur');
             let err = false;
             
             if(!isim) { markError('yh-isim'); err = true; }
@@ -1251,7 +1266,7 @@
                 action: "yeni_hesap", 
                 hesap_adi: isim, 
                 bakiye: bakiye, 
-                hesap_turu: document.getElementById('yh-tur').value 
+                hesap_turu: tur 
             }, 'btn-submit-yeni-hesap');
         }
         
@@ -1293,25 +1308,31 @@
 
                     // ============================================================================
                     // 🌟 YENİ: DİNAMİK HESAP/BANKA MENÜSÜ OLUŞTURUCU 🌟
-                    // Google Sheets'ten gelen güncel hesap listesini tüm ödeme menülerine basar.
-                    // ============================================================================
                     if (data.bankalar && data.bankalar.length > 0) {
                         let hesapOptions = "";
                         data.bankalar.forEach(banka => {
-                            // "Hesaplar" sekmesinde C sütunundaki isimleri alıyoruz
                             hesapOptions += `<option value="${banka.isim}">${banka.isim}</option>`;
                         });
                         
-                        // Tüm ilgili menüleri güncelle
                         const hesapMenuIDler = ['h-yontem', 'so-yontem', 'bo-yontem', 't-cikis', 't-giris', 'ys-yontem'];
                         hesapMenuIDler.forEach(id => {
                             const menuEl = document.getElementById(id);
                             if(menuEl) {
-                                // Mevcut seçimi hafızada tutmaya çalış, yoksa ilkini seçer
-                                const eskiSecim = menuEl.value; 
+                                // Seçimi hafızada tut
+                                let eskiSecim = menuEl.value;
+                                if (!eskiSecim) {
+                                    const spanTxt = menuEl.parentElement?.querySelector('.custom-select-trigger span');
+                                    if (spanTxt && spanTxt.innerText !== "Seçiniz...") eskiSecim = spanTxt.innerText;
+                                }
+                                
                                 menuEl.innerHTML = hesapOptions;
                                 
-                                // Arayüzü bozmamak için custom select'i yeniden tetikle
+                                // Seçimi geri yükle
+                                let varMi = false;
+                                Array.from(menuEl.options).forEach(opt => { if(opt.value === eskiSecim) varMi = true; });
+                                if(varMi) menuEl.value = eskiSecim;
+                                else menuEl.selectedIndex = 0; // Yoksa ilkini seç
+
                                 refreshCustomSelect(menuEl);
                             }
                         });
