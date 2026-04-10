@@ -746,7 +746,7 @@
         function animateValue(id, endValue, duration) { const obj = document.getElementById(id); if(!obj || isNaN(endValue)) return; let startTimestamp = null; const step = (timestamp) => { if (!startTimestamp) startTimestamp = timestamp; const progress = Math.min((timestamp - startTimestamp) / duration, 1); const easeProgress = 1 - Math.pow(1 - progress, 4); const currentVal = endValue * easeProgress; obj.innerHTML = formatTL(currentVal); if (progress < 1) window.requestAnimationFrame(step); else obj.innerHTML = formatTL(endValue); }; window.requestAnimationFrame(step); }
         function animateValueUSD(id, endValue, duration) { const obj = document.getElementById(id); if(!obj || isNaN(endValue)) return; let startTimestamp = null; const step = (timestamp) => { if (!startTimestamp) startTimestamp = timestamp; const progress = Math.min((timestamp - startTimestamp) / duration, 1); const easeProgress = 1 - Math.pow(1 - progress, 4); const currentVal = endValue * easeProgress; obj.innerHTML = formatUSD(currentVal); if (progress < 1) window.requestAnimationFrame(step); else obj.innerHTML = formatUSD(endValue); }; window.requestAnimationFrame(step); }
 
-        function updateTrends(days, btnElement) {
+                function updateTrends(days, btnElement) {
             document.querySelectorAll('.time-btn').forEach(btn => btn.classList.remove('active')); 
             if(btnElement) btnElement.classList.add('active');
             
@@ -754,56 +754,52 @@
             if (days === 0) { ids.forEach(id => { setHtml(id, ""); }); return; }
             
             if(!window.tarihceData || window.tarihceData.length < 2) { 
-                const msg = `<span style="color:var(--text-muted); font-weight:500;">Veri yok</span>`; 
-                ids.forEach(id => { setHtml(id, msg); }); 
+                ids.forEach(id => { setHtml(id, `<span style="color:var(--text-muted); font-weight:500;">Veri yok</span>`); }); 
                 return; 
+            }
+
+            // Safari uyumlu tarih motoru
+            function parseTarihceDate(rawStr) {
+                if (!rawStr) return 0;
+                if (rawStr instanceof Date) return rawStr.getTime();
+                let s = rawStr.toString().trim();
+                let datePart = s.split('T')[0].split(' ')[0]; 
+                if ((datePart.includes('.') || datePart.includes('/')) && !datePart.includes('-')) {
+                    let dParts = datePart.split(/[./]/);
+                    if (dParts.length === 3 && dParts[2].length === 4) {
+                        return new Date(parseInt(dParts[2], 10), parseInt(dParts[1], 10) - 1, parseInt(dParts[0], 10)).getTime();
+                    }
+                }
+                let t = new Date(s).getTime();
+                return isNaN(t) ? 0 : t;
             }
             
             const now = new Date(); 
-            // 🌟 MİMARİ DEĞİŞİKLİK: Anlık saati değil, tam gece 00:00'ı (Gün Dönümünü) referans alıyoruz
             const midnightToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-            
-            // Hedef zaman: 1 Gün = Bugün 00:00 | 7 Gün = 6 Gün Önceki 00:00
             const targetTime = midnightToday - ((days - 1) * 24 * 60 * 60 * 1000);
             
-            let bestRow = null; 
-            
-            // Hedef zamandan (Örn: Bugün 00:00) ÖNCEKİ EN SON KAYDI buluyoruz.
-            // Bu sayede tam olarak dünün kapanış / bugünün açılış rakamını yakalarız.
             let gecmisKayitlar = window.tarihceData.filter(row => {
-                const rowDate = new Date(row[0]);
-                return !isNaN(rowDate.getTime()) && rowDate.getTime() <= targetTime;
+                let t = parseTarihceDate(row[0]);
+                return t > 0 && t <= targetTime;
             });
 
-            if (gecmisKayitlar.length > 0) {
-                bestRow = gecmisKayitlar[gecmisKayitlar.length - 1]; // Hedefe en yakın dünkü/geçmiş kayıt
-            } else {
-                bestRow = window.tarihceData[0]; // Eğer o kadar eski kayıt yoksa en eskisini baz al
-            }
-            
+            // Aranan güne ait en son satırı al
+            let bestRow = gecmisKayitlar.length > 0 ? gecmisKayitlar[gecmisKayitlar.length - 1] : window.tarihceData[0];
             if(!bestRow) return;
             
+            // Tüm veriler doğrudan hedef sütunlardan (indexlerden) çekiliyor
             renderTrend('trend-net-servet', window.currentStats.netServet, parseSaha(bestRow[1]), false); 
-            renderTrend('trend-net-servet-usd', window.currentStats.netServetUSD, bestRow.length > 8 && bestRow[8] !== "" ? parseSaha(bestRow[8]) : (window.currentStats.usdRate > 0 ? (parseSaha(bestRow[1]) / window.currentStats.usdRate) : window.currentStats.netServetUSD), false, '$'); 
+            renderTrend('trend-net-servet-usd', window.currentStats.netServetUSD, parseSaha(bestRow[8] || (window.currentStats.netServet / window.currentStats.usdRate)), false, '$'); 
             renderTrend('trend-borc', window.currentStats.toplamBorc, parseSaha(bestRow[2]), true); 
             renderTrend('trend-can-yakan', window.currentStats.toplamCanYakan, parseSaha(bestRow[3]), true); 
             renderTrend('trend-planli', window.currentStats.toplamPlanli, parseSaha(bestRow[4]), true); 
-            renderTrend('trend-faiz', window.currentStats.tahminiFaiz, bestRow.length > 5 && bestRow[5] !== "" ? parseSaha(bestRow[5]) : window.currentStats.tahminiFaiz, true); 
+            renderTrend('trend-faiz', window.currentStats.tahminiFaiz, parseSaha(bestRow[5]), true); 
+            renderTrend('trend-kasa', window.currentStats.toplamKasa, parseSaha(bestRow[6]), false); 
             
-            // 🛡️ KASA GÜVENLİK ZIRHI (Sonradan Eklendiği İçin)
-            if (bestRow.length > 6 && bestRow[6] !== "" && bestRow[6] !== undefined) {
-                renderTrend('trend-kasa', window.currentStats.toplamKasa, parseSaha(bestRow[6]), false); 
-            } else {
-                setHtml('trend-kasa', `<span style="color:var(--text-muted); font-weight:500;">Eski Veri Yok</span>`);
-            }
-            
-            // 🛡️ KART GÜVENLİK ZIRHI (Sonradan Eklendiği İçin)
-            if (bestRow.length > 7 && bestRow[7] !== "" && bestRow[7] !== undefined) {
-                renderTrend('trend-kart', window.currentStats.kartToplam, parseSaha(bestRow[7]), true);
-            } else {
-                setHtml('trend-kart', `<span style="color:var(--text-muted); font-weight:500;">Eski Veri Yok</span>`);
-            }
+            // 🎯 Senin teyit ettiğin H sütunu (Index 7) hiçbir if-else kalkanı olmadan doğrudan yansıtılıyor!
+            renderTrend('trend-kart', window.currentStats.kartToplam, parseSaha(bestRow[7]), true);
         }
+
 
         function renderTrend(elementId, current, past, isDebt, symbol = '₺') {
             const diff = current - past; const el = document.getElementById(elementId); if(!el) return;
