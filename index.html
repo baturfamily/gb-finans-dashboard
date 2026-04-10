@@ -1126,31 +1126,46 @@
             
             if(!seciliOption) return;
 
-            const hedefTutar = parseFloat(seciliOption.getAttribute('data-tutar')) || 0;
-            let girilenToplam = 0;
+            // 1. GÜVENLİ PARSE: Önce data-tutar kontrol et, yoksa metinden (text) ₺ sonrasını Regex ile sök!
+            let hedefTutar = 0;
+            const dataTutar = seciliOption.getAttribute('data-tutar');
+            
+            if(dataTutar) {
+                hedefTutar = parseSaha(dataTutar);
+            } else {
+                // Eğer eski fonksiyon devredeyse ve data-tutar yoksa metinden bul: "Nev kredisi - ₺17650 (16 Ay)"
+                const text = seciliOption.text;
+                const match = text.match(/₺([\d,.]+)/);
+                if(match && match[1]) {
+                    hedefTutar = parseSaha(match[1]);
+                }
+            }
 
+            // 2. Parçalı inputlardaki değerleri senin parseSaha fonksiyonun ile topla
+            let girilenToplam = 0;
             document.querySelectorAll('.parca-tutar').forEach(input => {
                 let val = input.value;
                 if(val) {
-                    val = val.toString().replace(/₺/g, "").replace(/\s/g, "").replace(/\./g, "").replace(",", ".");
-                    girilenToplam += parseFloat(val) || 0;
+                    girilenToplam += parseSaha(val); 
                 }
             });
 
             const kalan = hedefTutar - girilenToplam;
             
+            // 3. Ekrana Formatlı Yazdır
             document.getElementById('so-hedef-tutar').innerText = "₺" + hedefTutar.toLocaleString('tr-TR', {minimumFractionDigits:2, maximumFractionDigits:2});
             
             const kalanEl = document.getElementById('so-kalan-tutar');
-            kalanEl.innerText = "₺" + kalan.toLocaleString('tr-TR', {minimumFractionDigits:2, maximumFractionDigits:2});
             
             if(kalan === 0) {
                 kalanEl.style.color = "var(--emerald)";
+                kalanEl.innerText = "₺0,00";
             } else if (kalan < 0) {
                 kalanEl.style.color = "var(--rose)";
-                kalanEl.innerText = "Fazla: ₺" + Math.abs(kalan).toLocaleString('tr-TR');
+                kalanEl.innerText = "Fazla: ₺" + Math.abs(kalan).toLocaleString('tr-TR', {minimumFractionDigits:2, maximumFractionDigits:2});
             } else {
                 kalanEl.style.color = "var(--amber)";
+                kalanEl.innerText = "₺" + kalan.toLocaleString('tr-TR', {minimumFractionDigits:2, maximumFractionDigits:2});
             }
         }
         
