@@ -609,8 +609,47 @@
 
             <div id="section-sabit-onayla" class="form-section">
                 <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Geri Dön</span>
-                <div class="form-group"><label>Ödenecek Sabit Kural</label><select id="so-kural" class="form-control"></select></div>
-                <div class="form-group"><label>Paranın Çıktığı Yer</label><select id="so-yontem" class="form-control"><option value="Kredi Kartı">Kredi Kartı</option><option value="Ziraat">Ziraat</option><option value="İsbankasi">İş Bankası</option><option value="Yapıkredi">YapıKredi</option><option value="Nakit">Nakit</option></select></div>
+                
+                <div class="form-group">
+                    <label>Ödenecek Sabit Kural</label>
+                    <select id="so-kural" class="form-control" onchange="hesaplaKalanParcali()"></select>
+                </div>
+
+                <div class="form-group">
+                    <label>Ödeme Şekli</label>
+                    <select id="so-odeme-sekli" class="form-control" onchange="toggleParcaliOdeme()">
+                        <option value="tek">Tek Hesaptan Öde</option>
+                        <option value="parcali">Parça Parça (Farklı Hesaplardan) Öde</option>
+                    </select>
+                </div>
+
+                <div id="so-tek-hesap-alani">
+                    <div class="form-group">
+                        <label>Paranın Çıktığı Yer</label>
+                        <select id="so-yontem" class="form-control">
+                            <option value="Kredi Kartı">Kredi Kartı</option>
+                            <option value="Ziraat">Ziraat</option>
+                            <option value="İsbankasi">İş Bankası</option>
+                            <option value="Yapıkredi">YapıKredi</option>
+                            <option value="Nakit">Nakit</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="so-parcali-hesap-alani" style="display:none; background: rgba(0,0,0,0.2); padding: 16px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 16px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px dashed rgba(255,255,255,0.1);">
+                        <span style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Hedef: <span id="so-hedef-tutar" style="color:#fff; font-weight:800;" class="tabular-nums">₺0</span></span>
+                        <span style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Kalan: <span id="so-kalan-tutar" style="color:var(--rose); font-weight:800;" class="tabular-nums">₺0</span></span>
+                    </div>
+
+                    <div id="so-parcalar-container">
+                        </div>
+                    
+                    <button onclick="addParca()" style="background: rgba(255,255,255,0.05); border: 1px dashed rgba(255,255,255,0.2); color: #cbd5e1; width: 100%; padding: 12px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 10px; transition: 0.2s;">
+                        + Yeni Hesap / Parça Ekle
+                    </button>
+                </div>
+
                 <button class="btn-submit" id="btn-submit-sabit-onayla" onclick="submitSabitOnayla()">Ödemeyi Onayla</button>
             </div>
 
@@ -1000,6 +1039,119 @@
             if(!kalem) { markError('h-kalem'); err = true; } if(!tutar) { markError('h-tutar'); err = true; }
             if(err) return;
             apiIstekAt({ action: "yeni_hareket", tur: document.getElementById('h-tur').value, kategori: "Değişken", kalem: kalem, yontem: document.getElementById('h-yontem').value, tutar: tutar, tarih: getFormattedDateTime('h-tarih') }, 'btn-submit-harcama');
+        }
+
+        // MEVCUT FONKSİYONU DEĞİŞTİR: Sabitleri çekerken tutarı da saklamamız lazım.
+        async function loadSabitlerAndShow(sectionId, selectId, title) {
+            const ev = event.currentTarget; const orig = ev.innerHTML; ev.innerHTML = `<span class="spinner"></span>...`; vibe();
+            try {
+                const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: "sabitleri_getir" }) });
+                const result = await res.json();
+                if(result.status === "success") {
+                    const sel = document.getElementById(selectId); sel.innerHTML = "";
+                    result.data.forEach(k => { 
+                        // data-tutar özelliğini ekledik ki canlı hesaplama yapabilelim
+                        sel.innerHTML += `<option value="${k.satir}" data-tutar="${k.tutar}">${k.kalem} - ₺${k.tutar} (${k.kalan_ay} Ay)</option>`; 
+                    });
+                    if(result.data.length === 0) sel.innerHTML = `<option value="">Aktif kural bulunamadı.</option>`;
+                    
+                    showSection(sectionId, title);
+                    
+                    // Modülleri sıfırla
+                    if(sectionId === 'section-sabit-onayla') {
+                        document.getElementById('so-odeme-sekli').value = 'tek';
+                        toggleParcaliOdeme();
+                        refreshCustomSelect(document.getElementById('so-odeme-sekli'));
+                    }
+                }
+            } catch(e) { alert("Sabitler çekilemedi. İnternetinizi kontrol edin."); }
+            ev.innerHTML = orig;
+        }
+
+        // YENİ EKLENECEK FONKSİYONLAR:
+        function toggleParcaliOdeme() {
+            const sekil = document.getElementById('so-odeme-sekli').value;
+            const tekAlan = document.getElementById('so-tek-hesap-alani');
+            const parcaliAlan = document.getElementById('so-parcali-hesap-alani');
+            const container = document.getElementById('so-parcalar-container');
+
+            if(sekil === 'parcali') {
+                tekAlan.style.display = 'none';
+                parcaliAlan.style.display = 'block';
+                container.innerHTML = ''; // Temizle
+                addParca(); // İlk 2 parçayı otomatik ekle
+                addParca();
+                hesaplaKalanParcali();
+            } else {
+                tekAlan.style.display = 'block';
+                parcaliAlan.style.display = 'none';
+            }
+        }
+
+        let parcaSayaci = 0;
+        function addParca() {
+            parcaSayaci++;
+            const container = document.getElementById('so-parcalar-container');
+            const row = document.createElement('div');
+            row.className = 'parca-satiri';
+            row.style.cssText = "display: grid; grid-template-columns: 1.5fr 1fr auto; gap: 8px; margin-bottom: 10px; align-items: start;";
+            
+            // Modern Select ve Input yapısı
+            row.innerHTML = `
+                <select class="form-control parca-hesap" style="padding: 10px; font-size: 13px;">
+                    <option value="Ziraat">Ziraat</option>
+                    <option value="İsbankasi">İş Bankası</option>
+                    <option value="Yapıkredi">YapıKredi</option>
+                    <option value="Kredi Kartı">Kredi Kartı</option>
+                    <option value="Nakit">Nakit</option>
+                </select>
+                <input type="text" inputmode="decimal" class="form-control parca-tutar" placeholder="Tutar" onkeyup="hesaplaKalanParcali()" style="padding: 10px; font-size: 14px;">
+                <button onclick="this.parentElement.remove(); hesaplaKalanParcali();" style="background: rgba(244, 63, 94, 0.15); border: none; color: var(--rose); width: 38px; height: 38px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+            `;
+            container.appendChild(row);
+            
+            // Eklenen yeni Select'i modern iOS görünüme çevir
+            const newSelect = row.querySelector('.parca-hesap');
+            refreshCustomSelect(newSelect);
+        }
+
+        function hesaplaKalanParcali() {
+            const sekil = document.getElementById('so-odeme-sekli').value;
+            if(sekil !== 'parcali') return;
+
+            const kuralSelect = document.getElementById('so-kural');
+            const seciliOption = kuralSelect.options[kuralSelect.selectedIndex];
+            
+            if(!seciliOption) return;
+
+            const hedefTutar = parseFloat(seciliOption.getAttribute('data-tutar')) || 0;
+            let girilenToplam = 0;
+
+            document.querySelectorAll('.parca-tutar').forEach(input => {
+                let val = input.value;
+                if(val) {
+                    val = val.toString().replace(/₺/g, "").replace(/\s/g, "").replace(/\./g, "").replace(",", ".");
+                    girilenToplam += parseFloat(val) || 0;
+                }
+            });
+
+            const kalan = hedefTutar - girilenToplam;
+            
+            document.getElementById('so-hedef-tutar').innerText = "₺" + hedefTutar.toLocaleString('tr-TR', {minimumFractionDigits:2, maximumFractionDigits:2});
+            
+            const kalanEl = document.getElementById('so-kalan-tutar');
+            kalanEl.innerText = "₺" + kalan.toLocaleString('tr-TR', {minimumFractionDigits:2, maximumFractionDigits:2});
+            
+            if(kalan === 0) {
+                kalanEl.style.color = "var(--emerald)";
+            } else if (kalan < 0) {
+                kalanEl.style.color = "var(--rose)";
+                kalanEl.innerText = "Fazla: ₺" + Math.abs(kalan).toLocaleString('tr-TR');
+            } else {
+                kalanEl.style.color = "var(--amber)";
+            }
         }
         
         async function loadSabitlerAndShow(sectionId, selectId, title) {
