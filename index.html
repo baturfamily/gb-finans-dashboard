@@ -621,8 +621,31 @@
                 
                 <div class="form-group"><label>Tarih ve Saat</label><input type="datetime-local" id="kbo-tarih" class="form-control"></div>
                 <div class="form-group"><label>Hangi Kartın Borcunu Ödüyorsun?</label><select id="kbo-secim" class="form-control"></select></div>
-                <div class="form-group"><label>Ödenen Tutar (₺)</label><input type="text" inputmode="decimal" id="kbo-tutar" class="form-control" placeholder="Örn: 5000"></div>
-                <div class="form-group"><label>Paranın Çıktığı Yer</label><select id="kbo-yontem" class="form-control"></select></div>
+                <div class="form-group"><label>Ödenen Toplam Tutar (₺)</label><input type="text" inputmode="decimal" id="kbo-tutar" class="form-control" placeholder="Örn: 5000" oninput="hesaplaKalanParcaliKartBorc()"></div>
+                
+                <div class="form-group">
+                    <label>Ödeme Şekli</label>
+                    <select id="kbo-odeme-sekli" class="form-control" onchange="toggleParcaliKartBorcOdeme()">
+                        <option value="tek">Tek Hesaptan Öde</option>
+                        <option value="parcali">Parça Parça (Farklı Hesaplardan) Öde</option>
+                    </select>
+                </div>
+
+                <div id="kbo-tek-hesap-alani">
+                    <div class="form-group"><label>Paranın Çıktığı Yer</label><select id="kbo-yontem" class="form-control"></select></div>
+                </div>
+
+                <div id="kbo-parcali-hesap-alani" style="display:none; background: rgba(0,0,0,0.2); padding: 16px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 16px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px dashed rgba(255,255,255,0.1);">
+                        <span style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Hedef: <span id="kbo-hedef-tutar" style="color:#fff; font-weight:800;" class="tabular-nums">₺0</span></span>
+                        <span style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Kalan: <span id="kbo-kalan-tutar" style="color:var(--rose); font-weight:800;" class="tabular-nums">₺0</span></span>
+                    </div>
+                    <div id="kbo-parcalar-container"></div>
+                    <button onclick="addParcaKartBorc()" style="background: rgba(255,255,255,0.05); border: 1px dashed rgba(255,255,255,0.2); color: #cbd5e1; width: 100%; padding: 12px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 10px; transition: 0.2s;">
+                        + Yeni Hesap / Parça Ekle
+                    </button>
+                </div>
+
                 <button class="btn-submit" id="btn-submit-kart-borc-ode" onclick="submitKartBorcuOde()">Kart Borcunu Öde</button>
             </div>
 
@@ -700,10 +723,7 @@
                         <span style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Hedef: <span id="so-hedef-tutar" style="color:#fff; font-weight:800;" class="tabular-nums">₺0</span></span>
                         <span style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Kalan: <span id="so-kalan-tutar" style="color:var(--rose); font-weight:800;" class="tabular-nums">₺0</span></span>
                     </div>
-
-                    <div id="so-parcalar-container">
-                        </div>
-                    
+                    <div id="so-parcalar-container"></div>
                     <button onclick="addParca()" style="background: rgba(255,255,255,0.05); border: 1px dashed rgba(255,255,255,0.2); color: #cbd5e1; width: 100%; padding: 12px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 10px; transition: 0.2s;">
                         + Yeni Hesap / Parça Ekle
                     </button>
@@ -720,8 +740,31 @@
                     <select id="bo-secim" class="form-control" onchange="toggleYeniBorc()"></select>
                     <input type="text" id="bo-isim-yeni" class="form-control" placeholder="Yeni borcun adını yazın..." style="display:none; margin-top:8px;">
                 </div>
-                <div class="form-group"><label>Ödenen Tutar (₺)</label><input type="text" inputmode="decimal" id="bo-tutar" class="form-control" placeholder="Örn: 500"></div>
-                <div class="form-group"><label>Paranın Çıktığı Yer</label><select id="bo-yontem" class="form-control"><option value="Ziraat">Ziraat</option><option value="İş Bankası">İş Bankası</option><option value="Yapıkredi">YapıKredi</option><option value="Nakit">Nakit</option></select></div>
+                <div class="form-group"><label>Ödenen Toplam Tutar (₺)</label><input type="text" inputmode="decimal" id="bo-tutar" class="form-control" placeholder="Örn: 500" oninput="hesaplaKalanParcaliBorc()"></div>
+                
+                <div class="form-group">
+                    <label>Ödeme Şekli</label>
+                    <select id="bo-odeme-sekli" class="form-control" onchange="toggleParcaliBorcOdeme()">
+                        <option value="tek">Tek Hesaptan Öde</option>
+                        <option value="parcali">Parça Parça (Farklı Hesaplardan) Öde</option>
+                    </select>
+                </div>
+
+                <div id="bo-tek-hesap-alani">
+                    <div class="form-group"><label>Paranın Çıktığı Yer</label><select id="bo-yontem" class="form-control"></select></div>
+                </div>
+
+                <div id="bo-parcali-hesap-alani" style="display:none; background: rgba(0,0,0,0.2); padding: 16px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 16px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px dashed rgba(255,255,255,0.1);">
+                        <span style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Hedef: <span id="bo-hedef-tutar" style="color:#fff; font-weight:800;" class="tabular-nums">₺0</span></span>
+                        <span style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Kalan: <span id="bo-kalan-tutar" style="color:var(--rose); font-weight:800;" class="tabular-nums">₺0</span></span>
+                    </div>
+                    <div id="bo-parcalar-container"></div>
+                    <button onclick="addParcaBorc()" style="background: rgba(255,255,255,0.05); border: 1px dashed rgba(255,255,255,0.2); color: #cbd5e1; width: 100%; padding: 12px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 10px; transition: 0.2s;">
+                        + Yeni Hesap / Parça Ekle
+                    </button>
+                </div>
+
                 <button class="btn-submit" id="btn-submit-borc-ode" onclick="submitBorcOde()">Borcu Öde</button>
             </div>
 
@@ -1041,9 +1084,23 @@
             
             if(id === 'section-harcama') { setNow('h-tarih'); document.getElementById('h-tur').value = "Gider"; updateKategori(); }
             if(id === 'section-transfer') setNow('t-tarih');
-            if(id === 'section-kart-borc-ode') setNow('kbo-tarih');
             
-            if(id === 'section-borc-ode') { document.getElementById('bo-secim').value = ''; document.getElementById('bo-isim-yeni').style.display = 'none'; setNow('bo-tarih'); }
+            // Tüm Borç Ödemeleri (Kart/Planlı) İçin Modları Temizle
+            if(id === 'section-kart-borc-ode') {
+                setNow('kbo-tarih');
+                document.getElementById('kbo-odeme-sekli').value = 'tek';
+                toggleParcaliKartBorcOdeme();
+                refreshCustomSelect(document.getElementById('kbo-odeme-sekli'));
+            }
+            if(id === 'section-borc-ode') { 
+                document.getElementById('bo-secim').value = ''; 
+                document.getElementById('bo-isim-yeni').style.display = 'none'; 
+                setNow('bo-tarih'); 
+                document.getElementById('bo-odeme-sekli').value = 'tek';
+                toggleParcaliBorcOdeme();
+                refreshCustomSelect(document.getElementById('bo-odeme-sekli'));
+            }
+
             if(id === 'section-borc-guncelle') { document.getElementById('bg-secim').value = ''; document.getElementById('bg-isim-yeni').style.display = 'none'; }
             if(id === 'section-varlik-guncelle') { document.getElementById('vg-secim').value = ''; document.getElementById('vg-isim-yeni').style.display = 'none'; }
             if(id === 'section-yeni-hesap') { document.getElementById('yh-tur').value = "Banka"; }
@@ -1097,7 +1154,6 @@
                 if (span && span.innerText !== "Seçiniz...") {
                     let rawText = span.innerText.trim();
                     if(rawText.includes(" (KMH)")) rawText = rawText.replace(" (KMH)", "").trim();
-                    // Kart listesindeki gereksiz "[İPTAL]" ekini ayıkla (eğer varsa)
                     if(rawText.includes(" [İPTAL/BİTTİ]")) rawText = rawText.replace(" [İPTAL/BİTTİ]", "").trim();
                     return rawText;
                 }
@@ -1146,6 +1202,7 @@
             }
         }
 
+        // ================= KART İŞLEMLERİ BUTONLARI =================
         function submitYeniKart() {
             const isim = document.getElementById('yk-isim').value.trim();
             const limit = document.getElementById('yk-limit').value;
@@ -1185,19 +1242,98 @@
             apiIstekAt({ action: "kart_ekstre_guncelle", kart_adi: kartIsmi, yeni_gun: yeniGun }, 'btn-submit-ekstre-guncelle');
         }
 
+        // 🌟 KART BORCU ÖDEME (PARÇALI DESTEKLİ) 🌟
+        function toggleParcaliKartBorcOdeme() {
+            const sekil = getCustomVal('kbo-odeme-sekli');
+            if(sekil === 'parcali') {
+                document.getElementById('kbo-tek-hesap-alani').style.display = 'none';
+                document.getElementById('kbo-parcali-hesap-alani').style.display = 'block';
+                document.getElementById('kbo-parcalar-container').innerHTML = '';
+                addParcaKartBorc(); addParcaKartBorc();
+                hesaplaKalanParcaliKartBorc();
+            } else {
+                document.getElementById('kbo-tek-hesap-alani').style.display = 'block';
+                document.getElementById('kbo-parcali-hesap-alani').style.display = 'none';
+            }
+        }
+
+        function addParcaKartBorc() {
+            const container = document.getElementById('kbo-parcalar-container');
+            const row = document.createElement('div');
+            row.className = 'parca-satiri-kartborc';
+            row.style.cssText = "display: grid; grid-template-columns: 1.5fr 1fr auto; gap: 8px; margin-bottom: 10px; align-items: start;";
+            const yontemSelect = document.getElementById('kbo-yontem');
+            const dinamikSecenekler = yontemSelect ? yontemSelect.innerHTML : `<option value="Ziraat">Ziraat</option><option value="Nakit">Nakit</option>`;
+            row.innerHTML = `
+                <select class="form-control parca-hesap-kartborc" style="padding: 10px; font-size: 13px;">${dinamikSecenekler}</select>
+                <input type="text" inputmode="decimal" class="form-control parca-tutar-kartborc" placeholder="Tutar" oninput="hesaplaKalanParcaliKartBorc()" style="padding: 10px; font-size: 14px;">
+                <button onclick="this.parentElement.remove(); hesaplaKalanParcaliKartBorc();" style="background: rgba(244, 63, 94, 0.15); border: none; color: var(--rose); width: 38px; height: 38px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+            `;
+            container.appendChild(row);
+            refreshCustomSelect(row.querySelector('.parca-hesap-kartborc'));
+        }
+
+        function hesaplaKalanParcaliKartBorc() {
+            const hedefTutar = parseSaha(document.getElementById('kbo-tutar').value) || 0;
+            let girilenToplam = 0;
+            document.querySelectorAll('.parca-tutar-kartborc').forEach(inp => girilenToplam += parseSaha(inp.value) || 0);
+            
+            const kalan = hedefTutar - girilenToplam;
+            document.getElementById('kbo-hedef-tutar').innerText = "₺" + hedefTutar.toLocaleString('tr-TR', {minimumFractionDigits:2});
+            const kalanEl = document.getElementById('kbo-kalan-tutar');
+            if(kalan === 0) { kalanEl.style.color = "var(--emerald)"; kalanEl.innerText = "₺0,00"; }
+            else if (kalan < 0) { kalanEl.style.color = "var(--rose)"; kalanEl.innerText = "Fazla: ₺" + Math.abs(kalan).toLocaleString('tr-TR', {minimumFractionDigits:2}); }
+            else { kalanEl.style.color = "var(--amber)"; kalanEl.innerText = "₺" + kalan.toLocaleString('tr-TR', {minimumFractionDigits:2}); }
+        }
+
         function submitKartBorcuOde() {
             const kartIsmi = getCustomVal('kbo-secim');
-            const yontem = getCustomVal('kbo-yontem');
             const tutar = document.getElementById('kbo-tutar').value;
+            const sekil = getCustomVal('kbo-odeme-sekli');
             
             let err = false;
             if(!kartIsmi || kartIsmi === "-- Kart Seçin --" || kartIsmi === "Seçiniz...") { markError('kbo-secim'); err = true; }
             if(!tutar) { markError('kbo-tutar'); err = true; }
-            if(!yontem) { markError('kbo-yontem'); err = true; }
-            if(err) return;
+            
+            const fixBanka = (i) => {
+                if(!i) return ""; let s = i.trim();
+                if(s === "İsbankasi" || s === "İsbankası" || s === "isbankasi" || s === "İş Bankası") return "İş Bankası";
+                if(s === "YapıKredi" || s === "Yapı Kredi" || s === "yapıkredi" || s === "Yapıkredi") return "Yapıkredi";
+                return s;
+            };
 
-            apiIstekAt({ action: "kart_borcu_ode", kart_adi: kartIsmi, tutar: tutar, yontem: yontem, tarih: getFormattedDateTime('kbo-tarih') }, 'btn-submit-kart-borc-ode');
+            let payload = { action: "kart_borcu_ode", kart_adi: kartIsmi, tutar: tutar, tarih: getFormattedDateTime('kbo-tarih'), odeme_sekli: sekil };
+
+            if(sekil === 'parcali') {
+                const parcalar = []; let hataVar = false;
+                document.querySelectorAll('.parca-satiri-kartborc').forEach(row => {
+                    let yontem = row.querySelector('.parca-hesap-kartborc').value;
+                    if(!yontem || yontem.trim() === "") {
+                        const spanTxt = row.querySelector('.custom-select-trigger span');
+                        if(spanTxt) yontem = spanTxt.innerText;
+                    }
+                    const pTutarStr = row.querySelector('.parca-tutar-kartborc').value;
+                    const pTutarVal = parseSaha(pTutarStr);
+                    if(pTutarVal <= 0) { row.querySelector('.parca-tutar-kartborc').classList.add('error'); hataVar = true; }
+                    else { parcalar.push({ yontem: fixBanka(yontem), tutar: pTutarVal }); }
+                });
+                if(hataVar) return;
+                if(parcalar.length === 0) return alert("Lütfen en az bir ödeme tutarı girin.");
+                let gToplam = parcalar.reduce((acc, curr) => acc + curr.tutar, 0);
+                if(Math.abs(gToplam - parseSaha(tutar)) > 0.1) return alert("Parçaların toplamı, asıl tutara eşit olmalıdır.");
+                payload.parcalar = parcalar;
+                if(err) return;
+            } else {
+                let tekYontem = getCustomVal('kbo-yontem');
+                if(!tekYontem) { markError('kbo-yontem'); err = true; }
+                if(err) return;
+                payload.yontem = fixBanka(tekYontem);
+            }
+
+            apiIstekAt(payload, 'btn-submit-kart-borc-ode');
         }
+
+        // =============================================================
 
         function submitHarcama() {
             const kalem = document.getElementById('h-kalem').value.trim();
@@ -1215,7 +1351,6 @@
             apiIstekAt({ action: "yeni_hareket", tur: tur, kategori: "Değişken", kalem: kalem, yontem: yontem, tutar: tutar, taksit: taksit, tarih: getFormattedDateTime('h-tarih') }, 'btn-submit-harcama');
         }
 
-        // 🌟 SABİTLER MOTORU: ARTIK İPTALLERİ DE HAFIZAYA ALIYOR 🌟
         async function loadSabitlerAndShow(sectionId, selectId, title) {
             const ev = event.currentTarget; const orig = ev.innerHTML; ev.innerHTML = `<span class="spinner"></span>...`; vibe();
             try {
@@ -1225,7 +1360,6 @@
                     const sel = document.getElementById(selectId); sel.innerHTML = "";
                     
                     let filteredData = result.data;
-                    // Eğer onaylama ekranıysa SADECE Aktifleri göster
                     if(sectionId === 'section-sabit-onayla') {
                         filteredData = result.data.filter(k => k.durum === 'Aktif');
                     }
@@ -1252,22 +1386,18 @@
             ev.innerHTML = orig;
         }
 
+        // ================= SABİT ONAYLA PARÇALI MOTORU =================
         function toggleParcaliOdeme() {
             const sekil = getCustomVal('so-odeme-sekli');
-            const tekAlan = document.getElementById('so-tek-hesap-alani');
-            const parcaliAlan = document.getElementById('so-parcali-hesap-alani');
-            const container = document.getElementById('so-parcalar-container');
-
             if(sekil === 'parcali') {
-                tekAlan.style.display = 'none';
-                parcaliAlan.style.display = 'block';
-                container.innerHTML = ''; 
-                addParca(); 
-                addParca();
+                document.getElementById('so-tek-hesap-alani').style.display = 'none';
+                document.getElementById('so-parcali-hesap-alani').style.display = 'block';
+                document.getElementById('so-parcalar-container').innerHTML = ''; 
+                addParca(); addParca();
                 hesaplaKalanParcali();
             } else {
-                tekAlan.style.display = 'block';
-                parcaliAlan.style.display = 'none';
+                document.getElementById('so-tek-hesap-alani').style.display = 'block';
+                document.getElementById('so-parcali-hesap-alani').style.display = 'none';
             }
         }
 
@@ -1280,7 +1410,7 @@
             row.style.cssText = "display: grid; grid-template-columns: 1.5fr 1fr auto; gap: 8px; margin-bottom: 10px; align-items: start;";
             
             const yontemSelect = document.getElementById('h-yontem');
-            const dinamikSecenekler = yontemSelect ? yontemSelect.innerHTML : `<option value="Ziraat">Ziraat</option><option value="İş Bankası">İş Bankası</option><option value="Nakit">Nakit</option>`;
+            const dinamikSecenekler = yontemSelect ? yontemSelect.innerHTML : `<option value="Ziraat">Ziraat</option><option value="Nakit">Nakit</option>`;
 
             row.innerHTML = `
                 <select class="form-control parca-hesap" style="padding: 10px; font-size: 13px;">
@@ -1305,14 +1435,11 @@
 
             let hedefTutar = 0;
             const dataTutar = seciliOption.getAttribute('data-tutar');
-            if(dataTutar) {
-                hedefTutar = parseSaha(dataTutar);
-            } else {
+            if(dataTutar) { hedefTutar = parseSaha(dataTutar); } 
+            else {
                 const text = seciliOption.text;
                 const match = text.match(/₺([\d,.]+)/);
-                if(match && match[1]) {
-                    hedefTutar = parseSaha(match[1]);
-                }
+                if(match && match[1]) hedefTutar = parseSaha(match[1]);
             }
 
             let girilenToplam = 0;
@@ -1325,16 +1452,9 @@
             document.getElementById('so-hedef-tutar').innerText = "₺" + hedefTutar.toLocaleString('tr-TR', {minimumFractionDigits:2, maximumFractionDigits:2});
             const kalanEl = document.getElementById('so-kalan-tutar');
             
-            if(kalan === 0) {
-                kalanEl.style.color = "var(--emerald)";
-                kalanEl.innerText = "₺0,00";
-            } else if (kalan < 0) {
-                kalanEl.style.color = "var(--rose)";
-                kalanEl.innerText = "Fazla: ₺" + Math.abs(kalan).toLocaleString('tr-TR', {minimumFractionDigits:2, maximumFractionDigits:2});
-            } else {
-                kalanEl.style.color = "var(--amber)";
-                kalanEl.innerText = "₺" + kalan.toLocaleString('tr-TR', {minimumFractionDigits:2, maximumFractionDigits:2});
-            }
+            if(kalan === 0) { kalanEl.style.color = "var(--emerald)"; kalanEl.innerText = "₺0,00"; } 
+            else if (kalan < 0) { kalanEl.style.color = "var(--rose)"; kalanEl.innerText = "Fazla: ₺" + Math.abs(kalan).toLocaleString('tr-TR', {minimumFractionDigits:2, maximumFractionDigits:2}); } 
+            else { kalanEl.style.color = "var(--amber)"; kalanEl.innerText = "₺" + kalan.toLocaleString('tr-TR', {minimumFractionDigits:2, maximumFractionDigits:2}); }
         }
         
         function submitSabitOnayla() {
@@ -1345,17 +1465,14 @@
             let payload = { action: "sabit_onayla", satir: kuralSatir, odeme_sekli: sekil };
 
             const fixBankaIsmi = (isim) => {
-                if(!isim) return "";
-                let i = isim.trim();
+                if(!isim) return ""; let i = isim.trim();
                 if(i === "İsbankasi" || i === "İsbankası" || i === "isbankasi" || i === "İş Bankası") return "İş Bankası";
                 if(i === "YapıKredi" || i === "Yapı Kredi" || i === "yapıkredi" || i === "Yapıkredi") return "Yapıkredi";
                 return i;
             };
 
             if(sekil === 'parcali') {
-                const parcalar = [];
-                let hataVar = false;
-
+                const parcalar = []; let hataVar = false;
                 document.querySelectorAll('.parca-satiri').forEach(row => {
                     const selectEl = row.querySelector('.parca-hesap');
                     let yontem = selectEl.value;
@@ -1366,12 +1483,8 @@
                     const tutarStr = row.querySelector('.parca-tutar').value;
                     const tutarVal = parseSaha(tutarStr);
 
-                    if(!tutarStr || tutarVal <= 0) {
-                        row.querySelector('.parca-tutar').classList.add('error');
-                        hataVar = true;
-                    } else {
-                        parcalar.push({ yontem: fixBankaIsmi(yontem), tutar: tutarVal });
-                    }
+                    if(!tutarStr || tutarVal <= 0) { row.querySelector('.parca-tutar').classList.add('error'); hataVar = true; } 
+                    else { parcalar.push({ yontem: fixBankaIsmi(yontem), tutar: tutarVal }); }
                 });
 
                 if(hataVar) return;
@@ -1384,12 +1497,57 @@
 
             apiIstekAt(payload, 'btn-submit-sabit-onayla');
         }
+
+        // 🌟 YENİ BORÇ ÖDE (PARÇALI DESTEKLİ) 🌟
+        function toggleParcaliBorcOdeme() {
+            const sekil = getCustomVal('bo-odeme-sekli');
+            if(sekil === 'parcali') {
+                document.getElementById('bo-tek-hesap-alani').style.display = 'none';
+                document.getElementById('bo-parcali-hesap-alani').style.display = 'block';
+                document.getElementById('bo-parcalar-container').innerHTML = '';
+                addParcaBorc(); addParcaBorc();
+                hesaplaKalanParcaliBorc();
+            } else {
+                document.getElementById('bo-tek-hesap-alani').style.display = 'block';
+                document.getElementById('bo-parcali-hesap-alani').style.display = 'none';
+            }
+        }
+
+        function addParcaBorc() {
+            const container = document.getElementById('bo-parcalar-container');
+            const row = document.createElement('div');
+            row.className = 'parca-satiri-borc';
+            row.style.cssText = "display: grid; grid-template-columns: 1.5fr 1fr auto; gap: 8px; margin-bottom: 10px; align-items: start;";
+            const yontemSelect = document.getElementById('bo-yontem');
+            const dinamikSecenekler = yontemSelect ? yontemSelect.innerHTML : `<option value="Ziraat">Ziraat</option><option value="Nakit">Nakit</option>`;
+            row.innerHTML = `
+                <select class="form-control parca-hesap-borc" style="padding: 10px; font-size: 13px;">${dinamikSecenekler}</select>
+                <input type="text" inputmode="decimal" class="form-control parca-tutar-borc" placeholder="Tutar" oninput="hesaplaKalanParcaliBorc()" style="padding: 10px; font-size: 14px;">
+                <button onclick="this.parentElement.remove(); hesaplaKalanParcaliBorc();" style="background: rgba(244, 63, 94, 0.15); border: none; color: var(--rose); width: 38px; height: 38px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+            `;
+            container.appendChild(row);
+            refreshCustomSelect(row.querySelector('.parca-hesap-borc'));
+        }
+
+        function hesaplaKalanParcaliBorc() {
+            const hedefTutar = parseSaha(document.getElementById('bo-tutar').value) || 0;
+            let girilenToplam = 0;
+            document.querySelectorAll('.parca-tutar-borc').forEach(inp => girilenToplam += parseSaha(inp.value) || 0);
+            
+            const kalan = hedefTutar - girilenToplam;
+            document.getElementById('bo-hedef-tutar').innerText = "₺" + hedefTutar.toLocaleString('tr-TR', {minimumFractionDigits:2});
+            const kalanEl = document.getElementById('bo-kalan-tutar');
+            if(kalan === 0) { kalanEl.style.color = "var(--emerald)"; kalanEl.innerText = "₺0,00"; }
+            else if (kalan < 0) { kalanEl.style.color = "var(--rose)"; kalanEl.innerText = "Fazla: ₺" + Math.abs(kalan).toLocaleString('tr-TR', {minimumFractionDigits:2}); }
+            else { kalanEl.style.color = "var(--amber)"; kalanEl.innerText = "₺" + kalan.toLocaleString('tr-TR', {minimumFractionDigits:2}); }
+        }
         
         function submitBorcOde() {
             let isim = getCustomVal('bo-secim');
             if (isim === "_yeni_") isim = document.getElementById('bo-isim-yeni').value.trim();
-            let yontem = getCustomVal('bo-yontem');
             const tutar = document.getElementById('bo-tutar').value;
+            const sekil = getCustomVal('bo-odeme-sekli');
+            
             const fixBanka = (i) => {
                 if(!i) return ""; let s = i.trim();
                 if(s === "İsbankasi" || s === "İsbankası" || s === "isbankasi" || s === "İş Bankası") return "İş Bankası";
@@ -1400,9 +1558,36 @@
             let err = false; 
             if(!isim || isim === "Seçiniz...") { markError('bo-secim'); err = true; } 
             if(!tutar) { markError('bo-tutar'); err = true; } 
-            if(!yontem) { markError('bo-yontem'); err = true; } 
-            if(err) return;
-            apiIstekAt({ action: "borc_ode", borc_adi: isim, tutar: tutar, yontem: fixBanka(yontem), tarih: getFormattedDateTime('bo-tarih') }, 'btn-submit-borc-ode');
+
+            let payload = { action: "borc_ode", borc_adi: isim, tutar: tutar, tarih: getFormattedDateTime('bo-tarih'), odeme_sekli: sekil };
+
+            if(sekil === 'parcali') {
+                const parcalar = []; let hataVar = false;
+                document.querySelectorAll('.parca-satiri-borc').forEach(row => {
+                    let yontem = row.querySelector('.parca-hesap-borc').value;
+                    if(!yontem || yontem.trim() === "") {
+                        const spanTxt = row.querySelector('.custom-select-trigger span');
+                        if(spanTxt) yontem = spanTxt.innerText;
+                    }
+                    const pTutarStr = row.querySelector('.parca-tutar-borc').value;
+                    const pTutarVal = parseSaha(pTutarStr);
+                    if(pTutarVal <= 0) { row.querySelector('.parca-tutar-borc').classList.add('error'); hataVar = true; }
+                    else { parcalar.push({ yontem: fixBanka(yontem), tutar: pTutarVal }); }
+                });
+                if(hataVar) return;
+                if(parcalar.length === 0) return alert("Lütfen en az bir ödeme tutarı girin.");
+                let gToplam = parcalar.reduce((acc, curr) => acc + curr.tutar, 0);
+                if(Math.abs(gToplam - parseSaha(tutar)) > 0.1) return alert("Parçaların toplamı, asıl tutara eşit olmalıdır.");
+                payload.parcalar = parcalar;
+                if(err) return;
+            } else {
+                let tekYontem = getCustomVal('bo-yontem');
+                if(!tekYontem) { markError('bo-yontem'); err = true; }
+                if(err) return;
+                payload.yontem = fixBanka(tekYontem);
+            }
+            
+            apiIstekAt(payload, 'btn-submit-borc-ode');
         }
         
         function submitTransfer() {
@@ -1433,7 +1618,6 @@
             apiIstekAt({ action: "yeni_sabit", tur: tur, kalem: kalem, yontem: yontem, tutar: tutar, odeme_gunu: gun, kalan_ay: sure }, 'btn-submit-yeni-sabit');
         }
         
-        // 🌟 GÜNCELLENMİŞ OTOMATİK DOLDURMA MOTORU 🌟
         function doldurSabitGuncelleForm() {
             const select = document.getElementById('sg-kural');
             const opt = select.options[select.selectedIndex];
@@ -1463,7 +1647,6 @@
             }
         }
 
-        // 🌟 GÜNCELLENMİŞ SABİT KAYIT MOTORU 🌟
         function submitSabitGuncelle() {
             const kuralSatir = getCustomVal('sg-kural');
             const tutar = document.getElementById('sg-tutar').value;
@@ -1563,7 +1746,6 @@
                             }
                         });
                         
-                        // YENİ sg-yontem EKLENDİ
                         const hesapMenuIDler = ['h-yontem', 'so-yontem', 'bo-yontem', 't-cikis', 't-giris', 'ys-yontem', 'kbo-yontem', 'sg-yontem'];
                         hesapMenuIDler.forEach(id => {
                             const menuEl = document.getElementById(id);
