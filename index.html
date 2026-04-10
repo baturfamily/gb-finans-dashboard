@@ -549,7 +549,7 @@
                 </div>
                 <div class="undo-btn" onclick="geriAl()">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle; margin-right:4px;"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>
-                    Son İşlemi Geri Al
+                    Son Harcama/Ödemeyi Geri Al
                 </div>
             </div>
 
@@ -807,7 +807,7 @@
                 });
                 
                 const undoBtn = document.querySelector('.undo-btn');
-                if(undoBtn) undoBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle; margin-right:4px;"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg> Son İşlemi Geri Al`;
+                if(undoBtn) undoBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle; margin-right:4px;"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg> Son Harcama/Ödemeyi Geri Al`;
                 
                 btn.innerHTML = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>`;
                 btn.style.background = "var(--brand-gradient)";
@@ -1257,7 +1257,7 @@
         
         async function geriAl() {
             if(document.activeElement) { document.activeElement.blur(); } 
-            vibe(); if(!confirm("Emin misin? Son işlem tamamen silinecek.")) return;
+            vibe(); if(!confirm("Emin misin? Son harcama veya ödeme işlemin tamamen silinecek.\n\n(Not: Yeni eklediğin Varlık veya Borç kayıtları bu menüden geri alınamaz.)")) return;
             const btn = document.querySelector('.undo-btn'); const orig = btn.innerHTML; btn.innerHTML = `<span class="spinner"></span>...`;
             try {
                 await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'text/plain'}, body: JSON.stringify({ action: "geri_al" }) }); 
@@ -1295,8 +1295,12 @@
 
                     let borcHTMLOptions = `<option value="">-- Borç Seçin --</option>`;
                     let varlikHTMLOptions = `<option value="">-- Varlık Seçin --</option>`;
-                    safBorclarListe.forEach(b => borcHTMLOptions += `<option value="${b.isim}">${b.isim}</option>`);
-                    if(data.varliklarListe) data.varliklarListe.forEach(v => varlikHTMLOptions += `<option value="${v.isim}">${v.isim}</option>`);
+                    
+                    const formatPlainTL = (num) => "₺" + parseFloat(num).toLocaleString('tr-TR', {minimumFractionDigits:0, maximumFractionDigits:2});
+
+                    safBorclarListe.forEach(b => borcHTMLOptions += `<option value="${b.isim}">${b.isim} - ${formatPlainTL(b.tutar)}</option>`);
+                    if(data.varliklarListe) data.varliklarListe.forEach(v => varlikHTMLOptions += `<option value="${v.isim}">${v.isim} - ${formatPlainTL(v.deger)}</option>`);
+                    
                     borcHTMLOptions += `<option value="_yeni_">+ Yeni Borç Gir (Listede Yok)</option>`;
                     varlikHTMLOptions += `<option value="_yeni_">+ Yeni Varlık Gir (Listede Yok)</option>`;
                     
