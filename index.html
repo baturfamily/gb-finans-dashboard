@@ -1096,11 +1096,11 @@
             row.className = 'parca-satiri';
             row.style.cssText = "display: grid; grid-template-columns: 1.5fr 1fr auto; gap: 8px; margin-bottom: 10px; align-items: start;";
             
-            // onkeyup yerine oninput eklendi (iOS'ta anlık tepki için)
+            // value kısımlarını BİREBİR Google Sheets Hesaplar sekmesindeki adlarla aynı yaptık
             row.innerHTML = `
                 <select class="form-control parca-hesap" style="padding: 10px; font-size: 13px;">
                     <option value="Ziraat">Ziraat</option>
-                    <option value="İsbankasi">İş Bankası</option>
+                    <option value="İş Bankası">İş Bankası</option>
                     <option value="Yapıkredi">YapıKredi</option>
                     <option value="Kredi Kartı">Kredi Kartı</option>
                     <option value="Nakit">Nakit</option>
@@ -1111,10 +1111,7 @@
                 </button>
             `;
             container.appendChild(row);
-            
-            // Eklenen yeni Select'i modern iOS görünüme çevir
-            const newSelect = row.querySelector('.parca-hesap');
-            refreshCustomSelect(newSelect);
+            refreshCustomSelect(row.querySelector('.parca-hesap'));
         }
 
         function hesaplaKalanParcali() {
@@ -1190,7 +1187,6 @@
             
             if(!kuralSatir) { markError('so-kural'); return; }
 
-            // Ana paket (Payload)
             let payload = {
                 action: "sabit_onayla",
                 satir: kuralSatir,
@@ -1201,11 +1197,16 @@
                 const parcalar = [];
                 let hataVar = false;
 
-                // Tüm parçalı satırları topla
                 document.querySelectorAll('.parca-satiri').forEach(row => {
-                    // Custom select içindeki gerçek select'ten değeri al
                     const selectEl = row.querySelector('.parca-hesap');
-                    const yontem = selectEl.value;
+                    
+                    // GÜVENLİ OKUMA: Önce select value, yoksa span içindeki texti zorla al!
+                    let yontem = selectEl.value;
+                    if(!yontem || yontem.trim() === "") {
+                        const spanTxt = row.querySelector('.custom-select-trigger span');
+                        if(spanTxt) yontem = spanTxt.innerText;
+                    }
+
                     const tutarStr = row.querySelector('.parca-tutar').value;
                     const tutarVal = parseSaha(tutarStr);
 
@@ -1213,20 +1214,25 @@
                         row.querySelector('.parca-tutar').classList.add('error');
                         hataVar = true;
                     } else {
-                        parcalar.push({ yontem: yontem, tutar: tutarVal });
+                        // Eğer her şeye rağmen boşsa "Bilinmiyor" yazsın ki sorunu anında görelim
+                        parcalar.push({ yontem: yontem || "Bilinmiyor", tutar: tutarVal });
                     }
                 });
 
                 if(hataVar) return;
                 if(parcalar.length === 0) return alert("Lütfen en az bir ödeme tutarı girin.");
                 
-                payload.parcalar = parcalar; // Parçaları ekle
+                payload.parcalar = parcalar;
             } else {
-                // Tek ödeme modu
-                payload.kullanilan_yontem = document.getElementById('so-yontem').value;
+                // TEK HESAP İÇİN GÜVENLİ OKUMA
+                let tekYontem = document.getElementById('so-yontem').value;
+                if(!tekYontem || tekYontem.trim() === "") {
+                   const tekSpan = document.getElementById('so-tek-hesap-alani').querySelector('.custom-select-trigger span');
+                   if(tekSpan) tekYontem = tekSpan.innerText;
+                }
+                payload.kullanilan_yontem = tekYontem;
             }
 
-            // Backend'e gönder
             apiIstekAt(payload, 'btn-submit-sabit-onayla');
         }
         
