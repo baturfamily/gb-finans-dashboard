@@ -1411,42 +1411,47 @@
                         }
                         
                         let islemData = data.buAyIslemler || data.sonIslemler; let aHTML = "";
-                        if(islemData && islemData.length > 0) { islemData.forEach(islem => { let isaret = islem.tur === "Gelir" ? "+" : "-"; let bgClass = islem.tur === "Gelir" ? "rgba(16, 185, 129, 0.15)" : "rgba(244, 63, 94, 0.15)"; let colorClass = islem.tur === "Gelir" ? "var(--emerald)" : "var(--rose)"; aHTML += `<div class="t-row" style="padding: 12px 0;"><div class="t-details" style="min-width:0; padding-right:10px;"><div class="t-name" style="font-size:14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${islem.kalem}</div><div class="t-meta tabular-nums" style="font-size:11px;">${islem.tarih} • ${islem.odeme}</div></div><div class="t-amt tabular-nums" style="background:${bgClass}; color:${colorClass}; padding:4px 8px; border-radius:8px; font-size:13px; font-weight:700; flex-shrink:0;">${isaret} ${formatTL(islem.tutar)}</div></div>`; }); } else { aHTML = `<div style="text-align:center; color:var(--text-muted); padding: 15px 0; font-size:13px;">Bu ay henüz işlem kaydı yok.</div>`; }
+                        if(islemData && islemData.length > 0) { 
+                            islemData.forEach(islem => { 
+                                let isaret = "-"; let bgClass = "rgba(244, 63, 94, 0.15)"; let colorClass = "var(--rose)"; // Varsayılan: Gider (Kırmızı)
+                                
+                                if (islem.tur === "Gelir") {
+                                    isaret = "+"; bgClass = "rgba(16, 185, 129, 0.15)"; colorClass = "var(--emerald)";
+                                } else if (islem.tur === "Transfer") {
+                                    isaret = "⇄"; bgClass = "rgba(148, 163, 184, 0.15)"; colorClass = "#cbd5e1"; // Transfer: Gri
+                                } else if (islem.tur === "Borç_Odeme") {
+                                    isaret = "✓"; bgClass = "rgba(59, 130, 246, 0.15)"; colorClass = "var(--blue)"; // Borç Ödeme: Mavi
+                                }
+
+                                aHTML += `<div class="t-row" style="padding: 12px 0;"><div class="t-details" style="min-width:0; padding-right:10px;"><div class="t-name" style="font-size:14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${islem.kalem}</div><div class="t-meta tabular-nums" style="font-size:11px;">${islem.tarih} • ${islem.odeme}</div></div><div class="t-amt tabular-nums" style="background:${bgClass}; color:${colorClass}; padding:4px 8px; border-radius:8px; font-size:13px; font-weight:700; flex-shrink:0;">${isaret} ${formatTL(islem.tutar)}</div></div>`; 
+                            }); 
+                        } else { 
+                            aHTML = `<div style="text-align:center; color:var(--text-muted); padding: 15px 0; font-size:13px;">Bu ay henüz işlem kaydı yok.</div>`; 
+                        }
                         setHtml('aylik-islemler-container', aHTML);
                     }
 
-                    let yHTML = "";
-                    if(data.yaklasanOdemeler && data.yaklasanOdemeler.length > 0) {
-                        let currentDay = now.getDate(); let daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-                        data.yaklasanOdemeler.forEach(islem => { 
-                            let kalanGun = islem.gun - currentDay; if (kalanGun < 0) kalanGun += daysInMonth;
-                            let badgeRenk = kalanGun <= 2 ? "background: rgba(244, 63, 94, 0.15); color: var(--rose);" : "background: rgba(255,255,255,0.05); color: #cbd5e1;";
-                            yHTML += `<div class="list-row" style="padding: 14px 0;"><div style="display:flex; flex-direction:column; gap:6px; min-width:0; padding-right:10px;"><span class="list-label" style="font-size:15px; color:#f8fafc; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Ayın ${islem.gun}${turkceEkBul(islem.gun)} - ${islem.kalem}</span><div style="display:flex;"><span style="font-size:10px; font-weight:700; padding:2px 6px; border-radius:6px; border:1px solid rgba(255,255,255,0.05); ${badgeRenk}">${kalanGun === 0 ? "Bugün" : kalanGun + " gün kaldı"}</span></div></div><span class="list-value tabular-nums text-red" style="flex-shrink:0;">${formatTL(islem.tutar)}</span></div>`; 
-                        });
-                        yHTML += `<div style="text-align:right; margin-top:14px; font-size:13px; color:var(--text-muted); padding-right:5px; border-top: 1px solid var(--border-color); padding-top: 12px;">Toplam Çıkış: <span class="tabular-nums" style="color:#fff; font-weight:800; font-size:16px; letter-spacing:-0.2px;">${formatTL(data.yaklasanToplam)}</span></div>`;
-                    } else { yHTML = `<div style="text-align:center; color:var(--emerald); font-size: 14px; padding: 20px 0; font-weight: 600;">Planlı ödeme yok</div>`; }
-                    setHtml('yaklasan-listesi', yHTML);
+                    // ... (Yaklaşan Ödemeler ve Sabitler kısımları burada duracak, onlara dokunma) ...
 
-                    let sHTML = "";
-                    if(data.tumSabitlerListe && data.tumSabitlerListe.length > 0) {
-                        let toplamSabit = 0; let odenenSabit = 0; let odenecekSabit = 0; sHTML = `<div class="custom-scrollbar" style="max-height: 350px; overflow-y: auto; overflow-x: hidden; padding-right: 8px; overscroll-behavior: contain; margin-bottom: 4px;">`;
-                        data.tumSabitlerListe.forEach(sabit => {
-                            let tutar = parseFloat(sabit.tutar) || 0; toplamSabit += tutar; if(sabit.odendiMi) { odenenSabit += tutar; } else { odenecekSabit += tutar; }
-                            let checkIcon = sabit.odendiMi ? '<span style="color:var(--emerald); margin-left:8px; font-size:14px;">✓</span>' : '';
-                            let opacityStyle = sabit.odendiMi ? 'opacity: 0.4;' : ''; let kalanMetin = (sabit.kalanAy === "Süresiz" || !sabit.kalanAy) ? "Süresiz" : sabit.kalanAy + " Ay Kaldı"; let badgeClass = (sabit.kalanAy === "Süresiz" || !sabit.kalanAy) ? "pill-gray" : "pill-red";
-                            sHTML += `<div class="list-row" style="${opacityStyle} border-bottom: 1px solid var(--border-color); padding: 16px 0;"><div style="display:flex; flex-direction:column; gap:6px;"><span class="list-label" style="font-size:15px; color:#f8fafc;">Ayın ${sabit.gun}${turkceEkBul(sabit.gun)} - ${sabit.kalem} ${checkIcon}</span><div style="display:flex; gap:6px; align-items:center;"><span style="font-size:11px; font-weight:700; color:var(--text-muted); background:rgba(255,255,255,0.05); padding:2px 6px; border-radius:6px; border:1px solid rgba(255,255,255,0.05);">${sabit.yontem}</span><span class="pill-badge tabular-nums ${badgeClass}" style="font-size:10px; padding:2px 6px; border-radius:6px;">${kalanMetin}</span></div></div><span class="list-value tabular-nums" style="font-weight:800;">${formatTL(tutar)}</span></div>`;
-                        });
-                        sHTML += `</div><div style="margin-top:14px; font-size:13px; color:var(--text-muted); border-top: 1px solid var(--border-color); padding-top: 12px; display:flex; flex-direction:column; gap:8px;"><div style="display:flex; justify-content:space-between; align-items:center;"><span>Ödenen:</span><span class="tabular-nums" style="color:var(--emerald); font-weight:600;">${formatTL(odenenSabit)}</span></div><div style="display:flex; justify-content:space-between; align-items:center;"><span>Ödenecek:</span><span class="tabular-nums" style="color:var(--rose); font-weight:600;">${formatTL(odenecekSabit)}</span></div><div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px; padding-top:10px; border-top: 1px dashed rgba(255,255,255,0.1);"><span style="font-weight:600; color:#cbd5e1;">Toplam Sabit:</span><span class="tabular-nums" style="color:#fff; font-weight:800; font-size:16px; letter-spacing:-0.2px;">${formatTL(toplamSabit)}</span></div></div>`;
-                    } else { sHTML = `<div style="text-align:center; color:var(--text-muted); font-size: 13px; padding: 15px 0;">Kayıtlı sabit ödeme bulunamadı.</div>`; }
-                    setHtml('sabitler-listesi', sHTML);
-
+                    // Son 10 İşlem Kısmındaki Renklendirme Güncellemesi (Bunu da değiştir)
                     let siHTML = "";
                     if(data.sonIslemler && data.sonIslemler.length > 0) {
                         data.sonIslemler.forEach(islem => {
-                            let isaret = islem.tur === "Gelir" ? "+" : "-"; let bgClass = islem.tur === "Gelir" ? "rgba(16, 185, 129, 0.15)" : "rgba(244, 63, 94, 0.15)"; let colorClass = islem.tur === "Gelir" ? "var(--emerald)" : "var(--rose)";
+                            let isaret = "-"; let bgClass = "rgba(244, 63, 94, 0.15)"; let colorClass = "var(--rose)"; // Varsayılan: Gider
+                            
+                            if (islem.tur === "Gelir") {
+                                isaret = "+"; bgClass = "rgba(16, 185, 129, 0.15)"; colorClass = "var(--emerald)";
+                            } else if (islem.tur === "Transfer") {
+                                isaret = "⇄"; bgClass = "rgba(148, 163, 184, 0.15)"; colorClass = "#cbd5e1"; // Transfer: Gri
+                            } else if (islem.tur === "Borç_Odeme") {
+                                isaret = "✓"; bgClass = "rgba(59, 130, 246, 0.15)"; colorClass = "var(--blue)"; // Borç Ödeme: Mavi
+                            }
+
                             siHTML += `<div class="t-row"><div class="t-details" style="min-width:0; padding-right:10px;"><div class="t-name" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${islem.kalem}</div><div class="t-meta tabular-nums">${islem.tarih} • ${islem.odeme}</div></div><div class="t-amt tabular-nums" style="background:${bgClass}; color:${colorClass}; padding:6px 10px; border-radius:10px; font-size:15px; font-weight:700; flex-shrink:0;">${isaret} ${formatTL(islem.tutar)}</div></div>`;
                         });
-                    } else { siHTML = `<div style="text-align:center; color:var(--text-muted); padding: 15px 0;">Henüz işlem yok</div>`; }
+                    } else { 
+                        siHTML = `<div style="text-align:center; color:var(--text-muted); padding: 15px 0;">Henüz işlem yok</div>`; 
+                    }
                     setHtml('islem-listesi', siHTML);
                     
                     updateTrends(0, document.querySelector('.time-btn.active')); grafigiCizDoughnut(data.pastaGrafik, data.buAyToplamGider);
