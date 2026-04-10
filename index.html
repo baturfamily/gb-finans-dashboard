@@ -1401,13 +1401,16 @@
     let netKalan = data.buAyToplamGelir - data.buAyToplamGider;
     let tasarrufOrani = (data.buAyToplamGelir > 0 && netKalan > 0) ? Math.round((netKalan / data.buAyToplamGelir) * 100) : 0;
 
-    // 2. ÜSTTEKİ BÜYÜK ALAN VE BAŞLIK GÜNCELLEME (İstediğin Yer Değişimi)
+    // 2. ÜSTTEKİ BÜYÜK ALAN VE BAŞLIK GÜNCELLEME (Renk Dinamik Hale Getirildi)
+    let aylikGiderEl = document.getElementById('aylikGider');
     if (netKalan < 0) {
         setHtml('aylikGider', "Aşıldı: " + formatTL(Math.abs(netKalan)));
         setText('budgetSubtitle', 'Bütçe Aşım Tutarı');
+        if(aylikGiderEl) aylikGiderEl.style.color = "var(--rose)"; // Aşıldıysa KIRMIZI
     } else {
         setHtml('aylikGider', "Kalan: " + formatTL(netKalan));
         setText('budgetSubtitle', 'Kullanılabilir Kalan Bütçe');
+        if(aylikGiderEl) aylikGiderEl.style.color = "var(--emerald)"; // Kalan bütçe varsa YEŞİL
     }
 
     // 3. ALTTAKİ GELİR VE HARCAMA ETİKETLERİ
