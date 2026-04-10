@@ -1291,6 +1291,33 @@
                     animateValue("val-net-servet", window.currentStats.netServet, 1200);
                     animateValueUSD("val-net-servet-usd", window.currentStats.netServetUSD, 1200);
 
+                    // ============================================================================
+                    // 🌟 YENİ: DİNAMİK HESAP/BANKA MENÜSÜ OLUŞTURUCU 🌟
+                    // Google Sheets'ten gelen güncel hesap listesini tüm ödeme menülerine basar.
+                    // ============================================================================
+                    if (data.bankalar && data.bankalar.length > 0) {
+                        let hesapOptions = "";
+                        data.bankalar.forEach(banka => {
+                            // "Hesaplar" sekmesinde C sütunundaki isimleri alıyoruz
+                            hesapOptions += `<option value="${banka.isim}">${banka.isim}</option>`;
+                        });
+                        
+                        // Tüm ilgili menüleri güncelle
+                        const hesapMenuIDler = ['h-yontem', 'so-yontem', 'bo-yontem', 't-cikis', 't-giris', 'ys-yontem'];
+                        hesapMenuIDler.forEach(id => {
+                            const menuEl = document.getElementById(id);
+                            if(menuEl) {
+                                // Mevcut seçimi hafızada tutmaya çalış, yoksa ilkini seçer
+                                const eskiSecim = menuEl.value; 
+                                menuEl.innerHTML = hesapOptions;
+                                
+                                // Arayüzü bozmamak için custom select'i yeniden tetikle
+                                refreshCustomSelect(menuEl);
+                            }
+                        });
+                    }
+                    // ============================================================================
+
                     let safBorclarListe = data.borclarListe ? data.borclarListe.filter(b => !b.isim.includes("(KMH)")) : [];
 
                     let borcHTMLOptions = `<option value="">-- Borç Seçin --</option>`;
