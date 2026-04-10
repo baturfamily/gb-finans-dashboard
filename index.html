@@ -602,7 +602,7 @@
                         <span class="tag-pill" onclick="fillInput('h-kalem', 'Kişisel')">Kişisel</span>
                     </div>
                 </div>
-                <div class="form-group"><label>Ödeme Yöntemi</label><select id="h-yontem" class="form-control"><option value="Kredi Kartı">Kredi Kartı</option><option value="Ziraat">Ziraat</option><option value="İsbankasi">İş Bankası</option><option value="Yapıkredi">YapıKredi</option><option value="Nakit">Nakit</option></select></div>
+                <div class="form-group"><label>Ödeme Yöntemi</label><select id="h-yontem" class="form-control"><option value="Kredi Kartı">Kredi Kartı</option><option value="Ziraat">Ziraat</option><option value="İş Bankası">İş Bankası</option><option value="Yapıkredi">YapıKredi</option><option value="Nakit">Nakit</option></select></div>
                 <div class="form-group"><label>Tutar (₺)</label><input type="text" inputmode="decimal" id="h-tutar" class="form-control" placeholder="Örn: 1500,50"></div>
                 <button class="btn-submit" id="btn-submit-harcama" onclick="submitHarcama()">Kaydet</button>
             </div>
@@ -629,7 +629,7 @@
                         <select id="so-yontem" class="form-control">
                             <option value="Kredi Kartı">Kredi Kartı</option>
                             <option value="Ziraat">Ziraat</option>
-                            <option value="İsbankasi">İş Bankası</option>
+                            <option value="İş Bankası">İş Bankası</option>
                             <option value="Yapıkredi">YapıKredi</option>
                             <option value="Nakit">Nakit</option>
                         </select>
@@ -662,7 +662,7 @@
                     <input type="text" id="bo-isim-yeni" class="form-control" placeholder="Yeni borcun adını yazın..." style="display:none; margin-top:8px;">
                 </div>
                 <div class="form-group"><label>Ödenen Tutar (₺)</label><input type="text" inputmode="decimal" id="bo-tutar" class="form-control" placeholder="Örn: 500"></div>
-                <div class="form-group"><label>Paranın Çıktığı Yer</label><select id="bo-yontem" class="form-control"><option value="Ziraat">Ziraat</option><option value="İsbankasi">İş Bankası</option><option value="Yapıkredi">YapıKredi</option><option value="Nakit">Nakit</option></select></div>
+                <div class="form-group"><label>Paranın Çıktığı Yer</label><select id="bo-yontem" class="form-control"><option value="Ziraat">Ziraat</option><option value="İş Bankası">İş Bankası</option><option value="Yapıkredi">YapıKredi</option><option value="Nakit">Nakit</option></select></div>
                 <button class="btn-submit" id="btn-submit-borc-ode" onclick="submitBorcOde()">Borcu Öde</button>
             </div>
 
@@ -671,10 +671,10 @@
                 <div class="form-group"><label>Tarih ve Saat</label><input type="datetime-local" id="t-tarih" class="form-control"></div>
                 <div class="form-group" style="position:relative;">
                     <label>Çıkış Yapılan (Gönderen)</label>
-                    <select id="t-cikis" class="form-control"><option value="İsbankasi">İş Bankası</option><option value="Ziraat">Ziraat</option><option value="Yapıkredi">YapıKredi</option><option value="Nakit">Nakit</option></select>
+                    <select id="t-cikis" class="form-control"><option value="İş Bankası">İş Bankası</option><option value="Ziraat">Ziraat</option><option value="Yapıkredi">YapıKredi</option><option value="Nakit">Nakit</option></select>
                     <button class="swap-btn" onclick="swapTransfer()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21 16-4 4-4-4"/><path d="M17 20V4"/><path d="m3 8 4-4 4 4"/><path d="M7 4v16"/></svg></button>
                 </div>
-                <div class="form-group"><label>Giriş Yapılan (Alan)</label><select id="t-giris" class="form-control"><option value="Ziraat">Ziraat</option><option value="İsbankasi">İş Bankası</option><option value="Yapıkredi">YapıKredi</option><option value="Nakit">Nakit</option></select></div>
+                <div class="form-group"><label>Giriş Yapılan (Alan)</label><select id="t-giris" class="form-control"><option value="Ziraat">Ziraat</option><option value="İş Bankası">İş Bankası</option><option value="Yapıkredi">YapıKredi</option><option value="Nakit">Nakit</option></select></div>
                 <div class="form-group"><label>Transfer Tutarı (₺)</label><input type="text" inputmode="decimal" id="t-tutar" class="form-control" placeholder="Örn: 2500"></div>
                 <button class="btn-submit" id="btn-submit-transfer" onclick="submitTransfer()">Transfer Yap</button>
             </div>
@@ -694,7 +694,7 @@
                 <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Geri Dön</span>
                 <div class="form-group"><label>Tür</label><select id="ys-tur" class="form-control"><option value="Gider">Gider</option><option value="Gelir">Gelir</option></select></div>
                 <div class="form-group"><label>Sabit Kalem Adı</label><input type="text" id="ys-kalem" class="form-control" placeholder="Örn: Kira, Netflix"></div>
-                <div class="form-group"><label>Ödeme Yöntemi</label><select id="ys-yontem" class="form-control"><option value="Kredi Kartı">Kredi Kartı</option><option value="Ziraat">Ziraat</option><option value="İsbankasi">İş Bankası</option><option value="Yapıkredi">YapıKredi</option></select></div>
+                <div class="form-group"><label>Ödeme Yöntemi</label><select id="ys-yontem" class="form-control"><option value="Kredi Kartı">Kredi Kartı</option><option value="Ziraat">Ziraat</option><option value="İş Bankası">İş Bankası</option><option value="Yapıkredi">YapıKredi</option></select></div>
                 <div class="form-group"><label>Tutar (₺)</label><input type="text" inputmode="decimal" id="ys-tutar" class="form-control"></div>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
                     <div class="form-group"><label>Ayın Kaçı?</label><input type="text" inputmode="numeric" id="ys-gun" class="form-control" placeholder="1-31"></div>
@@ -944,7 +944,7 @@
             if(id === 'section-yeni-hesap') { document.getElementById('yh-tur').value = "Banka"; }
             
             if(document.getElementById('h-yontem')) document.getElementById('h-yontem').value = "Kredi Kartı";
-            if(document.getElementById('t-cikis')) document.getElementById('t-cikis').value = "İsbankasi";
+            if(document.getElementById('t-cikis')) document.getElementById('t-cikis').value = "İş Bankası";
             if(document.getElementById('t-giris')) document.getElementById('t-giris').value = "Ziraat";
         }
 
@@ -1099,7 +1099,7 @@
                 <select class="form-control parca-hesap" style="padding: 10px; font-size: 13px;">
                     <option value="Ziraat">Ziraat</option>
                     <option value="İş Bankası">İş Bankası</option>
-                    <option value="YapıKredi">YapıKredi</option>
+                    <option value="Yapıkredi">YapıKredi</option>
                     <option value="Kredi Kartı">Kredi Kartı</option>
                     <option value="Nakit">Nakit</option>
                 </select>
@@ -1180,8 +1180,9 @@
             const fixBankaIsmi = (isim) => {
                 if(!isim) return "";
                 let i = isim.trim();
-                if(i === "İş Bankası" || i === "Isbankasi" || i === "İsbankası" || i === "isbankasi") return "İsbankasi";
-                if(i === "YapıKredi" || i === "Yapı Kredi" || i === "yapıkredi") return "Yapıkredi";
+                // "İş Bankası" Excel'deki asıl adımız!
+                if(i === "İsbankasi" || i === "İsbankası" || i === "isbankasi" || i === "İş Bankası") return "İş Bankası";
+                if(i === "YapıKredi" || i === "Yapı Kredi" || i === "yapıkredi" || i === "Yapıkredi") return "Yapıkredi";
                 return i;
             };
 
