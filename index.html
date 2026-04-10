@@ -764,9 +764,37 @@
 
             <div id="section-sabit-guncelle" class="form-section">
                 <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Geri Dön</span>
-                <div class="form-group"><label>Güncellenecek Kural</label><select id="sg-kural" class="form-control"></select></div>
-                <div class="form-group"><label>Yeni Tutar Ne Kadar? (₺) <span style="font-size:11px; font-weight:normal; color:var(--rose);">(İptal için 0 yazın)</span></label><input type="text" inputmode="decimal" id="sg-tutar" class="form-control"></div>
-                <button class="btn-submit" id="btn-submit-sabit-guncelle" onclick="submitSabitGuncelle()">Güncelle / İptal Et</button>
+                
+                <div class="form-group">
+                    <label>Güncellenecek Kural</label>
+                    <select id="sg-kural" class="form-control" onchange="doldurSabitGuncelleForm()"></select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Ödeme Yöntemi / Kart</label>
+                    <select id="sg-yontem" class="form-control"></select>
+                </div>
+
+                <div class="form-group">
+                    <label>Tutar (₺)</label>
+                    <input type="text" inputmode="decimal" id="sg-tutar" class="form-control" placeholder="Örn: 500">
+                </div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                    <div class="form-group"><label>Ayın Kaçı?</label><input type="text" inputmode="numeric" id="sg-gun" class="form-control" placeholder="1-31"></div>
+                    <div class="form-group"><label>Kalan Ay</label><input type="text" id="sg-sure" class="form-control" placeholder="Sayı veya Süresiz"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>Durum</label>
+                    <select id="sg-durum" class="form-control">
+                        <option value="Aktif">Aktif</option>
+                        <option value="İptal">İptal</option>
+                        <option value="Bitti">Bitti</option>
+                    </select>
+                </div>
+
+                <button class="btn-submit" id="btn-submit-sabit-guncelle" onclick="submitSabitGuncelle()">Kuralı Güncelle</button>
             </div>
 
             <div id="section-varlik-guncelle" class="form-section">
@@ -930,7 +958,7 @@
                     else if (b.id === 'btn-submit-transfer') b.innerHTML = 'Transfer Yap';
                     else if (b.id === 'btn-submit-borc-guncelle') b.innerHTML = 'Borcu Güncelle';
                     else if (b.id === 'btn-submit-yeni-sabit') b.innerHTML = 'Sabit Ekle';
-                    else if (b.id === 'btn-submit-sabit-guncelle') b.innerHTML = 'Güncelle / İptal Et';
+                    else if (b.id === 'btn-submit-sabit-guncelle') b.innerHTML = 'Kuralı Güncelle';
                     else if (b.id === 'btn-submit-varlik-guncelle') b.innerHTML = 'Varlığı Güncelle';
                     else if (b.id === 'btn-submit-yeni-hesap') b.innerHTML = 'Hesabı Oluştur';
                     else if (b.id === 'btn-submit-yeni-kart') b.innerHTML = 'Kartı Sisteme Ekle';
@@ -1069,6 +1097,8 @@
                 if (span && span.innerText !== "Seçiniz...") {
                     let rawText = span.innerText.trim();
                     if(rawText.includes(" (KMH)")) rawText = rawText.replace(" (KMH)", "").trim();
+                    // Kart listesindeki gereksiz "[İPTAL]" ekini ayıkla (eğer varsa)
+                    if(rawText.includes(" [İPTAL/BİTTİ]")) rawText = rawText.replace(" [İPTAL/BİTTİ]", "").trim();
                     return rawText;
                 }
             }
@@ -1185,6 +1215,7 @@
             apiIstekAt({ action: "yeni_hareket", tur: tur, kategori: "Değişken", kalem: kalem, yontem: yontem, tutar: tutar, taksit: taksit, tarih: getFormattedDateTime('h-tarih') }, 'btn-submit-harcama');
         }
 
+        // 🌟 SABİTLER MOTORU: ARTIK İPTALLERİ DE HAFIZAYA ALIYOR 🌟
         async function loadSabitlerAndShow(sectionId, selectId, title) {
             const ev = event.currentTarget; const orig = ev.innerHTML; ev.innerHTML = `<span class="spinner"></span>...`; vibe();
             try {
@@ -1192,10 +1223,19 @@
                 const result = await res.json();
                 if(result.status === "success") {
                     const sel = document.getElementById(selectId); sel.innerHTML = "";
-                    result.data.forEach(k => { 
-                        sel.innerHTML += `<option value="${k.satir}" data-tutar="${k.tutar}">${k.kalem} - ₺${k.tutar} (${k.kalan_ay} Ay)</option>`; 
+                    
+                    let filteredData = result.data;
+                    // Eğer onaylama ekranıysa SADECE Aktifleri göster
+                    if(sectionId === 'section-sabit-onayla') {
+                        filteredData = result.data.filter(k => k.durum === 'Aktif');
+                    }
+                    
+                    filteredData.forEach(k => { 
+                        let label = `${k.kalem} - ₺${k.tutar} (${k.kalan_ay} Ay)`;
+                        if(k.durum !== "Aktif") label += " [İPTAL/BİTTİ]";
+                        sel.innerHTML += `<option value="${k.satir}" data-tutar="${k.tutar}" data-yontem="${k.yontem}" data-gun="${k.gun}" data-sure="${k.kalan_ay}" data-durum="${k.durum}">${label}</option>`; 
                     });
-                    if(result.data.length === 0) sel.innerHTML = `<option value="">Aktif kural bulunamadı.</option>`;
+                    if(filteredData.length === 0) sel.innerHTML = `<option value="">Kayıt bulunamadı.</option>`;
                     
                     showSection(sectionId, title);
                     
@@ -1203,6 +1243,9 @@
                         document.getElementById('so-odeme-sekli').value = 'tek';
                         toggleParcaliOdeme();
                         refreshCustomSelect(document.getElementById('so-odeme-sekli'));
+                    }
+                    if(sectionId === 'section-sabit-guncelle') {
+                        setTimeout(doldurSabitGuncelleForm, 100);
                     }
                 }
             } catch(e) { alert("Sabitler çekilemedi. İnternetinizi kontrol edin."); }
@@ -1258,12 +1301,10 @@
 
             const kuralSelect = document.getElementById('so-kural');
             const seciliOption = kuralSelect.options[kuralSelect.selectedIndex];
-            
             if(!seciliOption) return;
 
             let hedefTutar = 0;
             const dataTutar = seciliOption.getAttribute('data-tutar');
-            
             if(dataTutar) {
                 hedefTutar = parseSaha(dataTutar);
             } else {
@@ -1277,15 +1318,11 @@
             let girilenToplam = 0;
             document.querySelectorAll('.parca-tutar').forEach(input => {
                 let val = input.value;
-                if(val) {
-                    girilenToplam += parseSaha(val); 
-                }
+                if(val) { girilenToplam += parseSaha(val); }
             });
 
             const kalan = hedefTutar - girilenToplam;
-            
             document.getElementById('so-hedef-tutar').innerText = "₺" + hedefTutar.toLocaleString('tr-TR', {minimumFractionDigits:2, maximumFractionDigits:2});
-            
             const kalanEl = document.getElementById('so-kalan-tutar');
             
             if(kalan === 0) {
@@ -1303,14 +1340,9 @@
         function submitSabitOnayla() {
             const kuralSatir = getCustomVal('so-kural');
             const sekil = getCustomVal('so-odeme-sekli');
-            
             if(!kuralSatir) { markError('so-kural'); return; }
 
-            let payload = {
-                action: "sabit_onayla",
-                satir: kuralSatir,
-                odeme_sekli: sekil
-            };
+            let payload = { action: "sabit_onayla", satir: kuralSatir, odeme_sekli: sekil };
 
             const fixBankaIsmi = (isim) => {
                 if(!isim) return "";
@@ -1326,13 +1358,11 @@
 
                 document.querySelectorAll('.parca-satiri').forEach(row => {
                     const selectEl = row.querySelector('.parca-hesap');
-                    
                     let yontem = selectEl.value;
                     if(!yontem || yontem.trim() === "") {
                         const spanTxt = row.querySelector('.custom-select-trigger span');
                         if(spanTxt) yontem = spanTxt.innerText;
                     }
-
                     const tutarStr = row.querySelector('.parca-tutar').value;
                     const tutarVal = parseSaha(tutarStr);
 
@@ -1346,7 +1376,6 @@
 
                 if(hataVar) return;
                 if(parcalar.length === 0) return alert("Lütfen en az bir ödeme tutarı girin.");
-                
                 payload.parcalar = parcalar;
             } else {
                 let tekYontem = getCustomVal('so-yontem');
@@ -1359,13 +1388,10 @@
         function submitBorcOde() {
             let isim = getCustomVal('bo-secim');
             if (isim === "_yeni_") isim = document.getElementById('bo-isim-yeni').value.trim();
-            
             let yontem = getCustomVal('bo-yontem');
             const tutar = document.getElementById('bo-tutar').value;
-            
             const fixBanka = (i) => {
-                if(!i) return "";
-                let s = i.trim();
+                if(!i) return ""; let s = i.trim();
                 if(s === "İsbankasi" || s === "İsbankası" || s === "isbankasi" || s === "İş Bankası") return "İş Bankası";
                 if(s === "YapıKredi" || s === "Yapı Kredi" || s === "yapıkredi" || s === "Yapıkredi") return "Yapıkredi";
                 return s;
@@ -1376,7 +1402,6 @@
             if(!tutar) { markError('bo-tutar'); err = true; } 
             if(!yontem) { markError('bo-yontem'); err = true; } 
             if(err) return;
-            
             apiIstekAt({ action: "borc_ode", borc_adi: isim, tutar: tutar, yontem: fixBanka(yontem), tarih: getFormattedDateTime('bo-tarih') }, 'btn-submit-borc-ode');
         }
         
@@ -1404,15 +1429,67 @@
             const kalem = document.getElementById('ys-kalem').value.trim(), tutar = document.getElementById('ys-tutar').value, gun = document.getElementById('ys-gun').value, sure = document.getElementById('ys-sure').value;
             const tur = getCustomVal('ys-tur');
             const yontem = getCustomVal('ys-yontem');
-            
             let err = false; if(!kalem) {markError('ys-kalem'); err=true;} if(!tutar) {markError('ys-tutar'); err=true;} if(!gun) {markError('ys-gun'); err=true;} if(!sure) {markError('ys-sure'); err=true;} if(!yontem) {markError('ys-yontem'); err=true;} if(err) return;
             apiIstekAt({ action: "yeni_sabit", tur: tur, kalem: kalem, yontem: yontem, tutar: tutar, odeme_gunu: gun, kalan_ay: sure }, 'btn-submit-yeni-sabit');
         }
         
+        // 🌟 GÜNCELLENMİŞ OTOMATİK DOLDURMA MOTORU 🌟
+        function doldurSabitGuncelleForm() {
+            const select = document.getElementById('sg-kural');
+            const opt = select.options[select.selectedIndex];
+            if(!opt || !opt.value) {
+                document.getElementById('sg-tutar').value = "";
+                document.getElementById('sg-gun').value = "";
+                document.getElementById('sg-sure').value = "";
+                return;
+            }
+            document.getElementById('sg-tutar').value = opt.getAttribute('data-tutar');
+            document.getElementById('sg-gun').value = opt.getAttribute('data-gun');
+            document.getElementById('sg-sure').value = opt.getAttribute('data-sure');
+            
+            const yontem = opt.getAttribute('data-yontem');
+            const durum = opt.getAttribute('data-durum');
+            
+            const yontemSel = document.getElementById('sg-yontem');
+            if(yontemSel) {
+                yontemSel.value = yontem;
+                refreshCustomSelect(yontemSel);
+            }
+            
+            const durumSel = document.getElementById('sg-durum');
+            if(durumSel) {
+                durumSel.value = durum;
+                refreshCustomSelect(durumSel);
+            }
+        }
+
+        // 🌟 GÜNCELLENMİŞ SABİT KAYIT MOTORU 🌟
         function submitSabitGuncelle() {
-            const kuralSatir = getCustomVal('sg-kural'), tutar = document.getElementById('sg-tutar').value;
-            let err = false; if(!kuralSatir) {markError('sg-kural'); err=true;} if(tutar === "") {markError('sg-tutar'); err=true;} if(err) return;
-            apiIstekAt({ action: "sabit_guncelle", satir: kuralSatir, yeni_tutar: tutar }, 'btn-submit-sabit-guncelle');
+            const kuralSatir = getCustomVal('sg-kural');
+            const tutar = document.getElementById('sg-tutar').value;
+            const yontem = getCustomVal('sg-yontem');
+            const gun = document.getElementById('sg-gun').value;
+            const sure = document.getElementById('sg-sure').value;
+            const durum = getCustomVal('sg-durum');
+            
+            let err = false; 
+            if(!kuralSatir) {markError('sg-kural'); err=true;} 
+            if(tutar === "") {markError('sg-tutar'); err=true;} 
+            if(!yontem) {markError('sg-yontem'); err=true;}
+            if(!gun) {markError('sg-gun'); err=true;}
+            if(!sure) {markError('sg-sure'); err=true;}
+            if(!durum) {markError('sg-durum'); err=true;}
+            if(err) return;
+            
+            apiIstekAt({ 
+                action: "sabit_guncelle", 
+                satir: kuralSatir, 
+                yeni_tutar: tutar,
+                yeni_yontem: yontem,
+                yeni_gun: gun,
+                yeni_sure: sure,
+                yeni_durum: durum
+            }, 'btn-submit-sabit-guncelle');
         }
         
         function submitVarlikGuncelle() {
@@ -1486,7 +1563,8 @@
                             }
                         });
                         
-                        const hesapMenuIDler = ['h-yontem', 'so-yontem', 'bo-yontem', 't-cikis', 't-giris', 'ys-yontem', 'kbo-yontem'];
+                        // YENİ sg-yontem EKLENDİ
+                        const hesapMenuIDler = ['h-yontem', 'so-yontem', 'bo-yontem', 't-cikis', 't-giris', 'ys-yontem', 'kbo-yontem', 'sg-yontem'];
                         hesapMenuIDler.forEach(id => {
                             const menuEl = document.getElementById(id);
                             if(menuEl) {
@@ -1568,14 +1646,12 @@
 
                     setHtml('val-kasa', formatTL(data.toplamKasa)); setHtml('val-borc', formatTL(data.toplamBorc)); setHtml('val-borc-acil', formatTL(data.toplamCanYakan)); setHtml('val-borc-planli', formatTL(data.toplamPlanli)); setHtml('val-tahmini-faiz', formatTL(data.tahminiFaiz || 0)); setHtml('val-toplam-odenen-faiz', formatTL(data.toplamOdenenFaiz || 0)); setHtml('val-faiz-yk', formatTL(data.faizYKB || 0)); setHtml('val-faiz-is', formatTL(data.faizIs || 0)); setHtml('val-faiz-kk', formatTL(data.faizKK || 0)); 
                     
-                    // KART BEYNİ YANSIMALARI
                     setHtml('val-kart-toplam', formatTL(data.kartToplam)); 
                     setHtml('val-kart-limit', formatTL(data.kartLimit));
                     setHtml('val-kart-kullanilabilir', formatTL(data.kartKullanilabilir));
                     setText('val-kart-doluluk', "%" + (data.kartDoluluk || 0) + " Dolu");
                     if(document.getElementById('bar-kart-limit')) document.getElementById('bar-kart-limit').style.width = (data.kartDoluluk || 0) + "%";
 
-                    // 15'İ KURALINA GÖRE HESAPLANAN DÖNEM İÇİ VE GELECEK
                     setHtml('val-kart-donemici', formatTL(data.kartDonemIci)); 
                     setHtml('val-kart-gelecek', formatTL(data.kartGelecek)); 
 
