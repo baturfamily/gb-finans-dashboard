@@ -1186,8 +1186,48 @@
         
         function submitSabitOnayla() {
             const kuralSatir = document.getElementById('so-kural').value;
+            const sekil = document.getElementById('so-odeme-sekli').value;
+            
             if(!kuralSatir) { markError('so-kural'); return; }
-            apiIstekAt({ action: "sabit_onayla", satir: kuralSatir, kullanilan_yontem: document.getElementById('so-yontem').value }, 'btn-submit-sabit-onayla');
+
+            // Ana paket (Payload)
+            let payload = {
+                action: "sabit_onayla",
+                satir: kuralSatir,
+                odeme_sekli: sekil
+            };
+
+            if(sekil === 'parcali') {
+                const parcalar = [];
+                let hataVar = false;
+
+                // Tüm parçalı satırları topla
+                document.querySelectorAll('.parca-satiri').forEach(row => {
+                    // Custom select içindeki gerçek select'ten değeri al
+                    const selectEl = row.querySelector('.parca-hesap');
+                    const yontem = selectEl.value;
+                    const tutarStr = row.querySelector('.parca-tutar').value;
+                    const tutarVal = parseSaha(tutarStr);
+
+                    if(!tutarStr || tutarVal <= 0) {
+                        row.querySelector('.parca-tutar').classList.add('error');
+                        hataVar = true;
+                    } else {
+                        parcalar.push({ yontem: yontem, tutar: tutarVal });
+                    }
+                });
+
+                if(hataVar) return;
+                if(parcalar.length === 0) return alert("Lütfen en az bir ödeme tutarı girin.");
+                
+                payload.parcalar = parcalar; // Parçaları ekle
+            } else {
+                // Tek ödeme modu
+                payload.kullanilan_yontem = document.getElementById('so-yontem').value;
+            }
+
+            // Backend'e gönder
+            apiIstekAt(payload, 'btn-submit-sabit-onayla');
         }
         
         function submitBorcOde() {
