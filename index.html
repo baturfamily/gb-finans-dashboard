@@ -437,7 +437,7 @@
             <div class="accordion-content">
                 <div class="budget-module">
                     <div class="budget-amount tabular-nums sensitive-data" id="aylikGider">Yükleniyor...</div>
-                    <div class="budget-subtitle">Bu Ayki Toplam Harcama</div>
+                    <div class="budget-subtitle" id="budgetSubtitle">Kalan / Aşılan Bütçe</div>
                     <div class="budget-progress-container"><div class="budget-progress-bar" id="budgetBar"></div><div id="budgetPercent" class="tabular-nums">%0</div></div>
                     <div class="budget-footer tabular-nums sensitive-data"><span id="butceDurum">Gelir: ₺0,00</span><span id="kalanBakiye">Kalan: ₺0,00</span></div>
                     <div id="tasarruf-orani-badge" class="trend-badge tabular-nums" style="background: rgba(59, 130, 246, 0.15); color: var(--blue); border: 1px solid rgba(59, 130, 246, 0.2); margin-top: 8px;">Tasarruf: %0</div>
@@ -1397,44 +1397,99 @@
                     } else { setHtml('banka-listesi', `<div style="text-align:center; color:var(--text-muted); padding: 15px 0;">Veri bulunamadı.</div>`); }
 
                     if(data.buAyToplamGider !== undefined) {
-                        setHtml('aylikGider', formatTL(data.buAyToplamGider)); setHtml('butceDurum', "Gelir: " + formatTL(data.buAyToplamGelir));
-                        let netKalan = data.buAyToplamGelir - data.buAyToplamGider; let tasarrufOrani = (data.buAyToplamGelir > 0 && netKalan > 0) ? Math.round((netKalan / data.buAyToplamGelir) * 100) : 0;
-                        setText('tasarruf-orani-badge', `Tasarruf: %${tasarrufOrani}`); setHtml('mevcutKalanProjek', formatTL(netKalan)); setHtml('gelecekSabitler', "- " + formatTL(data.odenecekSabitToplam || 0));
-                        let ozgurPara = netKalan - (data.odenecekSabitToplam || 0); let ozgurParaEl = document.getElementById('ozgurPara');
-                        if(ozgurParaEl) { ozgurParaEl.innerHTML = formatTL(ozgurPara); ozgurParaEl.style.color = ozgurPara >= 0 ? "var(--emerald)" : "var(--rose)"; }
+    // 1. TEMEL HESAPLAMALAR
+    let netKalan = data.buAyToplamGelir - data.buAyToplamGider;
+    let tasarrufOrani = (data.buAyToplamGelir > 0 && netKalan > 0) ? Math.round((netKalan / data.buAyToplamGelir) * 100) : 0;
 
-                        const bakiyeDOM = document.getElementById('kalanBakiye'), budgetBarDOM = document.getElementById('budgetBar'), percentDOM = document.getElementById('budgetPercent');
-                        if (data.buAyToplamGelir > 0 && bakiyeDOM && budgetBarDOM && percentDOM) {
-                            let harcananYuzde = (data.buAyToplamGider / data.buAyToplamGelir) * 100; let kalan = data.buAyToplamGelir - data.buAyToplamGider; percentDOM.innerText = "%" + Math.round(harcananYuzde);
-                            if (harcananYuzde > 100) { budgetBarDOM.style.width = "100%"; budgetBarDOM.style.background = "linear-gradient(90deg, #f43f5e, #fb923c)"; percentDOM.style.color = "#ffffff"; bakiyeDOM.innerHTML = "Aşıldı: " + formatTL(Math.abs(kalan)); bakiyeDOM.style.color = "var(--rose)"; } else { budgetBarDOM.style.width = harcananYuzde + "%"; budgetBarDOM.style.background = harcananYuzde > 80 ? "linear-gradient(90deg, #f59e0b, #f43f5e)" : "var(--brand-gradient)"; percentDOM.style.color = "#ffffff"; bakiyeDOM.innerHTML = "Kalan: " + formatTL(kalan); bakiyeDOM.style.color = "var(--emerald)"; }
-                        } else if(budgetBarDOM) { budgetBarDOM.style.width = "0%"; percentDOM.innerText = "%0"; bakiyeDOM.innerText = "Veri Yok"; }
+    // 2. ÜSTTEKİ BÜYÜK ALAN VE BAŞLIK GÜNCELLEME (İstediğin Yer Değişimi)
+    if (netKalan < 0) {
+        setHtml('aylikGider', "Aşıldı: " + formatTL(Math.abs(netKalan)));
+        setText('budgetSubtitle', 'Bütçe Aşım Tutarı');
+    } else {
+        setHtml('aylikGider', "Kalan: " + formatTL(netKalan));
+        setText('budgetSubtitle', 'Kullanılabilir Kalan Bütçe');
+    }
 
-                        const trendDOM = document.getElementById('aylikTrend'); 
-                        if(trendDOM) {
-                            trendDOM.style.display = "inline-flex"; 
-                            if(data.gecenAyToplamGider > 0) { let fark = data.buAyToplamGider - data.gecenAyToplamGider; let yuzde = Math.abs((fark / data.gecenAyToplamGider) * 100).toFixed(1); if (fark > 0) { trendDOM.className = "trend-badge tabular-nums trend-bad"; trendDOM.innerText = "Geçen aya göre %" + yuzde + " fazla ↑"; } else if (fark < 0) { trendDOM.className = "trend-badge tabular-nums trend-good"; trendDOM.innerText = "Geçen aya göre %" + yuzde + " az ↓"; } else { trendDOM.className = "trend-badge tabular-nums"; trendDOM.innerText = "Geçen ayla aynı ━"; trendDOM.style.background = "rgba(255,255,255,0.06)"; trendDOM.style.color = "#fff"; } } else { trendDOM.className = "trend-badge"; trendDOM.innerText = "Geçen ay verisi yok"; trendDOM.style.background = "rgba(255,255,255,0.04)"; trendDOM.style.color = "var(--text-muted)"; }
-                        }
-                        
-                        let islemData = data.buAyIslemler || data.sonIslemler; let aHTML = "";
-                        if(islemData && islemData.length > 0) { 
-                            islemData.forEach(islem => { 
-                                let isaret = "-"; let bgClass = "rgba(244, 63, 94, 0.15)"; let colorClass = "var(--rose)"; 
-                                
-                                if (islem.tur === "Gelir") {
-                                    isaret = "+"; bgClass = "rgba(16, 185, 129, 0.15)"; colorClass = "var(--emerald)";
-                                } else if (islem.tur === "Transfer") {
-                                    isaret = "⇄"; bgClass = "rgba(148, 163, 184, 0.15)"; colorClass = "#cbd5e1"; 
-                                } else if (islem.tur === "Borç_Odeme") {
-                                    isaret = "✓"; bgClass = "rgba(59, 130, 246, 0.15)"; colorClass = "var(--blue)"; 
-                                }
+    // 3. ALTTAKİ GELİR VE HARCAMA ETİKETLERİ
+    setHtml('butceDurum', "Gelir: " + formatTL(data.buAyToplamGelir)); // Alt Sol
+    setHtml('kalanBakiye', "Harcama: " + formatTL(data.buAyToplamGider)); // Alt Sağ (Eskiden burası Kalan idi)
 
-                                aHTML += `<div class="t-row" style="padding: 12px 0;"><div class="t-details" style="min-width:0; padding-right:10px;"><div class="t-name" style="font-size:14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${islem.kalem}</div><div class="t-meta tabular-nums" style="font-size:11px;">${islem.tarih} • ${islem.odeme}</div></div><div class="t-amt tabular-nums" style="background:${bgClass}; color:${colorClass}; padding:4px 8px; border-radius:8px; font-size:13px; font-weight:700; flex-shrink:0;">${isaret} ${formatTL(islem.tutar)}</div></div>`; 
-                            }); 
-                        } else { 
-                            aHTML = `<div style="text-align:center; color:var(--text-muted); padding: 15px 0; font-size:13px;">Bu ay henüz işlem kaydı yok.</div>`; 
-                        }
-                        setHtml('aylik-islemler-container', aHTML);
-                    }
+    // 4. TASARRUF VE ÖZGÜR PARA MANTIĞI
+    setText('tasarruf-orani-badge', `Tasarruf: %${tasarrufOrani}`); 
+    setHtml('mevcutKalanProjek', formatTL(netKalan)); 
+    setHtml('gelecekSabitler', "- " + formatTL(data.odenecekSabitToplam || 0));
+
+    let ozgurPara = netKalan - (data.odenecekSabitToplam || 0); 
+    let ozgurParaEl = document.getElementById('ozgurPara');
+    if(ozgurParaEl) { 
+        ozgurParaEl.innerHTML = formatTL(ozgurPara); 
+        ozgurParaEl.style.color = ozgurPara >= 0 ? "var(--emerald)" : "var(--rose)"; 
+    }
+
+    // 5. BÜTÇE ÇUBUĞU (BAR) GÖRSELLEŞTİRME
+    const budgetBarDOM = document.getElementById('budgetBar'), percentDOM = document.getElementById('budgetPercent');
+    if (data.buAyToplamGelir > 0 && budgetBarDOM && percentDOM) {
+        let harcananYuzde = (data.buAyToplamGider / data.buAyToplamGelir) * 100;
+        percentDOM.innerText = "%" + Math.round(harcananYuzde);
+        if (harcananYuzde > 100) { 
+            budgetBarDOM.style.width = "100%"; 
+            budgetBarDOM.style.background = "linear-gradient(90deg, #f43f5e, #fb923c)"; 
+        } else { 
+            budgetBarDOM.style.width = harcananYuzde + "%"; 
+            budgetBarDOM.style.background = harcananYuzde > 80 ? "linear-gradient(90deg, #f59e0b, #f43f5e)" : "var(--brand-gradient)"; 
+        }
+    } else if(budgetBarDOM) { 
+        budgetBarDOM.style.width = "0%"; 
+        percentDOM.innerText = "%0"; 
+    }
+
+    // 6. GEÇEN AYA GÖRE TREND BADGE
+    const trendDOM = document.getElementById('aylikTrend'); 
+    if(trendDOM) {
+        trendDOM.style.display = "inline-flex"; 
+        if(data.gecenAyToplamGider > 0) { 
+            let fark = data.buAyToplamGider - data.gecenAyToplamGider; 
+            let yuzde = Math.abs((fark / data.gecenAyToplamGider) * 100).toFixed(1); 
+            if (fark > 0) { 
+                trendDOM.className = "trend-badge tabular-nums trend-bad"; 
+                trendDOM.innerText = "Geçen aya göre %" + yuzde + " fazla ↑"; 
+            } else if (fark < 0) { 
+                trendDOM.className = "trend-badge tabular-nums trend-good"; 
+                trendDOM.innerText = "Geçen aya göre %" + yuzde + " az ↓"; 
+            } else { 
+                trendDOM.className = "trend-badge tabular-nums"; 
+                trendDOM.innerText = "Geçen ayla aynı ━"; 
+                trendDOM.style.background = "rgba(255,255,255,0.06)"; 
+                trendDOM.style.color = "#fff"; 
+            } 
+        } else { 
+            trendDOM.className = "trend-badge"; 
+            trendDOM.innerText = "Geçen ay verisi yok"; 
+            trendDOM.style.background = "rgba(255,255,255,0.04)"; 
+            trendDOM.style.color = "var(--text-muted)"; 
+        }
+    }
+
+    // 7. BU AYKİ İŞLEMLER LİSTESİ (aHTML)
+    let islemData = data.buAyIslemler || data.sonIslemler; 
+    let aHTML = "";
+    if(islemData && islemData.length > 0) { 
+        islemData.forEach(islem => { 
+            let isaret = "-"; let bgClass = "rgba(244, 63, 94, 0.15)"; let colorClass = "var(--rose)"; 
+            if (islem.tur === "Gelir") {
+                isaret = "+"; bgClass = "rgba(16, 185, 129, 0.15)"; colorClass = "var(--emerald)";
+            } else if (islem.tur === "Transfer") {
+                isaret = "⇄"; bgClass = "rgba(148, 163, 184, 0.15)"; colorClass = "#cbd5e1"; 
+            } else if (islem.tur === "Borç_Odeme") {
+                isaret = "✓"; bgClass = "rgba(59, 130, 246, 0.15)"; colorClass = "var(--blue)"; 
+            }
+            aHTML += `<div class="t-row" style="padding: 12px 0;"><div class="t-details" style="min-width:0; padding-right:10px;"><div class="t-name" style="font-size:14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${islem.kalem}</div><div class="t-meta tabular-nums" style="font-size:11px;">${islem.tarih} • ${islem.odeme}</div></div><div class="t-amt tabular-nums" style="background:${bgClass}; color:${colorClass}; padding:4px 8px; border-radius:8px; font-size:13px; font-weight:700; flex-shrink:0;">${isaret} ${formatTL(islem.tutar)}</div></div>`; 
+        }); 
+    } else { 
+        aHTML = `<div style="text-align:center; color:var(--text-muted); padding: 15px 0; font-size:13px;">Bu ay henüz işlem kaydı yok.</div>`; 
+    }
+    setHtml('aylik-islemler-container', aHTML);
+}
 
                     // Yaklaşan Sabitler Bölümü
                     let yHTML = "";
