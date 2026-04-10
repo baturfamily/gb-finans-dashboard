@@ -1041,7 +1041,6 @@
             apiIstekAt({ action: "yeni_hareket", tur: document.getElementById('h-tur').value, kategori: "Değişken", kalem: kalem, yontem: document.getElementById('h-yontem').value, tutar: tutar, tarih: getFormattedDateTime('h-tarih') }, 'btn-submit-harcama');
         }
 
-        // MEVCUT FONKSİYONU DEĞİŞTİR: Sabitleri çekerken tutarı da saklamamız lazım.
         async function loadSabitlerAndShow(sectionId, selectId, title) {
             const ev = event.currentTarget; const orig = ev.innerHTML; ev.innerHTML = `<span class="spinner"></span>...`; vibe();
             try {
@@ -1068,7 +1067,6 @@
             ev.innerHTML = orig;
         }
 
-        // YENİ EKLENECEK FONKSİYONLAR:
         function toggleParcaliOdeme() {
             const sekil = document.getElementById('so-odeme-sekli').value;
             const tekAlan = document.getElementById('so-tek-hesap-alani');
@@ -1101,7 +1099,7 @@
                 <select class="form-control parca-hesap" style="padding: 10px; font-size: 13px;">
                     <option value="Ziraat">Ziraat</option>
                     <option value="İş Bankası">İş Bankası</option>
-                    <option value="Yapıkredi">YapıKredi</option>
+                    <option value="YapıKredi">YapıKredi</option>
                     <option value="Kredi Kartı">Kredi Kartı</option>
                     <option value="Nakit">Nakit</option>
                 </select>
@@ -1166,21 +1164,6 @@
             }
         }
         
-        async function loadSabitlerAndShow(sectionId, selectId, title) {
-            const ev = event.currentTarget; const orig = ev.innerHTML; ev.innerHTML = `<span class="spinner"></span>...`; vibe();
-            try {
-                const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: "sabitleri_getir" }) });
-                const result = await res.json();
-                if(result.status === "success") {
-                    const sel = document.getElementById(selectId); sel.innerHTML = "";
-                    result.data.forEach(k => { sel.innerHTML += `<option value="${k.satir}">${k.kalem} - ₺${k.tutar} (${k.kalan_ay} Ay)</option>`; });
-                    if(result.data.length === 0) sel.innerHTML = `<option value="">Aktif kural bulunamadı.</option>`;
-                    showSection(sectionId, title);
-                }
-            } catch(e) { alert("Sabitler çekilemedi. İnternetinizi kontrol edin."); }
-            ev.innerHTML = orig;
-        }
-        
         function submitSabitOnayla() {
             const kuralSatir = document.getElementById('so-kural').value;
             const sekil = document.getElementById('so-odeme-sekli').value;
@@ -1191,6 +1174,15 @@
                 action: "sabit_onayla",
                 satir: kuralSatir,
                 odeme_sekli: sekil
+            };
+
+            // KURŞUN GEÇİRMEZ ÇEVİRİCİ: Ekranda ne yazarsa yazsın, veritabanına doğru ismi gönderir.
+            const fixBankaIsmi = (isim) => {
+                if(!isim) return "";
+                let i = isim.trim();
+                if(i === "İş Bankası" || i === "Isbankasi" || i === "İsbankası" || i === "isbankasi") return "İsbankasi";
+                if(i === "YapıKredi" || i === "Yapı Kredi" || i === "yapıkredi") return "Yapıkredi";
+                return i;
             };
 
             if(sekil === 'parcali') {
@@ -1214,8 +1206,7 @@
                         row.querySelector('.parca-tutar').classList.add('error');
                         hataVar = true;
                     } else {
-                        // Eğer her şeye rağmen boşsa "Bilinmiyor" yazsın ki sorunu anında görelim
-                        parcalar.push({ yontem: yontem || "Bilinmiyor", tutar: tutarVal });
+                        parcalar.push({ yontem: fixBankaIsmi(yontem), tutar: tutarVal });
                     }
                 });
 
@@ -1224,13 +1215,12 @@
                 
                 payload.parcalar = parcalar;
             } else {
-                // TEK HESAP İÇİN GÜVENLİ OKUMA
                 let tekYontem = document.getElementById('so-yontem').value;
                 if(!tekYontem || tekYontem.trim() === "") {
                    const tekSpan = document.getElementById('so-tek-hesap-alani').querySelector('.custom-select-trigger span');
                    if(tekSpan) tekYontem = tekSpan.innerText;
                 }
-                payload.kullanilan_yontem = tekYontem;
+                payload.kullanilan_yontem = fixBankaIsmi(tekYontem);
             }
 
             apiIstekAt(payload, 'btn-submit-sabit-onayla');
@@ -1347,10 +1337,13 @@
                     animateValue("val-net-servet", window.currentStats.netServet, 1200);
                     animateValueUSD("val-net-servet-usd", window.currentStats.netServetUSD, 1200);
 
+                    // KMH'ları listeden filtreliyoruz (Sadece görsel liste ve menüler için gizlenir, ana toplamlarda kalır)
+                    let safBorclarListe = data.borclarListe ? data.borclarListe.filter(b => !b.isim.includes("(KMH)")) : [];
+
                     // --- Form Açılır Menülerini Doldurma (Borçlar ve Varlıklar için) ---
                     let borcHTMLOptions = `<option value="">-- Borç Seçin --</option>`;
                     let varlikHTMLOptions = `<option value="">-- Varlık Seçin --</option>`;
-                    if(data.borclarListe) data.borclarListe.forEach(b => borcHTMLOptions += `<option value="${b.isim}">${b.isim}</option>`);
+                    safBorclarListe.forEach(b => borcHTMLOptions += `<option value="${b.isim}">${b.isim}</option>`);
                     if(data.varliklarListe) data.varliklarListe.forEach(v => varlikHTMLOptions += `<option value="${v.isim}">${v.isim}</option>`);
                     borcHTMLOptions += `<option value="_yeni_">+ Yeni Borç Gir (Listede Yok)</option>`;
                     varlikHTMLOptions += `<option value="_yeni_">+ Yeni Varlık Gir (Listede Yok)</option>`;
@@ -1364,12 +1357,20 @@
                     varlikHTML += `<div style="margin-top:14px; font-size:13px; color:var(--text-muted); border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 12px; display: flex; justify-content: space-between; align-items: center;"><span style="font-weight:600; color:#cbd5e1;">Toplam Varlık:</span><span class="tabular-nums" style="color:#fff; font-weight:800; font-size:16px; letter-spacing:-0.2px;">${formatTL(toplamVarlik)}</span></div>`;
                     setHtml('varlik-listesi', varlikHTML);
 
-                    let toplamBorcDagilim = data.toplamBorc || 0; let borcHTML = '';
-                    if (data.borclarListe && data.borclarListe.length > 0) {
-                        data.borclarListe.sort((a, b) => b.tutar - a.tutar);
-                        data.borclarListe.forEach(b => { let yuzde = toplamBorcDagilim > 0 ? Math.round((b.tutar / toplamBorcDagilim) * 100) : 0; borcHTML += `<div class="list-row" style="padding: 8px 0; border:none;"><div style="width: 100%;"><div style="display:flex; justify-content:space-between; margin-bottom:6px;"><span class="list-label" style="font-size:14px; color:var(--text-muted);">${b.isim} <span style="font-size:11px; margin-left:6px; color:var(--rose); opacity: 0.8;">%${yuzde}</span></span><span class="list-value tabular-nums text-red" style="font-size:14px;">${formatTL(b.tutar)}</span></div><div style="width: 100%; background: rgba(255,255,255,0.05); height: 4px; border-radius: 2px; overflow: hidden;"><div style="width: ${yuzde}%; background: var(--rose); height: 100%; border-radius: 2px;"></div></div></div></div>`; });
-                        borcHTML += `<div style="margin-top:14px; font-size:13px; color:var(--text-muted); border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 12px; display: flex; justify-content: space-between; align-items: center;"><span style="font-weight:600; color:#cbd5e1;">Toplam Borç:</span><span class="tabular-nums" style="color:#fff; font-weight:800; font-size:16px; letter-spacing:-0.2px;">${formatTL(toplamBorcDagilim)}</span></div>`;
-                    } else { borcHTML = `<div style="text-align:center; color:var(--emerald); font-size:13px; padding:10px 0;">Sıfır Borç! 🎉</div>`; }
+                    let safBorcToplam = 0;
+                    safBorclarListe.forEach(b => safBorcToplam += b.tutar);
+                    let borcHTML = '';
+                    
+                    if (safBorclarListe.length > 0) {
+                        safBorclarListe.sort((a, b) => b.tutar - a.tutar);
+                        safBorclarListe.forEach(b => { 
+                            let yuzde = safBorcToplam > 0 ? Math.round((b.tutar / safBorcToplam) * 100) : 0; 
+                            borcHTML += `<div class="list-row" style="padding: 8px 0; border:none;"><div style="width: 100%;"><div style="display:flex; justify-content:space-between; margin-bottom:6px;"><span class="list-label" style="font-size:14px; color:var(--text-muted);">${b.isim} <span style="font-size:11px; margin-left:6px; color:var(--rose); opacity: 0.8;">%${yuzde}</span></span><span class="list-value tabular-nums text-red" style="font-size:14px;">${formatTL(b.tutar)}</span></div><div style="width: 100%; background: rgba(255,255,255,0.05); height: 4px; border-radius: 2px; overflow: hidden;"><div style="width: ${yuzde}%; background: var(--rose); height: 100%; border-radius: 2px;"></div></div></div></div>`; 
+                        });
+                        borcHTML += `<div style="margin-top:14px; font-size:13px; color:var(--text-muted); border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 12px; display: flex; justify-content: space-between; align-items: center;"><span style="font-weight:600; color:#cbd5e1;">Dağılım Toplamı:</span><span class="tabular-nums" style="color:#fff; font-weight:800; font-size:16px; letter-spacing:-0.2px;">${formatTL(safBorcToplam)}</span></div>`;
+                    } else { 
+                        borcHTML = `<div style="text-align:center; color:var(--emerald); font-size:13px; padding:10px 0;">Sıfır Borç! 🎉</div>`; 
+                    }
                     setHtml('borc-listesi', borcHTML);
 
                     setHtml('val-kasa', formatTL(data.toplamKasa)); setHtml('val-borc', formatTL(data.toplamBorc)); setHtml('val-borc-acil', formatTL(data.toplamCanYakan)); setHtml('val-borc-planli', formatTL(data.toplamPlanli)); setHtml('val-tahmini-faiz', formatTL(data.tahminiFaiz || 0)); setHtml('val-toplam-odenen-faiz', formatTL(data.toplamOdenenFaiz || 0)); setHtml('val-faiz-yk', formatTL(data.faizYKB || 0)); setHtml('val-faiz-is', formatTL(data.faizIs || 0)); setHtml('val-faiz-kk', formatTL(data.faizKK || 0)); setHtml('val-kart-toplam', formatTL(data.kartToplam)); setHtml('val-kart-donemici', formatTL(data.kartDonemIci || 0)); setHtml('val-kart-buay', formatTL(data.kartBuAy)); setHtml('val-kart-gelecek', formatTL(data.kartGelecek)); 
