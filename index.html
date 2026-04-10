@@ -937,7 +937,8 @@
                 if (span && span.innerText !== "Seçiniz...") {
                     // Borç/Varlık listesindeki "Nev Kredisi - ₺17.650" formatını böl, sadece ismi al
                     let rawText = span.innerText.trim();
-                    if(rawText.includes(" - ₺")) return rawText.split(" - ₺")[0].trim();
+                    // KMH ekini temizle ki banka bakiyesiyle tam eşleşsin
+                    if(rawText.includes(" (KMH)")) rawText = rawText.replace(" (KMH)", "").trim();
                     return rawText;
                 }
             }
