@@ -1242,6 +1242,15 @@
             if(id === 'section-harcama') { 
                 setNow('h-tarih'); 
                 document.getElementById('h-tur').value = "Gider"; 
+
+                if(id === 'section-duzenli') {
+                // Sekme UI'ını Gider olarak sıfırla
+                if(document.querySelectorAll('#duzenli-segment .segment-btn').length > 0) {
+                    document.querySelectorAll('#duzenli-segment .segment-btn')[0].classList.add('active');
+                    document.querySelectorAll('#duzenli-segment .segment-btn')[1].classList.remove('active');
+                }
+                setDuzenliFilter('Gider', document.querySelectorAll('#duzenli-segment .segment-btn')[0]);
+            }
                 
                 // Sekme UI'ını Gider olarak sıfırla
                 if(document.querySelectorAll('#h-segment .segment-btn').length > 0) {
@@ -2345,8 +2354,9 @@ if(document.getElementById('t-giris')) document.getElementById('t-giris').value 
             vibe(); currentDuzenliType = type;
             document.querySelectorAll('#duzenli-segment .segment-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
+            // 🌟 Taksit seçeneği eklendi
             let html = type === 'Gelir' ? '<option value="Gelir">Düzenli Gelir (Maaş vb.)</option>' : 
-                       '<option value="Fatura">Fatura / Abonelik</option><option value="Kredi">Banka Kredisi</option><option value="Sabit Gider">Diğer Sabit Gider</option>';
+                       '<option value="Fatura">Fatura / Abonelik</option><option value="Taksit">Taksitli Alışveriş</option><option value="Kredi">Banka Kredisi</option><option value="Sabit Gider">Diğer Sabit Gider</option>';
             setHtml('du-tur', html);
             document.getElementById('du-yontem').innerHTML = type === 'Gelir' ? window.vadesizOptions : window.hesapOptions;
             refreshCustomSelect(document.getElementById('du-tur'));
