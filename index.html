@@ -1876,15 +1876,22 @@
                     if (data.bankalar && data.bankalar.length > 0) {
                         let kartOptions = `<option value="">-- Kart Seçin --</option>`;
                         
+                        // 🌟 GÜNCELLEME: Kredi Kartlarını Üste Almak İçin İkiye Böldük 🌟
+                        let krediKartlariHTML = "";
+                        let digerHesaplarHTML = "";
+                        
                         data.bankalar.forEach(banka => {
-                            window.hesapOptions += `<option value="${banka.isim}">${banka.isim}</option>`;
-                            if(banka.tur !== 'Kredi Kartı') {
+                            if(banka.tur === 'Kredi Kartı') {
+                                krediKartlariHTML += `<option value="${banka.isim}">${banka.isim}</option>`;
+                                kartOptions += `<option value="${banka.isim}">${banka.isim}</option>`;
+                            } else {
+                                digerHesaplarHTML += `<option value="${banka.isim}">${banka.isim}</option>`;
                                 window.vadesizOptions += `<option value="${banka.isim}">${banka.isim}</option>`;
                             }
-                            if(banka.tur === 'Kredi Kartı') {
-                                kartOptions += `<option value="${banka.isim}">${banka.isim}</option>`;
-                            }
                         });
+                        
+                        // Kredi kartları üstte, vadesiz/nakit altta olacak şekilde birleştiriyoruz
+                        window.hesapOptions = krediKartlariHTML + digerHesaplarHTML;
                         
                         let kartDurumOptions = `<option value="hepsi">Tüm Kartlar (Özet)</option>`;
                         window.kartlarVerisi.forEach(k => {
