@@ -2133,6 +2133,8 @@
                     updateTrends(0, document.querySelector('.time-btn.active')); grafigiCizDoughnut(data.pastaGrafik, data.buAyToplamGider);
                 } else { throw new Error("API hatası"); }
             } catch (error) { 
+                // 🌟 DEDEKTİF KODU BURADA BAŞLIYOR 🌟
+                alert("Arayüz hatası oluştu: \n" + error.message + "\n\nSatır: " + error.stack);
                 console.error("Dashboard Veri Çekme Hatası:", error);
                 document.getElementById('baglanti-durumu').innerText = "Hata (Sayfayı Yenileyin)"; 
                 document.getElementById('baglanti-durumu').style.color = "var(--rose)"; 
