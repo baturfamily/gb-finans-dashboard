@@ -1846,7 +1846,7 @@
                     
                     const now = new Date();
                     setText('header-date', now.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }) + " " + gunler[now.getDay()]);
-                    setText('last-update', "Son: " +toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'}));
+                    setText('last-update', "Son: " + now.toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'}));
 
                     window.tarihceData = data.tarihce || [];
                     window.currentStats = { netServet: data.netServet, toplamBorc: data.toplamBorc, toplamCanYakan: data.toplamCanYakan, toplamPlanli: data.toplamPlanli, tahminiFaiz: data.tahminiFaiz, toplamKasa: data.toplamKasa, kartToplam: data.kartToplam, kartLimit: data.kartLimit, kartKullanilabilir: data.kartKullanilabilir, kartDoluluk: data.kartDoluluk, kartDonemIci: data.kartDonemIci, kartGelecek: data.kartGelecek, netServetUSD: data.netServetUSD, usdRate: data.usdRate || 1 };
