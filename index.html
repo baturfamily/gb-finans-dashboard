@@ -238,8 +238,8 @@
         .swap-btn { position: absolute; right: 10px; top: 32px; background: rgba(255,255,255,0.1); border: none; color: #fff; width: 34px; height: 34px; border-radius: 17px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 2;}
         .swap-btn:active { transform: scale(0.9); background: rgba(255,255,255,0.2); }
         
-        .inline-action-btn { background: rgba(16, 185, 129, 0.15); color: var(--emerald); border: 1px solid rgba(16, 185, 129, 0.3); padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; margin-left: 8px;}
-        .inline-action-btn:active { background: rgba(16, 185, 129, 0.3); }
+        .inline-action-btn { background: rgba(16, 185, 129, 0.15); color: var(--emerald); border: 1px solid rgba(16, 185, 129, 0.3); padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; margin-left: 8px; transition: 0.2s;}
+        .inline-action-btn:active { background: rgba(16, 185, 129, 0.3); transform: scale(0.95); }
         
         .custom-select-wrapper { position: relative; width: 100%; margin-bottom: 16px; }
         .form-group .custom-select-wrapper { margin-bottom: 0; }
@@ -689,7 +689,13 @@
 
                 <div style="display:none; grid-template-columns:1fr 1fr; gap:10px;" id="grp-sabit-detay">
                     <div class="form-group"><label>Ödeme/Yatma Günü</label><input type="text" inputmode="numeric" id="h-gun" class="form-control" placeholder="Ayın Kaçı? (1-31)"></div>
-                    <div class="form-group"><label>Süresi (Kalan Ay)</label><input type="text" id="h-sure" class="form-control" placeholder="Sayı veya Süresiz"></div>
+                    <div class="form-group">
+                        <label style="display:flex; justify-content:space-between; align-items:center;">
+                            Süresi (Ay)
+                            <span onclick="document.getElementById('h-sure').value='Süresiz'; document.getElementById('h-sure').style.borderColor='var(--emerald)';" style="background:rgba(16, 185, 129, 0.15); color:var(--emerald); padding:2px 8px; border-radius:6px; font-size:10px; cursor:pointer; font-weight:700; transition:0.2s;">∞ Süresiz Yap</span>
+                        </label>
+                        <input type="text" id="h-sure" class="form-control" placeholder="Sayı veya Süresiz" oninput="this.style.borderColor='';">
+                    </div>
                 </div>
 
                 <button class="btn-submit" id="btn-submit-harcama" onclick="submitMasterForm()">İşlemi Kaydet</button>
@@ -834,7 +840,13 @@
 
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
                     <div class="form-group"><label>Ayın Kaçı?</label><input type="text" inputmode="numeric" id="sg-gun" class="form-control" placeholder="1-31"></div>
-                    <div class="form-group"><label>Kalan Ay</label><input type="text" id="sg-sure" class="form-control" placeholder="Sayı veya Süresiz"></div>
+                    <div class="form-group">
+                        <label style="display:flex; justify-content:space-between; align-items:center;">
+                            Kalan Ay
+                            <span onclick="document.getElementById('sg-sure').value='Süresiz'; document.getElementById('sg-sure').style.borderColor='var(--emerald)';" style="background:rgba(16, 185, 129, 0.15); color:var(--emerald); padding:2px 8px; border-radius:6px; font-size:10px; cursor:pointer; font-weight:700; transition:0.2s;">∞ Süresiz Yap</span>
+                        </label>
+                        <input type="text" id="sg-sure" class="form-control" placeholder="Sayı veya Süresiz" oninput="this.style.borderColor='';">
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -887,6 +899,8 @@
         const API_URL = "https://script.google.com/macros/s/AKfycbyf4VwhjJ7fpf82W-56eWCRQEsmkMlGDP5FZmWN8NJwwaCU_zkDA-N103srUOJ6gd0wnQ/exec"; 
         
         let expenseChartInstance = null; window.tarihceData = []; window.currentStats = {};
+        window.hesapOptions = ""; window.vadesizOptions = ""; // 🌟 GELİR İÇİN GÜVENLİ HESAP LİSTESİ
+
         const gunler = ["Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi"];
         const EYE_OPEN = `<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>`;
         const EYE_CLOSED = `<path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/>`;
@@ -1060,10 +1074,26 @@
             const lblKalem = document.getElementById('label-h-kalem');
             const tags = document.getElementById('tags-h-kalem');
             const inputKalem = document.getElementById('h-kalem');
+            
+            const hYontem = document.getElementById('h-yontem');
+            const prevYontem = getCustomVal('h-yontem');
 
-            // Başlıklar
-            lblYontem.innerText = tur === 'Gider' ? 'Hangi hesaptan çıkacak?' : 'Hangi hesaba girecek?';
-            lblKalem.innerText = tur === 'Gider' ? 'Nereye harcadın? / Ne Aldın?' : 'Nereden geldi?';
+            // 🌟 GÜNCELLEME 1: GELİR SEÇİLİRSE KREDİ KARTLARINI GİZLE 🌟
+            if (tur === 'Gelir') {
+                hYontem.innerHTML = window.vadesizOptions || "";
+                lblYontem.innerText = 'Hangi hesaba girecek?';
+                lblKalem.innerText = 'Nereden geldi?';
+            } else {
+                hYontem.innerHTML = window.hesapOptions || "";
+                lblYontem.innerText = 'Hangi hesaptan çıkacak?';
+                lblKalem.innerText = 'Nereye harcadın? / Ne Aldın?';
+            }
+            
+            let found = false;
+            Array.from(hYontem.options).forEach(o => { if(o.value === prevYontem) found = true; });
+            if(found) hYontem.value = prevYontem;
+            else if(hYontem.options.length > 0) hYontem.selectedIndex = 0;
+            refreshCustomSelect(hYontem);
 
             // Görünürlük
             grpTaksit.style.display = altTur === 'Taksitli' ? 'block' : 'none';
@@ -1295,8 +1325,10 @@
                     const sel = document.getElementById(selectId); sel.innerHTML = "";
                     
                     let filteredData = result.data;
+                    
+                    // 🌟 GÜNCELLEME 3: TAKSİTLER ONAY BEKLEYENLER LİSTESİNDEN GİZLENDİ 🌟
                     if(sectionId === 'section-sabit-onayla') {
-                        filteredData = result.data.filter(k => k.durum === 'Aktif');
+                        filteredData = result.data.filter(k => k.durum === 'Aktif' && k.tur !== 'Taksit');
                     }
                     
                     filteredData.forEach(k => { 
@@ -1328,7 +1360,7 @@
             const select = document.getElementById('so-kural');
             const opt = select.options[select.selectedIndex];
             if(!opt || !opt.value) {
-                document.getElementById('so-referans-tutar').innerText = "₺0,00";
+                document.getElementById('so-referans-tutar').innerHTML = "₺0,00";
                 document.getElementById('so-guncel-tutar').value = "";
                 return;
             }
@@ -1336,7 +1368,8 @@
             const dataTutar = opt.getAttribute('data-tutar');
             const tur = opt.getAttribute('data-tur');
 
-            document.getElementById('so-referans-tutar').innerText = formatTL(parseSaha(dataTutar));
+            // 🌟 GÜNCELLEME 4: HTML FORMATLI SPAN YAZISI DÜZELTİLDİ (innerHTML kullanıldı) 🌟
+            document.getElementById('so-referans-tutar').innerHTML = formatTL(parseSaha(dataTutar));
             document.getElementById('so-guncel-tutar').value = dataTutar;
 
             document.getElementById('lbl-so-yontem').innerText = tur === 'Gelir' ? 'Paranın Gireceği Hesap' : 'Paranın Çıktığı Hesap';
@@ -1360,6 +1393,13 @@
 
         function addParca() {
             const container = document.getElementById('so-parcalar-container');
+            
+            // 🌟 GÜNCELLEME 5: MAX 5 PARÇA LİMİTİ EKLENDİ 🌟
+            if(container.querySelectorAll('.parca-satiri').length >= 5) {
+                alert("En fazla 5 parçaya bölebilirsiniz.");
+                return;
+            }
+
             const row = document.createElement('div');
             row.className = 'parca-satiri';
             row.style.cssText = "display: grid; grid-template-columns: 1.5fr 1fr auto; gap: 8px; margin-bottom: 10px; align-items: start;";
@@ -1405,8 +1445,6 @@
             const kuralSatir = getCustomVal('so-kural');
             if(!kuralSatir) return markError('so-kural');
             if(confirm("Bu işlemi bu ay için pas geçmek (atlamak) istediğinize emin misiniz? Bütçeye işlenmeyecektir.")) {
-                // Not: Henüz backend 'sabit_pas_gec' desteklemiyor ama payload hazır.
-                // Şimdilik tutarı 0 olarak onaylatarak aynı mantığı kurabiliriz (Backend destekleyene kadar)
                 apiIstekAt({ action: "sabit_onayla", satir: kuralSatir, odeme_sekli: "parcali", parcalar: [{ yontem: "Sistem", tutar: 0 }] }, 'btn-submit-pas-gec');
             }
         }
@@ -1430,7 +1468,7 @@
             let payload = { 
                 action: "sabit_onayla", 
                 satir: kuralSatir, 
-                odeme_sekli: "parcali", // Hile: Yeni tutarın geçmesi için her şeyi parçalı gönderiyoruz
+                odeme_sekli: "parcali", 
                 kalici_guncelle: isKalici,
                 yeni_tutar: parseSaha(guncelTutarStr)
             };
@@ -1465,6 +1503,12 @@
         // ================= KART BORCU & BORÇ ÖDE (ESKİ MANTIK KORUNDU) =================
         function addParcaKartBorc() {
             const container = document.getElementById('kbo-parcalar-container');
+            
+            if(container.querySelectorAll('.parca-satiri-kartborc').length >= 5) {
+                alert("En fazla 5 parçaya bölebilirsiniz.");
+                return;
+            }
+
             const row = document.createElement('div');
             row.className = 'parca-satiri-kartborc';
             row.style.cssText = "display: grid; grid-template-columns: 1.5fr 1fr auto; gap: 8px; margin-bottom: 10px; align-items: start;";
@@ -1553,6 +1597,12 @@
 
         function addParcaBorc() {
             const container = document.getElementById('bo-parcalar-container');
+            
+            if(container.querySelectorAll('.parca-satiri-borc').length >= 5) {
+                alert("En fazla 5 parçaya bölebilirsiniz.");
+                return;
+            }
+
             const row = document.createElement('div');
             row.className = 'parca-satiri-borc';
             row.style.cssText = "display: grid; grid-template-columns: 1.5fr 1fr auto; gap: 8px; margin-bottom: 10px; align-items: start;";
@@ -1807,12 +1857,18 @@
                     // 🌟 KREDİ KARTI DURUMU KARTI İÇİN HAFIZA 🌟
                     window.kartlarVerisi = data.kartlarDetayli || [];
                     
+                    // 🌟 GÜNCELLEME 1 İÇİN GLOBAL LİSTE OLUŞTURMA 🌟
+                    window.hesapOptions = "";
+                    window.vadesizOptions = "";
+                    
                     if (data.bankalar && data.bankalar.length > 0) {
-                        let hesapOptions = "";
                         let kartOptions = `<option value="">-- Kart Seçin --</option>`;
                         
                         data.bankalar.forEach(banka => {
-                            hesapOptions += `<option value="${banka.isim}">${banka.isim}</option>`;
+                            window.hesapOptions += `<option value="${banka.isim}">${banka.isim}</option>`;
+                            if(banka.tur !== 'Kredi Kartı') {
+                                window.vadesizOptions += `<option value="${banka.isim}">${banka.isim}</option>`;
+                            }
                             if(banka.tur === 'Kredi Kartı') {
                                 kartOptions += `<option value="${banka.isim}">${banka.isim}</option>`;
                             }
@@ -1835,11 +1891,18 @@
                                     const spanTxt = menuEl.parentElement?.querySelector('.custom-select-trigger span');
                                     if (spanTxt && spanTxt.innerText !== "Seçiniz...") eskiSecim = spanTxt.innerText;
                                 }
-                                menuEl.innerHTML = hesapOptions;
+                                
+                                // Gider Ekle kısmındaysak ve "Gelir" seçiliyse sadece vadesizleri doldur
+                                if(id === 'h-yontem' && getCustomVal('h-tur') === 'Gelir') {
+                                    menuEl.innerHTML = window.vadesizOptions;
+                                } else {
+                                    menuEl.innerHTML = window.hesapOptions;
+                                }
+
                                 let varMi = false;
                                 Array.from(menuEl.options).forEach(opt => { if(opt.value === eskiSecim) varMi = true; });
                                 if(varMi) menuEl.value = eskiSecim;
-                                else menuEl.selectedIndex = 0;
+                                else if(menuEl.options.length > 0) menuEl.selectedIndex = 0;
                                 refreshCustomSelect(menuEl);
                             }
                         });
