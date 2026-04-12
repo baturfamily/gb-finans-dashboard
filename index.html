@@ -144,6 +144,11 @@
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
 
+        /* 🌟 GÜNCELLEME: YENİ SEKMELİ YAPI STİLLERİ 🌟 */
+        .segment-control { display: flex; background: rgba(0,0,0,0.3); border-radius: 12px; padding: 4px; margin-bottom: 16px; border: 1px solid rgba(255,255,255,0.05); }
+        .segment-btn { flex: 1; text-align: center; padding: 10px 0; font-size: 13px; font-weight: 600; color: var(--text-muted); cursor: pointer; border-radius: 8px; transition: all 0.2s; }
+        .segment-btn.active { background: rgba(255,255,255,0.1); color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+
         /* FAB ve Modal Stilleri */
         .fab-btn {
             position: fixed; bottom: calc(env(safe-area-inset-bottom) + 20px); right: 20px; z-index: 999;
@@ -530,21 +535,17 @@
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
                         <span>⏳ Bekleyenleri Onayla</span>
                     </div>
-                    <div class="action-card" onclick="openSectionLive(event, 'section-borc-ode', 'Borç Öde')">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-                        <span>Borç Öde</span>
+                    <div class="action-card" onclick="openSectionLive(event, 'section-ozel-borc', 'Şahıs/Özel Borç İşlemleri')">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+                        <span>Özel Borç İşlemleri</span>
                     </div>
                     <div class="action-card" onclick="showSection('section-transfer', 'Hesaplar Arası Transfer')">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg>
                         <span>Transfer Yap</span>
                     </div>
-                    <div class="action-card" onclick="openSectionLive(event, 'section-borc-guncelle', 'Borç Ekle / Güncelle')">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
-                        <span>Borç Ekle/Güncelle</span>
-                    </div>
                     <div class="action-card" onclick="loadSabitlerAndShow('section-sabit-guncelle', 'sg-kural', 'Düzenli Kayıtları Yönet')">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                        <span>Düzenli Kayıtları Yönet</span>
+                        <span>Düzenli Kayıt Yönet</span>
                     </div>
                     <div class="action-card" onclick="openSectionLive(event, 'section-varlik-guncelle', 'Varlık Değeri Güncelle')">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
@@ -639,7 +640,6 @@
 
             <div id="section-kart-limit-guncelle" class="form-section">
                 <span class="back-link" onclick="showSection('section-kart-merkezi', '💳 Kredi Kartı İşlemleri')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Kart İşlemlerine Dön</span>
-                
                 <div class="form-group"><label>Hangi Kartın Limiti Güncellenecek?</label><select id="kl-secim" class="form-control"></select></div>
                 <div class="form-group"><label>Yeni Toplam Limit (₺)</label><input type="text" inputmode="decimal" id="kl-yeni-limit" class="form-control" placeholder="Örn: 250000"></div>
                 <button class="btn-submit" id="btn-submit-limit-guncelle" onclick="submitLimitGuncelle()">Limiti Güncelle</button>
@@ -647,7 +647,6 @@
 
             <div id="section-kart-ekstre-guncelle" class="form-section">
                 <span class="back-link" onclick="showSection('section-kart-merkezi', '💳 Kredi Kartı İşlemleri')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Kart İşlemlerine Dön</span>
-                
                 <div class="form-group"><label>Hangi Kartın Ekstresi Değişecek?</label><select id="keg-secim" class="form-control"></select></div>
                 <div class="form-group"><label>Yeni Ekstre Kesim Günü (Ayın Kaçı?)</label><input type="text" inputmode="numeric" id="keg-yeni-gun" class="form-control" placeholder="Örn: 1-31 arası bir sayı"></div>
                 <button class="btn-submit" id="btn-submit-ekstre-guncelle" onclick="submitEkstreGuncelle()">Ekstreyi Güncelle</button>
@@ -704,14 +703,25 @@
             <div id="section-sabit-onayla" class="form-section">
                 <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Geri Dön</span>
                 
+                <div class="segment-control" style="margin-bottom: 16px;" id="so-segment">
+                    <div class="segment-btn active" onclick="setSabitFilter('fatura', this)">📄 Faturalar</div>
+                    <div class="segment-btn" onclick="setSabitFilter('diger', this)">🏦 Diğer (Kira/Kredi vb.)</div>
+                </div>
+
                 <div class="form-group">
                     <label>Bekleyen İşlemi Seçin</label>
                     <select id="so-kural" class="form-control" onchange="onKuralChange()"></select>
                 </div>
 
-                <div style="background: rgba(59, 130, 246, 0.1); border: 1px dashed rgba(59, 130, 246, 0.3); padding: 12px; border-radius: 12px; margin-bottom: 16px; text-align:center;">
+                <div style="background: rgba(59, 130, 246, 0.1); border: 1px dashed rgba(59, 130, 246, 0.3); padding: 12px; border-radius: 12px; margin-bottom: 8px; text-align:center;">
                     <div style="font-size: 11px; color: var(--blue); font-weight: 700; margin-bottom: 4px; letter-spacing: 0.5px;">KAYITLI / GEÇEN AYKİ TUTAR</div>
                     <div style="font-size: 22px; font-weight: 800; color: #fff;" id="so-referans-tutar">₺0,00</div>
+                </div>
+
+                <div style="text-align:right; margin-bottom: 16px;">
+                    <span onclick="submitPasGec()" style="color: var(--rose); font-size: 12px; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; background: rgba(244, 63, 94, 0.1); padding: 4px 10px; border-radius: 8px;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 4 15 12 5 20"></polygon><line x1="19" y1="5" x2="19" y2="19"></line></svg> İşlemi Bu Ay Pas Geç
+                    </span>
                 </div>
 
                 <div class="form-group">
@@ -746,54 +756,67 @@
                         <span style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Hedef: <span id="so-hedef-tutar" style="color:#fff; font-weight:800;" class="tabular-nums">₺0</span></span>
                         <span style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Kalan: <span id="so-kalan-tutar" style="color:var(--rose); font-weight:800;" class="tabular-nums">₺0</span></span>
                     </div>
-
                     <div id="so-parcalar-container"></div>
-                    
                     <button onclick="addParca()" style="background: rgba(255,255,255,0.05); border: 1px dashed rgba(255,255,255,0.2); color: #cbd5e1; width: 100%; padding: 12px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 10px; transition: 0.2s;">
                         + Yeni Hesap / Parça Ekle
                     </button>
                 </div>
 
-                <div style="display: flex; gap: 10px; margin-top: 5px;">
-                     <button class="btn-submit" style="background: rgba(255,255,255,0.05); color: #cbd5e1; border: 1px solid rgba(255,255,255,0.1); flex: 1; margin:0; font-size:13px;" id="btn-submit-pas-gec" onclick="submitPasGec()">Bu Ayı Pas Geç</button>
-                     <button class="btn-submit" id="btn-submit-sabit-onayla" style="flex: 2; margin:0;" onclick="submitSabitOnayla()">Onayla ve Kaydet</button>
-                </div>
+                <button class="btn-submit" id="btn-submit-sabit-onayla" onclick="submitSabitOnayla()">Onayla ve Kaydet</button>
             </div>
 
-            <div id="section-borc-ode" class="form-section">
+            <div id="section-ozel-borc" class="form-section">
                 <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Geri Dön</span>
-                <div class="form-group"><label>Tarih ve Saat</label><input type="datetime-local" id="bo-tarih" class="form-control"></div>
-                <div class="form-group">
-                    <label>Hangi Borcu Ödüyorsun?</label>
-                    <select id="bo-secim" class="form-control" onchange="toggleYeniBorc()"></select>
-                    <input type="text" id="bo-isim-yeni" class="form-control" placeholder="Yeni borcun adını yazın..." style="display:none; margin-top:8px;">
-                </div>
-                <div class="form-group"><label>Ödenen Toplam Tutar (₺)</label><input type="text" inputmode="decimal" id="bo-tutar" class="form-control" placeholder="Örn: 500" oninput="hesaplaKalanParcaliBorc()"></div>
                 
-                <div class="form-group">
-                    <label>Ödeme Şekli</label>
-                    <select id="bo-odeme-sekli" class="form-control" onchange="toggleParcaliBorcOdeme()">
-                        <option value="tek">Tek Hesaptan Öde</option>
-                        <option value="parcali">Parça Parça (Farklı Hesaplardan) Öde</option>
-                    </select>
+                <div class="segment-control" style="margin-bottom: 16px;">
+                    <div class="segment-btn active" id="btn-tab-borc-ode" onclick="toggleOzelBorcTab('ode')">Mevcut Borcu Öde</div>
+                    <div class="segment-btn" id="btn-tab-borc-ekle" onclick="toggleOzelBorcTab('ekle')">Yeni Ekle / Güncelle</div>
                 </div>
 
-                <div id="bo-tek-hesap-alani">
-                    <div class="form-group"><label>Paranın Çıktığı Yer</label><select id="bo-yontem" class="form-control"></select></div>
-                </div>
-
-                <div id="bo-parcali-hesap-alani" style="display:none; background: rgba(0,0,0,0.2); padding: 16px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 16px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px dashed rgba(255,255,255,0.1);">
-                        <span style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Hedef: <span id="bo-hedef-tutar" style="color:#fff; font-weight:800;" class="tabular-nums">₺0</span></span>
-                        <span style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Kalan: <span id="bo-kalan-tutar" style="color:var(--rose); font-weight:800;" class="tabular-nums">₺0</span></span>
+                <div id="tab-borc-ode">
+                    <div class="form-group"><label>Tarih ve Saat</label><input type="datetime-local" id="bo-tarih" class="form-control"></div>
+                    <div class="form-group">
+                        <label>Hangi Borcu Ödüyorsun?</label>
+                        <select id="bo-secim" class="form-control" onchange="toggleYeniBorc()"></select>
+                        <input type="text" id="bo-isim-yeni" class="form-control" placeholder="Yeni borcun adını yazın..." style="display:none; margin-top:8px;">
                     </div>
-                    <div id="bo-parcalar-container"></div>
-                    <button onclick="addParcaBorc()" style="background: rgba(255,255,255,0.05); border: 1px dashed rgba(255,255,255,0.2); color: #cbd5e1; width: 100%; padding: 12px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 10px; transition: 0.2s;">
-                        + Yeni Hesap / Parça Ekle
-                    </button>
+                    <div class="form-group"><label>Ödenen Toplam Tutar (₺)</label><input type="text" inputmode="decimal" id="bo-tutar" class="form-control" placeholder="Örn: 500" oninput="hesaplaKalanParcaliBorc()"></div>
+                    
+                    <div class="form-group">
+                        <label>Ödeme Şekli</label>
+                        <select id="bo-odeme-sekli" class="form-control" onchange="toggleParcaliBorcOdeme()">
+                            <option value="tek">Tek Hesaptan Öde</option>
+                            <option value="parcali">Parça Parça (Farklı Hesaplardan) Öde</option>
+                        </select>
+                    </div>
+
+                    <div id="bo-tek-hesap-alani">
+                        <div class="form-group"><label>Paranın Çıktığı Yer</label><select id="bo-yontem" class="form-control"></select></div>
+                    </div>
+
+                    <div id="bo-parcali-hesap-alani" style="display:none; background: rgba(0,0,0,0.2); padding: 16px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 16px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px dashed rgba(255,255,255,0.1);">
+                            <span style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Hedef: <span id="bo-hedef-tutar" style="color:#fff; font-weight:800;" class="tabular-nums">₺0</span></span>
+                            <span style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Kalan: <span id="bo-kalan-tutar" style="color:var(--rose); font-weight:800;" class="tabular-nums">₺0</span></span>
+                        </div>
+                        <div id="bo-parcalar-container"></div>
+                        <button onclick="addParcaBorc()" style="background: rgba(255,255,255,0.05); border: 1px dashed rgba(255,255,255,0.2); color: #cbd5e1; width: 100%; padding: 12px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 10px; transition: 0.2s;">
+                            + Yeni Hesap / Parça Ekle
+                        </button>
+                    </div>
+
+                    <button class="btn-submit" id="btn-submit-borc-ode" onclick="submitBorcOde()">Borcu Öde</button>
                 </div>
 
-                <button class="btn-submit" id="btn-submit-borc-ode" onclick="submitBorcOde()">Borcu Öde</button>
+                <div id="tab-borc-ekle" style="display: none;">
+                    <div class="form-group">
+                        <label>Borç Adı</label>
+                        <select id="bg-secim" class="form-control" onchange="toggleYeniBorcGuncelle()"></select>
+                        <input type="text" id="bg-isim-yeni" class="form-control" placeholder="Yeni borcun adını yazın..." style="display:none; margin-top:8px;">
+                    </div>
+                    <div class="form-group"><label>Yeni Kalan Tutar (₺)</label><input type="text" inputmode="decimal" id="bg-tutar" class="form-control"></div>
+                    <button class="btn-submit" id="btn-submit-borc-guncelle" onclick="submitBorcGuncelle()">Borcu Kaydet/Güncelle</button>
+                </div>
             </div>
 
             <div id="section-transfer" class="form-section">
@@ -807,17 +830,6 @@
                 <div class="form-group"><label>Giriş Yapılan (Alan)</label><select id="t-giris" class="form-control"><option value="Ziraat">Ziraat</option><option value="İş Bankası">İş Bankası</option><option value="Yapıkredi">YapıKredi</option><option value="Nakit">Nakit</option></select></div>
                 <div class="form-group"><label>Transfer Tutarı (₺)</label><input type="text" inputmode="decimal" id="t-tutar" class="form-control" placeholder="Örn: 2500"></div>
                 <button class="btn-submit" id="btn-submit-transfer" onclick="submitTransfer()">Transfer Yap</button>
-            </div>
-
-            <div id="section-borc-guncelle" class="form-section">
-                <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Geri Dön</span>
-                <div class="form-group">
-                    <label>Borç Adı</label>
-                    <select id="bg-secim" class="form-control" onchange="toggleYeniBorcGuncelle()"></select>
-                    <input type="text" id="bg-isim-yeni" class="form-control" placeholder="Yeni borcun adını yazın..." style="display:none; margin-top:8px;">
-                </div>
-                <div class="form-group"><label>Yeni Kalan Tutar (₺)</label><input type="text" inputmode="decimal" id="bg-tutar" class="form-control"></div>
-                <button class="btn-submit" id="btn-submit-borc-guncelle" onclick="submitBorcGuncelle()">Borcu Güncelle</button>
             </div>
 
             <div id="section-sabit-guncelle" class="form-section">
@@ -899,7 +911,8 @@
         const API_URL = "https://script.google.com/macros/s/AKfycbyf4VwhjJ7fpf82W-56eWCRQEsmkMlGDP5FZmWN8NJwwaCU_zkDA-N103srUOJ6gd0wnQ/exec"; 
         
         let expenseChartInstance = null; window.tarihceData = []; window.currentStats = {};
-        window.hesapOptions = ""; window.vadesizOptions = ""; // 🌟 GELİR İÇİN GÜVENLİ HESAP LİSTESİ
+        window.hesapOptions = ""; window.vadesizOptions = ""; 
+        window.sabitDataRaw = []; // 🌟 FİLTRELEME İÇİN HAM DATA HAFIZASI
 
         const gunler = ["Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi"];
         const EYE_OPEN = `<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>`;
@@ -914,9 +927,7 @@
         function togglePrivacy(e) { if(e) e.stopPropagation(); vibe(); const body = document.body; body.classList.toggle('privacy-mode'); const isPrivacy = body.classList.contains('privacy-mode'); localStorage.setItem('privacyMode', isPrivacy ? "1" : "0"); document.getElementById('privacy-icon').innerHTML = isPrivacy ? EYE_CLOSED : EYE_OPEN; }
         function initAccordions() { document.querySelectorAll('.accordion').forEach(el => { if (el.id && localStorage.getItem(el.id) === "1") el.classList.add("collapsed"); }); checkPrivacyState(); }
 
-        document.addEventListener("DOMContentLoaded", () => {
-            initAccordions();
-        });
+        document.addEventListener("DOMContentLoaded", () => { initAccordions(); });
 
         function toggleAccordion(element) { element.classList.toggle("collapsed"); if(element.id) { localStorage.setItem(element.id, element.classList.contains("collapsed") ? "1" : "0"); } }
         function turkceEkBul(sayi) { sayi = parseInt(sayi); const sonRakam = sayi % 10; const sonIkiRakam = sayi % 100; if (sayi === 0) return "'ı"; if ([10,30,40,60,90].includes(sonIkiRakam)) return "'u"; if ([50,80].includes(sonIkiRakam)) return "'i"; if ([20,70].includes(sonIkiRakam)) return "'si"; switch (sonRakam) { case 1: case 5: case 8: return "'i"; case 2: case 7: return "'si"; case 3: case 4: return "'ü"; case 6: return "'sı"; case 9: return "'u"; default: return "'u"; } }
@@ -949,26 +960,14 @@
                 if (!rawStr) return 0;
                 if (rawStr instanceof Date) return rawStr.getTime();
                 let s = rawStr.toString().trim();
-                
-                if (s.includes('.')) {
-                    let parts = s.split(' ')[0].split('.');
-                    if (parts.length === 3) {
-                        return new Date(parseInt(parts[2], 10), parseInt(parts[1], 10) - 1, parseInt(parts[0], 10)).getTime();
-                    }
-                }
-                let t = new Date(s).getTime();
-                return isNaN(t) ? 0 : t;
+                if (s.includes('.')) { let parts = s.split(' ')[0].split('.'); if (parts.length === 3) return new Date(parseInt(parts[2], 10), parseInt(parts[1], 10) - 1, parseInt(parts[0], 10)).getTime(); }
+                let t = new Date(s).getTime(); return isNaN(t) ? 0 : t;
             }
             
-            const now = new Date(); 
-            const midnightToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+            const now = new Date(); const midnightToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
             const targetTime = midnightToday - ((days - 1) * 24 * 60 * 60 * 1000);
             
-            let gecmisKayitlar = window.tarihceData.filter(row => {
-                let t = parseTarihceDate(row[0]);
-                return t > 0 && t <= targetTime;
-            });
-
+            let gecmisKayitlar = window.tarihceData.filter(row => { let t = parseTarihceDate(row[0]); return t > 0 && t <= targetTime; });
             let bestRow = gecmisKayitlar.length > 0 ? gecmisKayitlar[gecmisKayitlar.length - 1] : window.tarihceData[0];
             if(!bestRow) return;
             
@@ -1034,9 +1033,6 @@
                 
                 const undoBtn = document.querySelector('.undo-btn');
                 if(undoBtn) undoBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle; margin-right:4px;"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg> Son Harcama/Ödemeyi Geri Al`;
-                
-                const pasGecBtn = document.getElementById('btn-submit-pas-gec');
-                if(pasGecBtn) { pasGecBtn.innerHTML = 'Bu Ayı Pas Geç'; pasGecBtn.style.background = "rgba(255,255,255,0.05)"; }
 
                 btn.innerHTML = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>`;
                 btn.style.background = "var(--brand-gradient)";
@@ -1078,7 +1074,6 @@
             const hYontem = document.getElementById('h-yontem');
             const prevYontem = getCustomVal('h-yontem');
 
-            // 🌟 GÜNCELLEME 1: GELİR SEÇİLİRSE KREDİ KARTLARINI GİZLE 🌟
             if (tur === 'Gelir') {
                 hYontem.innerHTML = window.vadesizOptions || "";
                 lblYontem.innerText = 'Hangi hesaba girecek?';
@@ -1095,11 +1090,9 @@
             else if(hYontem.options.length > 0) hYontem.selectedIndex = 0;
             refreshCustomSelect(hYontem);
 
-            // Görünürlük
             grpTaksit.style.display = altTur === 'Taksitli' ? 'block' : 'none';
             grpSabit.style.display = ['Fatura', 'Kredi', 'Gelir'].includes(altTur) ? 'grid' : 'none';
 
-            // Etiketler
             if (tur === 'Gelir') {
                 inputKalem.placeholder = 'Örn: Maaş, Kira Geliri, Ek Ders...';
                 tags.innerHTML = `
@@ -1123,7 +1116,6 @@
             }
         }
 
-        // Ana İşlem Dispatcher
         function submitMasterForm() {
             const tur = getCustomVal('h-tur');
             const altTur = getCustomVal('h-alt-tur');
@@ -1152,7 +1144,7 @@
                 let sabitTurPayload = altTur === 'Gelir' ? 'Gelir' : (altTur === 'Kredi' ? 'Kredi' : 'Fatura');
                 apiIstekAt({ action: "yeni_sabit", tur: sabitTurPayload, kalem: kalem, yontem: yontem, tutar: tutar, odeme_gunu: gun, kalan_ay: sure }, 'btn-submit-harcama');
             }
-            else { // Anlık (Tek Seferlik)
+            else { 
                 if(err) return;
                 apiIstekAt({ action: "yeni_hareket", tur: tur, kategori: "Değişken", kalem: kalem, yontem: yontem, tutar: tutar, taksit: 1, tarih: getFormattedDateTime('h-tarih') }, 'btn-submit-harcama');
             }
@@ -1175,6 +1167,22 @@
             const val = getCustomVal('vg-secim');
             document.getElementById('vg-isim-yeni').style.display = val === '_yeni_' ? 'block' : 'none';
             if(val === '_yeni_') document.getElementById('vg-isim-yeni').focus();
+        }
+
+        // 🌟 YENİ ŞAHIS/ÖZEL BORÇ TAB GEÇİŞ MOTORU 🌟
+        function toggleOzelBorcTab(tab) {
+            vibe();
+            if(tab === 'ode') {
+                document.getElementById('btn-tab-borc-ode').classList.add('active');
+                document.getElementById('btn-tab-borc-ekle').classList.remove('active');
+                document.getElementById('tab-borc-ode').style.display = 'block';
+                document.getElementById('tab-borc-ekle').style.display = 'none';
+            } else {
+                document.getElementById('btn-tab-borc-ode').classList.remove('active');
+                document.getElementById('btn-tab-borc-ekle').classList.add('active');
+                document.getElementById('tab-borc-ode').style.display = 'none';
+                document.getElementById('tab-borc-ekle').style.display = 'block';
+            }
         }
 
         async function openSectionLive(ev, sectionId, title) {
@@ -1206,16 +1214,20 @@
                 toggleParcaliKartBorcOdeme();
                 refreshCustomSelect(document.getElementById('kbo-odeme-sekli'));
             }
-            if(id === 'section-borc-ode') { 
+            if(id === 'section-ozel-borc') { 
                 document.getElementById('bo-secim').value = ''; 
+                document.getElementById('bg-secim').value = ''; 
                 document.getElementById('bo-isim-yeni').style.display = 'none'; 
+                document.getElementById('bg-isim-yeni').style.display = 'none'; 
                 setNow('bo-tarih'); 
                 document.getElementById('bo-odeme-sekli').value = 'tek';
                 toggleParcaliBorcOdeme();
                 refreshCustomSelect(document.getElementById('bo-odeme-sekli'));
+                refreshCustomSelect(document.getElementById('bo-secim'));
+                refreshCustomSelect(document.getElementById('bg-secim'));
+                toggleOzelBorcTab('ode');
             }
 
-            if(id === 'section-borc-guncelle') { document.getElementById('bg-secim').value = ''; document.getElementById('bg-isim-yeni').style.display = 'none'; }
             if(id === 'section-varlik-guncelle') { document.getElementById('vg-secim').value = ''; document.getElementById('vg-isim-yeni').style.display = 'none'; }
             if(id === 'section-yeni-hesap') { document.getElementById('yh-tur').value = "Banka"; }
             
@@ -1322,40 +1334,68 @@
                 const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: "sabitleri_getir" }) });
                 const result = await res.json();
                 if(result.status === "success") {
-                    const sel = document.getElementById(selectId); sel.innerHTML = "";
-                    
-                    let filteredData = result.data;
-                    
-                    // 🌟 GÜNCELLEME 3: TAKSİTLER ONAY BEKLEYENLER LİSTESİNDEN GİZLENDİ 🌟
-                    if(sectionId === 'section-sabit-onayla') {
-                        filteredData = result.data.filter(k => k.durum === 'Aktif' && k.tur !== 'Taksit');
-                    }
-                    
-                    filteredData.forEach(k => { 
-                        let label = `${k.kalem} - ₺${k.tutar} (${k.kalan_ay} Ay)`;
-                        if(k.durum !== "Aktif") label += " [İPTAL/BİTTİ]";
-                        sel.innerHTML += `<option value="${k.satir}" data-tur="${k.tur}" data-tutar="${k.tutar}" data-yontem="${k.yontem}" data-gun="${k.gun}" data-sure="${k.kalan_ay}" data-durum="${k.durum}">${label}</option>`; 
-                    });
-                    if(filteredData.length === 0) sel.innerHTML = `<option value="">Kayıt bulunamadı.</option>`;
-                    
-                    showSection(sectionId, title);
                     
                     if(sectionId === 'section-sabit-onayla') {
+                        // Taksitler hariç aktif olanları hafızaya al
+                        window.sabitDataRaw = result.data.filter(k => k.durum === 'Aktif' && k.tur !== 'Taksit');
+                        showSection(sectionId, title);
                         document.getElementById('so-odeme-sekli').value = 'tek';
                         document.getElementById('so-kalici-check').checked = false;
                         toggleParcaliOdeme();
                         refreshCustomSelect(document.getElementById('so-odeme-sekli'));
-                        setTimeout(onKuralChange, 100); // İlkini yükle
-                    }
-                    if(sectionId === 'section-sabit-guncelle') {
-                        setTimeout(doldurSabitGuncelleForm, 100);
+                        
+                        // Filtreyi varsayılan "Fatura" yap
+                        setSabitFilter('fatura', document.querySelector('#so-segment .segment-btn.active'));
+                    } else {
+                        const sel = document.getElementById(selectId); sel.innerHTML = "";
+                        let filteredData = result.data;
+                        
+                        filteredData.forEach(k => { 
+                            let label = `${k.kalem} - ₺${k.tutar} (${k.kalan_ay} Ay)`;
+                            if(k.durum !== "Aktif") label += " [İPTAL/BİTTİ]";
+                            sel.innerHTML += `<option value="${k.satir}" data-tur="${k.tur}" data-tutar="${k.tutar}" data-yontem="${k.yontem}" data-gun="${k.gun}" data-sure="${k.kalan_ay}" data-durum="${k.durum}">${label}</option>`; 
+                        });
+                        if(filteredData.length === 0) sel.innerHTML = `<option value="">Kayıt bulunamadı.</option>`;
+                        showSection(sectionId, title);
+                        
+                        if(sectionId === 'section-sabit-guncelle') {
+                            setTimeout(doldurSabitGuncelleForm, 100);
+                        }
                     }
                 }
             } catch(e) { alert("Kayıtlar çekilemedi. İnternetinizi kontrol edin."); }
-            ev.innerHTML = orig;
+            if (ev) ev.innerHTML = orig;
         }
 
-        // ================= BEKLEYENLERİ ONAYLA UX MOTORU =================
+        // 🌟 YENİ BEKLEYENLERİ ONAYLA FİLTRE MOTORU 🌟
+        function setSabitFilter(type, btnElement) {
+            vibe();
+            if(btnElement) {
+                document.querySelectorAll('#so-segment .segment-btn').forEach(btn => btn.classList.remove('active'));
+                btnElement.classList.add('active');
+            } else {
+                document.querySelectorAll('#so-segment .segment-btn')[0].classList.add('active');
+                document.querySelectorAll('#so-segment .segment-btn')[1].classList.remove('active');
+            }
+
+            const sel = document.getElementById('so-kural');
+            sel.innerHTML = "";
+            
+            let filteredData = window.sabitDataRaw.filter(k => {
+                if(type === 'fatura') return k.tur === 'Fatura';
+                return k.tur !== 'Fatura'; // Diğerleri (Sabit Gider, Kredi vs.)
+            });
+
+            filteredData.forEach(k => { 
+                let label = `${k.kalem} - ₺${k.tutar} (${k.kalan_ay} Ay)`;
+                sel.innerHTML += `<option value="${k.satir}" data-tur="${k.tur}" data-tutar="${k.tutar}" data-yontem="${k.yontem}" data-gun="${k.gun}" data-sure="${k.kalan_ay}" data-durum="${k.durum}">${label}</option>`; 
+            });
+            if(filteredData.length === 0) sel.innerHTML = `<option value="">Bu kategoride onay bekleyen işlem yok.</option>`;
+            
+            refreshCustomSelect(sel);
+            onKuralChange();
+        }
+
         function onKuralChange() {
             const select = document.getElementById('so-kural');
             const opt = select.options[select.selectedIndex];
@@ -1368,7 +1408,6 @@
             const dataTutar = opt.getAttribute('data-tutar');
             const tur = opt.getAttribute('data-tur');
 
-            // 🌟 GÜNCELLEME 4: HTML FORMATLI SPAN YAZISI DÜZELTİLDİ (innerHTML kullanıldı) 🌟
             document.getElementById('so-referans-tutar').innerHTML = formatTL(parseSaha(dataTutar));
             document.getElementById('so-guncel-tutar').value = dataTutar;
 
@@ -1394,7 +1433,6 @@
         function addParca() {
             const container = document.getElementById('so-parcalar-container');
             
-            // 🌟 GÜNCELLEME 5: MAX 5 PARÇA LİMİTİ EKLENDİ 🌟
             if(container.querySelectorAll('.parca-satiri').length >= 5) {
                 alert("En fazla 5 parçaya bölebilirsiniz.");
                 return;
@@ -1445,7 +1483,7 @@
             const kuralSatir = getCustomVal('so-kural');
             if(!kuralSatir) return markError('so-kural');
             if(confirm("Bu işlemi bu ay için pas geçmek (atlamak) istediğinize emin misiniz? Bütçeye işlenmeyecektir.")) {
-                apiIstekAt({ action: "sabit_onayla", satir: kuralSatir, odeme_sekli: "parcali", parcalar: [{ yontem: "Sistem", tutar: 0 }] }, 'btn-submit-pas-gec');
+                apiIstekAt({ action: "sabit_onayla", satir: kuralSatir, odeme_sekli: "parcali", parcalar: [{ yontem: "Sistem", tutar: 0 }] }, 'btn-submit-sabit-onayla');
             }
         }
 
@@ -1500,15 +1538,10 @@
             apiIstekAt(payload, 'btn-submit-sabit-onayla');
         }
 
-        // ================= KART BORCU & BORÇ ÖDE (ESKİ MANTIK KORUNDU) =================
+        // ================= KART BORCU & BORÇ ÖDE =================
         function addParcaKartBorc() {
             const container = document.getElementById('kbo-parcalar-container');
-            
-            if(container.querySelectorAll('.parca-satiri-kartborc').length >= 5) {
-                alert("En fazla 5 parçaya bölebilirsiniz.");
-                return;
-            }
-
+            if(container.querySelectorAll('.parca-satiri-kartborc').length >= 5) { alert("En fazla 5 parçaya bölebilirsiniz."); return; }
             const row = document.createElement('div');
             row.className = 'parca-satiri-kartborc';
             row.style.cssText = "display: grid; grid-template-columns: 1.5fr 1fr auto; gap: 8px; margin-bottom: 10px; align-items: start;";
@@ -1597,12 +1630,7 @@
 
         function addParcaBorc() {
             const container = document.getElementById('bo-parcalar-container');
-            
-            if(container.querySelectorAll('.parca-satiri-borc').length >= 5) {
-                alert("En fazla 5 parçaya bölebilirsiniz.");
-                return;
-            }
-
+            if(container.querySelectorAll('.parca-satiri-borc').length >= 5) { alert("En fazla 5 parçaya bölebilirsiniz."); return; }
             const row = document.createElement('div');
             row.className = 'parca-satiri-borc';
             row.style.cssText = "display: grid; grid-template-columns: 1.5fr 1fr auto; gap: 8px; margin-bottom: 10px; align-items: start;";
@@ -1846,6 +1874,8 @@
                     
                     const now = new Date();
                     setText('header-date', now.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }) + " " + gunler[now.getDay()]);
+                    
+                    // 🌟 ZAMAN BUG'I BURADA DÜZELTİLDİ 🌟
                     setText('last-update', "Son: " + now.toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'}));
 
                     window.tarihceData = data.tarihce || [];
@@ -1854,10 +1884,8 @@
                     animateValue("val-net-servet", window.currentStats.netServet, 1200);
                     animateValueUSD("val-net-servet-usd", window.currentStats.netServetUSD, 1200);
 
-                    // 🌟 KREDİ KARTI DURUMU KARTI İÇİN HAFIZA 🌟
                     window.kartlarVerisi = data.kartlarDetayli || [];
                     
-                    // 🌟 GÜNCELLEME 1 İÇİN GLOBAL LİSTE OLUŞTURMA 🌟
                     window.hesapOptions = "";
                     window.vadesizOptions = "";
                     
@@ -1874,7 +1902,6 @@
                             }
                         });
                         
-                        // KART DURUMU KARTI AÇILIR MENÜSÜNÜ DOLDUR
                         let kartDurumOptions = `<option value="hepsi">Tüm Kartlar (Özet)</option>`;
                         window.kartlarVerisi.forEach(k => {
                             kartDurumOptions += `<option value="${k.isim}">${k.isim}</option>`;
@@ -1892,7 +1919,6 @@
                                     if (spanTxt && spanTxt.innerText !== "Seçiniz...") eskiSecim = spanTxt.innerText;
                                 }
                                 
-                                // Gider Ekle kısmındaysak ve "Gelir" seçiliyse sadece vadesizleri doldur
                                 if(id === 'h-yontem' && getCustomVal('h-tur') === 'Gelir') {
                                     menuEl.innerHTML = window.vadesizOptions;
                                 } else {
@@ -1971,7 +1997,6 @@
 
                     setHtml('val-kasa', formatTL(data.toplamKasa)); setHtml('val-borc', formatTL(data.toplamBorc)); setHtml('val-borc-acil', formatTL(data.toplamCanYakan)); setHtml('val-borc-planli', formatTL(data.toplamPlanli)); setHtml('val-tahmini-faiz', formatTL(data.tahminiFaiz || 0)); setHtml('val-toplam-odenen-faiz', formatTL(data.toplamOdenenFaiz || 0)); setHtml('val-faiz-yk', formatTL(data.faizYKB || 0)); setHtml('val-faiz-is', formatTL(data.faizIs || 0)); setHtml('val-faiz-kk', formatTL(data.faizKK || 0)); 
                     
-                    // 🌟 KART DURUMU KARTINI DOLDUR (İLK AÇILIŞ İÇİN)
                     renderKartDurumu();
 
                     setText('val-nev-yuzde', "%" + (data.nevYuzde || 0)); if(document.getElementById('bar-nev')) document.getElementById('bar-nev').style.width = (data.nevYuzde || 0) + "%"; setHtml('val-nev-kalan', "(Kalan: " + formatTL(data.nevKalan || 0) + ")");
@@ -2099,7 +2124,7 @@
                         data.tumSabitlerListe.forEach(sabit => {
                             let stat = sabit.odendiMi ? `<span style="background:rgba(16, 185, 129, 0.15); color:var(--emerald); padding:2px 6px; border-radius:6px; font-size:10px;">Tamamlandı</span>` : `<span style="background:rgba(245, 158, 11, 0.15); color:var(--amber); padding:2px 6px; border-radius:6px; font-size:10px;">Bekliyor</span>`;
                             let rowOpacity = sabit.odendiMi ? "opacity: 0.5;" : "";
-                            let yonRenk = (sabit.tutar > 0) ? "text-red" : "text-green"; // Mantıken hepsi giderse kırmızıdır ama gelirler için ilerde değişebilir
+                            let yonRenk = (sabit.tutar > 0) ? "text-red" : "text-green";
                             if(sabit.odendiMi) odenenToplam += sabit.tutar; else odenecekToplam += sabit.tutar;
                             
                             tsHTML += `<div class="t-row" style="padding: 10px 0; ${rowOpacity}"><div class="t-details" style="min-width:0; padding-right:10px;"><div class="t-name" style="font-size:14px;">${sabit.kalem} <span style="font-size:11px; color:var(--text-muted); font-weight:normal; margin-left:4px;">(${sabit.yontem})</span></div><div class="t-meta tabular-nums" style="font-size:11px;">Ayın ${sabit.gun}${turkceEkBul(sabit.gun)} • ${sabit.kalanAy} Ay ${stat}</div></div><div class="t-amt tabular-nums ${yonRenk}" style="font-size:14px;">${formatTL(sabit.tutar)}</div></div>`;
@@ -2133,8 +2158,6 @@
                     updateTrends(0, document.querySelector('.time-btn.active')); grafigiCizDoughnut(data.pastaGrafik, data.buAyToplamGider);
                 } else { throw new Error("API hatası"); }
             } catch (error) { 
-                // 🌟 DEDEKTİF KODU BURADA BAŞLIYOR 🌟
-                alert("Arayüz hatası oluştu: \n" + error.message + "\n\nSatır: " + error.stack);
                 console.error("Dashboard Veri Çekme Hatası:", error);
                 document.getElementById('baglanti-durumu').innerText = "Hata (Sayfayı Yenileyin)"; 
                 document.getElementById('baglanti-durumu').style.color = "var(--rose)"; 
