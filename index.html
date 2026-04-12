@@ -822,10 +822,20 @@
                 <div class="form-group"><label>Tarih ve Saat</label><input type="datetime-local" id="t-tarih" class="form-control"></div>
                 <div class="form-group" style="position:relative;">
                     <label>Çıkış Yapılan (Gönderen)</label>
-                    <select id="t-cikis" class="form-control"><option value="İş Bankası">İş Bankası</option><option value="Ziraat">Ziraat</option><option value="Yapıkredi">YapıKredi</option><option value="Nakit">Nakit</option></select>
+                    <select id="t-cikis" class="form-control">
+    <option value="İş Bankası Hesap">İş Bankası Hesap</option>
+    <option value="Ziraat Hesap">Ziraat Hesap</option>
+    <option value="Yapıkredi Hesap">Yapıkredi Hesap</option>
+    <option value="Nakit">Nakit</option>
+</select>
                     <button class="swap-btn" onclick="swapTransfer()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21 16-4 4-4-4"/><path d="M17 20V4"/><path d="m3 8 4-4 4 4"/><path d="M7 4v16"/></svg></button>
                 </div>
-                <div class="form-group"><label>Giriş Yapılan (Alan)</label><select id="t-giris" class="form-control"><option value="Ziraat">Ziraat</option><option value="İş Bankası">İş Bankası</option><option value="Yapıkredi">YapıKredi</option><option value="Nakit">Nakit</option></select></div>
+                <div class="form-group"><label>Giriş Yapılan (Alan)</label><select id="t-giris" class="form-control">
+    <option value="Ziraat Hesap">Ziraat Hesap</option>
+    <option value="İş Bankası Hesap">İş Bankası Hesap</option>
+    <option value="Yapıkredi Hesap">Yapıkredi Hesap</option>
+    <option value="Nakit">Nakit</option>
+</select></div>
                 <div class="form-group"><label>Transfer Tutarı (₺)</label><input type="text" inputmode="decimal" id="t-tutar" class="form-control" placeholder="Örn: 2500"></div>
                 <button class="btn-submit" id="btn-submit-transfer" onclick="submitTransfer()">Transfer Yap</button>
             </div>
@@ -1245,9 +1255,9 @@
             if(id === 'section-varlik-guncelle') { document.getElementById('vg-secim').value = ''; document.getElementById('vg-isim-yeni').style.display = 'none'; }
             if(id === 'section-yeni-hesap') { document.getElementById('yh-tur').value = "Banka"; }
             
-            if(document.getElementById('h-yontem')) document.getElementById('h-yontem').value = "Kredi Kartı";
-            if(document.getElementById('t-cikis')) document.getElementById('t-cikis').value = "İş Bankası";
-            if(document.getElementById('t-giris')) document.getElementById('t-giris').value = "Ziraat";
+            if(document.getElementById('h-yontem')) document.getElementById('h-yontem').value = "Yapıkredi World"; // Veya hangi kartsa
+if(document.getElementById('t-cikis')) document.getElementById('t-cikis').value = "İş Bankası Hesap";
+if(document.getElementById('t-giris')) document.getElementById('t-giris').value = "Ziraat Hesap";
         }
 
         function fillInput(id, text) { vibe(); document.getElementById(id).value = text; }
