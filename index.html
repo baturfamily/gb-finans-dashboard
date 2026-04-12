@@ -1907,6 +1907,9 @@
                                     menuEl.innerHTML = window.vadesizOptions;
                                 } else if(id === 'du-yontem' && currentDuzenliType === 'Gelir') {
                                     menuEl.innerHTML = window.vadesizOptions;
+                                } else if(id === 't-cikis' || id === 't-giris') {
+                                    // 🌟 FİLTRE: Transfer ekranlarında sadece vadesiz hesapları/kasayı göster
+                                    menuEl.innerHTML = window.vadesizOptions;
                                 } else {
                                     menuEl.innerHTML = window.hesapOptions;
                                 }
