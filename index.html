@@ -527,10 +527,14 @@
 
             <div id="section-menu" class="form-section active">
                 <div class="action-grid">
-                    <div class="action-card" onclick="showSection('section-harcama', 'Yeni İşlem Ekle')">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>
-                        <span>➕ Yeni İşlem Ekle</span>
-                    </div>
+                    <div class="action-card" onclick="showSection('section-anlik', '⚡ Anlık Harcama / Gelir')" style="background: rgba(99, 102, 241, 0.1); border-color: rgba(99, 102, 241, 0.3);">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--blue);"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+    <span style="color: var(--blue);">Anlık İşlem Girişi</span>
+</div>
+<div class="action-card" onclick="showSection('section-duzenli', '📅 Yeni Düzenli Kayıt')">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    <span>Düzenli Kayıt Ekle</span>
+</div>
                     <div class="action-card" onclick="loadSabitlerAndShow('section-sabit-onayla', 'so-kural', 'Bekleyenleri Onayla')">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
                         <span>⏳ Bekleyenleri Onayla</span>
@@ -652,51 +656,67 @@
                 <button class="btn-submit" id="btn-submit-ekstre-guncelle" onclick="submitEkstreGuncelle()">Ekstreyi Güncelle</button>
             </div>
 
-            <div id="section-harcama" class="form-section">
-                <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Geri Dön</span>
-                <div class="form-group"><label>Tarih ve Saat</label><input type="datetime-local" id="h-tarih" class="form-control"></div>
-                
-                <div class="segment-control" style="margin-bottom: 16px;" id="h-segment">
-                    <div class="segment-btn active" onclick="setHarcamaFilter('Gider', this)">Gider (Çıkış)</div>
-                    <div class="segment-btn" onclick="setHarcamaFilter('Gelir', this)">Gelir (Giriş)</div>
-                </div>
-                
-                <select id="h-tur" style="display:none;"><option value="Gider">Gider</option><option value="Gelir">Gelir</option></select>
+            <div id="section-anlik" class="form-section">
+    <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Geri Dön</span>
+    
+    <div class="segment-control" style="margin-bottom: 16px;" id="anlik-segment">
+        <div class="segment-btn active" onclick="setAnlikFilter('Gider', this)">Gider</div>
+        <div class="segment-btn" onclick="setAnlikFilter('Gelir', this)">Gelir</div>
+    </div>
 
-                <div class="form-group">
-                    <label>İşlem Türü</label>
-                    <select id="h-alt-tur" class="form-control" onchange="updateFormDisplay()"></select>
-                </div>
+    <div class="form-group">
+        <label>Ne İçin / Nereden?</label>
+        <input type="text" id="an-kalem" class="form-control" placeholder="Örn: Kahve, Market, Bonus">
+    </div>
 
-                <div class="form-group">
-                    <label id="label-h-kalem">Ne / Nereden?</label>
-                    <input type="text" id="h-kalem" class="form-control" placeholder="Örn: Market">
-                    <div class="quick-tags" id="tags-h-kalem"></div>
-                </div>
-                
-                <div class="form-group">
-                    <label id="label-h-yontem">Hangi hesaptan çıkacak?</label>
-                    <select id="h-yontem" class="form-control"></select>
-                </div>
-                
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                    <div class="form-group"><label>Tutar (₺)</label><input type="text" inputmode="decimal" id="h-tutar" class="form-control" placeholder="Örn: 1500,50"></div>
-                    <div class="form-group" id="grp-taksit" style="display:none;"><label>Taksit Sayısı</label><input type="text" inputmode="numeric" id="h-taksit" class="form-control" placeholder="Örn: 5"></div>
-                </div>
+    <div class="form-group">
+        <label id="an-yontem-label">Ödeme Hesabı</label>
+        <select id="an-yontem" class="form-control"></select>
+    </div>
 
-                <div style="display:none; grid-template-columns:1fr 1fr; gap:10px;" id="grp-sabit-detay">
-                    <div class="form-group"><label>Ödeme/Yatma Günü</label><input type="text" inputmode="numeric" id="h-gun" class="form-control" placeholder="Ayın Kaçı? (1-31)"></div>
-                    <div class="form-group">
-                        <label style="display:flex; justify-content:space-between; align-items:center;">
-                            Süresi (Ay)
-                            <span onclick="document.getElementById('h-sure').value='Süresiz'; document.getElementById('h-sure').style.borderColor='var(--emerald)';" style="background:rgba(16, 185, 129, 0.15); color:var(--emerald); padding:2px 8px; border-radius:6px; font-size:10px; cursor:pointer; font-weight:700; transition:0.2s;">∞ Süresiz Yap</span>
-                        </label>
-                        <input type="text" id="h-sure" class="form-control" placeholder="Sayı veya Süresiz" oninput="this.style.borderColor='';">
-                    </div>
-                </div>
+    <div class="form-group">
+        <label>Tutar (₺)</label>
+        <input type="text" inputmode="decimal" id="an-tutar" class="form-control" placeholder="0,00">
+    </div>
 
-                <button class="btn-submit" id="btn-submit-harcama" onclick="submitMasterForm()">İşlemi Kaydet</button>
-            </div>
+    <button class="btn-submit" onclick="submitAnlik()">Şimdi Kaydet</button>
+</div>
+
+<div id="section-duzenli" class="form-section">
+    <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Geri Dön</span>
+    
+    <div class="segment-control" style="margin-bottom: 16px;" id="duzenli-segment">
+        <div class="segment-btn active" onclick="setDuzenliFilter('Gider', this)">Düzenli Gider</div>
+        <div class="segment-btn" onclick="setDuzenliFilter('Gelir', this)">Düzenli Gelir</div>
+    </div>
+
+    <div class="form-group">
+        <label>Kayıt Türü</label>
+        <select id="du-tur" class="form-control"></select>
+    </div>
+
+    <div class="form-group">
+        <label>Açıklama (Kalem Adı)</label>
+        <input type="text" id="du-kalem" class="form-control" placeholder="Örn: Kira, Netflix, Maaş">
+    </div>
+
+    <div class="form-group">
+        <label id="du-yontem-label">Ödeme Hesabı</label>
+        <select id="du-yontem" class="form-control"></select>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+        <div class="form-group"><label>Tutar (₺)</label><input type="text" inputmode="decimal" id="du-tutar" class="form-control"></div>
+        <div class="form-group"><label>Günü (1-31)</label><input type="text" inputmode="numeric" id="du-gun" class="form-control"></div>
+    </div>
+
+    <div class="form-group">
+        <label style="display:flex; justify-content:space-between;">Süresi (Ay) <span onclick="document.getElementById('du-sure').value='Süresiz'" style="color:var(--emerald); font-size:11px; cursor:pointer;">∞ Süresiz</span></label>
+        <input type="text" id="du-sure" class="form-control" placeholder="Örn: 12">
+    </div>
+
+    <button class="btn-submit" onclick="submitDuzenli()">Kuralı Oluştur</button>
+</div>
 
             <div id="section-sabit-onayla" class="form-section">
                 <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Geri Dön</span>
@@ -2306,6 +2326,50 @@ if(document.getElementById('t-giris')) document.getElementById('t-giris').value 
             wrapper.appendChild(trigger);
             wrapper.appendChild(optionsDiv);
             select.parentNode.insertBefore(wrapper, select.nextSibling);
+        }
+
+        let currentAnlikType = 'Gider';
+        let currentDuzenliType = 'Gider';
+
+        function setAnlikFilter(type, btn) {
+            vibe(); currentAnlikType = type;
+            document.querySelectorAll('#anlik-segment .segment-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('an-yontem-label').innerText = type === 'Gelir' ? 'Giriş Yapılacak Hesap' : 'Ödeme Hesabı';
+            // Gelirde kredi kartlarını gizle
+            document.getElementById('an-yontem').innerHTML = type === 'Gelir' ? window.vadesizOptions : window.hesapOptions;
+            refreshCustomSelect(document.getElementById('an-yontem'));
+        }
+
+        function setDuzenliFilter(type, btn) {
+            vibe(); currentDuzenliType = type;
+            document.querySelectorAll('#duzenli-segment .segment-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            let html = type === 'Gelir' ? '<option value="Gelir">Düzenli Gelir (Maaş vb.)</option>' : 
+                       '<option value="Fatura">Fatura / Abonelik</option><option value="Kredi">Banka Kredisi</option><option value="Sabit Gider">Diğer Sabit Gider</option>';
+            setHtml('du-tur', html);
+            document.getElementById('du-yontem').innerHTML = type === 'Gelir' ? window.vadesizOptions : window.hesapOptions;
+            refreshCustomSelect(document.getElementById('du-tur'));
+            refreshCustomSelect(document.getElementById('du-yontem'));
+        }
+
+        async function submitAnlik() {
+            const kalem = document.getElementById('an-kalem').value;
+            const tutar = document.getElementById('an-tutar').value;
+            const yontem = getCustomVal('an-yontem');
+            if(!kalem || !tutar) return alert("Eksik bilgi!");
+            apiIstekAt({ action: "yeni_hareket", tur: currentAnlikType, kategori: "Değişken", kalem: kalem, yontem: yontem, tutar: tutar, taksit: 1 }, 'fab-btn');
+        }
+
+        async function submitDuzenli() {
+            const tur = getCustomVal('du-tur');
+            const kalem = document.getElementById('du-kalem').value;
+            const yontem = getCustomVal('du-yontem');
+            const tutar = document.getElementById('du-tutar').value;
+            const gun = document.getElementById('du-gun').value;
+            const sure = document.getElementById('du-sure').value;
+            if(!kalem || !tutar || !gun) return alert("Eksik bilgi!");
+            apiIstekAt({ action: "yeni_sabit", tur: tur, kalem: kalem, yontem: yontem, tutar: tutar, odeme_gunu: gun, kalan_ay: sure }, 'fab-btn');
         }
 
         function initCustomSelects() {
