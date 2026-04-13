@@ -39,7 +39,7 @@
             padding-bottom: calc(env(safe-area-inset-bottom) + 110px); 
             overflow-y: auto; 
             overscroll-behavior-y: contain; 
-            min-height: 100vh; /* Ekran zıplama sorununu çözen anahtar kod */
+            min-height: 100vh;
         }
 
         body.modal-open { overflow: hidden; touch-action: none; }
@@ -365,8 +365,14 @@
                 </div>
                 <div class="accordion-content">
                     <div class="summary-grid">
-                        <div class="summary-item br-right"><span class="summary-label">Tahmini (Bu Ay)</span><span class="summary-val text-red sensitive-data" id="val-tahmini-faiz">₺0</span></div>
-                        <div class="summary-item"><span class="summary-label">Toplam Ödenen</span><span class="summary-val sensitive-data" id="val-toplam-odenen-faiz">₺0</span></div>
+                        <div class="summary-item br-right br-bottom"><span class="summary-label" style="color:var(--amber);">Tahmini Yük (Bu Ay)</span><span class="summary-val text-red sensitive-data tabular-nums" id="val-tahmini-faiz">₺0</span><div class="trend-box tabular-nums sensitive-data" id="trend-faiz" style="font-size:11px; margin-top:6px;"></div></div>
+                        <div class="summary-item br-bottom"><span class="summary-label" style="white-space: normal; line-height: 1.3; font-size: 12px; margin-bottom: 4px;">01.04.2026'dan İtibaren Toplam</span><span class="summary-val sensitive-data tabular-nums" id="val-toplam-odenen-faiz" style="color:#cbd5e1;">₺0</span></div>
+                        <div class="summary-item" style="grid-column: span 2; padding: 16px 12px 12px 12px;">
+                            <span class="summary-label" style="margin-bottom: 12px; color:#e2e8f0; font-size:12px; text-transform:uppercase; letter-spacing:0.5px;">Bu Ay Gerçekleşen (Ödenen) Faizler</span>
+                            <div class="list-row" style="padding: 8px 0; border-bottom: 1px dashed rgba(255,255,255,0.05);"><span class="list-label" style="font-size:14px; color:var(--text-muted);">YapıKredi KMH</span><span class="list-value tabular-nums text-red" style="font-size:15px;" id="val-faiz-yk">₺0</span></div>
+                            <div class="list-row" style="padding: 8px 0; border-bottom: 1px dashed rgba(255,255,255,0.05);"><span class="list-label" style="font-size:14px; color:var(--text-muted);">İş Bankası KMH</span><span class="list-value tabular-nums text-red" style="font-size:15px;" id="val-faiz-is">₺0</span></div>
+                            <div class="list-row" style="padding: 8px 0; border: none;"><span class="list-label" style="font-size:14px; color:var(--text-muted);">Kredi Kartı Faizi</span><span class="list-value tabular-nums text-red" style="font-size:15px;" id="val-faiz-kk">₺0</span></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -381,6 +387,21 @@
                         <div class="budget-amount tabular-nums sensitive-data" id="aylikGider">...</div>
                         <div class="budget-subtitle" id="budgetSubtitle">Kalan Bütçe</div>
                         <div class="budget-progress-container"><div class="budget-progress-bar" id="budgetBar"></div><div id="budgetPercent" class="tabular-nums">%0</div></div>
+                        <div class="budget-footer tabular-nums sensitive-data"><span id="butceDurum">Gelir: ₺0</span><span id="kalanBakiye">Harcama: ₺0</span></div>
+                        <div id="tasarruf-orani-badge" class="trend-badge tabular-nums" style="background: rgba(59, 130, 246, 0.15); color: var(--blue); border: 1px solid rgba(59, 130, 246, 0.2); margin-top: 8px;">Tasarruf: %0</div>
+                        <div id="aylikTrend" class="trend-badge tabular-nums" style="display: none;"></div>
+
+                        <div class="budget-footer tabular-nums sensitive-data" style="margin-top: 16px; padding-top: 14px; border-top: 1px dashed rgba(255,255,255,0.1); flex-direction: column; gap: 8px; text-align: left;">
+                            <div style="font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Ay Sonu Nakit Akışı</div>
+                            <div style="display: flex; justify-content: space-between;"><span style="font-size:14px; color:#cbd5e1;">Mevcut Kalan:</span><span id="mevcutKalanProjek" style="color: #fff; font-weight: 600; font-size:14px;">₺0,00</span></div>
+                            <div style="display: flex; justify-content: space-between;"><span style="font-size:14px; color:var(--text-muted);">Ödenecek Sabitler:</span><span id="gelecekSabitler" style="color: var(--rose); font-weight: 600; font-size:14px;">-₺0,00</span></div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); padding: 10px 12px; border-radius: 8px; margin-top: 4px; border: 1px solid rgba(255,255,255,0.05);"><span style="color: #f8fafc; font-size: 14px; font-weight:600;">Gerçek Özgür Para:</span><span id="ozgurPara" style="font-size: 17px; font-weight: 800;">₺0,00</span></div>
+                        </div>
+
+                        <div id="aylik-islemler-alani" class="sensitive-data" style="margin-top: 20px; text-align: left; border-top: 1px solid var(--border-color); padding-top: 16px;">
+                            <div style="font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:10px; text-transform:uppercase; letter-spacing:0.5px;">Bu Ayki Tüm İşlemler</div>
+                            <div class="custom-scrollbar" id="aylik-islemler-container" style="max-height: 250px; overflow-y: auto; overflow-x: hidden; padding-right: 8px; overscroll-behavior: contain;"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -446,8 +467,27 @@
                 <div class="accordion-content sensitive-data">
                     <select id="dashboard-kart-secim" class="form-control" onchange="renderKartDurumu()"></select>
                     <div style="margin-top:20px;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:13px;">
+                            <span style="color:var(--text-muted); font-weight:600;">Kullanılabilir Limit</span>
+                            <span id="val-kart-kullanilabilir" class="tabular-nums" style="color:var(--emerald); font-weight:800; font-size:15px;">₺0,00</span>
+                        </div>
                         <span id="val-kart-toplam" style="font-size:24px; font-weight:800;">₺0</span>
-                        <div class="progress-container" style="margin-top:10px;"><div class="progress-bar" id="bar-kart-limit"></div></div>
+                        <div id="trend-kart" class="trend-box tabular-nums sensitive-data" style="margin-top:4px; font-size:11px; display:block;"></div>
+                        <div class="progress-container" style="margin-top:10px;"><div class="progress-bar" id="bar-kart-limit" style="background:var(--brand-gradient);"></div></div>
+                        <div style="display:flex; justify-content:space-between; margin-top:8px; font-size:12px; color:var(--text-muted); font-weight:500;">
+                            <span>Toplam Limit: <span id="val-kart-limit" style="color:#cbd5e1;">₺0,00</span></span>
+                            <span id="val-kart-doluluk" style="background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 8px;">%0 Dolu</span>
+                        </div>
+                    </div>
+                    <div class="summary-grid" style="grid-template-columns: 1fr; gap: 2px; background: var(--border-color); border:none; margin-bottom:0; margin-top:15px;">
+                        <div style="background: var(--panel-bg); padding: 14px; display:flex; justify-content:space-between; align-items:center;">
+                            <span id="lbl-kart-donemici" style="font-size:13px; color:var(--text-muted); font-weight:500;">Dönem İçi (Bu Ay)</span>
+                            <span id="val-kart-donemici" class="tabular-nums" style="font-size:16px; font-weight:700; color:var(--rose);">₺0,00</span>
+                        </div>
+                        <div style="background: var(--panel-bg); padding: 14px; display:flex; justify-content:space-between; align-items:center;">
+                            <span id="lbl-kart-gelecek" style="font-size:13px; color:var(--text-muted); font-weight:500;">Gelecek Dönem</span>
+                            <span id="val-kart-gelecek" class="tabular-nums" style="font-size:16px; font-weight:700; color:var(--amber);">₺0,00</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -999,7 +1039,7 @@
             const el = document.getElementById(inputId); if(el) el.value = now.toISOString().slice(0,16);
         }
 
-        // 🌟 YENİ ALT MENÜ (TAB) DEĞİŞTİRİCİ MOTORU 🌟
+        // 🌟 5'Lİ ALT MENÜ (TAB) DEĞİŞTİRİCİ MOTORU 🌟
         function switchMainTab(tabId, el) {
             vibe();
             document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
