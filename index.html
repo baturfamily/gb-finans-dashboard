@@ -9,6 +9,7 @@
     
     <title>Finans Merkezi</title>
     <link rel="apple-touch-icon" href="https://i.ibb.co/mnN5B5k/Finans-Merkezi-kon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
@@ -36,7 +37,8 @@
             background-image: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.12) 0%, transparent 60%);
             background-attachment: fixed;
             color: var(--text-main); 
-            padding-bottom: calc(env(safe-area-inset-bottom) + 100px); 
+            /* Alt menü için padding-bottom artırıldı */
+            padding-bottom: calc(env(safe-area-inset-bottom) + 120px); 
             overflow-y: auto; 
             overscroll-behavior-y: contain; 
         }
@@ -176,7 +178,7 @@
             100% { box-shadow: 0 10px 25px rgba(99, 102, 241, 0.5), 0 0 0 0 rgba(99, 102, 241, 0); }
         }
         .fab-btn {
-            position: fixed; bottom: calc(env(safe-area-inset-bottom) + 20px); right: 20px; z-index: 999;
+            position: fixed; bottom: calc(env(safe-area-inset-bottom) + 80px); right: 20px; z-index: 999;
             width: 64px; height: 64px; border-radius: 32px; background: var(--brand-gradient);
             color: white; display: flex; justify-content: center; align-items: center;
             cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -313,6 +315,29 @@
         .custom-option:hover, .custom-option:active { background: rgba(255,255,255,0.06); }
         .custom-option.selected { color: var(--blue); font-weight: 600; background: rgba(59, 130, 246, 0.1); }
         .text-truncate { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* 🌟 TAB BAR & SECTION STYLES 🌟 */
+        .tab-section { display: none; animation: fadeInTab 0.3s ease-out; }
+        .tab-section.active { display: block; }
+        @keyframes fadeInTab { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: rgba(15, 17, 21, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            display: flex; justify-content: space-around;
+            padding: 12px 5px calc(12px + env(safe-area-inset-bottom));
+            border-top: 1px solid rgba(255, 255, 255, 0.08); z-index: 900;
+        }
+        .nav-item {
+            display: flex; flex-direction: column; align-items: center;
+            color: var(--text-muted); text-decoration: none; font-size: 10px; font-weight: 600; flex: 1; transition: 0.2s;
+        }
+        .nav-item i { font-size: 20px; margin-bottom: 4px; transition: transform 0.2s ease; }
+        .nav-item.active { color: var(--blue); }
+        .nav-item.active i { transform: translateY(-2px); }
+        .ai-empty { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+        .ai-empty i { font-size: 40px; margin-bottom: 15px; color: var(--amber); }
+
     </style>
 </head>
 <body>
@@ -347,206 +372,249 @@
     </div>
 
     <div class="content-container">
-        <div class="card main-stats accordion" id="acc-net-servet">
-            <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
-                <h3 style="color: rgba(255,255,255,0.7);">Net Servet</h3>
-                <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </div>
-            <div class="accordion-content">
-                <div class="amount-large tabular-nums sensitive-data" id="val-net-servet"><span style="font-size:0.7em; opacity:0.6;">₺</span> 0<span style="font-size:0.7em; opacity:0.6;">,00</span></div>
-                <div class="trend-box tabular-nums sensitive-data" id="trend-net-servet" style="margin-top:14px;"></div>
-                <div class="sensitive-data" style="margin-top: 16px; padding-top: 12px; border-top: 1px dashed rgba(255,255,255,0.1); display: flex; flex-direction: column; align-items: center; gap: 6px;">
-                    <div style="font-size: 11px; color: var(--text-muted); font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">Dolar Bazında Servet</div>
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <div class="tabular-nums" id="val-net-servet-usd" style="font-size: 20px; font-weight: 800; color: #cbd5e1;"><span style="font-size:0.8em; opacity:0.7; font-weight:600; margin-right:2px;">$</span>0<span style="font-size:0.8em; opacity:0.7; font-weight:600;">,00</span></div>
-                        <div class="trend-box tabular-nums" id="trend-net-servet-usd" style="margin-top:0; font-size: 11px;"></div>
-                    </div>
+        
+        <section id="section-ozet" class="tab-section active">
+            <div class="card main-stats accordion" id="acc-net-servet">
+                <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
+                    <h3 style="color: rgba(255,255,255,0.7);">Net Servet</h3>
+                    <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
                 </div>
-                <div id="varlik-dagilimi-alani" class="sensitive-data" style="margin-top: 20px; width: 100%; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px; text-align: left;">
-                    <div style="font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:12px; text-transform:uppercase; letter-spacing:0.5px;">Varlık Dağılımı</div>
-                    <div id="varlik-listesi"></div>
-                </div>
-                <div id="borc-dagilimi-alani" class="sensitive-data" style="margin-top: 20px; width: 100%; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px; text-align: left;">
-                    <div style="font-size:12px; font-weight:600; color:var(--rose); margin-bottom:12px; text-transform:uppercase; letter-spacing:0.5px;">Borç Dağılımı</div>
-                    <div id="borc-listesi"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="card accordion" id="acc-finansal-ozet">
-            <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
-                <h3><svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg> Finansal Özet</h3>
-                <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </div>
-            <div class="accordion-content">
-                <div class="summary-grid">
-                    <div class="summary-item br-right br-bottom"><span class="summary-label">Kasa</span><span class="summary-val text-green tabular-nums sensitive-data" id="val-kasa">₺ 0,00</span></div>
-                    <div class="summary-item br-bottom"><span class="summary-label">Genel Borç</span><span class="summary-val tabular-nums sensitive-data" id="val-borc">₺ 0,00</span><div class="trend-box tabular-nums sensitive-data" id="trend-borc" style="font-size:11px; margin-top:6px;"></div></div>
-                    <div class="summary-item br-right"><span class="summary-label" style="color:var(--rose);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:5px;"><path d="M12 2c0 0-5 6.5-5 11a5 5 0 0 0 10 0c0-4.5-5-11-5-11Z"/><path d="M12 13a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"/></svg> Can Yakan</span><span class="summary-val text-red tabular-nums sensitive-data" id="val-borc-acil">₺ 0,00</span><div class="trend-box tabular-nums sensitive-data" id="trend-can-yakan" style="font-size:11px; margin-top:6px;"></div></div>
-                    <div class="summary-item"><span class="summary-label">Planlı</span><span class="summary-val text-gray tabular-nums sensitive-data" id="val-borc-planli" style="color:#cbd5e1;">₺ 0,00</span><div class="trend-box tabular-nums sensitive-data" id="trend-planli" style="font-size:11px; margin-top:6px;"></div></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="card accordion" id="acc-faiz-durumu">
-            <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
-                <h3 style="color: var(--amber);"><svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> Faiz Yükü & Analizi</h3>
-                <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </div>
-            <div class="accordion-content">
-                <div class="summary-grid">
-                    <div class="summary-item br-right br-bottom"><span class="summary-label" style="color:var(--amber);">Tahmini Yük (Bu Ay)</span><span class="summary-val text-red tabular-nums sensitive-data" id="val-tahmini-faiz">₺ 0,00</span><div class="trend-box tabular-nums sensitive-data" id="trend-faiz" style="font-size:11px; margin-top:6px;"></div></div>
-                    <div class="summary-item br-bottom"><span class="summary-label" style="white-space: normal; line-height: 1.3; font-size: 12px; margin-bottom: 4px;">01.04.2026'dan İtibaren Toplam</span><span class="summary-val tabular-nums sensitive-data" id="val-toplam-odenen-faiz" style="color:#cbd5e1;">₺ 0,00</span></div>
-                    <div class="summary-item" style="grid-column: span 2; padding: 16px 12px 12px 12px;">
-                        <span class="summary-label" style="margin-bottom: 12px; color:#e2e8f0; font-size:12px; text-transform:uppercase; letter-spacing:0.5px;">Bu Ay Gerçekleşen (Ödenen) Faizler</span>
-                        <div class="list-row" style="padding: 8px 0; border-bottom: 1px dashed rgba(255,255,255,0.05);"><span class="list-label" style="font-size:14px; color:var(--text-muted);">YapıKredi KMH</span><span class="list-value tabular-nums text-red" style="font-size:15px;" id="val-faiz-yk">₺ 0,00</span></div>
-                        <div class="list-row" style="padding: 8px 0; border-bottom: 1px dashed rgba(255,255,255,0.05);"><span class="list-label" style="font-size:14px; color:var(--text-muted);">İş Bankası KMH</span><span class="list-value tabular-nums text-red" style="font-size:15px;" id="val-faiz-is">₺ 0,00</span></div>
-                        <div class="list-row" style="padding: 8px 0; border: none;"><span class="list-label" style="font-size:14px; color:var(--text-muted);">Kredi Kartı Faizi</span><span class="list-value tabular-nums text-red" style="font-size:15px;" id="val-faiz-kk">₺ 0,00</span></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="card accordion" id="acc-bankalar">
-            <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
-                <h3><svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg> Banka Hesaplarım</h3>
-                <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </div>
-            <div class="accordion-content sensitive-data" id="banka-listesi">
-                <div style="text-align:center; color:var(--text-muted); padding: 10px 0;"><span class="spinner" style="border-left-color: var(--text-muted);"></span>Yükleniyor...</div>
-            </div>
-        </div>
-
-        <div class="card accordion" id="acc-kredi-karti">
-            <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
-                <h3><svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> Kredi Kartı Durumu</h3>
-                <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </div>
-            <div class="accordion-content sensitive-data">
-                
-                <div class="form-group" style="margin-bottom: 12px; margin-top: -5px;">
-                    <select id="dashboard-kart-secim" class="form-control" onchange="renderKartDurumu()">
-                        <option value="hepsi">Tüm Kartlar (Özet)</option>
-                    </select>
-                </div>
-
-                <div style="margin-bottom: 20px; background: rgba(0,0,0,0.2); padding: 16px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.04);">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:13px;">
-                        <span style="color:var(--text-muted); font-weight:600;">Kullanılabilir Limit</span>
-                        <span id="val-kart-kullanilabilir" class="tabular-nums" style="color:var(--emerald); font-weight:800; font-size:15px;">₺0,00</span>
-                    </div>
-                    <div class="progress-container" style="height: 12px; background: rgba(255,255,255,0.1);">
-                        <div class="progress-bar" id="bar-kart-limit" style="width: 0%; background: var(--brand-gradient); border-radius: 12px; transition: width 1.5s cubic-bezier(0.1, 0.5, 0.1, 1);"></div>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; margin-top:8px; font-size:12px; color:var(--text-muted); font-weight:500;">
-                        <span>Toplam Limit: <span id="val-kart-limit" style="color:#cbd5e1;">₺0,00</span></span>
-                        <span id="val-kart-doluluk" style="background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 8px;">%0 Dolu</span>
-                    </div>
-                </div>
-
-                <div class="summary-grid" style="grid-template-columns: 1fr; gap: 2px; background: var(--border-color); border:none; margin-bottom:0;">
-                    <div style="background: var(--panel-bg); padding: 16px 14px; display:flex; justify-content:space-between; align-items:center;">
-                        <span style="font-size:14px; color:#e2e8f0; font-weight:600;">Toplam Güncel Borç</span>
-                        <div style="text-align:right;">
-                            <span id="val-kart-toplam" class="tabular-nums" style="font-size:19px; font-weight:800; color:#fff; letter-spacing:-0.5px;">₺0,00</span>
-                            <div id="trend-kart" class="trend-box tabular-nums sensitive-data" style="margin-top:4px; font-size:11px; display:block;"></div>
+                <div class="accordion-content">
+                    <div class="amount-large tabular-nums sensitive-data" id="val-net-servet"><span style="font-size:0.7em; opacity:0.6;">₺</span> 0<span style="font-size:0.7em; opacity:0.6;">,00</span></div>
+                    <div class="trend-box tabular-nums sensitive-data" id="trend-net-servet" style="margin-top:14px;"></div>
+                    <div class="sensitive-data" style="margin-top: 16px; padding-top: 12px; border-top: 1px dashed rgba(255,255,255,0.1); display: flex; flex-direction: column; align-items: center; gap: 6px;">
+                        <div style="font-size: 11px; color: var(--text-muted); font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">Dolar Bazında Servet</div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div class="tabular-nums" id="val-net-servet-usd" style="font-size: 20px; font-weight: 800; color: #cbd5e1;"><span style="font-size:0.8em; opacity:0.7; font-weight:600; margin-right:2px;">$</span>0<span style="font-size:0.8em; opacity:0.7; font-weight:600;">,00</span></div>
+                            <div class="trend-box tabular-nums" id="trend-net-servet-usd" style="margin-top:0; font-size: 11px;"></div>
                         </div>
                     </div>
-                    <div style="background: var(--panel-bg); padding: 14px; display:flex; justify-content:space-between; align-items:center;">
-                        <span id="lbl-kart-donemici" style="font-size:13px; color:var(--text-muted); font-weight:500;">Dönem İçi (Bu Ay)</span>
-                        <span id="val-kart-donemici" class="tabular-nums" style="font-size:16px; font-weight:700; color:var(--rose);">₺0,00</span>
+                    <div id="varlik-dagilimi-alani" class="sensitive-data" style="margin-top: 20px; width: 100%; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px; text-align: left;">
+                        <div style="font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:12px; text-transform:uppercase; letter-spacing:0.5px;">Varlık Dağılımı</div>
+                        <div id="varlik-listesi"></div>
                     </div>
-                    <div style="background: var(--panel-bg); padding: 14px; display:flex; justify-content:space-between; align-items:center;">
-                        <span id="lbl-kart-gelecek" style="font-size:13px; color:var(--text-muted); font-weight:500;">Gelecek Dönem</span>
-                        <span id="val-kart-gelecek" class="tabular-nums" style="font-size:16px; font-weight:700; color:var(--amber);">₺0,00</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="card accordion" id="acc-kredi-ilerleme">
-            <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
-                <h3><svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg> Kredi İlerlemeleri</h3>
-                <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </div>
-            <div class="accordion-content sensitive-data">
-                <div class="progress-group" style="margin-top: 0;">
-                    <div class="progress-label-group"><span>Nev Kredisi <span style="font-size:12px; color:var(--text-muted); font-weight:normal; margin-left:7px;" id="val-nev-kalan" class="tabular-nums"></span></span><span id="val-nev-yuzde" class="tabular-nums" style="color:var(--emerald); font-weight:700;">%0</span></div>
-                    <div class="progress-container"><div class="progress-bar" id="bar-nev" style="width: 0%; background-color: var(--emerald); box-shadow: 0 0 14px rgba(16, 185, 129, 0.5); animation: shimmerPulse 2.5s infinite linear;"></div></div>
-                </div>
-                <div class="progress-group">
-                    <div class="progress-label-group"><span>Ziraat Kredisi <span style="font-size:12px; color:var(--text-muted); font-weight:normal; margin-left:7px;" id="val-ziraat-kalan" class="tabular-nums"></span></span><span id="val-ziraat-yuzde" class="tabular-nums" style="color:var(--blue); font-weight:700;">%0</span></div>
-                    <div class="progress-container"><div class="progress-bar" id="bar-ziraat" style="width: 0%; background-color: var(--blue); box-shadow: 0 0 14px rgba(59, 130, 246, 0.5); animation: shimmerPulse 2.5s infinite linear;"></div></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="card accordion" id="acc-aylik-butce">
-            <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
-                <h3 style="text-align: center; width: 100%;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right:4px;"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 15h0M2 9.5h20"/></svg> Aylık Gider & Bütçe</h3>
-                <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </div>
-            <div class="accordion-content">
-                <div class="budget-module">
-                    <div class="budget-amount tabular-nums sensitive-data" id="aylikGider">Yükleniyor...</div>
-                    <div class="budget-subtitle" id="budgetSubtitle">Kalan / Aşılan Bütçe</div>
-                    <div class="budget-progress-container"><div class="budget-progress-bar" id="budgetBar"></div><div id="budgetPercent" class="tabular-nums">%0</div></div>
-                    <div class="budget-footer tabular-nums sensitive-data"><span id="butceDurum">Gelir: ₺0,00</span><span id="kalanBakiye">Kalan: ₺0,00</span></div>
-                    <div id="tasarruf-orani-badge" class="trend-badge tabular-nums" style="background: rgba(59, 130, 246, 0.15); color: var(--blue); border: 1px solid rgba(59, 130, 246, 0.2); margin-top: 8px;">Tasarruf: %0</div>
-                    <div id="aylikTrend" class="trend-badge tabular-nums" style="display: none;"></div>
-
-                    <div class="budget-footer tabular-nums sensitive-data" style="margin-top: 16px; padding-top: 14px; border-top: 1px dashed rgba(255,255,255,0.1); flex-direction: column; gap: 8px; text-align: left;">
-                        <div style="font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Ay Sonu Nakit Akışı</div>
-                        <div style="display: flex; justify-content: space-between;"><span style="font-size:14px; color:#cbd5e1;">Mevcut Kalan:</span><span id="mevcutKalanProjek" style="color: #fff; font-weight: 600; font-size:14px;">₺0,00</span></div>
-                        <div style="display: flex; justify-content: space-between;"><span style="font-size:14px; color:var(--text-muted);">Ödenecek Sabitler:</span><span id="gelecekSabitler" style="color: var(--rose); font-weight: 600; font-size:14px;">-₺0,00</span></div>
-                        <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); padding: 10px 12px; border-radius: 8px; margin-top: 4px; border: 1px solid rgba(255,255,255,0.05);"><span style="color: #f8fafc; font-size: 14px; font-weight:600;">Gerçek Özgür Para:</span><span id="ozgurPara" style="font-size: 17px; font-weight: 800;">₺0,00</span></div>
-                    </div>
-
-                    <div id="aylik-islemler-alani" class="sensitive-data" style="margin-top: 20px; text-align: left; border-top: 1px solid var(--border-color); padding-top: 16px;">
-                        <div style="font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:10px; text-transform:uppercase; letter-spacing:0.5px;">Bu Ayki Tüm İşlemler</div>
-                        <div class="custom-scrollbar" id="aylik-islemler-container" style="max-height: 250px; overflow-y: auto; overflow-x: hidden; padding-right: 8px; overscroll-behavior: contain;"></div>
+                    <div id="borc-dagilimi-alani" class="sensitive-data" style="margin-top: 20px; width: 100%; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px; text-align: left;">
+                        <div style="font-size:12px; font-weight:600; color:var(--rose); margin-bottom:12px; text-transform:uppercase; letter-spacing:0.5px;">Borç Dağılımı</div>
+                        <div id="borc-listesi"></div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="card accordion" id="acc-harcama-grafik">
-            <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
-                <h3 style="text-align: center; width: 100%;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right:4px;"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg> Aylık Gider Dağılımı</h3>
-                <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            <div class="card accordion" id="acc-finansal-ozet">
+                <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
+                    <h3><svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg> Finansal Özet</h3>
+                    <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+                <div class="accordion-content">
+                    <div class="summary-grid">
+                        <div class="summary-item br-right br-bottom"><span class="summary-label">Kasa</span><span class="summary-val text-green tabular-nums sensitive-data" id="val-kasa">₺ 0,00</span></div>
+                        <div class="summary-item br-bottom"><span class="summary-label">Genel Borç</span><span class="summary-val tabular-nums sensitive-data" id="val-borc">₺ 0,00</span><div class="trend-box tabular-nums sensitive-data" id="trend-borc" style="font-size:11px; margin-top:6px;"></div></div>
+                        <div class="summary-item br-right"><span class="summary-label" style="color:var(--rose);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:5px;"><path d="M12 2c0 0-5 6.5-5 11a5 5 0 0 0 10 0c0-4.5-5-11-5-11Z"/><path d="M12 13a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"/></svg> Can Yakan</span><span class="summary-val text-red tabular-nums sensitive-data" id="val-borc-acil">₺ 0,00</span><div class="trend-box tabular-nums sensitive-data" id="trend-can-yakan" style="font-size:11px; margin-top:6px;"></div></div>
+                        <div class="summary-item"><span class="summary-label">Planlı</span><span class="summary-val text-gray tabular-nums sensitive-data" id="val-borc-planli" style="color:#cbd5e1;">₺ 0,00</span><div class="trend-box tabular-nums sensitive-data" id="trend-planli" style="font-size:11px; margin-top:6px;"></div></div>
+                    </div>
+                </div>
             </div>
-            <div class="accordion-content"><div class="chart-box"><canvas id="expenseChart" class="sensitive-data"></canvas></div></div>
-        </div>
 
-        <div class="card accordion" id="acc-yaklasan">
-            <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
-                <h3><svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Yaklaşan Ödemeler (7 Gün)</h3>
-                <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            <div class="card accordion" id="acc-faiz-durumu">
+                <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
+                    <h3 style="color: var(--amber);"><svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> Faiz Yükü & Analizi</h3>
+                    <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+                <div class="accordion-content">
+                    <div class="summary-grid">
+                        <div class="summary-item br-right br-bottom"><span class="summary-label" style="color:var(--amber);">Tahmini Yük (Bu Ay)</span><span class="summary-val text-red tabular-nums sensitive-data" id="val-tahmini-faiz">₺ 0,00</span><div class="trend-box tabular-nums sensitive-data" id="trend-faiz" style="font-size:11px; margin-top:6px;"></div></div>
+                        <div class="summary-item br-bottom"><span class="summary-label" style="white-space: normal; line-height: 1.3; font-size: 12px; margin-bottom: 4px;">01.04.2026'dan İtibaren Toplam</span><span class="summary-val tabular-nums sensitive-data" id="val-toplam-odenen-faiz" style="color:#cbd5e1;">₺ 0,00</span></div>
+                        <div class="summary-item" style="grid-column: span 2; padding: 16px 12px 12px 12px;">
+                            <span class="summary-label" style="margin-bottom: 12px; color:#e2e8f0; font-size:12px; text-transform:uppercase; letter-spacing:0.5px;">Bu Ay Gerçekleşen (Ödenen) Faizler</span>
+                            <div class="list-row" style="padding: 8px 0; border-bottom: 1px dashed rgba(255,255,255,0.05);"><span class="list-label" style="font-size:14px; color:var(--text-muted);">YapıKredi KMH</span><span class="list-value tabular-nums text-red" style="font-size:15px;" id="val-faiz-yk">₺ 0,00</span></div>
+                            <div class="list-row" style="padding: 8px 0; border-bottom: 1px dashed rgba(255,255,255,0.05);"><span class="list-label" style="font-size:14px; color:var(--text-muted);">İş Bankası KMH</span><span class="list-value tabular-nums text-red" style="font-size:15px;" id="val-faiz-is">₺ 0,00</span></div>
+                            <div class="list-row" style="padding: 8px 0; border: none;"><span class="list-label" style="font-size:14px; color:var(--text-muted);">Kredi Kartı Faizi</span><span class="list-value tabular-nums text-red" style="font-size:15px;" id="val-faiz-kk">₺ 0,00</span></div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="accordion-content sensitive-data" id="yaklasan-listesi">
-                <div style="text-align:center; color:var(--text-muted); font-size: 15px; padding: 12px 0;"><span class="spinner" style="border-left-color: var(--text-muted);"></span>Analiz ediliyor...</div>
-            </div>
-        </div>
+        </section>
 
-        <div class="card accordion" id="acc-tum-sabitler">
-            <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
-                <h3><svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 22v-6h6"/></svg> Tüm Sabit İşlemlerim</h3>
-                <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </div>
-            <div class="accordion-content sensitive-data" id="sabitler-listesi">
-                <div style="text-align:center; color:var(--text-muted); font-size: 15px; padding: 12px 0;"><span class="spinner" style="border-left-color: var(--text-muted);"></span>Yükleniyor...</div>
-            </div>
-        </div>
+        <section id="section-islemler" class="tab-section">
+            <div class="card accordion" id="acc-aylik-butce">
+                <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
+                    <h3 style="text-align: center; width: 100%;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right:4px;"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 15h0M2 9.5h20"/></svg> Aylık Gider & Bütçe</h3>
+                    <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+                <div class="accordion-content">
+                    <div class="budget-module">
+                        <div class="budget-amount tabular-nums sensitive-data" id="aylikGider">Yükleniyor...</div>
+                        <div class="budget-subtitle" id="budgetSubtitle">Kalan / Aşılan Bütçe</div>
+                        <div class="budget-progress-container"><div class="budget-progress-bar" id="budgetBar"></div><div id="budgetPercent" class="tabular-nums">%0</div></div>
+                        <div class="budget-footer tabular-nums sensitive-data"><span id="butceDurum">Gelir: ₺0,00</span><span id="kalanBakiye">Kalan: ₺0,00</span></div>
+                        <div id="tasarruf-orani-badge" class="trend-badge tabular-nums" style="background: rgba(59, 130, 246, 0.15); color: var(--blue); border: 1px solid rgba(59, 130, 246, 0.2); margin-top: 8px;">Tasarruf: %0</div>
+                        <div id="aylikTrend" class="trend-badge tabular-nums" style="display: none;"></div>
 
-        <div class="card accordion" id="acc-son-islemler">
-            <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
-                <h3><svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg> Son 10 İşlem</h3>
-                <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        <div class="budget-footer tabular-nums sensitive-data" style="margin-top: 16px; padding-top: 14px; border-top: 1px dashed rgba(255,255,255,0.1); flex-direction: column; gap: 8px; text-align: left;">
+                            <div style="font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Ay Sonu Nakit Akışı</div>
+                            <div style="display: flex; justify-content: space-between;"><span style="font-size:14px; color:#cbd5e1;">Mevcut Kalan:</span><span id="mevcutKalanProjek" style="color: #fff; font-weight: 600; font-size:14px;">₺0,00</span></div>
+                            <div style="display: flex; justify-content: space-between;"><span style="font-size:14px; color:var(--text-muted);">Ödenecek Sabitler:</span><span id="gelecekSabitler" style="color: var(--rose); font-weight: 600; font-size:14px;">-₺0,00</span></div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); padding: 10px 12px; border-radius: 8px; margin-top: 4px; border: 1px solid rgba(255,255,255,0.05);"><span style="color: #f8fafc; font-size: 14px; font-weight:600;">Gerçek Özgür Para:</span><span id="ozgurPara" style="font-size: 17px; font-weight: 800;">₺0,00</span></div>
+                        </div>
+
+                        <div id="aylik-islemler-alani" class="sensitive-data" style="margin-top: 20px; text-align: left; border-top: 1px solid var(--border-color); padding-top: 16px;">
+                            <div style="font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:10px; text-transform:uppercase; letter-spacing:0.5px;">Bu Ayki Tüm İşlemler</div>
+                            <div class="custom-scrollbar" id="aylik-islemler-container" style="max-height: 250px; overflow-y: auto; overflow-x: hidden; padding-right: 8px; overscroll-behavior: contain;"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="accordion-content sensitive-data" id="islem-listesi">
-                <div style="text-align:center; padding: 18px 0;"><span class="spinner" style="border-left-color: var(--text-muted);"></span>Yükleniyor</div>
+
+            <div class="card accordion" id="acc-harcama-grafik">
+                <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
+                    <h3 style="text-align: center; width: 100%;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right:4px;"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg> Aylık Gider Dağılımı</h3>
+                    <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+                <div class="accordion-content"><div class="chart-box"><canvas id="expenseChart" class="sensitive-data"></canvas></div></div>
             </div>
-        </div>
+            
+            <div class="card accordion" id="acc-son-islemler">
+                <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
+                    <h3><svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg> Son 10 İşlem</h3>
+                    <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+                <div class="accordion-content sensitive-data" id="islem-listesi">
+                    <div style="text-align:center; padding: 18px 0;"><span class="spinner" style="border-left-color: var(--text-muted);"></span>Yükleniyor</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="section-cuzdan" class="tab-section">
+            <div class="card accordion" id="acc-bankalar">
+                <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
+                    <h3><svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg> Banka Hesaplarım</h3>
+                    <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+                <div class="accordion-content sensitive-data" id="banka-listesi">
+                    <div style="text-align:center; color:var(--text-muted); padding: 10px 0;"><span class="spinner" style="border-left-color: var(--text-muted);"></span>Yükleniyor...</div>
+                </div>
+            </div>
+
+            <div class="card accordion" id="acc-kredi-karti">
+                <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
+                    <h3><svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> Kredi Kartı Durumu</h3>
+                    <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+                <div class="accordion-content sensitive-data">
+                    
+                    <div class="form-group" style="margin-bottom: 12px; margin-top: -5px;">
+                        <select id="dashboard-kart-secim" class="form-control" onchange="renderKartDurumu()">
+                            <option value="hepsi">Tüm Kartlar (Özet)</option>
+                        </select>
+                    </div>
+
+                    <div style="margin-bottom: 20px; background: rgba(0,0,0,0.2); padding: 16px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.04);">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:13px;">
+                            <span style="color:var(--text-muted); font-weight:600;">Kullanılabilir Limit</span>
+                            <span id="val-kart-kullanilabilir" class="tabular-nums" style="color:var(--emerald); font-weight:800; font-size:15px;">₺0,00</span>
+                        </div>
+                        <div class="progress-container" style="height: 12px; background: rgba(255,255,255,0.1);">
+                            <div class="progress-bar" id="bar-kart-limit" style="width: 0%; background: var(--brand-gradient); border-radius: 12px; transition: width 1.5s cubic-bezier(0.1, 0.5, 0.1, 1);"></div>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; margin-top:8px; font-size:12px; color:var(--text-muted); font-weight:500;">
+                            <span>Toplam Limit: <span id="val-kart-limit" style="color:#cbd5e1;">₺0,00</span></span>
+                            <span id="val-kart-doluluk" style="background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 8px;">%0 Dolu</span>
+                        </div>
+                    </div>
+
+                    <div class="summary-grid" style="grid-template-columns: 1fr; gap: 2px; background: var(--border-color); border:none; margin-bottom:0;">
+                        <div style="background: var(--panel-bg); padding: 16px 14px; display:flex; justify-content:space-between; align-items:center;">
+                            <span style="font-size:14px; color:#e2e8f0; font-weight:600;">Toplam Güncel Borç</span>
+                            <div style="text-align:right;">
+                                <span id="val-kart-toplam" class="tabular-nums" style="font-size:19px; font-weight:800; color:#fff; letter-spacing:-0.5px;">₺0,00</span>
+                                <div id="trend-kart" class="trend-box tabular-nums sensitive-data" style="margin-top:4px; font-size:11px; display:block;"></div>
+                            </div>
+                        </div>
+                        <div style="background: var(--panel-bg); padding: 14px; display:flex; justify-content:space-between; align-items:center;">
+                            <span id="lbl-kart-donemici" style="font-size:13px; color:var(--text-muted); font-weight:500;">Dönem İçi (Bu Ay)</span>
+                            <span id="val-kart-donemici" class="tabular-nums" style="font-size:16px; font-weight:700; color:var(--rose);">₺0,00</span>
+                        </div>
+                        <div style="background: var(--panel-bg); padding: 14px; display:flex; justify-content:space-between; align-items:center;">
+                            <span id="lbl-kart-gelecek" style="font-size:13px; color:var(--text-muted); font-weight:500;">Gelecek Dönem</span>
+                            <span id="val-kart-gelecek" class="tabular-nums" style="font-size:16px; font-weight:700; color:var(--amber);">₺0,00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="section-takvim" class="tab-section">
+            <div class="card accordion" id="acc-yaklasan">
+                <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
+                    <h3><svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Yaklaşan Ödemeler (7 Gün)</h3>
+                    <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+                <div class="accordion-content sensitive-data" id="yaklasan-listesi">
+                    <div style="text-align:center; color:var(--text-muted); font-size: 15px; padding: 12px 0;"><span class="spinner" style="border-left-color: var(--text-muted);"></span>Analiz ediliyor...</div>
+                </div>
+            </div>
+
+            <div class="card accordion" id="acc-tum-sabitler">
+                <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
+                    <h3><svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 22v-6h6"/></svg> Tüm Sabit İşlemlerim</h3>
+                    <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+                <div class="accordion-content sensitive-data" id="sabitler-listesi">
+                    <div style="text-align:center; color:var(--text-muted); font-size: 15px; padding: 12px 0;"><span class="spinner" style="border-left-color: var(--text-muted);"></span>Yükleniyor...</div>
+                </div>
+            </div>
+
+            <div class="card accordion" id="acc-kredi-ilerleme">
+                <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
+                    <h3><svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg> Kredi İlerlemeleri</h3>
+                    <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+                <div class="accordion-content sensitive-data">
+                    <div class="progress-group" style="margin-top: 0;">
+                        <div class="progress-label-group"><span>Nev Kredisi <span style="font-size:12px; color:var(--text-muted); font-weight:normal; margin-left:7px;" id="val-nev-kalan" class="tabular-nums"></span></span><span id="val-nev-yuzde" class="tabular-nums" style="color:var(--emerald); font-weight:700;">%0</span></div>
+                        <div class="progress-container"><div class="progress-bar" id="bar-nev" style="width: 0%; background-color: var(--emerald); box-shadow: 0 0 14px rgba(16, 185, 129, 0.5); animation: shimmerPulse 2.5s infinite linear;"></div></div>
+                    </div>
+                    <div class="progress-group">
+                        <div class="progress-label-group"><span>Ziraat Kredisi <span style="font-size:12px; color:var(--text-muted); font-weight:normal; margin-left:7px;" id="val-ziraat-kalan" class="tabular-nums"></span></span><span id="val-ziraat-yuzde" class="tabular-nums" style="color:var(--blue); font-weight:700;">%0</span></div>
+                        <div class="progress-container"><div class="progress-bar" id="bar-ziraat" style="width: 0%; background-color: var(--blue); box-shadow: 0 0 14px rgba(59, 130, 246, 0.5); animation: shimmerPulse 2.5s infinite linear;"></div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="section-ai" class="tab-section">
+            <div class="card">
+                <div class="ai-empty">
+                    <i class="fas fa-sparkles"></i>
+                    <h3>Yapay Zeka Analizi</h3>
+                    <p style="margin-top: 10px; line-height: 1.5;">Finansal alışkanlıklarınız analiz ediliyor...<br>Gelecek güncellemeyle burada olacak.</p>
+                </div>
+            </div>
+        </section>
+
+        <nav class="bottom-nav">
+            <a href="javascript:void(0)" class="nav-item active" onclick="switchTab('ozet', this)">
+                <i class="fas fa-th-large"></i>
+                <span>Özet</span>
+            </a>
+            <a href="javascript:void(0)" class="nav-item" onclick="switchTab('islemler', this)">
+                <i class="fas fa-receipt"></i>
+                <span>İşlemler</span>
+            </a>
+            <a href="javascript:void(0)" class="nav-item" onclick="switchTab('cuzdan', this)">
+                <i class="fas fa-wallet"></i>
+                <span>Cüzdan</span>
+            </a>
+            <a href="javascript:void(0)" class="nav-item" onclick="switchTab('takvim', this)">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Takvim</span>
+            </a>
+            <a href="javascript:void(0)" class="nav-item" onclick="switchTab('ai', this)">
+                <i class="fas fa-robot"></i>
+                <span>Y.Zeka</span>
+            </a>
+        </nav>
+
     </div> 
 
     <div class="fab-btn" id="fab-btn" onclick="toggleModal()">
@@ -969,6 +1037,7 @@
 
         </div>
     </div>
+    
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbyf4VwhjJ7fpf82W-56eWCRQEsmkMlGDP5FZmWN8NJwwaCU_zkDA-N103srUOJ6gd0wnQ/exec"; 
         
@@ -979,6 +1048,22 @@
         const gunler = ["Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi"];
         const EYE_OPEN = `<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>`;
         const EYE_CLOSED = `<path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/>`;
+
+        // 🌟 YENİ: SEKME DEĞİŞTİRME FONKSİYONU 🌟
+        function switchTab(tabId, el) {
+            document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            
+            document.getElementById('section-' + tabId).classList.add('active');
+            el.classList.add('active');
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            if (window.navigator.vibrate) window.navigator.vibrate(10);
+            
+            if (tabId === 'islemler' && expenseChartInstance) {
+                setTimeout(() => { expenseChartInstance.update(); }, 100);
+            }
+        }
 
         const setHtml = (id, html) => { const el = document.getElementById(id); if(el) el.innerHTML = html; };
         const setText = (id, text) => { const el = document.getElementById(id); if(el) el.innerText = text; };
@@ -1911,7 +1996,6 @@
                     if (data.bankalar && data.bankalar.length > 0) {
                         let kartOptions = `<option value="">-- Kart Seçin --</option>`;
                         
-                        // 🌟 GÜNCELLEME: Kredi Kartlarını Üste Almak İçin İkiye Böldük 🌟
                         let krediKartlariHTML = "";
                         let digerHesaplarHTML = "";
                         
@@ -1925,7 +2009,6 @@
                             }
                         });
                         
-                        // Kredi kartları üstte, vadesiz/nakit altta olacak şekilde birleştiriyoruz
                         window.hesapOptions = krediKartlariHTML + digerHesaplarHTML;
                         
                         let kartDurumOptions = `<option value="hepsi">Tüm Kartlar (Özet)</option>`;
@@ -1950,7 +2033,6 @@
                                 } else if(id === 'du-yontem' && currentDuzenliType === 'Gelir') {
                                     menuEl.innerHTML = window.vadesizOptions;
                                 } else if(id === 't-cikis' || id === 't-giris') {
-                                    // 🌟 FİLTRE: Transfer ekranlarında sadece vadesiz hesapları/kasayı göster
                                     menuEl.innerHTML = window.vadesizOptions;
                                 } else {
                                     menuEl.innerHTML = window.hesapOptions;
