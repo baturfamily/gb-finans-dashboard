@@ -176,12 +176,13 @@
             100% { box-shadow: 0 10px 25px rgba(99, 102, 241, 0.5), 0 0 0 0 rgba(99, 102, 241, 0); }
         }
         .fab-btn {
-            position: fixed; bottom: calc(env(safe-area-inset-bottom) + 20px); right: 20px; z-index: 999;
+            position: fixed; right: 20px; z-index: 999;
             width: 64px; height: 64px; border-radius: 32px; background: var(--brand-gradient);
             color: white; display: flex; justify-content: center; align-items: center;
             cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent;
             animation: pulse-ring 3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+            bottom: calc(env(safe-area-inset-bottom) + 90px); /* Alt menüyle çakışmaması için */
         }
         .fab-btn:active { transform: scale(0.9); animation: none; box-shadow: 0 5px 15px rgba(99, 102, 241, 0.4); }
         .fab-btn svg { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
@@ -335,9 +336,6 @@
         
         .tab-pane { display: none; animation: fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .tab-pane.active { display: block; }
-        
-        /* FAB Butonunu Yukarı Taşıyalım (Alt Menüyle Çakışmasın) */
-        .fab-btn { bottom: calc(env(safe-area-inset-bottom) + 90px) !important; }
 
         /* 🌟 YENİ TAKVİM / ZAMAN ÇİZELGESİ 🌟 */
         .timeline-scroll { display: flex; gap: 14px; overflow-x: auto; padding-bottom: 12px; padding-top: 4px; scrollbar-width: none; }
@@ -1115,6 +1113,17 @@
             const el = document.getElementById(inputId); if(el) el.value = now.toISOString().slice(0,16);
         }
 
+        // 🌟 YENİ ALT MENÜ (TAB) DEĞİŞTİRİCİ 🌟
+        function switchMainTab(tabId, el) {
+            vibe();
+            document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            
+            document.querySelectorAll('.bottom-nav .nav-item').forEach(nav => nav.classList.remove('active'));
+            el.classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
         function toggleModal() {
             vibe();
             const modal = document.getElementById('action-modal'); const btn = document.getElementById('fab-btn');
@@ -1306,7 +1315,7 @@
             if(id === 'section-varlik-guncelle') { document.getElementById('vg-secim').value = ''; document.getElementById('vg-isim-yeni').style.display = 'none'; }
             if(id === 'section-yeni-hesap') { document.getElementById('yh-tur').value = "Banka"; }
             
-            // 🌟 İSİM GÜNCELLEMELERİ BURADA 🌟
+            // İSİM GÜNCELLEMELERİ VE VARSAYILANLAR
             if(document.getElementById('an-yontem')) document.getElementById('an-yontem').value = "Yapıkredi World"; 
             if(document.getElementById('t-cikis')) document.getElementById('t-cikis').value = "İş Bankası Hesap";
             if(document.getElementById('t-giris')) document.getElementById('t-giris').value = "Ziraat Hesap";
@@ -1519,7 +1528,7 @@
             row.style.cssText = "display: grid; grid-template-columns: 1.5fr 1fr auto; gap: 8px; margin-bottom: 10px; align-items: start;";
             
             const yontemSelect = document.getElementById('so-yontem');
-            const dinamikSecenekler = yontemSelect ? yontemSelect.innerHTML : `<option value="Ziraat">Ziraat</option><option value="Nakit">Nakit</option>`;
+            const dinamikSecenekler = yontemSelect ? yontemSelect.innerHTML : `<option value="Ziraat Hesap">Ziraat Hesap</option><option value="Nakit">Nakit</option>`;
 
             row.innerHTML = `
                 <select class="form-control parca-hesap" style="padding: 10px; font-size: 13px;">
@@ -1621,7 +1630,7 @@
             row.className = 'parca-satiri-kartborc';
             row.style.cssText = "display: grid; grid-template-columns: 1.5fr 1fr auto; gap: 8px; margin-bottom: 10px; align-items: start;";
             const yontemSelect = document.getElementById('kbo-yontem');
-            const dinamikSecenekler = yontemSelect ? yontemSelect.innerHTML : `<option value="Ziraat Hesap">Ziraat</option><option value="Nakit">Nakit</option>`;
+            const dinamikSecenekler = yontemSelect ? yontemSelect.innerHTML : `<option value="Ziraat Hesap">Ziraat Hesap</option><option value="Nakit">Nakit</option>`;
             row.innerHTML = `
                 <select class="form-control parca-hesap-kartborc" style="padding: 10px; font-size: 13px;">${dinamikSecenekler}</select>
                 <input type="text" inputmode="decimal" class="form-control parca-tutar-kartborc" placeholder="Tutar" oninput="hesaplaKalanParcaliKartBorc()" style="padding: 10px; font-size: 14px;">
@@ -1710,7 +1719,7 @@
             row.className = 'parca-satiri-borc';
             row.style.cssText = "display: grid; grid-template-columns: 1.5fr 1fr auto; gap: 8px; margin-bottom: 10px; align-items: start;";
             const yontemSelect = document.getElementById('bo-yontem');
-            const dinamikSecenekler = yontemSelect ? yontemSelect.innerHTML : `<option value="Ziraat Hesap">Ziraat</option><option value="Nakit">Nakit</option>`;
+            const dinamikSecenekler = yontemSelect ? yontemSelect.innerHTML : `<option value="Ziraat Hesap">Ziraat Hesap</option><option value="Nakit">Nakit</option>`;
             row.innerHTML = `
                 <select class="form-control parca-hesap-borc" style="padding: 10px; font-size: 13px;">${dinamikSecenekler}</select>
                 <input type="text" inputmode="decimal" class="form-control parca-tutar-borc" placeholder="Tutar" oninput="hesaplaKalanParcaliBorc()" style="padding: 10px; font-size: 14px;">
@@ -1964,7 +1973,6 @@
                     if (data.bankalar && data.bankalar.length > 0) {
                         let kartOptions = `<option value="">-- Kart Seçin --</option>`;
                         
-                        // 🌟 GÜNCELLEME: Kredi Kartlarını Üste Almak İçin İkiye Böldük 🌟
                         let krediKartlariHTML = "";
                         let digerHesaplarHTML = "";
                         
@@ -1978,7 +1986,6 @@
                             }
                         });
                         
-                        // Kredi kartları üstte, vadesiz/nakit altta olacak şekilde birleştiriyoruz
                         window.hesapOptions = krediKartlariHTML + digerHesaplarHTML;
                         
                         let kartDurumOptions = `<option value="hepsi">Tüm Kartlar (Özet)</option>`;
@@ -2003,7 +2010,6 @@
                                 } else if(id === 'du-yontem' && currentDuzenliType === 'Gelir') {
                                     menuEl.innerHTML = window.vadesizOptions;
                                 } else if(id === 't-cikis' || id === 't-giris') {
-                                    // 🌟 FİLTRE: Transfer ekranlarında sadece vadesiz hesapları/kasayı göster
                                     menuEl.innerHTML = window.vadesizOptions;
                                 } else {
                                     menuEl.innerHTML = window.hesapOptions;
