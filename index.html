@@ -582,7 +582,7 @@
             </div>
         </section>
 
-        <section id="section-ai" class="tab-section">
+        <section id="section-ai" class="tab-section" style="min-height: 85vh;">
             <div class="card">
                 <div class="ai-empty">
                     <i class="fas fa-sparkles"></i>
@@ -1644,6 +1644,21 @@
             }
 
             apiIstekAt(payload, 'btn-submit-sabit-onayla');
+        }
+
+        function toggleParcaliKartBorcOdeme() {
+            const sekil = getCustomVal('kbo-odeme-sekli');
+            if(sekil === 'parcali') {
+                document.getElementById('kbo-tek-hesap-alani').style.display = 'none';
+                document.getElementById('kbo-parcali-hesap-alani').style.display = 'block';
+                document.getElementById('kbo-parcalar-container').innerHTML = '';
+                addParcaKartBorc(); 
+                addParcaKartBorc();
+                hesaplaKalanParcaliKartBorc();
+            } else {
+                document.getElementById('kbo-tek-hesap-alani').style.display = 'block';
+                document.getElementById('kbo-parcali-hesap-alani').style.display = 'none';
+            }
         }
 
         function addParcaKartBorc() {
