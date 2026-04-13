@@ -1014,6 +1014,7 @@
             const el = document.getElementById(inputId); if(el) el.value = now.toISOString().slice(0,16);
         }
 
+        // 🌟 ALT MENÜ (TAB) DEĞİŞTİRİCİ MOTORU 🌟
         function switchMainTab(tabId, el) {
             vibe();
             document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
@@ -1993,7 +1994,6 @@
                         let bankaHTML = ""; let toplamBanka = 0; let gosterilenHesapSayisi = 0;
                         
                         data.bankalar.forEach(banka => {
-                            // 🌟 FİLTRE: TÜRÜ 'Kredi Kartı' OLANLARI GİZLE 🌟
                             if (banka.tur !== 'Kredi Kartı') {
                                 gosterilenHesapSayisi++;
                                 let bakiyeDegeri = parseFloat(banka.bakiye) || 0; toplamBanka += bakiyeDegeri;
@@ -2114,7 +2114,6 @@
                     }
                     setHtml('yaklasan-listesi', yHTML);
 
-                    // 🌟 ESKİ TİP ABONELİKLER LİSTESİ (DÜZELTİLMİŞ) 🌟
                     let tsHTML = "";
                     if(data.tumSabitlerListe && data.tumSabitlerListe.length > 0) {
                         let odenecekToplam = 0; let odenenToplam = 0;
@@ -2299,3 +2298,5 @@
             });
         });
     </script>
+</body>
+</html>
