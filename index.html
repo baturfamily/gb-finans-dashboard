@@ -2433,14 +2433,14 @@ if (quickTags) {
                         let odenecekToplam = 0; 
                         let genelToplamMaliyet = 0;
                         
-                        // YENİ: Adet sayacı ve Büyük Harf etiketler eklendi
+                        // YENİ: Bekleyen adet sayacı eklendi
                         let cats = {
-                            "Fatura": { id: "fatura", html: "", toplam: 0, adet: 0, label: "FATURALAR" },
-                            "Abonelik": { id: "abonelik", html: "", toplam: 0, adet: 0, label: "ABONELİKLER" },
-                            "Taksitli Alışveriş": { id: "taksitli", html: "", toplam: 0, adet: 0, label: "TAKSİTLİ ALIŞVERİŞLER" },
-                            "Kredi": { id: "kredi", html: "", toplam: 0, adet: 0, label: "KREDİLER" },
-                            "Yatırım": { id: "yatirim", html: "", toplam: 0, adet: 0, label: "YATIRIMLAR" },
-                            "Sabit Gider": { id: "sabit", html: "", toplam: 0, adet: 0, label: "SABİT GİDERLER" }
+                            "Fatura": { id: "fatura", html: "", toplam: 0, adet: 0, bekleyenAdet: 0, label: "FATURALAR" },
+                            "Abonelik": { id: "abonelik", html: "", toplam: 0, adet: 0, bekleyenAdet: 0, label: "ABONELİKLER" },
+                            "Taksitli Alışveriş": { id: "taksitli", html: "", toplam: 0, adet: 0, bekleyenAdet: 0, label: "TAKSİTLİ ALIŞVERİŞLER" },
+                            "Kredi": { id: "kredi", html: "", toplam: 0, adet: 0, bekleyenAdet: 0, label: "KREDİLER" },
+                            "Yatırım": { id: "yatirim", html: "", toplam: 0, adet: 0, bekleyenAdet: 0, label: "YATIRIMLAR" },
+                            "Sabit Gider": { id: "sabit", html: "", toplam: 0, adet: 0, bekleyenAdet: 0, label: "SABİT GİDERLER" }
                         };
 
                         data.tumSabitlerListe.forEach(sabit => {
@@ -2454,6 +2454,8 @@ if (quickTags) {
                             if(!cats[tur]) tur = "Sabit Gider"; // Listede yoksa Sabit Gidere at
                             
                             cats[tur].adet++;
+                            if(!sabit.odendiMi) cats[tur].bekleyenAdet++; // Eğer ödenmediyse sayacı artır
+                            
                             cats[tur].html += `<div class="t-row" style="padding: 10px 0; border-bottom: 1px dashed rgba(255,255,255,0.05); ${rowOpacity}"><div class="t-details" style="min-width:0; padding-right:10px;"><div class="t-name" style="font-size:14px;">${sabit.kalem} <span style="font-size:11px; color:var(--text-muted); font-weight:normal; margin-left:4px;">(${sabit.yontem})</span></div><div class="t-meta tabular-nums" style="font-size:11px;">Ayın ${sabit.gun}${turkceEkBul(sabit.gun)} • ${sabit.kalanAy} Ay ${stat}</div></div><div class="t-amt tabular-nums ${yonRenk}" style="font-size:14px;">${formatTL(sabit.tutar)}</div></div>`;
                             cats[tur].toplam += sabit.tutar;
                             genelToplamMaliyet += sabit.tutar;
@@ -2468,15 +2470,19 @@ if (quickTags) {
                                     catDiv.style.display = "block";
                                     let renk = key === "Yatırım" ? "var(--emerald)" : "var(--rose)";
                                     
+                                    // Dinamik Bekleyen Metni Oluşturma
+                                    let bekleyenMetin = obj.bekleyenAdet > 0 
+                                        ? `<span style="color: var(--amber); font-weight: 700;">${obj.bekleyenAdet} Bekliyor</span>` 
+                                        : `<span style="color: var(--emerald); font-weight: 700;">Tamamlandı</span>`;
+
                                     // YENİ: Sade ve Şık Apple Stil Liste
-                                    // (obj.label.toLowerCase() ile FATURALAR yazısını Faturalar'a çeviriyoruz)
                                     catDiv.innerHTML = `
                                         <div class="sub-accordion-header" onclick="toggleSubAccordion('${obj.id}')">
                                             <div style="display: flex; align-items: center;">
                                                 <div style="width: 4px; height: 18px; background: ${renk}; border-radius: 4px; margin-right: 12px; box-shadow: 0 0 8px ${renk};"></div>
                                                 <div>
                                                     <div style="color: #f8fafc; font-weight: 600; font-size: 15px; letter-spacing: -0.2px; text-transform: capitalize;">${obj.label.toLowerCase()}</div>
-                                                    <div style="color: var(--text-muted); font-size: 12px; font-weight: 500; margin-top: 3px;">${obj.adet} Kayıtlı İşlem</div>
+                                                    <div style="color: var(--text-muted); font-size: 12px; font-weight: 500; margin-top: 3px;">${obj.adet} İşlem • ${bekleyenMetin}</div>
                                                 </div>
                                             </div>
                                             <div style="display: flex; align-items: center; gap: 12px;">
