@@ -2260,8 +2260,26 @@ if (quickTags) {
                     
                     renderKartDurumu();
 
-                    setText('val-nev-yuzde', "%" + (data.nevYuzde || 0)); if(document.getElementById('bar-nev')) document.getElementById('bar-nev').style.width = (data.nevYuzde || 0) + "%"; setHtml('val-nev-kalan', "(Kalan: " + formatTL(data.nevKalan || 0) + ")");
-                    setText('val-ziraat-yuzde', "%" + (data.ziraatYuzde || 0)); if(document.getElementById('bar-ziraat')) document.getElementById('bar-ziraat').style.width = (data.ziraatYuzde || 0) + "%"; setHtml('val-ziraat-kalan', "(Kalan: " + formatTL(data.ziraatKalan || 0) + ")");
+                    // YENİ: Kredi Kalan Ay Bulma ve İlerleme Durumu Güncelleme
+                    let nevKalanAyText = "";
+                    let ziraatKalanAyText = "";
+                    
+                    // Arka plandaki listeden kredilerin kalan aylarını otomatik tarayıp buluyoruz
+                    if(data.tumSabitlerListe) {
+                        let nevKredi = data.tumSabitlerListe.find(k => k.kalem && k.kalem.toLowerCase().includes('nev'));
+                        if(nevKredi && nevKredi.kalanAy && nevKredi.kalanAy !== "Süresiz") nevKalanAyText = ` • ${nevKredi.kalanAy} Ay`;
+                        
+                        let ziraatKredi = data.tumSabitlerListe.find(k => k.kalem && k.kalem.toLowerCase().includes('ziraat'));
+                        if(ziraatKredi && ziraatKredi.kalanAy && ziraatKredi.kalanAy !== "Süresiz") ziraatKalanAyText = ` • ${ziraatKredi.kalanAy} Ay`;
+                    }
+
+                    setText('val-nev-yuzde', "%" + (data.nevYuzde || 0)); 
+                    if(document.getElementById('bar-nev')) document.getElementById('bar-nev').style.width = (data.nevYuzde || 0) + "%"; 
+                    setHtml('val-nev-kalan', "(Kalan: " + formatTL(data.nevKalan || 0) + nevKalanAyText + ")");
+
+                    setText('val-ziraat-yuzde', "%" + (data.ziraatYuzde || 0)); 
+                    if(document.getElementById('bar-ziraat')) document.getElementById('bar-ziraat').style.width = (data.ziraatYuzde || 0) + "%"; 
+                    setHtml('val-ziraat-kalan', "(Kalan: " + formatTL(data.ziraatKalan || 0) + ziraatKalanAyText + ")");
 
                     const bankaDOM = document.getElementById('banka-listesi');
                     if (data.bankalar && data.bankalar.length > 0) {
