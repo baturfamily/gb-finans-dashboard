@@ -802,15 +802,14 @@ input, textarea, select { -webkit-user-select: auto; user-select: auto; }
                 </div>
                 
                 <div class="form-group" style="margin-top: -8px;">
-                    <label style="font-size: 11px; color: var(--text-muted);">Hızlı Seçim</label>
-                    <div class="quick-tags">
-                        <div class="tag-pill" onclick="fillInput('an-kalem', 'Market'); vibe();">🛒 Market</div>
-                        <div class="tag-pill" onclick="fillInput('an-kalem', 'Yakıt'); vibe();">⛽ Yakıt</div>
-                        <div class="tag-pill" onclick="fillInput('an-kalem', 'Yemek/Dışarı'); vibe();">🍔 Yemek</div>
-                        <div class="tag-pill" onclick="fillInput('an-kalem', 'Eczane/Sağlık'); vibe();">💊 Eczane</div>
-                        <div class="tag-pill" onclick="fillInput('an-kalem', 'Kahve/Tatlı'); vibe();">☕ Kahve</div>
-                    </div>
-                </div>
+    <label style="font-size: 11px; color: var(--text-muted);">Hızlı Seçim</label>
+    <div class="quick-tags" id="anlik-quick-tags">
+        <div class="tag-pill" onclick="fillInput('an-kalem', 'Market'); vibe();">Market</div>
+        <div class="tag-pill" onclick="fillInput('an-kalem', 'Yakıt'); vibe();">Yakıt</div>
+        <div class="tag-pill" onclick="fillInput('an-kalem', 'Dışardan Yemek'); vibe();">Dışardan Yemek</div>
+        <div class="tag-pill" onclick="fillInput('an-kalem', 'Kahve/Tatlı'); vibe();">Kahve</div>
+    </div>
+</div>
 
                 <div class="form-group">
                     <label id="an-yontem-label">Ödeme Hesabı</label>
@@ -1249,25 +1248,25 @@ input, textarea, select { -webkit-user-select: auto; user-select: auto; }
                 refreshCustomSelect(selectEl);
             }
 
-            // BURADAN İTİBAREN YAPIŞTIRIYORSUN (Madde 3):
-            const quickTags = document.getElementById('anlik-quick-tags');
-            if (quickTags) {
-                if (type === 'Gelir') {
-                    quickTags.innerHTML = `
-                        <div class="tag-pill" onclick="fillInput('an-kalem', 'Sınav Görevi'); vibe();">Sınav Görevi</div>
-                        <div class="tag-pill" onclick="fillInput('an-kalem', 'Özel Ders'); vibe();">Özel Ders</div>
-                        <div class="tag-pill" onclick="fillInput('an-kalem', 'Maaş'); vibe();">Maaş</div>
-                        <div class="tag-pill" onclick="fillInput('an-kalem', 'Prim'); vibe();">Prim</div>
-                    `;
-                } else {
-                    quickTags.innerHTML = `
-                        <div class="tag-pill" onclick="fillInput('an-kalem', 'Market'); vibe();">Market</div>
-                        <div class="tag-pill" onclick="fillInput('an-kalem', 'Yakıt'); vibe();">Yakıt</div>
-                        <div class="tag-pill" onclick="fillInput('an-kalem', 'Hazır Yemek'); vibe();">Hazır Yemek</div>
-                        <div class="tag-pill" onclick="fillInput('an-kalem', 'Eczane'); vibe();">Eczane</div>
-                    `;
-                }
-            }
+            // Hızlı Seçim Dinamik Değişimi
+const quickTags = document.getElementById('anlik-quick-tags');
+if (quickTags) {
+    if (type === 'Gelir') {
+        quickTags.innerHTML = `
+        <div class="tag-pill" onclick="fillInput('an-kalem', 'Sınav Görevi'); vibe();">Sınav Görevi</div>
+        <div class="tag-pill" onclick="fillInput('an-kalem', 'Özel Ders'); vibe();">Özel Ders</div>
+        <div class="tag-pill" onclick="fillInput('an-kalem', 'Maaş'); vibe();">Maaş</div>
+        <div class="tag-pill" onclick="fillInput('an-kalem', 'Prim'); vibe();">Prim</div>
+        `;
+    } else {
+        quickTags.innerHTML = `
+        <div class="tag-pill" onclick="fillInput('an-kalem', 'Market'); vibe();">Market</div>
+        <div class="tag-pill" onclick="fillInput('an-kalem', 'Yakıt'); vibe();">Yakıt</div>
+        <div class="tag-pill" onclick="fillInput('an-kalem', 'Dışardan Yemek'); vibe();">Dışardan Yemek</div>
+        <div class="tag-pill" onclick="fillInput('an-kalem', 'Kahve/Tatlı'); vibe();">Kahve</div>
+        `;
+    }
+}
         }
 
         function setDuzenliFilter(type, btn) {
