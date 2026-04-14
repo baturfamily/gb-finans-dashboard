@@ -799,8 +799,6 @@ input, textarea, select { -webkit-user-select: auto; user-select: auto; }
                 </div>
                 <div class="form-group" style="margin-top: -8px;">
                     <label style="font-size: 11px; color: var(--text-muted);">Hızlı Seçim</label>
-                    <div class="quick-tags" id="anlik-quick-tags">
-                        </div>
                 </div>
                 
                 <div class="form-group" style="margin-top: -8px;">
@@ -1251,7 +1249,7 @@ input, textarea, select { -webkit-user-select: auto; user-select: auto; }
                 refreshCustomSelect(selectEl);
             }
 
-            // HIZLI SEÇİM ETIKETLERINI DINAMIK YAPALIM
+            // Madde 3: Dinamik Hızlı Seçimler
             const quickTags = document.getElementById('anlik-quick-tags');
             if (quickTags) {
                 if (type === 'Gelir') {
@@ -1259,16 +1257,14 @@ input, textarea, select { -webkit-user-select: auto; user-select: auto; }
                         <div class="tag-pill" onclick="fillInput('an-kalem', 'Sınav Görevi'); vibe();">Sınav Görevi</div>
                         <div class="tag-pill" onclick="fillInput('an-kalem', 'Özel Ders'); vibe();">Özel Ders</div>
                         <div class="tag-pill" onclick="fillInput('an-kalem', 'Maaş'); vibe();">Maaş</div>
-                        <div class="tag-pill" onclick="fillInput('an-kalem', 'Prim / Ödül'); vibe();">Prim</div>
-                        <div class="tag-pill" onclick="fillInput('an-kalem', 'Harçlık / Diğer'); vibe();">Harçlık</div>
+                        <div class="tag-pill" onclick="fillInput('an-kalem', 'Prim'); vibe();">Prim</div>
                     `;
                 } else {
                     quickTags.innerHTML = `
                         <div class="tag-pill" onclick="fillInput('an-kalem', 'Market'); vibe();">Market</div>
                         <div class="tag-pill" onclick="fillInput('an-kalem', 'Yakıt'); vibe();">Yakıt</div>
                         <div class="tag-pill" onclick="fillInput('an-kalem', 'Hazır Yemek'); vibe();">Hazır Yemek</div>
-                        <div class="tag-pill" onclick="fillInput('an-kalem', 'Eczane / Sağlık'); vibe();">Eczane</div>
-                        <div class="tag-pill" onclick="fillInput('an-kalem', 'Kahve / Tatlı'); vibe();">Kahve</div>
+                        <div class="tag-pill" onclick="fillInput('an-kalem', 'Eczane'); vibe();">Eczane</div>
                     `;
                 }
             }
@@ -1543,21 +1539,21 @@ input, textarea, select { -webkit-user-select: auto; user-select: auto; }
                         window.sabitDataRaw = result.data.filter(k => {
                             if (k.durum !== 'Aktif') return false;
                             
-                            // Otomatik olanları gizle (Robot zaten halledecek)
-                            if (k.tur === 'Taksit' || k.tur === 'Abonelik' || k.tur === 'Yatırım') return false;
+                            // Otomatik onaylananları (Taksit, Abonelik, Yatırım) gizle
+                            if (k.tur === 'Taksit' || k.tur === 'Abonelik' || k.tur === 'Yatırım' || k.tur === 'Taksitli Alışveriş') return false;
                             
-                            // Bu ay zaten manuel ödenmişse gizle!
+                            // Bu ay zaten ödenmiş olanları gizle
                             let zatenOdendiMi = false;
                             if (k.son_islem && k.son_islem.trim() !== "") {
-                                let tarihParcalari = k.son_islem.split(".");
-                                if (tarihParcalari.length === 3) {
-                                    let sTarihObj = new Date(parseInt(tarihParcalari[2]), parseInt(tarihParcalari[1]) - 1, parseInt(tarihParcalari[0]));
-                                    if (!isNaN(sTarihObj.getTime()) && sTarihObj.getMonth() === sBuAy && sTarihObj.getFullYear() === sBuYil) {
+                                let parts = k.son_islem.split(".");
+                                if (parts.length === 3) {
+                                    let sTarih = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
+                                    if (!isNaN(sTarih.getTime()) && sTarih.getMonth() === sBuAy && sTarih.getFullYear() === sBuYil) {
                                         zatenOdendiMi = true;
                                     }
                                 }
                             }
-                            return !zatenOdendiMi; // Sadece henüz ÖDENMEMİŞ olanları listele
+                            return !zatenOdendiMi; 
                         });
                         showSection(sectionId, title);
                         document.getElementById('so-odeme-sekli').value = 'tek';
@@ -2417,8 +2413,7 @@ input, textarea, select { -webkit-user-select: auto; user-select: auto; }
                                     // Başlık rengini ve yanındaki metni ayarla
                                     let renk = key === "Yatırım" ? "var(--emerald)" : "var(--rose)";
                                     
-                                    // HTML'deki başlığı bulup içine "Bu Ay Toplam: ..." yazdırıyoruz
-                                    // ID'si cat-fatura olan div'in ilk çocuğunu (başlık divi) hedefliyoruz
+                                    // BAŞLIK DÜZENLEME: Boyut büyütüldü ve "Bu Ay Toplam" yanına eklendi
                                     const headerDiv = catDiv.firstElementChild;
                                     if(headerDiv) {
                                         headerDiv.style.fontSize = "14px";
