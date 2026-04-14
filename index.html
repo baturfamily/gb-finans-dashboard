@@ -51,7 +51,7 @@ input, textarea, select { -webkit-user-select: auto; user-select: auto; }
 
         #pull-indicator { height: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 13px; color: var(--text-muted); transition: height 0.2s ease; font-weight: 500; background: var(--bg-dark);}
 
-        .top-container { position: sticky; top: 0; z-index: 100; background: rgba(15, 17, 21, 0.75); backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px); padding: 20px 20px 10px 20px; padding-top: calc(env(safe-area-inset-top) + 20px); border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 20px; }
+        .top-container { position: sticky; top: 0; z-index: 100; background: rgba(15, 17, 21, 0.75); backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px); padding: 20px 20px 10px 20px; padding-top: calc(env(safe-area-inset-top) + 35px); border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 20px; }
         .header-section { text-align: left; position: relative;}
         .header-top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
         .header-section h1 { font-size: 32px; font-weight: 800; letter-spacing: -1px; margin: 0; background: linear-gradient(to right, #fff, #cbd5e1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
@@ -1112,7 +1112,15 @@ input, textarea, select { -webkit-user-select: auto; user-select: auto; }
         document.addEventListener('touchmove', e => { if (window.scrollY <= 0 && touchStart > 0) { const diff = e.touches[0].pageY - touchStart; if (diff > 0) { const h = Math.min(diff * 0.4, 60); pullIndicator.style.height = h + 'px'; if (h > 50) pullIndicator.innerHTML = '<span class="spinner"></span> Bırakın güncellensin'; else pullIndicator.innerHTML = 'Aşağı çek...'; } } }, {passive: true});
         document.addEventListener('touchend', async e => { if (parseInt(pullIndicator.style.height) > 50) { pullIndicator.innerHTML = '<span class="spinner"></span> Güncelleniyor...'; vibe(); await verileriCek(); } pullIndicator.style.height = '0px'; touchStart = 0; });
 
-        function formatTL(sayi) { if (isNaN(sayi) || sayi === null || sayi === "") return `<span style="font-size:0.7em; opacity:0.6; font-weight:600;">₺</span>0<span style="font-size:0.7em; opacity:0.6; font-weight:600;">,00</span>`; let formatted = new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(sayi); let parts = formatted.split(','); return `<span style="font-size:0.75em; opacity:0.75; font-weight:600; margin-right:2px;">₺</span>${parts[0]}<span style="font-size:0.75em; opacity:0.75; font-weight:600;">,${parts[1]}</span>`; }
+        function formatTL(sayi) { 
+            if (isNaN(sayi) || sayi === null || sayi === "") return `<span style="font-size:0.7em; opacity:0.6; font-weight:600;">₺</span>0<span style="font-size:0.7em; opacity:0.6; font-weight:600;">,00</span>`; 
+            let isNegative = sayi < 0;
+            let absoluteSayi = Math.abs(sayi);
+            let formatted = new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(absoluteSayi); 
+            let parts = formatted.split(','); 
+            let sign = isNegative ? "-" : "";
+            return `${sign}<span style="font-size:0.75em; opacity:0.75; font-weight:600; margin-right:2px;">₺</span>${parts[0]}<span style="font-size:0.75em; opacity:0.75; font-weight:600;">,${parts[1]}</span>`; 
+        }
         function formatUSD(sayi) { if (isNaN(sayi) || sayi === null || sayi === "") return `<span style="font-size:0.8em; opacity:0.7; font-weight:600; margin-right:2px;">$</span>0<span style="font-size:0.8em; opacity:0.7; font-weight:600;">,00</span>`; let formatted = new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(sayi); let parts = formatted.split(','); return `<span style="font-size:0.8em; opacity:0.7; font-weight:600; margin-right:2px;">$</span>${parts[0]}<span style="font-size:0.8em; opacity:0.7; font-weight:600;">,${parts[1]}</span>`; }
         const parseSaha = (val) => { if(typeof val === 'number') return val; if(!val) return 0; let s = val.toString().replace(/₺/g, "").replace(/\s/g, ""); if(s.indexOf('.') !== -1 && s.indexOf(',') !== -1) s = s.replace(/\./g, "").replace(",", "."); else if(s.indexOf(',') !== -1) s = s.replace(",", "."); return parseFloat(s) || 0; };
 
@@ -2256,16 +2264,29 @@ if (quickTags) {
                         data.bankalar.forEach(banka => {
                             if (banka.tur !== 'Kredi Kartı') {
                                 gosterilenHesapSayisi++;
-                                let bakiyeDegeri = parseFloat(banka.bakiye) || 0; toplamBanka += bakiyeDegeri;
+                                let bakiyeDegeri = parseFloat(banka.bakiye) || 0; 
+                                
+                                // YENİ: Sadece artı bakiyeleri "Toplam Kasa"ya ekle (KMH borcunu kasadan düşme)
+                                if (bakiyeDegeri > 0) {
+                                    toplamBanka += bakiyeDegeri;
+                                }
+
                                 let kontrolBakiyesi = Math.round(bakiyeDegeri * 100) / 100;
                                 let pillClass = kontrolBakiyesi < 0 ? "pill-red" : (kontrolBakiyesi > 0 ? "pill-green" : "pill-gray");
                                 let ikon = (banka.isim || "").toLowerCase().includes("nakit") ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right:8px; opacity:0.8;"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M12 12h.01"/><path d="M17 12h.01"/><path d="M7 12h.01"/></svg>` : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right:8px; opacity:0.8;"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>`;
-                                bankaHTML += `<div class="list-row"><span class="list-label" style="font-size:15px; font-weight:600; color:#e2e8f0;">${ikon} ${banka.isim}</span><span class="pill-badge tabular-nums ${pillClass}">${formatTL(bakiyeDegeri)}</span></div>`;
+                                
+                                // YENİ: Eksi bakiyelerin yanına açıkça "-" işareti koyalım ki borç olduğu anlaşılsın
+                                let gosterilecekTutar = bakiyeDegeri;
+                                if (bakiyeDegeri < 0) {
+                                    bankaHTML += `<div class="list-row"><span class="list-label" style="font-size:15px; font-weight:600; color:#e2e8f0;">${ikon} ${banka.isim}</span><span class="pill-badge tabular-nums ${pillClass}">- ${formatTL(Math.abs(bakiyeDegeri))}</span></div>`;
+                                } else {
+                                    bankaHTML += `<div class="list-row"><span class="list-label" style="font-size:15px; font-weight:600; color:#e2e8f0;">${ikon} ${banka.isim}</span><span class="pill-badge tabular-nums ${pillClass}">${formatTL(bakiyeDegeri)}</span></div>`;
+                                }
                             }
                         });
                         
                         if (gosterilenHesapSayisi > 0) {
-                            bankaHTML += `<div style="margin-top:14px; font-size:13px; color:var(--text-muted); border-top: 1px solid var(--border-color); padding-top: 12px; display: flex; justify-content: space-between; align-items: center;"><div><span id="trend-kasa" class="trend-box tabular-nums sensitive-data" style="margin-top:0; font-size:11px;"></span></div><div>Toplam Kasa: <span class="tabular-nums" style="color:#fff; font-weight:800; font-size:16px; letter-spacing:-0.2px;">${formatTL(toplamBanka)}</span></div></div>`;
+                            bankaHTML += `<div style="margin-top:14px; font-size:13px; color:var(--text-muted); border-top: 1px solid var(--border-color); padding-top: 12px; display: flex; justify-content: space-between; align-items: center;"><div><span id="trend-kasa" class="trend-box tabular-nums sensitive-data" style="margin-top:0; font-size:11px;"></span></div><div>Toplam Kasa (Artı): <span class="tabular-nums" style="color:var(--emerald); font-weight:800; font-size:16px; letter-spacing:-0.2px;">${formatTL(toplamBanka)}</span></div></div>`;
                             setHtml('banka-listesi', bankaHTML);
                         } else {
                             setHtml('banka-listesi', `<div style="text-align:center; color:var(--text-muted); padding: 15px 0;">Sadece kredi kartınız bulunuyor.</div>`);
@@ -2278,7 +2299,8 @@ if (quickTags) {
 
                         let aylikGiderEl = document.getElementById('aylikGider');
                         if (netKalan < 0) {
-                            setHtml('aylikGider', "Aşıldı: " + formatTL(Math.abs(netKalan)));
+                            // YENİ: Aşılan bütçede anlamsız artı (+) çıkmasını engelledik, eksi (-) koyduk
+                            setHtml('aylikGider', "Aşıldı: -" + formatTL(Math.abs(netKalan)));
                             setText('budgetSubtitle', 'Bütçe Aşım Tutarı');
                             if(aylikGiderEl) aylikGiderEl.style.color = "var(--rose)";
                         } else {
