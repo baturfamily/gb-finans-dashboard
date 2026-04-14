@@ -803,12 +803,7 @@ input, textarea, select { -webkit-user-select: auto; user-select: auto; }
                 
                 <div class="form-group" style="margin-top: -8px;">
     <label style="font-size: 11px; color: var(--text-muted);">Hızlı Seçim</label>
-    <div class="quick-tags" id="anlik-quick-tags">
-        <div class="tag-pill" onclick="fillInput('an-kalem', 'Market'); vibe();">Market</div>
-        <div class="tag-pill" onclick="fillInput('an-kalem', 'Yakıt'); vibe();">Yakıt</div>
-        <div class="tag-pill" onclick="fillInput('an-kalem', 'Dışardan Yemek'); vibe();">Dışardan Yemek</div>
-        <div class="tag-pill" onclick="fillInput('an-kalem', 'Kahve/Tatlı'); vibe();">Kahve</div>
-    </div>
+    <div class="quick-tags" id="anlik-quick-tags"></div>
 </div>
 
                 <div class="form-group">
@@ -1251,20 +1246,22 @@ input, textarea, select { -webkit-user-select: auto; user-select: auto; }
             // Hızlı Seçim Dinamik Değişimi
 const quickTags = document.getElementById('anlik-quick-tags');
 if (quickTags) {
+    // Başlığı burada tek seferlik tanımlıyoruz
+    let baslik = '<label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 8px;">Hızlı Seçim</label>';
+    
     if (type === 'Gelir') {
-        quickTags.innerHTML = `
-        <div class="tag-pill" onclick="fillInput('an-kalem', 'Sınav Görevi'); vibe();">Sınav Görevi</div>
-        <div class="tag-pill" onclick="fillInput('an-kalem', 'Özel Ders'); vibe();">Özel Ders</div>
-        <div class="tag-pill" onclick="fillInput('an-kalem', 'Maaş'); vibe();">Maaş</div>
-        <div class="tag-pill" onclick="fillInput('an-kalem', 'Prim'); vibe();">Prim</div>
-        `;
+        // Gelir butonları (Emoji ve Eczane yok)
+        quickTags.innerHTML = baslik + `
+            <div class="tag-pill" onclick="fillInput('an-kalem', 'Sınav Görevi')">Sınav Görevi</div>
+            <div class="tag-pill" onclick="fillInput('an-kalem', 'Özel Ders')">Özel Ders</div>
+            <div class="tag-pill" onclick="fillInput('an-kalem', 'Maaş')">Maaş</div>`;
     } else {
-        quickTags.innerHTML = `
-        <div class="tag-pill" onclick="fillInput('an-kalem', 'Market'); vibe();">Market</div>
-        <div class="tag-pill" onclick="fillInput('an-kalem', 'Yakıt'); vibe();">Yakıt</div>
-        <div class="tag-pill" onclick="fillInput('an-kalem', 'Dışardan Yemek'); vibe();">Dışardan Yemek</div>
-        <div class="tag-pill" onclick="fillInput('an-kalem', 'Kahve/Tatlı'); vibe();">Kahve</div>
-        `;
+        // Gider butonları (Dışardan Yemek güncel, Eczane silindi)
+        quickTags.innerHTML = baslik + `
+            <div class="tag-pill" onclick="fillInput('an-kalem', 'Market')">Market</div>
+            <div class="tag-pill" onclick="fillInput('an-kalem', 'Yakıt')">Yakıt</div>
+            <div class="tag-pill" onclick="fillInput('an-kalem', 'Dışardan Yemek')">Dışardan Yemek</div>
+            <div class="tag-pill" onclick="fillInput('an-kalem', 'Kahve')">Kahve</div>`;
     }
 }
         }
