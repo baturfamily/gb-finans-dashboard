@@ -799,13 +799,8 @@ input, textarea, select { -webkit-user-select: auto; user-select: auto; }
                 </div>
                 <div class="form-group" style="margin-top: -8px;">
                     <label style="font-size: 11px; color: var(--text-muted);">Hızlı Seçim</label>
-                    <div class="quick-tags">
-                        <div class="tag-pill" onclick="fillInput('an-kalem', 'Market'); vibe();">🛒 Market</div>
-                        <div class="tag-pill" onclick="fillInput('an-kalem', 'Yakıt'); vibe();">⛽ Yakıt</div>
-                        <div class="tag-pill" onclick="fillInput('an-kalem', 'Yemek/Dışarı'); vibe();">🍔 Yemek</div>
-                        <div class="tag-pill" onclick="fillInput('an-kalem', 'Eczane/Sağlık'); vibe();">💊 Eczane</div>
-                        <div class="tag-pill" onclick="fillInput('an-kalem', 'Kahve/Tatlı'); vibe();">☕ Kahve</div>
-                    </div>
+                    <div class="quick-tags" id="anlik-quick-tags">
+                        </div>
                 </div>
                 
                 <div class="form-group" style="margin-top: -8px;">
@@ -1255,6 +1250,28 @@ input, textarea, select { -webkit-user-select: auto; user-select: auto; }
                 selectEl.innerHTML = type === 'Gelir' ? window.vadesizOptions : window.hesapOptions;
                 refreshCustomSelect(selectEl);
             }
+
+            // HIZLI SEÇİM ETIKETLERINI DINAMIK YAPALIM
+            const quickTags = document.getElementById('anlik-quick-tags');
+            if (quickTags) {
+                if (type === 'Gelir') {
+                    quickTags.innerHTML = `
+                        <div class="tag-pill" onclick="fillInput('an-kalem', 'Sınav Görevi'); vibe();">Sınav Görevi</div>
+                        <div class="tag-pill" onclick="fillInput('an-kalem', 'Özel Ders'); vibe();">Özel Ders</div>
+                        <div class="tag-pill" onclick="fillInput('an-kalem', 'Maaş'); vibe();">Maaş</div>
+                        <div class="tag-pill" onclick="fillInput('an-kalem', 'Prim / Ödül'); vibe();">Prim</div>
+                        <div class="tag-pill" onclick="fillInput('an-kalem', 'Harçlık / Diğer'); vibe();">Harçlık</div>
+                    `;
+                } else {
+                    quickTags.innerHTML = `
+                        <div class="tag-pill" onclick="fillInput('an-kalem', 'Market'); vibe();">Market</div>
+                        <div class="tag-pill" onclick="fillInput('an-kalem', 'Yakıt'); vibe();">Yakıt</div>
+                        <div class="tag-pill" onclick="fillInput('an-kalem', 'Hazır Yemek'); vibe();">Hazır Yemek</div>
+                        <div class="tag-pill" onclick="fillInput('an-kalem', 'Eczane / Sağlık'); vibe();">Eczane</div>
+                        <div class="tag-pill" onclick="fillInput('an-kalem', 'Kahve / Tatlı'); vibe();">Kahve</div>
+                    `;
+                }
+            }
         }
 
         function setDuzenliFilter(type, btn) {
@@ -1274,6 +1291,11 @@ input, textarea, select { -webkit-user-select: auto; user-select: auto; }
             }
             refreshCustomSelect(document.getElementById('du-tur'));
             checkDuzenliTur(); // Uyarı kutusunu tetikle
+            // YENİ EKLENEN: Placeholder dinamik değişimi
+            const kalemInput = document.getElementById('du-kalem');
+            if(kalemInput) {
+                kalemInput.placeholder = type === 'Gelir' ? "Örn: Maaş, Ek Ders, Kira Geliri" : "Örn: Ev Kirası, Netflix, Aidat";
+            }
         }
 
         // Yeni Bilgilendirme Fonksiyonu
@@ -1514,7 +1536,29 @@ input, textarea, select { -webkit-user-select: auto; user-select: auto; }
                 if(result.status === "success") {
                     
                     if(sectionId === 'section-sabit-onayla') {
-                        window.sabitDataRaw = result.data.filter(k => k.durum === 'Aktif' && k.tur !== 'Taksit');
+                        const sSimdi = new Date();
+                        const sBuAy = sSimdi.getMonth();
+                        const sBuYil = sSimdi.getFullYear();
+
+                        window.sabitDataRaw = result.data.filter(k => {
+                            if (k.durum !== 'Aktif') return false;
+                            
+                            // Otomatik olanları gizle (Robot zaten halledecek)
+                            if (k.tur === 'Taksit' || k.tur === 'Abonelik' || k.tur === 'Yatırım') return false;
+                            
+                            // Bu ay zaten manuel ödenmişse gizle!
+                            let zatenOdendiMi = false;
+                            if (k.son_islem && k.son_islem.trim() !== "") {
+                                let tarihParcalari = k.son_islem.split(".");
+                                if (tarihParcalari.length === 3) {
+                                    let sTarihObj = new Date(parseInt(tarihParcalari[2]), parseInt(tarihParcalari[1]) - 1, parseInt(tarihParcalari[0]));
+                                    if (!isNaN(sTarihObj.getTime()) && sTarihObj.getMonth() === sBuAy && sTarihObj.getFullYear() === sBuYil) {
+                                        zatenOdendiMi = true;
+                                    }
+                                }
+                            }
+                            return !zatenOdendiMi; // Sadece henüz ÖDENMEMİŞ olanları listele
+                        });
                         showSection(sectionId, title);
                         document.getElementById('so-odeme-sekli').value = 'tek';
                         document.getElementById('so-kalici-check').checked = false;
@@ -2185,7 +2229,8 @@ input, textarea, select { -webkit-user-select: auto; user-select: auto; }
                         tumBorclarDizisi.sort((a, b) => b.tutar - a.tutar);
                         tumBorclarDizisi.forEach(b => { 
                             let yuzde = gercekBorcToplam > 0 ? Math.round((b.tutar / gercekBorcToplam) * 100) : 0; 
-                            let isKmh = b.isim.includes("(KMH)");
+                            let kartIsimleriListesi = data.kartlarDetayli ? data.kartlarDetayli.map(k => k.isim.trim()) : [];
+                            let isKmh = b.isim.includes("(KMH)") || kartIsimleriListesi.includes(b.isim.trim());
                             let barColor = isKmh ? "#ef4444" : "var(--rose)"; 
                             let labelStyle = isKmh ? "color:#fca5a5; font-weight:600;" : "color:var(--text-muted);";
                             
@@ -2368,7 +2413,22 @@ input, textarea, select { -webkit-user-select: auto; user-select: auto; }
                                 if(obj.html !== "") {
                                     catDiv.style.display = "block";
                                     listDiv.innerHTML = obj.html;
-                                    topSpan.innerHTML = formatTL(obj.toplam);
+                                    
+                                    // Başlık rengini ve yanındaki metni ayarla
+                                    let renk = key === "Yatırım" ? "var(--emerald)" : "var(--rose)";
+                                    
+                                    // HTML'deki başlığı bulup içine "Bu Ay Toplam: ..." yazdırıyoruz
+                                    // ID'si cat-fatura olan div'in ilk çocuğunu (başlık divi) hedefliyoruz
+                                    const headerDiv = catDiv.firstElementChild;
+                                    if(headerDiv) {
+                                        headerDiv.style.fontSize = "14px";
+                                        headerDiv.style.color = "var(--text-main)";
+                                        headerDiv.style.fontWeight = "800";
+                                        headerDiv.style.borderBottom = "2px solid var(--border-color)";
+                                        headerDiv.style.paddingBottom = "6px";
+                                        headerDiv.style.marginBottom = "8px";
+                                        headerDiv.innerHTML = `${key} <span style="color:${renk}; font-size:12px; font-weight:700; text-transform:none;">(Bu Ay Toplam: ${formatTL(obj.toplam)})</span>`;
+                                    }
                                 } else {
                                     catDiv.style.display = "none";
                                 }
