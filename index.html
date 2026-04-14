@@ -1537,24 +1537,35 @@ input, textarea, select { -webkit-user-select: auto; user-select: auto; }
                         const sBuYil = sSimdi.getFullYear();
 
                         window.sabitDataRaw = result.data.filter(k => {
-                            if (k.durum !== 'Aktif') return false;
-                            
-                            // Madde 5: Otomatik olanları gizle
-                            if (k.tur === 'Taksit' || k.tur === 'Abonelik' || k.tur === 'Yatırım' || k.tur === 'Taksitli Alışveriş') return false;
-                            
-                            // Madde 5: Bu ay ödenmiş olanları listeden düşür
-                            let zatenOdendiMi = false;
-                            if (k.son_islem && k.son_islem.trim() !== "") {
-                                let parts = k.son_islem.split(".");
-                                if (parts.length === 3) {
-                                    let sTarih = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
-                                    if (!isNaN(sTarih.getTime()) && sTarih.getMonth() === sBuAy && sTarih.getFullYear() === sBuYil) {
-                                        zatenOdendiMi = true;
-                                    }
-                                }
-                            }
-                            return !zatenOdendiMi; 
-                        });
+                if (k.durum !== 'Aktif') return false;
+
+                let turu = k.tur ? k.tur.toString().trim() : "";
+                
+                // Madde 5: Otomatik olanları gizle (Abonelik vb. Onay ekranına DÜŞMEYECEK)
+                if (turu === 'Taksit' || turu === 'Abonelik' || turu === 'Yatırım' || turu === 'Taksitli Alışveriş') return false;
+
+                // Madde 5: Bu ay ödenmiş olanları listeden düşür (Tarih formatı hatası giderildi)
+                let zatenOdendiMi = false;
+                if (k.son_islem && k.son_islem.toString().trim() !== "") {
+                    let islemTarihiStr = k.son_islem.toString().trim();
+                    let sTarih;
+                    
+                    // Apps Script'ten gelen ISO tarihi veya normal dd.MM.yyyy formatını yakalama
+                    if (islemTarihiStr.includes("T")) {
+                         sTarih = new Date(islemTarihiStr);
+                    } else if (islemTarihiStr.includes(".")) {
+                         let parts = islemTarihiStr.split(" ")[0].split(".");
+                         if (parts.length === 3) sTarih = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
+                    } else {
+                         sTarih = new Date(islemTarihiStr);
+                    }
+
+                    if (sTarih && !isNaN(sTarih.getTime()) && sTarih.getMonth() === sBuAy && sTarih.getFullYear() === sBuYil) {
+                        zatenOdendiMi = true;
+                    }
+                }
+                return !zatenOdendiMi;
+            });
                         showSection(sectionId, title);
                         document.getElementById('so-odeme-sekli').value = 'tek';
                         document.getElementById('so-kalici-check').checked = false;
