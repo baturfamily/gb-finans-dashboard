@@ -563,23 +563,27 @@ input, textarea, select { -webkit-user-select: auto; user-select: auto; }
                     <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
                 </div>
                 <div class="accordion-content sensitive-data">
-                    <div id="cat-faturalar" style="margin-bottom: 15px;">
+                    <div id="cat-fatura" style="margin-bottom: 15px; display: none;">
                         <div style="font-size:11px; color:var(--text-muted); font-weight:700; text-transform:uppercase; margin-bottom:8px; border-bottom:1px solid var(--border-color); padding-bottom:4px; display:flex; justify-content:space-between;">Faturalar <span id="toplam-fatura" style="color:var(--rose)">₺0</span></div>
                         <div id="list-fatura"></div>
                     </div>
-                    <div id="cat-abonelikler" style="margin-bottom: 15px;">
+                    <div id="cat-abonelik" style="margin-bottom: 15px; display: none;">
                         <div style="font-size:11px; color:var(--text-muted); font-weight:700; text-transform:uppercase; margin-bottom:8px; border-bottom:1px solid var(--border-color); padding-bottom:4px; display:flex; justify-content:space-between;">Abonelikler <span id="toplam-abonelik" style="color:var(--rose)">₺0</span></div>
                         <div id="list-abonelik"></div>
                     </div>
-                    <div id="cat-taksitler" style="margin-bottom: 15px;">
-                        <div style="font-size:11px; color:var(--text-muted); font-weight:700; text-transform:uppercase; margin-bottom:8px; border-bottom:1px solid var(--border-color); padding-bottom:4px; display:flex; justify-content:space-between;">Taksitli Alışverişler <span id="toplam-taksit" style="color:var(--rose)">₺0</span></div>
-                        <div id="list-taksit"></div>
+                    <div id="cat-taksitli" style="margin-bottom: 15px; display: none;">
+                        <div style="font-size:11px; color:var(--text-muted); font-weight:700; text-transform:uppercase; margin-bottom:8px; border-bottom:1px solid var(--border-color); padding-bottom:4px; display:flex; justify-content:space-between;">Taksitli Alışverişler <span id="toplam-taksitli" style="color:var(--rose)">₺0</span></div>
+                        <div id="list-taksitli"></div>
                     </div>
-                    <div id="cat-krediler" style="margin-bottom: 15px;">
+                    <div id="cat-kredi" style="margin-bottom: 15px; display: none;">
                         <div style="font-size:11px; color:var(--text-muted); font-weight:700; text-transform:uppercase; margin-bottom:8px; border-bottom:1px solid var(--border-color); padding-bottom:4px; display:flex; justify-content:space-between;">Krediler <span id="toplam-kredi" style="color:var(--rose)">₺0</span></div>
                         <div id="list-kredi"></div>
                     </div>
-                    <div id="cat-yatirimlar">
+                    <div id="cat-sabit" style="margin-bottom: 15px; display: none;">
+                        <div style="font-size:11px; color:var(--text-muted); font-weight:700; text-transform:uppercase; margin-bottom:8px; border-bottom:1px solid var(--border-color); padding-bottom:4px; display:flex; justify-content:space-between;">Sabit Gider <span id="toplam-sabit" style="color:var(--rose)">₺0</span></div>
+                        <div id="list-sabit"></div>
+                    </div>
+                    <div id="cat-yatirim" style="margin-bottom: 15px; display: none;">
                         <div style="font-size:11px; color:var(--text-muted); font-weight:700; text-transform:uppercase; margin-bottom:8px; border-bottom:1px solid var(--border-color); padding-bottom:4px; display:flex; justify-content:space-between;">Yatırımlar <span id="toplam-yatirim" style="color:var(--emerald)">₺0</span></div>
                         <div id="list-yatirim"></div>
                     </div>
@@ -2325,13 +2329,14 @@ input, textarea, select { -webkit-user-select: auto; user-select: auto; }
                         let odenecekToplam = 0; 
                         let genelToplamMaliyet = 0;
                         
+                        // Backend'den (Sheets) gelen tam isimlere göre eşleştirme yapıyoruz
                         let cats = {
-                            "Fatura": { isim: "Faturalar", toplam: 0, html: "" },
-                            "Abonelik": { isim: "Abonelikler", toplam: 0, html: "" },
-                            "Taksit": { isim: "Taksitli Alışverişler", toplam: 0, html: "" },
-                            "Kredi": { isim: "Krediler", toplam: 0, html: "" },
-                            "Yatırım": { isim: "Yatırımlar", toplam: 0, html: "" },
-                            "Diğer": { isim: "Diğer Sabitler", toplam: 0, html: "" }
+                            "Fatura": { id: "fatura", html: "", toplam: 0 },
+                            "Abonelik": { id: "abonelik", html: "", toplam: 0 },
+                            "Taksitli Alışveriş": { id: "taksitli", html: "", toplam: 0 },
+                            "Kredi": { id: "kredi", html: "", toplam: 0 },
+                            "Yatırım": { id: "yatirim", html: "", toplam: 0 },
+                            "Sabit Gider": { id: "sabit", html: "", toplam: 0 }
                         };
 
                         data.tumSabitlerListe.forEach(sabit => {
@@ -2342,35 +2347,7 @@ input, textarea, select { -webkit-user-select: auto; user-select: auto; }
                             if(!sabit.odendiMi) odenecekToplam += sabit.tutar;
                             
                             let tur = sabit.tur;
-                            if(!cats[tur]) tur = "Diğer";
-                            
-                            cats[tur].html += `<div class="t-row" style="padding: 10px 0; ${rowOpacity}"><div class="t-details" style="min-width:0; padding-right:10px;"><div class="t-name" style="font-size:14px;">${sabit.kalem} <span style="font-size:11px; color:var(--text-muted); font-weight:normal; margin-left:4px;">(${sabit.yontem})</span></div><div class="t-meta tabular-nums" style="font-size:11px;">Ayın ${sabit.gun}${turkceEkBul(sabit.gun)} • ${sabit.kalanAy} Ay ${stat}</div></div><div class="t-amt tabular-nums ${yonRenk}" style="font-size:14px;">${formatTL(sabit.tutar)}</div></div>`;
-                            cats[tur].toplam += sabit.tutar;
-                            genelToplamMaliyet += sabit.tutar;
-                        });
-
-                        if(data.tumSabitlerListe && data.tumSabitlerListe.length > 0) {
-                        let odenecekToplam = 0; 
-                        let genelToplamMaliyet = 0;
-                        
-                        let cats = {
-                            "Fatura": { isim: "Faturalar", toplam: 0, html: "" },
-                            "Abonelik": { isim: "Abonelikler", toplam: 0, html: "" },
-                            "Taksit": { isim: "Taksitli Alışverişler", toplam: 0, html: "" },
-                            "Kredi": { isim: "Krediler", toplam: 0, html: "" },
-                            "Yatırım": { isim: "Yatırımlar", toplam: 0, html: "" },
-                            "Diğer": { isim: "Diğer Sabitler", toplam: 0, html: "" }
-                        };
-
-                        data.tumSabitlerListe.forEach(sabit => {
-                            let stat = sabit.odendiMi ? `<span style="background:rgba(16, 185, 129, 0.15); color:var(--emerald); padding:2px 6px; border-radius:6px; font-size:10px;">Tamamlandı</span>` : `<span style="background:rgba(245, 158, 11, 0.15); color:var(--amber); padding:2px 6px; border-radius:6px; font-size:10px;">Bekliyor</span>`;
-                            let rowOpacity = sabit.odendiMi ? "opacity: 0.5;" : "";
-                            let yonRenk = (sabit.tutar > 0) ? "text-red" : "text-green";
-                            
-                            if(!sabit.odendiMi) odenecekToplam += sabit.tutar;
-                            
-                            let tur = sabit.tur;
-                            if(!cats[tur]) tur = "Diğer"; // Eşleşmeyenleri Diğer'e at
+                            if(!cats[tur]) tur = "Sabit Gider"; // Listede yoksa Sabit Gidere at
                             
                             cats[tur].html += `<div class="t-row" style="padding: 10px 0; ${rowOpacity}"><div class="t-details" style="min-width:0; padding-right:10px;"><div class="t-name" style="font-size:14px;">${sabit.kalem} <span style="font-size:11px; color:var(--text-muted); font-weight:normal; margin-left:4px;">(${sabit.yontem})</span></div><div class="t-meta tabular-nums" style="font-size:11px;">Ayın ${sabit.gun}${turkceEkBul(sabit.gun)} • ${sabit.kalanAy} Ay ${stat}</div></div><div class="t-amt tabular-nums ${yonRenk}" style="font-size:14px;">${formatTL(sabit.tutar)}</div></div>`;
                             cats[tur].toplam += sabit.tutar;
@@ -2378,16 +2355,16 @@ input, textarea, select { -webkit-user-select: auto; user-select: auto; }
                         });
 
                         Object.keys(cats).forEach(key => {
-                            let listDiv = document.getElementById(`list-${key.toLowerCase()}`);
-                            let topSpan = document.getElementById(`toplam-${key.toLowerCase()}`);
-                            let catDiv = document.getElementById(`cat-${key.toLowerCase()}lar`); 
-                            if(!catDiv) catDiv = document.getElementById(`cat-${key.toLowerCase()}`);
+                            let obj = cats[key];
+                            let listDiv = document.getElementById(`list-${obj.id}`);
+                            let topSpan = document.getElementById(`toplam-${obj.id}`);
+                            let catDiv = document.getElementById(`cat-${obj.id}`);
 
                             if(listDiv && topSpan && catDiv) {
-                                if(cats[key].html !== "") {
+                                if(obj.html !== "") {
                                     catDiv.style.display = "block";
-                                    listDiv.innerHTML = cats[key].html;
-                                    topSpan.innerHTML = formatTL(cats[key].toplam);
+                                    listDiv.innerHTML = obj.html;
+                                    topSpan.innerHTML = formatTL(obj.toplam);
                                 } else {
                                     catDiv.style.display = "none";
                                 }
@@ -2395,19 +2372,15 @@ input, textarea, select { -webkit-user-select: auto; user-select: auto; }
                         });
 
                         setHtml('sabit-genel-toplam', formatTL(genelToplamMaliyet));
-                        // Alttaki genel özet barı
-                        let genelOzetHtml = `<div style="margin-top:14px; font-size:13px; color:var(--text-muted); border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 12px; display: flex; justify-content: space-between; align-items: center;"><span style="font-weight:600; color:#cbd5e1;">Bu Ay Kalan Yük:</span><span class="tabular-nums" style="color:var(--rose); font-weight:800; font-size:16px; letter-spacing:-0.2px;">${formatTL(odenecekToplam)}</span></div>`;
-                        if(!document.getElementById('list-diger')) {
-                           // Eger list-diger divi yoksa en alta ekleyelim
-                           document.getElementById('cat-yatirimlar').insertAdjacentHTML('afterend', genelOzetHtml);
+                        
+                        // Eğer eski "sabitler-listesi" divi duruyorsa gizle veya özet barı ekle
+                        const listeDiv = document.getElementById('sabitler-listesi');
+                        if (listeDiv) {
+                            listeDiv.innerHTML = `<div style="margin-top:14px; font-size:13px; color:var(--text-muted); border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 12px; display: flex; justify-content: space-between; align-items: center;"><span style="font-weight:600; color:#cbd5e1;">Bu Ay Kalan Yük:</span><span class="tabular-nums" style="color:var(--rose); font-weight:800; font-size:16px; letter-spacing:-0.2px;">${formatTL(odenecekToplam)}</span></div>`;
                         }
                     } else {
                         setHtml('sabit-genel-toplam', "₺0,00");
-                    }
-                        setHtml('sabit-genel-toplam', formatTL(genelToplamMaliyet));
-                    } else {
                         setHtml('sabitler-listesi', `<div style="text-align:center; color:var(--text-muted); padding: 15px 0; font-size:13px;">Kayıtlı aktif kayıt yok.</div>`);
-                        setHtml('sabit-genel-toplam', "₺0,00");
                     }
 
                     let siHTML = "";
