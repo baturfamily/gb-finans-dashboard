@@ -585,9 +585,23 @@ input, textarea, select { -webkit-user-select: auto; user-select: auto; }
                     <div id="cat-sabit" style="margin-bottom: 15px; display: none;"></div>
                     <div id="cat-yatirim" style="margin-bottom: 15px; display: none;"></div>
 
-                    <div style="margin-top:20px; font-size:13px; color:var(--text-muted); border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 16px; display: flex; justify-content: space-between; align-items: center;">
-                        <span style="font-weight:600; color:#cbd5e1;">Aylık Toplam Sabit Yük:</span>
-                        <span id="sabit-genel-toplam" class="tabular-nums" style="color:var(--amber); font-weight:800; font-size:17px; letter-spacing:-0.3px;">₺0,00</span>
+                    <div style="margin-top:20px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 16px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                            <span style="font-weight:600; color:#cbd5e1; font-size: 14px;">Aylık Toplam Sabit Yük:</span>
+                            <span id="sabit-genel-toplam" class="tabular-nums" style="color:var(--amber); font-weight:800; font-size:17px; letter-spacing:-0.3px;">₺0,00</span>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: space-between; background: rgba(0,0,0,0.25); padding: 12px 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.03);">
+                            <div>
+                                <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">Ödenen</div>
+                                <div id="sabit-odenen-toplam" class="tabular-nums" style="color: var(--emerald); font-weight: 700; font-size: 15px;">₺0,00</div>
+                            </div>
+                            <div style="width: 1px; background: rgba(255,255,255,0.05); margin: 0 10px;"></div>
+                            <div style="text-align: right;">
+                                <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">Kalan Ödeme</div>
+                                <div id="sabit-kalan-toplam" class="tabular-nums" style="color: var(--rose); font-weight: 700; font-size: 15px;">₺0,00</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -2502,10 +2516,17 @@ if (quickTags) {
                             }
                         });
 
+                        // YENİ: Toplam, Ödenen ve Kalanı arayüze basma
+                        let odenenTutar = genelToplamMaliyet - odenecekToplam;
                         setHtml('sabit-genel-toplam', formatTL(genelToplamMaliyet));
-                        
-                        } else {
+                        setHtml('sabit-odenen-toplam', formatTL(odenenTutar));
+                        setHtml('sabit-kalan-toplam', formatTL(odenecekToplam));
+
+                    } else {
+                        // Hiç kayıt yoksa her şeyi sıfırla
                         setHtml('sabit-genel-toplam', "₺0,00");
+                        setHtml('sabit-odenen-toplam', "₺0,00");
+                        setHtml('sabit-kalan-toplam', "₺0,00");
                     }
 
                     let siHTML = "";
