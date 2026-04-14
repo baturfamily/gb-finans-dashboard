@@ -396,7 +396,7 @@ input, textarea, select { -webkit-user-select: auto; user-select: auto; }
                     <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
                 </div>
                 <div class="accordion-content">
-                    <div class="amount-large tabular-nums sensitive-data" id="val-net-servet"><span style="font-size:0.7em; opacity:0.6;">₺</span> 0<span style="font-size:0.7em; opacity:0.6;">,00</span></div>
+                    <div class="amount-large tabular-nums sensitive-data" id="val-net-servet"><span style="font-size:0.7em; opacity:0.6;">₺</span> 0</div>
                     <div class="trend-box tabular-nums sensitive-data" id="trend-net-servet" style="margin-top:14px;"></div>
                     <div class="sensitive-data" style="margin-top: 16px; padding-top: 12px; border-top: 1px dashed rgba(255,255,255,0.1); display: flex; flex-direction: column; align-items: center; gap: 6px;">
                         <div style="font-size: 11px; color: var(--text-muted); font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">Dolar Bazında Varlık</div>
@@ -1127,10 +1127,19 @@ input, textarea, select { -webkit-user-select: auto; user-select: auto; }
             let sign = isNegative ? "-" : "";
             return `${sign}<span style="font-size:0.75em; opacity:0.75; font-weight:600; margin-right:2px;">₺</span>${parts[0]}<span style="font-size:0.75em; opacity:0.75; font-weight:600;">,${parts[1]}</span>`; 
         }
+        // YENİ: Sadece Ana Net Varlık rakamı için küsuratsız format
+        function formatTLTam(sayi) { 
+            if (isNaN(sayi) || sayi === null || sayi === "") return `<span style="font-size:0.7em; opacity:0.6; font-weight:600;">₺</span>0`; 
+            let isNegative = sayi < 0;
+            let absoluteSayi = Math.abs(sayi);
+            let formatted = new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(absoluteSayi); 
+            let sign = isNegative ? "-" : "";
+            return `${sign}<span style="font-size:0.75em; opacity:0.75; font-weight:600; margin-right:2px;">₺</span>${formatted}`; 
+        }
         function formatUSD(sayi) { if (isNaN(sayi) || sayi === null || sayi === "") return `<span style="font-size:0.8em; opacity:0.7; font-weight:600; margin-right:2px;">$</span>0<span style="font-size:0.8em; opacity:0.7; font-weight:600;">,00</span>`; let formatted = new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(sayi); let parts = formatted.split(','); return `<span style="font-size:0.8em; opacity:0.7; font-weight:600; margin-right:2px;">$</span>${parts[0]}<span style="font-size:0.8em; opacity:0.7; font-weight:600;">,${parts[1]}</span>`; }
         const parseSaha = (val) => { if(typeof val === 'number') return val; if(!val) return 0; let s = val.toString().replace(/₺/g, "").replace(/\s/g, ""); if(s.indexOf('.') !== -1 && s.indexOf(',') !== -1) s = s.replace(/\./g, "").replace(",", "."); else if(s.indexOf(',') !== -1) s = s.replace(",", "."); return parseFloat(s) || 0; };
 
-        function animateValue(id, endValue, duration) { const obj = document.getElementById(id); if(!obj || isNaN(endValue)) return; let startTimestamp = null; const step = (timestamp) => { if (!startTimestamp) startTimestamp = timestamp; const progress = Math.min((timestamp - startTimestamp) / duration, 1); const easeProgress = 1 - Math.pow(1 - progress, 4); const currentVal = endValue * easeProgress; obj.innerHTML = formatTL(currentVal); if (progress < 1) window.requestAnimationFrame(step); else obj.innerHTML = formatTL(endValue); }; window.requestAnimationFrame(step); }
+        function animateValue(id, endValue, duration) { const obj = document.getElementById(id); if(!obj || isNaN(endValue)) return; let startTimestamp = null; const step = (timestamp) => { if (!startTimestamp) startTimestamp = timestamp; const progress = Math.min((timestamp - startTimestamp) / duration, 1); const easeProgress = 1 - Math.pow(1 - progress, 4); const currentVal = endValue * easeProgress; obj.innerHTML = formatTLTam(currentVal); if (progress < 1) window.requestAnimationFrame(step); else obj.innerHTML = formatTLTam(endValue); }; window.requestAnimationFrame(step); }
         function animateValueUSD(id, endValue, duration) { const obj = document.getElementById(id); if(!obj || isNaN(endValue)) return; let startTimestamp = null; const step = (timestamp) => { if (!startTimestamp) startTimestamp = timestamp; const progress = Math.min((timestamp - startTimestamp) / duration, 1); const easeProgress = 1 - Math.pow(1 - progress, 4); const currentVal = endValue * easeProgress; obj.innerHTML = formatUSD(currentVal); if (progress < 1) window.requestAnimationFrame(step); else obj.innerHTML = formatUSD(endValue); }; window.requestAnimationFrame(step); }
 
         function updateTrends(days, btnElement) {
