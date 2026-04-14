@@ -650,6 +650,52 @@ input, textarea, select { -webkit-user-select: auto; user-select: auto; }
                 <button class="close-btn" onclick="toggleModal()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
             </div>
 
+            <div id="section-menu" class="form-section active">
+    <div class="action-grid">
+        <div class="action-card" onclick="showSection('section-anlik', '⚡ Anlık Harcama / Gelir')" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(168, 85, 247, 0.15) 100%); border-color: rgba(99, 102, 241, 0.4); grid-column: span 2; padding: 20px;">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #fff; margin-bottom: 10px;"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            <span style="color: #fff; font-size: 14px;">Anlık İşlem Girişi</span>
+        </div>
+        
+        <div class="action-card" onclick="showSection('section-duzenli', '📅 Yeni Düzenli Kayıt')">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <span>Düzenli Kayıt Ekle</span>
+        </div>
+        <div class="action-card" onclick="loadSabitlerAndShow('section-sabit-onayla', 'so-kural', 'Bekleyenleri Onayla')">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            <span>Bekleyenleri Onayla</span>
+        </div>
+        <div class="action-card" onclick="showSection('section-transfer', 'Hesaplar Arası Transfer')">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg>
+            <span>Transfer Yap</span>
+        </div>
+        <div class="action-card" onclick="openSectionLive(event, 'section-ozel-borc', 'Şahıs/Özel Borç İşlemleri')">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+            <span>Özel Borç İşlemleri</span>
+        </div>
+        <div class="action-card" onclick="showSection('section-kart-merkezi', '💳 Kredi Kartı İşlemleri')">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--blue);"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            <span style="color: var(--blue);">Kart İşlemleri</span>
+        </div>
+        <div class="action-card" onclick="loadSabitlerAndShow('section-sabit-guncelle', 'sg-kural', 'Düzenli Kayıtları Yönet')">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            <span>Düzenli Kayıt Yönet</span>
+        </div>
+        <div class="action-card" onclick="openSectionLive(event, 'section-varlik-guncelle', 'Varlık Değeri Güncelle')">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span>Varlık Güncelle</span>
+        </div>
+        <div class="action-card" onclick="showSection('section-yeni-hesap', 'Yeni Banka / Kasa Ekle')">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+            <span>Yeni Hesap Ekle</span>
+        </div>
+    </div>
+    <div class="undo-btn" onclick="geriAl()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle; margin-right:4px;"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>
+        Son Harcama/Ödemeyi Geri Al
+    </div>
+</div>
+
             <div id="section-kart-merkezi" class="form-section">
                 <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Ana Menüye Dön</span>
                 
