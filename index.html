@@ -1249,7 +1249,7 @@ input, textarea, select { -webkit-user-select: auto; user-select: auto; }
                 refreshCustomSelect(selectEl);
             }
 
-            // Madde 3: Dinamik Hızlı Seçimler
+            // BURADAN İTİBAREN YAPIŞTIRIYORSUN (Madde 3):
             const quickTags = document.getElementById('anlik-quick-tags');
             if (quickTags) {
                 if (type === 'Gelir') {
@@ -1539,10 +1539,10 @@ input, textarea, select { -webkit-user-select: auto; user-select: auto; }
                         window.sabitDataRaw = result.data.filter(k => {
                             if (k.durum !== 'Aktif') return false;
                             
-                            // Otomatik onaylananları (Taksit, Abonelik, Yatırım) gizle
+                            // Madde 5: Otomatik olanları gizle
                             if (k.tur === 'Taksit' || k.tur === 'Abonelik' || k.tur === 'Yatırım' || k.tur === 'Taksitli Alışveriş') return false;
                             
-                            // Bu ay zaten ödenmiş olanları gizle
+                            // Madde 5: Bu ay ödenmiş olanları listeden düşür
                             let zatenOdendiMi = false;
                             if (k.son_islem && k.son_islem.trim() !== "") {
                                 let parts = k.son_islem.split(".");
@@ -1560,9 +1560,9 @@ input, textarea, select { -webkit-user-select: auto; user-select: auto; }
                         document.getElementById('so-kalici-check').checked = false;
                         toggleParcaliOdeme();
                         refreshCustomSelect(document.getElementById('so-odeme-sekli'));
-                        
                         setSabitFilter('fatura', document.querySelector('#so-segment .segment-btn.active'));
-                    } else {
+                    }
+                    else {
                         const sel = document.getElementById(selectId); sel.innerHTML = "";
                         let filteredData = result.data;
                         
@@ -2410,10 +2410,9 @@ input, textarea, select { -webkit-user-select: auto; user-select: auto; }
                                     catDiv.style.display = "block";
                                     listDiv.innerHTML = obj.html;
                                     
-                                    // Başlık rengini ve yanındaki metni ayarla
                                     let renk = key === "Yatırım" ? "var(--emerald)" : "var(--rose)";
                                     
-                                    // BAŞLIK DÜZENLEME: Boyut büyütüldü ve "Bu Ay Toplam" yanına eklendi
+                                    // Madde 2: Başlık Boyutu, Kalınlığı ve Yanına Toplam Ekleme
                                     const headerDiv = catDiv.firstElementChild;
                                     if(headerDiv) {
                                         headerDiv.style.fontSize = "14px";
