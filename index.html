@@ -2117,7 +2117,8 @@ input, textarea, select { -webkit-user-select: auto; user-select: auto; }
                                     menuEl.innerHTML = window.vadesizOptions;
                                 } else if(id === 'du-yontem' && currentDuzenliType === 'Gelir') {
                                     menuEl.innerHTML = window.vadesizOptions;
-                                } else if(id === 't-cikis' || id === 't-giris') {
+                                } else if(id === 't-cikis' || id === 't-giris' || id === 'kbo-yontem' || id === 'bo-yontem') {
+                                    // Kredi kartı borcu ve Şahıs borcu öderken sadece VADESİZ hesaplar (Kartsız) gelsin
                                     menuEl.innerHTML = window.vadesizOptions;
                                 } else {
                                     menuEl.innerHTML = window.hesapOptions;
