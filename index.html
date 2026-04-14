@@ -377,14 +377,14 @@ input, textarea, select { -webkit-user-select: auto; user-select: auto; }
         <section id="section-ozet" class="tab-section active">
             <div class="card main-stats accordion" id="acc-net-servet">
                 <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
-                    <h3 style="color: rgba(255,255,255,0.7);">Net Servet</h3>
+                    <h3 style="color: rgba(255,255,255,0.7);">Net Varlık</h3>
                     <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
                 </div>
                 <div class="accordion-content">
                     <div class="amount-large tabular-nums sensitive-data" id="val-net-servet"><span style="font-size:0.7em; opacity:0.6;">₺</span> 0<span style="font-size:0.7em; opacity:0.6;">,00</span></div>
                     <div class="trend-box tabular-nums sensitive-data" id="trend-net-servet" style="margin-top:14px;"></div>
                     <div class="sensitive-data" style="margin-top: 16px; padding-top: 12px; border-top: 1px dashed rgba(255,255,255,0.1); display: flex; flex-direction: column; align-items: center; gap: 6px;">
-                        <div style="font-size: 11px; color: var(--text-muted); font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">Dolar Bazında Servet</div>
+                        <div style="font-size: 11px; color: var(--text-muted); font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">Dolar Bazında Varlık</div>
                         <div style="display: flex; align-items: center; gap: 10px;">
                             <div class="tabular-nums" id="val-net-servet-usd" style="font-size: 20px; font-weight: 800; color: #cbd5e1;"><span style="font-size:0.8em; opacity:0.7; font-weight:600; margin-right:2px;">$</span>0<span style="font-size:0.8em; opacity:0.7; font-weight:600;">,00</span></div>
                             <div class="trend-box tabular-nums" id="trend-net-servet-usd" style="margin-top:0; font-size: 11px;"></div>
@@ -486,42 +486,42 @@ input, textarea, select { -webkit-user-select: auto; user-select: auto; }
         </section>
 
         <section id="section-cuzdan" class="tab-section">
-            <div class="card accordion" id="acc-bankalar">
-                <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
-                    <h3><svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg> Banka Hesaplarım</h3>
-                    <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+
+    <div class="card accordion" id="acc-kredi-karti">
+        <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
+            <h3><svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> Kredi Kartı Durumu</h3>
+            <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </div>
+        <div class="accordion-content sensitive-data">
+            <div class="form-group" style="margin-bottom: 12px; margin-top: -5px;">
+                <select id="dashboard-kart-secim" class="form-control" onchange="renderKartDurumu()">
+                    <option value="hepsi">Tüm Kartlar (Özet)</option>
+                </select>
+            </div>
+            <div style="margin-bottom: 20px; background: rgba(0,0,0,0.2); padding: 16px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.04);">
+                <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:13px;">
+                    <span style="color:var(--text-muted); font-weight:600;">Kullanılabilir Limit</span>
+                    <span id="val-kart-kullanilabilir" class="tabular-nums" style="color:var(--emerald); font-weight:800; font-size:15px;">₺0,00</span>
                 </div>
-                <div class="accordion-content sensitive-data" id="banka-listesi">
-                    <div style="text-align:center; color:var(--text-muted); padding: 10px 0;"><span class="spinner" style="border-left-color: var(--text-muted);"></span>Yükleniyor...</div>
+                <div class="progress-container" style="height: 12px; background: rgba(255,255,255,0.1);">
+                    <div class="progress-bar" id="bar-kart-limit" style="width: 0%; background: var(--brand-gradient); border-radius: 12px; transition: width 1.5s cubic-bezier(0.1, 0.5, 0.1, 1);"></div>
+                </div>
+                <div style="display:flex; justify-content:space-between; margin-top:8px; font-size:12px; color:var(--text-muted); font-weight:500;">
+                    <span>Toplam Limit: <span id="val-kart-limit" style="color:#cbd5e1;">₺0,00</span></span>
+                    <span id="val-kart-doluluk" style="background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 8px;">%0 Dolu</span>
                 </div>
             </div>
-
-            <div class="card accordion" id="acc-kredi-karti">
-                <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
-                    <h3><svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> Kredi Kartı Durumu</h3>
-                    <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                </div>
-                <div class="accordion-content sensitive-data">
-                    
-                    <div class="form-group" style="margin-bottom: 12px; margin-top: -5px;">
-                        <select id="dashboard-kart-secim" class="form-control" onchange="renderKartDurumu()">
-                            <option value="hepsi">Tüm Kartlar (Özet)</option>
-                        </select>
-                    </div>
-
-                    <div style="margin-bottom: 20px; background: rgba(0,0,0,0.2); padding: 16px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.04);">
-                        <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:13px;">
-                            <span style="color:var(--text-muted); font-weight:600;">Kullanılabilir Limit</span>
-                            <span id="val-kart-kullanilabilir" class="tabular-nums" style="color:var(--emerald); font-weight:800; font-size:15px;">₺0,00</span>
-                        </div>
-                        <div class="progress-container" style="height: 12px; background: rgba(255,255,255,0.1);">
-                            <div class="progress-bar" id="bar-kart-limit" style="width: 0%; background: var(--brand-gradient); border-radius: 12px; transition: width 1.5s cubic-bezier(0.1, 0.5, 0.1, 1);"></div>
-                        </div>
-                        <div style="display:flex; justify-content:space-between; margin-top:8px; font-size:12px; color:var(--text-muted); font-weight:500;">
-                            <span>Toplam Limit: <span id="val-kart-limit" style="color:#cbd5e1;">₺0,00</span></span>
-                            <span id="val-kart-doluluk" style="background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 8px;">%0 Dolu</span>
-                        </div>
-                    </div>
+            <div class="summary-grid" style="grid-template-columns: 1fr; gap: 2px; background: var(--border-color); border:none; margin-bottom:0;">
+                 </div>
+        </div> </div> <div class="card accordion" id="acc-bankalar">
+        <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
+            <h3><svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg> Banka Hesaplarım</h3>
+            <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </div>
+        <div class="accordion-content sensitive-data" id="banka-listesi">
+            <div style="text-align:center; color:var(--text-muted); padding: 10px 0;"><span class="spinner" style="border-left-color: var(--text-muted);"></span>Yükleniyor...</div>
+        </div>
+    </div> </section>
 
                     <div class="summary-grid" style="grid-template-columns: 1fr; gap: 2px; background: var(--border-color); border:none; margin-bottom:0;">
                         <div style="background: var(--panel-bg); padding: 16px 14px; display:flex; justify-content:space-between; align-items:center;">
@@ -641,7 +641,7 @@ input, textarea, select { -webkit-user-select: auto; user-select: auto; }
                     </div>
                     <div class="action-card" onclick="loadSabitlerAndShow('section-sabit-onayla', 'so-kural', 'Bekleyenleri Onayla')">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                        <span>⏳ Bekleyenleri Onayla</span>
+                        <span>Bekleyenleri Onayla</span>
                     </div>
                     <div class="action-card" onclick="openSectionLive(event, 'section-ozel-borc', 'Şahıs/Özel Borç İşlemleri')">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
@@ -791,7 +791,7 @@ input, textarea, select { -webkit-user-select: auto; user-select: auto; }
                 
                 <div class="segment-control" style="margin-bottom: 16px;" id="duzenli-segment">
                     <div class="segment-btn active" onclick="setDuzenliFilter('Gider', this)">Düzenli Gider</div>
-                    <div class="segment-btn" onclick="setDuzenliFilter('Gelir', this)">Düzenli Gelir</div>
+                    <div class="segment-btn" onclick="setDuzenliFilter('Gelir', this)">Düzenli Gelir (Maaş, ekders vb.)</div>
                 </div>
 
                 <div class="form-group">
@@ -826,8 +826,8 @@ input, textarea, select { -webkit-user-select: auto; user-select: auto; }
                 <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Geri Dön</span>
                 
                 <div class="segment-control" style="margin-bottom: 16px;" id="so-segment">
-                    <div class="segment-btn active" onclick="setSabitFilter('fatura', this)">📄 Faturalar</div>
-                    <div class="segment-btn" onclick="setSabitFilter('diger', this)">🏦 Diğer (Kira/Kredi vb.)</div>
+                    <div class="segment-btn active" onclick="setSabitFilter('fatura', this)">Faturalar</div>
+                    <div class="segment-btn" onclick="setSabitFilter('diger', this)">Diğer (Kira/Kredi vb.)</div>
                 </div>
 
                 <div class="form-group">
