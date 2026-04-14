@@ -164,8 +164,26 @@ input, textarea, select { -webkit-user-select: auto; user-select: auto; }
         .accordion-header h3 { margin-bottom: 0; pointer-events: none; color: #e2e8f0; font-size: 14px;}
         .chevron-icon { width: 22px; height: 22px; color: var(--text-muted); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); pointer-events: none; }
         .accordion-header:active .chevron-icon { opacity: 0.7; }
-        .accordion-content { overflow: hidden; transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s ease, margin-top 0.5s ease; max-height: 1200px; opacity: 1; margin-top: 18px; }
-        .card.collapsed .accordion-content { max-height: 0; opacity: 0; margin-top: 0; transition: max-height 0.25s cubic-bezier(0.4, 0, 1, 1), opacity 0.2s ease, margin-top 0.25s ease; }
+        /* Ana akordiyon yüksekliği 3500px yapıldı (kesilme olmaması için) */
+        .accordion-content { overflow: hidden; transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s ease; max-height: 3500px; opacity: 1; margin-top: 18px; }
+        .card.collapsed .accordion-content { max-height: 0; opacity: 0; margin-top: 0; }
+
+        /* Yeni İç İçe Akordiyon (Alt Menü) Stilleri */
+        .sub-accordion-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 14px 12px; background: rgba(59, 130, 246, 0.08);
+            border-radius: 14px; margin-bottom: 10px; cursor: pointer;
+            transition: all 0.2s ease; border: 1px solid rgba(59, 130, 246, 0.15);
+            -webkit-tap-highlight-color: transparent;
+        }
+        .sub-accordion-header:active { transform: scale(0.97); background: rgba(59, 130, 246, 0.15); }
+        .sub-accordion-title { font-weight: 800; font-size: 13px; color: var(--blue); letter-spacing: 0.5px; display: flex; align-items: center; }
+        .sub-accordion-content { 
+            max-height: 0; overflow: hidden; 
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease; 
+            padding: 0 6px; opacity: 0;
+        }
+        .sub-accordion-content.open { max-height: 1500px; padding-bottom: 12px; opacity: 1; }
         .card.collapsed .chevron-icon { transform: rotate(-90deg); }
         
         .custom-scrollbar::-webkit-scrollbar { display: none; }
@@ -2402,14 +2420,14 @@ if (quickTags) {
                         let odenecekToplam = 0; 
                         let genelToplamMaliyet = 0;
                         
-                        // Backend'den (Sheets) gelen tam isimlere göre eşleştirme yapıyoruz
+                        // YENİ: Adet sayacı ve Büyük Harf etiketler eklendi
                         let cats = {
-                            "Fatura": { id: "fatura", html: "", toplam: 0 },
-                            "Abonelik": { id: "abonelik", html: "", toplam: 0 },
-                            "Taksitli Alışveriş": { id: "taksitli", html: "", toplam: 0 },
-                            "Kredi": { id: "kredi", html: "", toplam: 0 },
-                            "Yatırım": { id: "yatirim", html: "", toplam: 0 },
-                            "Sabit Gider": { id: "sabit", html: "", toplam: 0 }
+                            "Fatura": { id: "fatura", html: "", toplam: 0, adet: 0, label: "FATURALAR" },
+                            "Abonelik": { id: "abonelik", html: "", toplam: 0, adet: 0, label: "ABONELİKLER" },
+                            "Taksitli Alışveriş": { id: "taksitli", html: "", toplam: 0, adet: 0, label: "TAKSİTLİ ALIŞVERİŞLER" },
+                            "Kredi": { id: "kredi", html: "", toplam: 0, adet: 0, label: "KREDİLER" },
+                            "Yatırım": { id: "yatirim", html: "", toplam: 0, adet: 0, label: "YATIRIMLAR" },
+                            "Sabit Gider": { id: "sabit", html: "", toplam: 0, adet: 0, label: "SABİT GİDERLER" }
                         };
 
                         data.tumSabitlerListe.forEach(sabit => {
@@ -2422,35 +2440,37 @@ if (quickTags) {
                             let tur = sabit.tur;
                             if(!cats[tur]) tur = "Sabit Gider"; // Listede yoksa Sabit Gidere at
                             
-                            cats[tur].html += `<div class="t-row" style="padding: 10px 0; ${rowOpacity}"><div class="t-details" style="min-width:0; padding-right:10px;"><div class="t-name" style="font-size:14px;">${sabit.kalem} <span style="font-size:11px; color:var(--text-muted); font-weight:normal; margin-left:4px;">(${sabit.yontem})</span></div><div class="t-meta tabular-nums" style="font-size:11px;">Ayın ${sabit.gun}${turkceEkBul(sabit.gun)} • ${sabit.kalanAy} Ay ${stat}</div></div><div class="t-amt tabular-nums ${yonRenk}" style="font-size:14px;">${formatTL(sabit.tutar)}</div></div>`;
+                            cats[tur].adet++;
+                            cats[tur].html += `<div class="t-row" style="padding: 10px 0; border-bottom: 1px dashed rgba(255,255,255,0.05); ${rowOpacity}"><div class="t-details" style="min-width:0; padding-right:10px;"><div class="t-name" style="font-size:14px;">${sabit.kalem} <span style="font-size:11px; color:var(--text-muted); font-weight:normal; margin-left:4px;">(${sabit.yontem})</span></div><div class="t-meta tabular-nums" style="font-size:11px;">Ayın ${sabit.gun}${turkceEkBul(sabit.gun)} • ${sabit.kalanAy} Ay ${stat}</div></div><div class="t-amt tabular-nums ${yonRenk}" style="font-size:14px;">${formatTL(sabit.tutar)}</div></div>`;
                             cats[tur].toplam += sabit.tutar;
                             genelToplamMaliyet += sabit.tutar;
                         });
 
                         Object.keys(cats).forEach(key => {
                             let obj = cats[key];
-                            let listDiv = document.getElementById(`list-${obj.id}`);
-                            let topSpan = document.getElementById(`toplam-${obj.id}`);
                             let catDiv = document.getElementById(`cat-${obj.id}`);
 
-                            if(listDiv && topSpan && catDiv) {
+                            if(catDiv) {
                                 if(obj.html !== "") {
                                     catDiv.style.display = "block";
-                                    listDiv.innerHTML = obj.html;
-                                    
                                     let renk = key === "Yatırım" ? "var(--emerald)" : "var(--rose)";
                                     
-                                    // Madde 2: Başlık Boyutu, Kalınlığı ve Yanına Toplam Ekleme
-                                    const headerDiv = catDiv.firstElementChild;
-                                    if(headerDiv) {
-                                        headerDiv.style.fontSize = "14px";
-                                        headerDiv.style.color = "var(--text-main)";
-                                        headerDiv.style.fontWeight = "800";
-                                        headerDiv.style.borderBottom = "2px solid var(--border-color)";
-                                        headerDiv.style.paddingBottom = "6px";
-                                        headerDiv.style.marginBottom = "8px";
-                                        headerDiv.innerHTML = `${key} <span style="color:${renk}; font-size:12px; font-weight:700; text-transform:none;">(Bu Ay Toplam: ${formatTL(obj.toplam)})</span>`;
-                                    }
+                                    // YENİ: İç İçe Akordiyon HTML Yapısı
+                                    catDiv.innerHTML = `
+                                        <div class="sub-accordion-header" onclick="toggleSubAccordion('${obj.id}')">
+                                            <div class="sub-accordion-title">
+                                                <svg id="sub-icon-${obj.id}" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px; transition: transform 0.3s ease;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                                ${obj.label} (${obj.adet} ADET)
+                                            </div>
+                                            <div style="text-align:right;">
+                                                <div style="font-size:10px; color:var(--text-muted); text-transform:none; margin-bottom:2px;">Bu Ay Toplam</div>
+                                                <div style="color:${renk}; font-weight:800; font-size:14px;" class="tabular-nums">${formatTL(obj.toplam)}</div>
+                                            </div>
+                                        </div>
+                                        <div id="sub-content-${obj.id}" class="sub-accordion-content">
+                                            ${obj.html}
+                                        </div>
+                                    `;
                                 } else {
                                     catDiv.style.display = "none";
                                 }
@@ -2619,6 +2639,19 @@ if (quickTags) {
             });
         }
         initCustomSelects();
+
+        // YENİ: Alt akordiyonları (Fatura, Abonelik vb.) açıp kapatan fonksiyon
+        function toggleSubAccordion(id) {
+            vibe();
+            const content = document.getElementById(`sub-content-${id}`);
+            const icon = document.getElementById(`sub-icon-${id}`);
+            if (content) {
+                content.classList.toggle('open');
+                if (icon) {
+                    icon.style.transform = content.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0deg)';
+                }
+            }
+        }
 
         const formInputs = document.querySelectorAll('input.form-control');
         formInputs.forEach(input => {
