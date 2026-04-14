@@ -487,17 +487,21 @@ input, textarea, select { -webkit-user-select: auto; user-select: auto; }
 
         <section id="section-cuzdan" class="tab-section">
 
+    <section id="section-cuzdan" class="tab-section">
+
     <div class="card accordion" id="acc-kredi-karti">
         <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
             <h3><svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> Kredi Kartı Durumu</h3>
             <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
         </div>
         <div class="accordion-content sensitive-data">
+            
             <div class="form-group" style="margin-bottom: 12px; margin-top: -5px;">
                 <select id="dashboard-kart-secim" class="form-control" onchange="renderKartDurumu()">
                     <option value="hepsi">Tüm Kartlar (Özet)</option>
                 </select>
             </div>
+
             <div style="margin-bottom: 20px; background: rgba(0,0,0,0.2); padding: 16px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.04);">
                 <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:13px;">
                     <span style="color:var(--text-muted); font-weight:600;">Kullanılabilir Limit</span>
@@ -511,38 +515,38 @@ input, textarea, select { -webkit-user-select: auto; user-select: auto; }
                     <span id="val-kart-doluluk" style="background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 8px;">%0 Dolu</span>
                 </div>
             </div>
+
             <div class="summary-grid" style="grid-template-columns: 1fr; gap: 2px; background: var(--border-color); border:none; margin-bottom:0;">
-                 </div>
-        </div> </div> <div class="card accordion" id="acc-bankalar">
+                <div style="background: var(--panel-bg); padding: 16px 14px; display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:14px; color:#e2e8f0; font-weight:600;">Toplam Güncel Borç</span>
+                    <div style="text-align:right;">
+                        <span id="val-kart-toplam" class="tabular-nums" style="font-size:19px; font-weight:800; color:#fff; letter-spacing:-0.5px;">₺0,00</span>
+                        <div id="trend-kart" class="trend-box tabular-nums sensitive-data" style="margin-top:4px; font-size:11px; display:block;"></div>
+                    </div>
+                </div>
+                <div style="background: var(--panel-bg); padding: 14px; display:flex; justify-content:space-between; align-items:center;">
+                    <span id="lbl-kart-donemici" style="font-size:13px; color:var(--text-muted); font-weight:500;">Dönem İçi (Bu Ay)</span>
+                    <span id="val-kart-donemici" class="tabular-nums" style="font-size:16px; font-weight:700; color:var(--rose);">₺0,00</span>
+                </div>
+                <div style="background: var(--panel-bg); padding: 14px; display:flex; justify-content:space-between; align-items:center;">
+                    <span id="lbl-kart-gelecek" style="font-size:13px; color:var(--text-muted); font-weight:500;">Gelecek Dönem</span>
+                    <span id="val-kart-gelecek" class="tabular-nums" style="font-size:16px; font-weight:700; color:var(--amber);">₺0,00</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card accordion" id="acc-bankalar">
         <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
-            <h3><svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg> Banka Hesaplarım</h3>
+            <h3><svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg> Banka Hesaplarım</h3>
             <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
         </div>
         <div class="accordion-content sensitive-data" id="banka-listesi">
             <div style="text-align:center; color:var(--text-muted); padding: 10px 0;"><span class="spinner" style="border-left-color: var(--text-muted);"></span>Yükleniyor...</div>
         </div>
-    </div> </section>
+    </div>
 
-                    <div class="summary-grid" style="grid-template-columns: 1fr; gap: 2px; background: var(--border-color); border:none; margin-bottom:0;">
-                        <div style="background: var(--panel-bg); padding: 16px 14px; display:flex; justify-content:space-between; align-items:center;">
-                            <span style="font-size:14px; color:#e2e8f0; font-weight:600;">Toplam Güncel Borç</span>
-                            <div style="text-align:right;">
-                                <span id="val-kart-toplam" class="tabular-nums" style="font-size:19px; font-weight:800; color:#fff; letter-spacing:-0.5px;">₺0,00</span>
-                                <div id="trend-kart" class="trend-box tabular-nums sensitive-data" style="margin-top:4px; font-size:11px; display:block;"></div>
-                            </div>
-                        </div>
-                        <div style="background: var(--panel-bg); padding: 14px; display:flex; justify-content:space-between; align-items:center;">
-                            <span id="lbl-kart-donemici" style="font-size:13px; color:var(--text-muted); font-weight:500;">Dönem İçi (Bu Ay)</span>
-                            <span id="val-kart-donemici" class="tabular-nums" style="font-size:16px; font-weight:700; color:var(--rose);">₺0,00</span>
-                        </div>
-                        <div style="background: var(--panel-bg); padding: 14px; display:flex; justify-content:space-between; align-items:center;">
-                            <span id="lbl-kart-gelecek" style="font-size:13px; color:var(--text-muted); font-weight:500;">Gelecek Dönem</span>
-                            <span id="val-kart-gelecek" class="tabular-nums" style="font-size:16px; font-weight:700; color:var(--amber);">₺0,00</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+</section>
 
         <section id="section-takvim" class="tab-section">
             <div class="card accordion" id="acc-yaklasan">
