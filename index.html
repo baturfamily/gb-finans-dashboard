@@ -1599,8 +1599,13 @@ input, textarea, select { -webkit-user-select: auto; user-select: auto; }
             if(sel) {
                 sel.innerHTML = "";
                 let filteredData = window.sabitDataRaw.filter(k => {
-                    if(type === 'fatura') return k.tur === 'Fatura';
-                    return k.tur !== 'Fatura'; 
+                    let kTur = k.tur ? k.tur.toString().trim() : "";
+                    if(type === 'fatura') {
+                        return kTur === 'Fatura';
+                    } else {
+                        // Diğer sekmesinde sadece Manuel olanlar çıksın.
+                        return kTur === 'Kredi' || kTur === 'Sabit Gider' || kTur === 'Sabit Gelir' || kTur === 'Sabit';
+                    }
                 });
 
                 filteredData.forEach(k => { 
