@@ -2151,7 +2151,8 @@ input, textarea, select { -webkit-user-select: auto; user-select: auto; }
                         });
                     }
 
-                    let safBorclarListe = data.borclarListe ? data.borclarListe.filter(b => !b.isim.includes("(KMH)")) : [];
+                    let kartIsimleri = data.kartlarDetayli ? data.kartlarDetayli.map(k => k.isim.trim()) : [];
+                    let safBorclarListe = data.borclarListe ? data.borclarListe.filter(b => !b.isim.includes("(KMH)") && !kartIsimleri.includes(b.isim.trim())) : [];
 
                     let borcHTMLOptions = `<option value="">-- Borç Seçin --</option>`;
                     let varlikHTMLOptions = `<option value="">-- Varlık Seçin --</option>`;
