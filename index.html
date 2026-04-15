@@ -578,6 +578,7 @@ input, textarea, select { -webkit-user-select: auto; user-select: auto; }
                     <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
                 </div>
                 <div class="accordion-content sensitive-data">
+                    <div id="cat-gelir" style="margin-bottom: 15px; display: none;"></div>
                     <div id="cat-fatura" style="margin-bottom: 15px; display: none;"></div>
                     <div id="cat-abonelik" style="margin-bottom: 15px; display: none;"></div>
                     <div id="cat-taksitli" style="margin-bottom: 15px; display: none;"></div>
@@ -2520,6 +2521,7 @@ function applySabitFilters() {
                         
                         // YENİ: Bekleyen adet sayacı eklendi
                         let cats = {
+                            "Sabit Gelir": { id: "gelir", html: "", toplam: 0, adet: 0, bekleyenAdet: 0, label: "SABİT GELİRLER" },
                             "Fatura": { id: "fatura", html: "", toplam: 0, adet: 0, bekleyenAdet: 0, label: "FATURALAR" },
                             "Abonelik": { id: "abonelik", html: "", toplam: 0, adet: 0, bekleyenAdet: 0, label: "ABONELİKLER" },
                             "Taksitli Alışveriş": { id: "taksitli", html: "", toplam: 0, adet: 0, bekleyenAdet: 0, label: "TAKSİTLİ ALIŞVERİŞLER" },
@@ -2531,19 +2533,29 @@ function applySabitFilters() {
                         data.tumSabitlerListe.forEach(sabit => {
                             let stat = sabit.odendiMi ? `<span style="background:rgba(16, 185, 129, 0.15); color:var(--emerald); padding:2px 6px; border-radius:6px; font-size:10px;">Tamamlandı</span>` : `<span style="background:rgba(245, 158, 11, 0.15); color:var(--amber); padding:2px 6px; border-radius:6px; font-size:10px;">Bekliyor</span>`;
                             let rowOpacity = sabit.odendiMi ? "opacity: 0.5;" : "";
-                            let yonRenk = (sabit.tutar > 0) ? "text-red" : "text-green";
                             
-                            if(!sabit.odendiMi) odenecekToplam += sabit.tutar;
+                            // RENK MANTIĞI: Gelir ise Yeşil, Gider ise Kırmızı
+                            let yonRenk = (sabit.yon === "Gelir") ? "text-green" : "text-red";
                             
+                            // Toplam yük hesabında GELİRLERİ HARİÇ TUTUYORUZ
+                            if(!sabit.odendiMi && sabit.yon === "Gider") odenecekToplam += sabit.tutar;
+                            
+                            // KATEGORİ BELİRLEME
                             let tur = sabit.tur;
-                            if(!cats[tur]) tur = "Sabit Gider"; // Listede yoksa Sabit Gidere at
+                            if (sabit.yon === "Gelir") {
+                                tur = "Sabit Gelir"; 
+                            } else if(!cats[tur]) {
+                                tur = "Sabit Gider"; 
+                            }
                             
                             cats[tur].adet++;
-                            if(!sabit.odendiMi) cats[tur].bekleyenAdet++; // Eğer ödenmediyse sayacı artır
+                            if(!sabit.odendiMi) cats[tur].bekleyenAdet++; 
                             
                             cats[tur].html += `<div class="t-row" style="padding: 10px 0; border-bottom: 1px dashed rgba(255,255,255,0.05); ${rowOpacity}"><div class="t-details" style="min-width:0; padding-right:10px;"><div class="t-name" style="font-size:14px;">${sabit.kalem} <span style="font-size:11px; color:var(--text-muted); font-weight:normal; margin-left:4px;">(${sabit.yontem})</span></div><div class="t-meta tabular-nums" style="font-size:11px;">Ayın ${sabit.gun}${turkceEkBul(sabit.gun)} • ${sabit.kalanAy} Ay ${stat}</div></div><div class="t-amt tabular-nums ${yonRenk}" style="font-size:14px;">${formatTL(sabit.tutar)}</div></div>`;
                             cats[tur].toplam += sabit.tutar;
-                            genelToplamMaliyet += sabit.tutar;
+                            
+                            // Toplam maliyet hesabında sadece Giderleri topla
+                            if(sabit.yon === "Gider") genelToplamMaliyet += sabit.tutar;
                         });
 
                         Object.keys(cats).forEach(key => {
@@ -2553,7 +2565,7 @@ function applySabitFilters() {
                             if(catDiv) {
                                 if(obj.html !== "") {
                                     catDiv.style.display = "block";
-                                    let renk = key === "Yatırım" ? "var(--emerald)" : "var(--rose)";
+                                    let renk = (key === "Yatırım" || key === "Sabit Gelir") ? "var(--emerald)" : "var(--rose)";
                                     
                                     // Dinamik Bekleyen Metni Oluşturma
                                     let bekleyenMetin = obj.bekleyenAdet > 0 
