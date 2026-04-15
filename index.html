@@ -1366,7 +1366,8 @@ if (quickTags) {
             if(!kalem || !tutar || !gun) return alert("Lütfen Kalem Adı, Tutar ve Günü eksiksiz girin!");
             if(!sure) return alert("Lütfen süre belirtin (Süresiz ise 'Süresiz' yazın).");
             
-            apiIstekAt({ action: "yeni_sabit", tur: tur, kalem: kalem, yontem: yontem, tutar: tutar, odeme_gunu: gun, kalan_ay: sure }, 'btn-submit-duzenli');
+            // Hangi sekmede (Gelir/Gider) olduğumuzu 'yon' olarak backend'e yolluyoruz
+apiIstekAt({ action: "yeni_sabit", yon: currentDuzenliType, tur: tur, kalem: kalem, yontem: yontem, tutar: tutar, odeme_gunu: gun, kalan_ay: sure }, 'btn-submit-duzenli');
         }
 
         function toggleYeniBorc() {
