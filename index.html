@@ -1301,7 +1301,7 @@ if (quickTags) {
             if(btn) btn.classList.add('active');
             
             // Fatura, Abonelik ve Yatırım eklendi
-            let html = type === 'Gelir' ? '<option value="Okul Maaşı">Okul Maaşı</option><option value="Ek Ders">Ek Ders</option><option value="Sabit Gelir">Diğer Düzenli Gelir</option>' :
+            let html = type === 'Gelir' ? '<option value="Maaş">Maaş</option><option value="Ek Ders">Ek Ders</option><option value="Sabit Gelir">Diğer Düzenli Gelir</option>' :
 '<option value="Fatura">Fatura</option><option value="Abonelik">Abonelik (Netflix, Spotify vb.)</option><option value="Taksit">Taksitli Alışveriş</option><option value="Kredi">Banka Kredisi</option><option value="Yatırım">Yatırım (BES, Altın, Fon)</option><option value="Sabit Gider">Diğer Sabit Gider</option>';
             setHtml('du-tur', html);
             
@@ -1639,7 +1639,7 @@ if (quickTags) {
                     if(type === 'fatura') {
     return kTur === 'Fatura';
 } else {
-    // Fatura harici tüm manuel işlemler (Okul Maaşı, Ek Ders, Kredi vb.) Diğer sekmesine düşsün
+    // Fatura harici tüm manuel işlemler (Maaş, Ek Ders, Kredi vb.) Diğer sekmesine düşsün
     return kTur !== 'Fatura';
 }
                 });
