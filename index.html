@@ -1301,8 +1301,8 @@ if (quickTags) {
             if(btn) btn.classList.add('active');
             
             // Fatura, Abonelik ve Yatırım eklendi
-            let html = type === 'Gelir' ? '<option value="Gelir">Düzenli Gelir (Maaş, Ekders vb.)</option>' : 
-                       '<option value="Fatura">Fatura</option><option value="Abonelik">Abonelik (Netflix, Spotify vb.)</option><option value="Taksit">Taksitli Alışveriş</option><option value="Kredi">Banka Kredisi</option><option value="Yatırım">Yatırım (BES, Altın, Fon)</option><option value="Sabit Gider">Diğer Sabit Gider</option>';
+            let html = type === 'Gelir' ? '<option value="Okul Maaşı">Okul Maaşı</option><option value="Ek Ders">Ek Ders</option><option value="Sabit Gelir">Diğer Düzenli Gelir</option>' :
+'<option value="Fatura">Fatura</option><option value="Abonelik">Abonelik (Netflix, Spotify vb.)</option><option value="Taksit">Taksitli Alışveriş</option><option value="Kredi">Banka Kredisi</option><option value="Yatırım">Yatırım (BES, Altın, Fon)</option><option value="Sabit Gider">Diğer Sabit Gider</option>';
             setHtml('du-tur', html);
             
             const yontemEl = document.getElementById('du-yontem');
@@ -1605,7 +1605,7 @@ if (quickTags) {
                         filteredData.forEach(k => { 
                             let label = `${k.kalem} - ₺${k.tutar} (${k.kalan_ay} Ay)`;
                             if(k.durum !== "Aktif") label += " [İPTAL/BİTTİ]";
-                            sel.innerHTML += `<option value="${k.satir}" data-tur="${k.tur}" data-tutar="${k.tutar}" data-yontem="${k.yontem}" data-gun="${k.gun}" data-sure="${k.kalan_ay}" data-durum="${k.durum}">${label}</option>`; 
+                            sel.innerHTML += `<option value="${k.satir}" data-yon="${k.yon}" data-tur="${k.tur}" data-tutar="${k.tutar}" data-yontem="${k.yontem}" data-gun="${k.gun}" data-sure="${k.kalan_ay}" data-durum="${k.durum}">${label}</option>`; 
                         });
                         if(filteredData.length === 0) sel.innerHTML = `<option value="">Kayıt bulunamadı.</option>`;
                         showSection(sectionId, title);
@@ -1637,16 +1637,16 @@ if (quickTags) {
                 let filteredData = window.sabitDataRaw.filter(k => {
                     let kTur = k.tur ? k.tur.toString().trim() : "";
                     if(type === 'fatura') {
-                        return kTur === 'Fatura';
-                    } else {
-                        // Diğer sekmesinde sadece Manuel olanlar çıksın.
-                        return kTur === 'Kredi' || kTur === 'Sabit Gider' || kTur === 'Sabit Gelir' || kTur === 'Sabit';
-                    }
+    return kTur === 'Fatura';
+} else {
+    // Fatura harici tüm manuel işlemler (Okul Maaşı, Ek Ders, Kredi vb.) Diğer sekmesine düşsün
+    return kTur !== 'Fatura';
+}
                 });
 
                 filteredData.forEach(k => { 
                     let label = `${k.kalem} - ₺${k.tutar} (${k.kalan_ay} Ay)`;
-                    sel.innerHTML += `<option value="${k.satir}" data-tur="${k.tur}" data-tutar="${k.tutar}" data-yontem="${k.yontem}" data-gun="${k.gun}" data-sure="${k.kalan_ay}" data-durum="${k.durum}">${label}</option>`; 
+                    sel.innerHTML += `<option value="${k.satir}" data-yon="${k.yon}" data-tur="${k.tur}" data-tutar="${k.tutar}" data-yontem="${k.yontem}" data-gun="${k.gun}" data-sure="${k.kalan_ay}" data-durum="${k.durum}">${label}</option>`; 
                 });
                 if(filteredData.length === 0) sel.innerHTML = `<option value="">Bu kategoride onay bekleyen işlem yok.</option>`;
                 
@@ -1665,12 +1665,12 @@ if (quickTags) {
             }
 
             const dataTutar = opt.getAttribute('data-tutar');
-            const tur = opt.getAttribute('data-tur');
+const yon = opt.getAttribute('data-yon'); // Artık tur değil, doğrudan Yön(Gelir/Gider) bilgisine bakıyoruz
 
-            document.getElementById('so-referans-tutar').innerHTML = formatTL(parseSaha(dataTutar));
-            document.getElementById('so-guncel-tutar').value = dataTutar;
+document.getElementById('so-referans-tutar').innerHTML = formatTL(parseSaha(dataTutar));
+document.getElementById('so-guncel-tutar').value = dataTutar;
 
-            document.getElementById('lbl-so-yontem').innerText = tur === 'Gelir' ? 'Paranın Gireceği Hesap' : 'Paranın Çıktığı Hesap';
+document.getElementById('lbl-so-yontem').innerText = yon === 'Gelir' ? 'Paranın Gireceği Hesap' : 'Paranın Çıktığı Hesap';
 
             hesaplaKalanParcali();
         }
