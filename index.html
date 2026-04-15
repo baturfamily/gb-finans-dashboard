@@ -1309,10 +1309,16 @@ if (quickTags) {
             setHtml('du-tur', html);
             
             const yontemEl = document.getElementById('du-yontem');
-            if(yontemEl) {
-                yontemEl.innerHTML = type === 'Gelir' ? window.vadesizOptions : window.hesapOptions;
-                refreshCustomSelect(yontemEl);
-            }
+    if(yontemEl) {
+        yontemEl.innerHTML = type === 'Gelir' ? window.vadesizOptions : window.hesapOptions;
+        refreshCustomSelect(yontemEl);
+    }
+    
+    // 🌟 YENİ: Yazıyı dinamik değiştirme
+    const duYontemLabel = document.getElementById('du-yontem-label');
+    if(duYontemLabel) {
+        duYontemLabel.innerText = type === 'Gelir' ? 'Paranın Gireceği Hesap' : 'Ödeme Hesabı';
+    }
             refreshCustomSelect(document.getElementById('du-tur'));
             checkDuzenliTur(); // Uyarı kutusunu tetikle
             // YENİ EKLENEN: Placeholder dinamik değişimi
@@ -1690,13 +1696,11 @@ function applySabitFilters() {
         let kYon = k.yon ? k.yon.toString().trim() : "Gider";
         let kTur = k.tur ? k.tur.toString().trim() : "";
 
-        // 1. Ana Yön (Gider/Gelir) Kontrolü
         if (kYon !== currentSabitMainType) return false;
 
-        // 2. Alt Çip Kontrolü
         if (currentSabitSubType !== 'Hepsi') {
             if (currentSabitMainType === 'Gider' && currentSabitSubType === 'Diger') {
-                if (kTur === 'Fatura' || kTur === 'Kredi') return false; // Fatura ve kredi hariç her şey Diger'dir
+                if (kTur === 'Fatura' || kTur === 'Kredi') return false; 
             } else if (kTur !== currentSabitSubType) {
                 return false;
             }
@@ -1711,29 +1715,39 @@ function applySabitFilters() {
     
     if (filteredData.length === 0) sel.innerHTML = `<option value="">Bu kategoride bekleyen işlem yok.</option>`;
     
+    // 🌟 YENİ: Etiketleri her sekme değişiminde garanti olarak güncelle
+    const lblYontem = document.getElementById('lbl-so-yontem');
+    if(lblYontem) lblYontem.innerText = currentSabitMainType === 'Gelir' ? 'Paranın Gireceği Hesap' : 'Paranın Çıktığı Hesap';
+    
+    const lblTutar = document.getElementById('lbl-so-tutar');
+    if(lblTutar) lblTutar.innerText = currentSabitMainType === 'Gelir' ? 'Tahsil Edilen Net Tutar (₺)' : 'Bu Ay Gerçekleşen Net Tutar (₺)';
+
     refreshCustomSelect(sel);
     onKuralChange();
 }
 
-        function onKuralChange() {
-            const select = document.getElementById('so-kural');
-            const opt = select.options[select.selectedIndex];
-            if(!opt || !opt.value) {
-                document.getElementById('so-referans-tutar').innerHTML = "₺0,00";
-                document.getElementById('so-guncel-tutar').value = "";
-                return;
-            }
+       function onKuralChange() {
+    const select = document.getElementById('so-kural');
+    const opt = select.options[select.selectedIndex];
+    
+    if(!opt || !opt.value) {
+        document.getElementById('so-referans-tutar').innerHTML = "₺0,00";
+        document.getElementById('so-guncel-tutar').value = "";
+        return;
+    }
 
-            const dataTutar = opt.getAttribute('data-tutar');
-const yon = opt.getAttribute('data-yon'); // Artık tur değil, doğrudan Yön(Gelir/Gider) bilgisine bakıyoruz
+    const dataTutar = opt.getAttribute('data-tutar');
+    const yon = (opt.getAttribute('data-yon') || "").trim();
 
-document.getElementById('so-referans-tutar').innerHTML = formatTL(parseSaha(dataTutar));
-document.getElementById('so-guncel-tutar').value = dataTutar;
+    document.getElementById('so-referans-tutar').innerHTML = formatTL(parseSaha(dataTutar));
+    document.getElementById('so-guncel-tutar').value = dataTutar;
 
-document.getElementById('lbl-so-yontem').innerText = yon === 'Gelir' ? 'Paranın Gireceği Hesap' : 'Paranın Çıktığı Hesap';
+    // Etiket güncellemelerini garantiye alma
+    const lblYontem = document.getElementById('lbl-so-yontem');
+    if(lblYontem) lblYontem.innerText = yon === 'Gelir' ? 'Paranın Gireceği Hesap' : 'Paranın Çıktığı Hesap';
 
-            hesaplaKalanParcali();
-        }
+    hesaplaKalanParcali();
+}
 
         function toggleParcaliOdeme() {
             const sekil = getCustomVal('so-odeme-sekli');
@@ -2237,7 +2251,7 @@ document.getElementById('lbl-so-yontem').innerText = yon === 'Gelir' ? 'Paranın
                             }
                         });
                         
-                        window.hesapOptions = krediKartlariHTML + digerHesaplarHTML;
+                        window.hesapOptions = digerHesaplarHTML + krediKartlariHTML;
                         
                         let kartDurumOptions = `<option value="hepsi">Tüm Kartlar (Özet)</option>`;
                         window.kartlarVerisi.forEach(k => {
