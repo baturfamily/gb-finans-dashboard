@@ -1462,40 +1462,36 @@ apiIstekAt({ action: "yeni_sabit", yon: currentDuzenliType, tur: tur, kalem: kal
             if(id === 'section-yeni-hesap') { document.getElementById('yh-tur').value = "Banka"; }
             
             // 🌟 İSİM GÜNCELLEMELERİ BURADA 🌟
-            if(document.getElementById('an-yontem')) document.getElementById('an-yontem').value = "Yapıkredi World"; 
-            if(document.getElementById('t-cikis')) document.getElementById('t-cikis').value = "İş Bankası Hesap";
-            if(document.getElementById('t-giris')) document.getElementById('t-giris').value = "Ziraat Hesap";
-        }
+    if(document.getElementById('an-yontem')) { 
+        document.getElementById('an-yontem').value = "Yapıkredi World"; 
+        refreshCustomSelect(document.getElementById('an-yontem')); 
+    }
+    if(document.getElementById('t-cikis')) { 
+        document.getElementById('t-cikis').value = "İş Bankası Hesap"; 
+        refreshCustomSelect(document.getElementById('t-cikis')); 
+    }
+    if(document.getElementById('t-giris')) { 
+        document.getElementById('t-giris').value = "Ziraat Hesap"; 
+        refreshCustomSelect(document.getElementById('t-giris')); 
+    }
+}
 
         function fillInput(id, text) { vibe(); document.getElementById(id).value = text; }
 
         function swapTransfer() {
-            vibe();
-            const c = document.getElementById('t-cikis'); const g = document.getElementById('t-giris');
-            
-            const tempVal = c.value; 
-            c.value = g.value; 
-            g.value = tempVal;
+    vibe();
+    const c = document.getElementById('t-cikis'); 
+    const g = document.getElementById('t-giris');
+    
+    // 1. Gizli gerçek select değerlerini yer değiştir
+    const tempVal = c.value; 
+    c.value = g.value; 
+    g.value = tempVal;
 
-            const cWrapper = c.nextElementSibling;
-            const gWrapper = g.nextElementSibling;
-            
-            if(cWrapper && cWrapper.classList.contains('custom-select-wrapper') && gWrapper) {
-                const cSpan = cWrapper.querySelector('.custom-select-trigger span');
-                const gSpan = gWrapper.querySelector('.custom-select-trigger span');
-                
-                const tempText = cSpan.innerText;
-                cSpan.innerText = gSpan.innerText;
-                gSpan.innerText = tempText;
-
-                cWrapper.querySelectorAll('.custom-option').forEach(opt => {
-                    opt.classList.toggle('selected', opt.innerText === cSpan.innerText);
-                });
-                gWrapper.querySelectorAll('.custom-option').forEach(opt => {
-                    opt.classList.toggle('selected', opt.innerText === gSpan.innerText);
-                });
-            }
-        }
+    // 2. Sistemi yormadan arayüzü yeni değerlere göre otomatik yeniden çizdir
+    refreshCustomSelect(c);
+    refreshCustomSelect(g);
+}
 
         function markError(id) {
             const el = document.getElementById(id);
