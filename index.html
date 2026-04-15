@@ -872,15 +872,18 @@ input, textarea, select { -webkit-user-select: auto; user-select: auto; }
             <div id="section-sabit-onayla" class="form-section">
                 <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Geri Dön</span>
                 
-                <div class="segment-control" style="margin-bottom: 16px;" id="so-segment">
-                    <div class="segment-btn active" onclick="setSabitFilter('fatura', this)">Faturalar</div>
-                    <div class="segment-btn" onclick="setSabitFilter('diger', this)">Diğer (Kira/Kredi vb.)</div>
-                </div>
+                <div class="segment-control" style="margin-bottom: 12px;" id="so-main-segment">
+    <div class="segment-btn active" onclick="setSabitMainFilter('Gider', this)">Bekleyen Giderler</div>
+    <div class="segment-btn" onclick="setSabitMainFilter('Gelir', this)">Bekleyen Gelirler</div>
+</div>
 
-                <div class="form-group">
-                    <label>Bekleyen İşlemi Seçin</label>
-                    <select id="so-kural" class="form-control" onchange="onKuralChange()"></select>
-                </div>
+<div id="so-sub-filters" style="display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none;">
+    </div>
+
+<div class="form-group">
+    <label>Bekleyen İşlemi Seçin</label>
+    <select id="so-kural" class="form-control" onchange="onKuralChange()"></select>
+</div>
 
                 <div style="background: rgba(59, 130, 246, 0.1); border: 1px dashed rgba(59, 130, 246, 0.3); padding: 12px; border-radius: 12px; margin-bottom: 8px; text-align:center;">
                     <div style="font-size: 11px; color: var(--blue); font-weight: 700; margin-bottom: 4px; letter-spacing: 0.5px;">KAYITLI / GEÇEN AYKİ TUTAR</div>
@@ -1592,11 +1595,16 @@ if (quickTags) {
                 return !zatenOdendiMi;
             });
                         showSection(sectionId, title);
-                        document.getElementById('so-odeme-sekli').value = 'tek';
-                        document.getElementById('so-kalici-check').checked = false;
-                        toggleParcaliOdeme();
-                        refreshCustomSelect(document.getElementById('so-odeme-sekli'));
-                        setSabitFilter('fatura', document.querySelector('#so-segment .segment-btn.active'));
+document.getElementById('so-odeme-sekli').value = 'tek';
+document.getElementById('so-kalici-check').checked = false;
+toggleParcaliOdeme();
+refreshCustomSelect(document.getElementById('so-odeme-sekli'));
+
+// Yeni Ana ve Alt filtreleri Başlat
+if(document.querySelectorAll('#so-main-segment .segment-btn').length > 0) {
+    let ilkBtn = document.querySelectorAll('#so-main-segment .segment-btn')[0];
+    setSabitMainFilter('Gider', ilkBtn);
+}
                     }
                     else {
                         const sel = document.getElementById(selectId); sel.innerHTML = "";
@@ -1619,41 +1627,93 @@ if (quickTags) {
             if (ev) ev.innerHTML = orig;
         }
 
-        function setSabitFilter(type, btnElement) {
-            vibe();
-            if(btnElement) {
-                document.querySelectorAll('#so-segment .segment-btn').forEach(btn => btn.classList.remove('active'));
-                btnElement.classList.add('active');
-            } else {
-                if(document.querySelectorAll('#so-segment .segment-btn').length > 0) {
-                    document.querySelectorAll('#so-segment .segment-btn')[0].classList.add('active');
-                    document.querySelectorAll('#so-segment .segment-btn')[1].classList.remove('active');
-                }
-            }
+        let currentSabitMainType = 'Gider';
+let currentSabitSubType = 'Hepsi';
 
-            const sel = document.getElementById('so-kural');
-            if(sel) {
-                sel.innerHTML = "";
-                let filteredData = window.sabitDataRaw.filter(k => {
-                    let kTur = k.tur ? k.tur.toString().trim() : "";
-                    if(type === 'fatura') {
-    return kTur === 'Fatura';
-} else {
-    // Fatura harici tüm manuel işlemler (Maaş, Ek Ders, Kredi vb.) Diğer sekmesine düşsün
-    return kTur !== 'Fatura';
+function setSabitMainFilter(yon, btnElement) {
+    vibe();
+    currentSabitMainType = yon;
+    currentSabitSubType = 'Hepsi'; // Ana sekme değişince alt çipi 'Hepsi'ne sıfırla
+
+    if (btnElement) {
+        document.querySelectorAll('#so-main-segment .segment-btn').forEach(btn => btn.classList.remove('active'));
+        btnElement.classList.add('active');
+    }
+
+    renderSabitSubFilters();
+    applySabitFilters();
 }
-                });
 
-                filteredData.forEach(k => { 
-                    let label = `${k.kalem} - ₺${k.tutar} (${k.kalan_ay} Ay)`;
-                    sel.innerHTML += `<option value="${k.satir}" data-yon="${k.yon}" data-tur="${k.tur}" data-tutar="${k.tutar}" data-yontem="${k.yontem}" data-gun="${k.gun}" data-sure="${k.kalan_ay}" data-durum="${k.durum}">${label}</option>`; 
-                });
-                if(filteredData.length === 0) sel.innerHTML = `<option value="">Bu kategoride onay bekleyen işlem yok.</option>`;
-                
-                refreshCustomSelect(sel);
-                onKuralChange();
+function renderSabitSubFilters() {
+    const container = document.getElementById('so-sub-filters');
+    let html = `<div class="tag-pill active" onclick="setSabitSubFilter('Hepsi', this)" style="border-radius: 20px; font-size: 12px; padding: 6px 14px; white-space: nowrap;">Hepsi</div>`;
+
+    if (currentSabitMainType === 'Gider') {
+        html += `
+            <div class="tag-pill" onclick="setSabitSubFilter('Fatura', this)" style="border-radius: 20px; font-size: 12px; padding: 6px 14px; white-space: nowrap;">Faturalar</div>
+            <div class="tag-pill" onclick="setSabitSubFilter('Kredi', this)" style="border-radius: 20px; font-size: 12px; padding: 6px 14px; white-space: nowrap;">Krediler</div>
+            <div class="tag-pill" onclick="setSabitSubFilter('Diger', this)" style="border-radius: 20px; font-size: 12px; padding: 6px 14px; white-space: nowrap;">Diğer Giderler</div>
+        `;
+    } else {
+        html += `
+            <div class="tag-pill" onclick="setSabitSubFilter('Maaş', this)" style="border-radius: 20px; font-size: 12px; padding: 6px 14px; white-space: nowrap;">Maaş</div>
+            <div class="tag-pill" onclick="setSabitSubFilter('Ek Ders', this)" style="border-radius: 20px; font-size: 12px; padding: 6px 14px; white-space: nowrap;">Ek Ders</div>
+            <div class="tag-pill" onclick="setSabitSubFilter('Sabit Gelir', this)" style="border-radius: 20px; font-size: 12px; padding: 6px 14px; white-space: nowrap;">Diğer Gelirler</div>
+        `;
+    }
+    container.innerHTML = html;
+}
+
+function setSabitSubFilter(subType, el) {
+    vibe();
+    currentSabitSubType = subType;
+    document.querySelectorAll('#so-sub-filters .tag-pill').forEach(c => {
+        c.classList.remove('active');
+        c.style.background = 'rgba(255,255,255,0.06)';
+        c.style.color = '#cbd5e1';
+    });
+    
+    el.classList.add('active');
+    el.style.background = 'var(--brand-gradient)';
+    el.style.color = 'white';
+
+    applySabitFilters();
+}
+
+function applySabitFilters() {
+    const sel = document.getElementById('so-kural');
+    if (!sel) return;
+    
+    sel.innerHTML = "";
+    
+    let filteredData = window.sabitDataRaw.filter(k => {
+        let kYon = k.yon ? k.yon.toString().trim() : "Gider";
+        let kTur = k.tur ? k.tur.toString().trim() : "";
+
+        // 1. Ana Yön (Gider/Gelir) Kontrolü
+        if (kYon !== currentSabitMainType) return false;
+
+        // 2. Alt Çip Kontrolü
+        if (currentSabitSubType !== 'Hepsi') {
+            if (currentSabitMainType === 'Gider' && currentSabitSubType === 'Diger') {
+                if (kTur === 'Fatura' || kTur === 'Kredi') return false; // Fatura ve kredi hariç her şey Diger'dir
+            } else if (kTur !== currentSabitSubType) {
+                return false;
             }
         }
+        return true;
+    });
+
+    filteredData.forEach(k => { 
+        let label = `${k.kalem} - ₺${k.tutar} (${k.kalan_ay} Ay)`;
+        sel.innerHTML += `<option value="${k.satir}" data-yon="${k.yon}" data-tur="${k.tur}" data-tutar="${k.tutar}" data-yontem="${k.yontem}" data-gun="${k.gun}" data-sure="${k.kalan_ay}" data-durum="${k.durum}">${label}</option>`; 
+    });
+    
+    if (filteredData.length === 0) sel.innerHTML = `<option value="">Bu kategoride bekleyen işlem yok.</option>`;
+    
+    refreshCustomSelect(sel);
+    onKuralChange();
+}
 
         function onKuralChange() {
             const select = document.getElementById('so-kural');
