@@ -2677,25 +2677,32 @@ document.getElementById('lbl-kart-gelecek').innerHTML = `Gelecek Dönem <span st
             let bar = document.getElementById('bar-kart-limit');
             if(bar) bar.style.width = kData.doluluk + "%";
 
-            // YENİ DİNAMİK ETİKETLER VE HESAPLAMA
-                    let eGun = (secim === "hepsi" || secim === "") ? 15 : window.kartlarVerisi.find(k => k.isim === secim).ekstre;
-                    let simdi = new Date();
-                    let d = new Date();
+            // YENİ DİNAMİK ETİKETLER (KORUMALI)
+                    let targetKart = (secim !== "hepsi" && secim !== "") ? window.kartlarVerisi.find(k => k.isim === secim) : null;
+                    let eGun = targetKart ? parseInt(targetKart.ekstre) : 15;
                     
+                    let simdiG = new Date();
                     const aylar = ["Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"];
-                    const getAy = (off) => { d.setMonth(simdi.getMonth() + off); return aylar[d.getMonth()]; };
+                    
+                    const getAyAdi = (offset) => {
+                        let tempDate = new Date();
+                        tempDate.setMonth(simdiG.getMonth() + offset);
+                        return aylar[tempDate.getMonth()];
+                    };
 
                     let donemMetni, gelecekMetni;
-                    if (simdi.getDate() >= eGun) {
-                        donemMetni = `Dönem İçi (${eGun} ${getAy(0)} - ${eGun-1} ${getAy(1)})`;
-                        gelecekMetni = `Gelecek Dönem (${eGun} ${getAy(1)} ve Sonrası)`;
+                    if (simdiG.getDate() >= eGun) {
+                        donemMetni = `Dönem İçi (${eGun} ${getAyAdi(0)} - ${eGun-1} ${getAyAdi(1)})`;
+                        gelecekMetni = `Gelecek Dönem (${eGun} ${getAyAdi(1)} ve Sonrası)`;
                     } else {
-                        donemMetni = `Dönem İçi (${eGun} ${getAy(-1)} - ${eGun-1} ${getAy(0)})`;
-                        gelecekMetni = `Gelecek Dönem (${eGun} ${getAy(0)} ve Sonrası)`;
+                        donemMetni = `Dönem İçi (${eGun} ${getAyAdi(-1)} - ${eGun-1} ${getAyAdi(0)})`;
+                        gelecekMetni = `Gelecek Dönem (${eGun} ${getAyAdi(0)} ve Sonrası)`;
                     }
 
-                    document.getElementById('lbl-kart-donemici').innerText = donemMetni;
-                    document.getElementById('lbl-kart-gelecek').innerText = gelecekMetni;
+                    const labelDonem = document.getElementById('lbl-kart-donemici');
+                    const labelGelecek = document.getElementById('lbl-kart-gelecek');
+                    if(labelDonem) labelDonem.innerText = donemMetni;
+                    if(labelGelecek) labelGelecek.innerText = gelecekMetni;
 
                     setHtml('val-kart-donemici', formatTL(kData.donemIci));
                     setHtml('val-kart-gelecek', formatTL(kData.gelecek));
