@@ -2255,7 +2255,26 @@
                     setText('last-update', "Son: " + now.toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'}));
 
                     window.tarihceData = data.tarihce || [];
-                    window.currentStats = { netServet: data.netServet, toplamBorc: data.toplamBorc, toplamCanYakan: data.toplamCanYakan, toplamPlanli: data.toplamPlanli, tahminiFaiz: data.tahminiFaiz, toplamKasa: data.toplamKasa, kartToplam: data.kartToplam, kartLimit: data.kartLimit, kartKullanilabilir: data.kartKullanilabilir, kartDoluluk: data.kartDoluluk, kartDonemIci: data.kartDonemIci, kartGelecek: data.kartGelecek, netServetUSD: data.netServetUSD, usdRate: data.usdRate || 1 };
+                    window.currentStats = { 
+                        netServet: data.netServet, 
+                        toplamBorc: data.toplamBorc, 
+                        toplamCanYakan: data.toplamCanYakan, 
+                        toplamPlanli: data.toplamPlanli, 
+                        tahminiFaiz: data.tahminiFaiz, 
+                        toplamKasa: data.toplamKasa, 
+                        kartToplam: data.kartToplam, 
+                        kartLimit: data.kartLimit, 
+                        kartKullanilabilir: data.kartKullanilabilir, 
+                        kartDoluluk: data.kartDoluluk, 
+                        kartDonemIci: data.kartDonemIci, 
+                        kartGelecek: data.kartGelecek, 
+                        netServetUSD: data.netServetUSD, 
+                        usdRate: data.usdRate || 1,
+                        // YENİ EKLENEN 3 METRİK:
+                        toplamVarlik: data.toplamVarlik,
+                        toplamYatirim: data.toplamYatirim,
+                        finansalSkor: data.finansalSkor
+                    };
 
                     animateValue("val-net-servet", window.currentStats.netServet, 1200);
                     animateValueUSD("val-net-servet-usd", window.currentStats.netServetUSD, 1200);
