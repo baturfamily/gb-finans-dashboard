@@ -2442,8 +2442,12 @@
                     } else { setHtml('banka-listesi', `<div style="text-align:center; color:var(--text-muted); padding: 15px 0;">Veri bulunamadı.</div>`); }
 
                     if(data.buAyToplamGider !== undefined) {
-                        let netKalan = data.buAyToplamGelir - data.buAyToplamGider;
-                        let tasarrufOrani = (data.buAyToplamGelir > 0 && netKalan > 0) ? Math.round((netKalan / data.buAyToplamGelir) * 100) : 0;
+                        let gelir = parseSaha(data.buAyToplamGelir) || 0;
+                        let gider = parseSaha(data.buAyToplamGider) || 0;
+                        let sabitler = parseSaha(data.odenecekSabitToplam) || 0;
+                        
+                        let netKalan = gelir - gider;
+                        let tasarrufOrani = (gelir > 0 && netKalan > 0) ? Math.round((netKalan / gelir) * 100) : 0;
 
                         let aylikGiderEl = document.getElementById('aylikGider');
                         if (netKalan < 0) {
@@ -2456,14 +2460,14 @@
                             if(aylikGiderEl) aylikGiderEl.style.color = "var(--emerald)"; 
                         }
 
-                        setHtml('butceDurum', "Gelir: " + formatTL(data.buAyToplamGelir)); 
-                        setHtml('kalanBakiye', "Harcama: " + formatTL(data.buAyToplamGider)); 
+                        setHtml('butceDurum', "Gelir: " + formatTL(gelir)); 
+                        setHtml('kalanBakiye', "Harcama: " + formatTL(gider)); 
 
                         setText('tasarruf-orani-badge', `Tasarruf: %${tasarrufOrani}`); 
                         setHtml('mevcutKalanProjek', formatTL(netKalan)); 
-                        setHtml('gelecekSabitler', "- " + formatTL(data.odenecekSabitToplam || 0));
+                        setHtml('gelecekSabitler', "- " + formatTL(sabitler));
 
-                        let ozgurPara = netKalan - (data.odenecekSabitToplam || 0); 
+                        let ozgurPara = netKalan - sabitler; 
                         let ozgurParaEl = document.getElementById('ozgurPara');
                         if(ozgurParaEl) { 
                             ozgurParaEl.innerHTML = formatTL(ozgurPara); 
