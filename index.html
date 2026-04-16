@@ -858,6 +858,11 @@
                 <select id="an-yontem" class="form-control"></select>
             </div>
 
+            <div class="form-group">
+                <label>İşlem Tarihi</label>
+                <input type="date" id="an-tarih" class="form-control">
+            </div>
+
             <button class="btn-submit" id="btn-submit-anlik" onclick="submitAnlik()">Şimdi Kaydet</button>
         </div>
 
@@ -1319,6 +1324,15 @@
     document.querySelectorAll('#anlik-segment .segment-btn').forEach(b => b.classList.remove('active'));
     if(btn) btn.classList.add('active');
 
+    // Tarihi otomatik olarak bugüne ayarla
+    document.getElementById('an-tarih').valueAsDate = new Date();
+
+    const kLabel = document.getElementById('an-kalem-label');
+    const kKonteyner = document.getElementById('an-kalem-konteyner');
+    const fGrubu = document.getElementById('an-faiz-grubu');
+    if(fGrubu) fGrubu.style.display = 'none';
+    if(btn) btn.classList.add('active');
+
     const kLabel = document.getElementById('an-kalem-label');
     const kKonteyner = document.getElementById('an-kalem-konteyner');
     const fGrubu = document.getElementById('an-faiz-grubu');
@@ -1411,9 +1425,10 @@ function checkAnlikKalem() {
     let kalem = getCustomVal('an-kalem');
     const tutar = document.getElementById('an-tutar').value;
     const yontem = getCustomVal('an-yontem');
+    const tarih = document.getElementById('an-tarih').value; // Seçilen tarihi al
+    
     if(!kalem || !tutar) return alert("Lütfen Kalem ve Tutar girin!");
 
-    // Faiz özel durumu: Seçilen hesabı kalem adına ekle
     if (kalem === "Faiz") {
         const faizHesabi = getCustomVal('an-faiz-detay');
         if(!faizHesabi) return alert("Lütfen faiz uygulanan hesabı seçin!");
@@ -1421,7 +1436,8 @@ function checkAnlikKalem() {
     }
 
     const odTuru = window.hesapTurleri[yontem] || "Banka Hesabı";
-    apiIstekAt({ action: "yeni_hareket", tur: currentAnlikType, kategori: "Değişken", kalem: kalem, yontem: yontem, tutar: tutar, taksit: 1, odeme_turu: odTuru }, 'btn-submit-anlik');
+    // Payload'a tarih eklendi
+    apiIstekAt({ action: "yeni_hareket", tur: currentAnlikType, kategori: "Değişken", kalem: kalem, yontem: yontem, tutar: tutar, taksit: 1, odeme_turu: odTuru, tarih: tarih }, 'btn-submit-anlik');
 }
 
         async function submitDuzenli() {
