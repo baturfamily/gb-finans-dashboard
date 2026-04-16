@@ -825,33 +825,41 @@
             </div>
 
             <div id="section-anlik" class="form-section">
-                <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Geri Dön</span>
-                
-                <div class="segment-control" style="margin-bottom: 16px;" id="anlik-segment">
-                    <div class="segment-btn active" onclick="setAnlikFilter('Gider', this)">Gider</div>
-                    <div class="segment-btn" onclick="setAnlikFilter('Gelir', this)">Gelir</div>
-                </div>
-
-                <div class="form-group">
-                    <label>Ne İçin / Nereden?</label>
-                    <input type="text" id="an-kalem" class="form-control" placeholder="Örn: Kahve, Market, Bonus">
-                </div>
-                <div class="form-group">
-    <div class="quick-tags" id="anlik-quick-tags"></div>
-</div>
-
-                <div class="form-group">
-                    <label id="an-yontem-label">Ödeme Hesabı</label>
-                    <select id="an-yontem" class="form-control"></select>
-                </div>
-
-                <div class="form-group">
-                    <label>Tutar (₺)</label>
-                    <input type="text" inputmode="decimal" id="an-tutar" class="form-control" placeholder="0,00">
-                </div>
-
-                <button class="btn-submit" id="btn-submit-anlik" onclick="submitAnlik()">Şimdi Kaydet</button>
+            <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Geri Dön</span>
+            
+            <div class="segment-control" style="margin-bottom: 16px;" id="anlik-segment">
+                <div class="segment-btn active" onclick="setAnlikFilter('Gider', this)">Gider</div>
+                <div class="segment-btn" onclick="setAnlikFilter('Gelir', this)">Gelir</div>
             </div>
+
+            <div class="form-group">
+                <label>Tutar (₺)</label>
+                <input type="text" inputmode="decimal" id="an-tutar" class="form-control" placeholder="0,00">
+            </div>
+
+            <div class="form-group">
+                <label id="an-kalem-label">Gider Kalemi</label>
+                <div id="an-kalem-konteyner">
+                    <select id="an-kalem" class="form-control" onchange="checkAnlikKalem()"></select>
+                </div>
+            </div>
+
+            <div class="form-group" id="an-faiz-grubu" style="display:none; background: rgba(245, 158, 11, 0.05); padding: 15px; border-radius: 14px; border: 1px dashed rgba(245, 158, 11, 0.3); margin-top: -10px; margin-bottom: 15px;">
+                <label style="color: var(--amber);">Hangi bankanın hesabı ya da kredi kartının faizi?</label>
+                <select id="an-faiz-detay" class="form-control"></select>
+            </div>
+
+            <div class="form-group">
+                <div class="quick-tags" id="anlik-quick-tags"></div>
+            </div>
+
+            <div class="form-group">
+                <label id="an-yontem-label">Ödeme Hesabı</label>
+                <select id="an-yontem" class="form-control"></select>
+            </div>
+
+            <button class="btn-submit" id="btn-submit-anlik" onclick="submitAnlik()">Şimdi Kaydet</button>
+        </div>
 
             <div id="section-duzenli" class="form-section">
                 <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Geri Dön</span>
@@ -1307,35 +1315,52 @@
         let currentDuzenliType = 'Gider';
 
         function setAnlikFilter(type, btn) {
-            vibe(); currentAnlikType = type;
-            document.querySelectorAll('#anlik-segment .segment-btn').forEach(b => b.classList.remove('active'));
-            if(btn) btn.classList.add('active');
-            
-            const labelEl = document.getElementById('an-yontem-label');
-            const selectEl = document.getElementById('an-yontem');
-            if(labelEl) labelEl.innerText = type === 'Gelir' ? 'Giriş Yapılacak Hesap' : 'Ödeme Hesabı';
-            if(selectEl) {
-                selectEl.innerHTML = type === 'Gelir' ? window.vadesizOptions : window.hesapOptions;
-                refreshCustomSelect(selectEl);
-            }
+    vibe(); currentAnlikType = type;
+    document.querySelectorAll('#anlik-segment .segment-btn').forEach(b => b.classList.remove('active'));
+    if(btn) btn.classList.add('active');
 
-            const quickTags = document.getElementById('anlik-quick-tags');
-            if (quickTags) {
-                let baslik = '<label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 8px;">Hızlı Seçim</label>';
-                if (type === 'Gelir') {
-                    quickTags.innerHTML = baslik + `
-                        <div class="tag-pill" onclick="fillInput('an-kalem', 'Sınav Görevi')">Sınav Görevi</div>
-                        <div class="tag-pill" onclick="fillInput('an-kalem', 'Özel Ders')">Özel Ders</div>
-                        <div class="tag-pill" onclick="fillInput('an-kalem', 'Maaş')">Maaş</div>`;
-                } else {
-                    quickTags.innerHTML = baslik + `
-                        <div class="tag-pill" onclick="fillInput('an-kalem', 'Market')">Market</div>
-                        <div class="tag-pill" onclick="fillInput('an-kalem', 'Yakıt')">Yakıt</div>
-                        <div class="tag-pill" onclick="fillInput('an-kalem', 'Dışardan Yemek')">Dışardan Yemek</div>
-                        <div class="tag-pill" onclick="fillInput('an-kalem', 'Kahve')">Kahve</div>`;
-                }
-            }
-        }
+    const kLabel = document.getElementById('an-kalem-label');
+    const kKonteyner = document.getElementById('an-kalem-konteyner');
+    const fGrubu = document.getElementById('an-faiz-grubu');
+    if(fGrubu) fGrubu.style.display = 'none';
+
+    if(type === 'Gider') {
+        kLabel.innerText = "Gider Kalemi";
+        kKonteyner.innerHTML = `<select id="an-kalem" class="form-control" onchange="checkAnlikKalem()">
+            <option value="Market">Market</option>
+            <option value="Yakıt">Yakıt</option>
+            <option value="Dışardan Yemek">Dışardan Yemek</option>
+            <option value="Kahve">Kahve</option>
+            <option value="Faiz">Faiz</option>
+        </select>`;
+        refreshCustomSelect(document.getElementById('an-kalem'));
+    } else {
+        kLabel.innerText = "Ne İçin / Nereden?";
+        kKonteyner.innerHTML = `<input type="text" id="an-kalem" class="form-control" placeholder="Örn: Maaş, Bonus">`;
+    }
+
+    const labelEl = document.getElementById('an-yontem-label');
+    const selectEl = document.getElementById('an-yontem');
+    if(labelEl) labelEl.innerText = type === 'Gelir' ? 'Giriş Yapılacak Hesap' : 'Ödeme Hesabı';
+    if(selectEl) {
+        selectEl.innerHTML = type === 'Gelir' ? window.vadesizOptions : window.hesapOptions;
+        refreshCustomSelect(selectEl);
+    }
+}
+
+// YENİ: Faiz seçimini kontrol eden fonksiyon
+function checkAnlikKalem() {
+    const kalem = getCustomVal('an-kalem');
+    const fGrubu = document.getElementById('an-faiz-grubu');
+    const fSelect = document.getElementById('an-faiz-detay');
+    if (kalem === "Faiz") {
+        fGrubu.style.display = 'block';
+        fSelect.innerHTML = window.faizOptions;
+        refreshCustomSelect(fSelect);
+    } else {
+        fGrubu.style.display = 'none';
+    }
+}
 
         function setDuzenliFilter(type, btn) {
             vibe(); currentDuzenliType = type;
@@ -1383,14 +1408,21 @@
         }
 
         async function submitAnlik() {
-            const kalem = document.getElementById('an-kalem').value;
-            const tutar = document.getElementById('an-tutar').value;
-            const yontem = getCustomVal('an-yontem');
-            if(!kalem || !tutar) return alert("Eksik bilgi!");
-            
-            const odTuru = window.hesapTurleri[yontem] || "Banka Hesabı";
-            apiIstekAt({ action: "yeni_hareket", tur: currentAnlikType, kategori: "Değişken", kalem: kalem, yontem: yontem, tutar: tutar, taksit: 1, odeme_turu: odTuru }, 'btn-submit-anlik');
-        }
+    let kalem = getCustomVal('an-kalem');
+    const tutar = document.getElementById('an-tutar').value;
+    const yontem = getCustomVal('an-yontem');
+    if(!kalem || !tutar) return alert("Lütfen Kalem ve Tutar girin!");
+
+    // Faiz özel durumu: Seçilen hesabı kalem adına ekle
+    if (kalem === "Faiz") {
+        const faizHesabi = getCustomVal('an-faiz-detay');
+        if(!faizHesabi) return alert("Lütfen faiz uygulanan hesabı seçin!");
+        kalem = faizHesabi + " Faizi";
+    }
+
+    const odTuru = window.hesapTurleri[yontem] || "Banka Hesabı";
+    apiIstekAt({ action: "yeni_hareket", tur: currentAnlikType, kategori: "Değişken", kalem: kalem, yontem: yontem, tutar: tutar, taksit: 1, odeme_turu: odTuru }, 'btn-submit-anlik');
+}
 
         async function submitDuzenli() {
             const tur = getCustomVal('du-tur');
@@ -2315,17 +2347,30 @@
                     window.hesapTurleri = { "Nakit": "Nakit" };
                     window.hesapOptions = "";
                     window.vadesizOptions = "";
-                    let kartOptions = `<option value="">-- Kart Seçin --</option>`;
-                    let krediKartlariHTML = "";
-                    let digerHesaplarHTML = "";
-
-                    if (data.bankalar && data.bankalar.length > 0) {
-                        data.bankalar.forEach(banka => {
-                            digerHesaplarHTML += `<option value="${banka.isim}">${banka.isim}</option>`;
-                            window.vadesizOptions += `<option value="${banka.isim}">${banka.isim}</option>`;
-                            window.hesapTurleri[banka.isim] = (banka.tur === 'Nakit' || banka.isim.toLowerCase().includes('nakit')) ? 'Nakit' : 'Banka Hesabı';
-                        });
-                    }
+                    window.faizOptions = ""; // Faiz listesi için yeni değişken
+        let kartOptions = `<option value="">-- Kart Seçin --</option>`;
+        let krediKartlariHTML = "";
+        let digerHesaplarHTML = "";
+        if (data.bankalar && data.bankalar.length > 0) {
+            data.bankalar.forEach(banka => {
+                digerHesaplarHTML += `<option value="${banka.isim}">${banka.isim}</option>`;
+                window.vadesizOptions += `<option value="${banka.isim}">${banka.isim}</option>`;
+                window.hesapTurleri[banka.isim] = (banka.tur === 'Nakit' || banka.isim.toLowerCase().includes('nakit')) ? 'Nakit' : 'Banka Hesabı';
+                // Nakit hariç faiz listesine ekle
+                if(banka.tur !== 'Nakit' && !banka.isim.toLowerCase().includes('nakit')) {
+                    window.faizOptions += `<option value="${banka.isim}">${banka.isim}</option>`;
+                }
+            });
+        }
+        if (data.kartlarDetayli && data.kartlarDetayli.length > 0) {
+            data.kartlarDetayli.forEach(kart => {
+                krediKartlariHTML += `<option value="${kart.isim}">${kart.isim}</option>`;
+                kartOptions += `<option value="${kart.isim}">${kart.isim}</option>`;
+                window.hesapTurleri[kart.isim] = 'Kredi Kartı';
+                // Kartları da faiz listesine ekle
+                window.faizOptions += `<option value="${kart.isim}">${kart.isim}</option>`;
+            });
+        }
                     
                     if (data.kartlarDetayli && data.kartlarDetayli.length > 0) {
                         data.kartlarDetayli.forEach(kart => {
