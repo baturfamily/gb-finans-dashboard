@@ -1167,7 +1167,7 @@
             document.querySelectorAll('.time-btn').forEach(btn => btn.classList.remove('active')); 
             if(btnElement) btnElement.classList.add('active');
             
-            const ids = ['trend-net-servet', 'trend-net-servet-usd', 'trend-borc', 'trend-can-yakan', 'trend-planli', 'trend-faiz', 'trend-kasa', 'trend-kart'];
+            const ids = ['trend-net-servet', 'trend-net-servet-usd', 'trend-borc', 'trend-can-yakan', 'trend-planli', 'trend-faiz', 'trend-kasa', 'trend-kart', 'trend-toplam-varlik', 'trend-yatirim', 'trend-skor', 'trend-dolar-kuru'];
             if (days === 0) { ids.forEach(id => { setHtml(id, ""); }); return; }
             
             if(!window.tarihceData || window.tarihceData.length < 2) { 
@@ -1193,26 +1193,34 @@
             // YENİ 12 SÜTUNLU TARİHÇE FORMATI:
             // 0:Tarih, 1:Top.Varlık, 2:Yatırım, 3:Net Varlık, 4:Top.Borç, 5:Can Yakan, 6:Planlı, 7:Faiz, 8:Kasa, 9:Kart Borcu, 10:Dolar Kuru, 11:Skor
             
-            let pastNetServet = parseSaha(bestRow[3]);
-            let pastBorc = parseSaha(bestRow[4]);
-            let pastCanYakan = parseSaha(bestRow[5]);
-            let pastPlanli = parseSaha(bestRow[6]);
-            let pastFaiz = parseSaha(bestRow[7]);
-            let pastKasa = parseSaha(bestRow[8]);
-            let pastKart = parseSaha(bestRow[9]);
+            // YENİ 12 SÜTUNLU (0-11) TARİHÇE HARİTASI
+            let pastToplamVarlik = parseSaha(bestRow[1]);
+            let pastYatirim      = parseSaha(bestRow[2]);
+            let pastNetServet    = parseSaha(bestRow[3]);
+            let pastBorc         = parseSaha(bestRow[4]);
+            let pastCanYakan     = parseSaha(bestRow[5]);
+            let pastPlanli       = parseSaha(bestRow[6]);
+            let pastFaiz         = parseSaha(bestRow[7]);
+            let pastKasa         = parseSaha(bestRow[8]);
+            let pastKart         = parseSaha(bestRow[9]);
+            let pastDolarKuru    = parseSaha(bestRow[10]) || 1;
+            let pastSkor         = parseSaha(bestRow[11]);
             
-            // Dolar kurunu al, sıfır veya boşsa güncel kuru kullan, o da yoksa 1 kabul et (Hatayı önle)
-            let dolarKuru = parseSaha(bestRow[10]) || window.currentStats.usdRate || 1;
-            let pastNetServetUSD = pastNetServet / dolarKuru;
+            let pastNetServetUSD = pastNetServet / pastDolarKuru;
 
-            renderTrend('trend-net-servet', window.currentStats.netServet, pastNetServet, false); 
-            renderTrend('trend-net-servet-usd', window.currentStats.netServetUSD, pastNetServetUSD, false, '$'); 
-            renderTrend('trend-borc', window.currentStats.toplamBorc, pastBorc, true); 
-            renderTrend('trend-can-yakan', window.currentStats.toplamCanYakan, pastCanYakan, true); 
-            renderTrend('trend-planli', window.currentStats.toplamPlanli, pastPlanli, true); 
-            renderTrend('trend-faiz', window.currentStats.tahminiFaiz, pastFaiz, true); 
-            renderTrend('trend-kasa', window.currentStats.toplamKasa, pastKasa, false); 
+            // Trend Rozetlerini Çizdir (11 Sütun + Dolar Bazlı)
+            renderTrend('trend-toplam-varlik', window.currentStats.toplamVarlik, pastToplamVarlik, false);
+            renderTrend('trend-yatirim', window.currentStats.toplamYatirim, pastYatirim, false);
+            renderTrend('trend-net-servet', window.currentStats.netServet, pastNetServet, false);
+            renderTrend('trend-net-servet-usd', window.currentStats.netServetUSD, pastNetServetUSD, false, '$');
+            renderTrend('trend-borc', window.currentStats.toplamBorc, pastBorc, true);
+            renderTrend('trend-can-yakan', window.currentStats.toplamCanYakan, pastCanYakan, true);
+            renderTrend('trend-planli', window.currentStats.toplamPlanli, pastPlanli, true);
+            renderTrend('trend-faiz', window.currentStats.tahminiFaiz, pastFaiz, true);
+            renderTrend('trend-kasa', window.currentStats.toplamKasa, pastKasa, false);
             renderTrend('trend-kart', window.currentStats.kartToplam, pastKart, true);
+            renderTrend('trend-dolar-kuru', window.currentStats.usdRate, pastDolarKuru, false, '₺');
+            renderTrend('trend-skor', window.currentStats.finansalSkor, pastSkor, false, '');
         }
 
         function renderTrend(elementId, current, past, isDebt, symbol = '₺') {
