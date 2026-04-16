@@ -2642,7 +2642,10 @@
                                 taahhutBadge = `<span style="background:rgba(59, 130, 246, 0.15); color:var(--blue); padding:2px 6px; border-radius:6px; font-size:10px; margin-left:4px;">⏳ Bitiş: ${tDate}</span>`;
                             }
                             
-                            cats[tur].html += `<div class="t-row" style="padding: 10px 0; border-bottom: 1px dashed rgba(255,255,255,0.05); ${rowOpacity}"><div class="t-details" style="min-width:0; padding-right:10px;"><div class="t-name" style="font-size:14px;">${sabit.kalem} <span style="font-size:11px; color:var(--text-muted); font-weight:normal; margin-left:4px;">(${sabit.yontem})</span></div><div class="t-meta tabular-nums" style="font-size:11px;">Ayın ${sabit.gun}${turkceEkBul(sabit.gun)} • ${sabit.kalanAy} Ay ${stat}${taahhutBadge}</div></div><div class="t-amt tabular-nums ${yonRenk}" style="font-size:14px;">${formatTL(sabit.tutar)}</div></div>`;
+                            // YENİ: Sabit gelirlerde "İşlem Türü - Kalem Adı" gösterme koşulu
+                            let gorunenAdi = (sabit.yon === "Gelir") ? `${sabit.tur} - ${sabit.kalem}` : sabit.kalem;
+
+                            cats[tur].html += `<div class="t-row" style="padding: 10px 0; border-bottom: 1px dashed rgba(255,255,255,0.05); ${rowOpacity}"><div class="t-details" style="min-width:0; padding-right:10px;"><div class="t-name" style="font-size:14px;">${gorunenAdi} <span style="font-size:11px; color:var(--text-muted); font-weight:normal; margin-left:4px;">(${sabit.yontem})</span></div><div class="t-meta tabular-nums" style="font-size:11px;">Ayın ${sabit.gun}${turkceEkBul(sabit.gun)} • ${sabit.kalanAy} Ay ${stat}${taahhutBadge}</div></div><div class="t-amt tabular-nums ${yonRenk}" style="font-size:14px;">${formatTL(sabit.tutar)}</div></div>`;
                             cats[tur].toplam += sabit.tutar;
                             
                             // Toplam maliyet hesabında sadece Giderleri topla
