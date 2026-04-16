@@ -844,6 +844,11 @@
                 </div>
             </div>
 
+            <div class="form-group" id="an-diger-konteyner" style="display:none; margin-top: -10px; margin-bottom: 15px;">
+                <label>Lütfen Kalem Adını Yazın</label>
+                <input type="text" id="an-kalem-diger" class="form-control" placeholder="Örn: Hırdavat, Bağış vb.">
+            </div>
+
             <div class="form-group" id="an-faiz-grubu" style="display:none; background: rgba(245, 158, 11, 0.05); padding: 15px; border-radius: 14px; border: 1px dashed rgba(245, 158, 11, 0.3); margin-top: -10px; margin-bottom: 15px;">
                 <label style="color: var(--amber);">Hangi bankanın hesabı ya da kredi kartının faizi?</label>
                 <select id="an-faiz-detay" class="form-control"></select>
@@ -1326,13 +1331,14 @@
             document.querySelectorAll('#anlik-segment .segment-btn').forEach(b => b.classList.remove('active'));
             if(btn) btn.classList.add('active');
 
-            // Ekran açıldığında tarihi otomatik bugüne ayarla
             document.getElementById('an-tarih').valueAsDate = new Date();
+            
+            // Gizli kutuları sıfırla
+            document.getElementById('an-faiz-grubu').style.display = 'none';
+            document.getElementById('an-diger-konteyner').style.display = 'none';
 
             const kLabel = document.getElementById('an-kalem-label');
             const kKonteyner = document.getElementById('an-kalem-konteyner');
-            const fGrubu = document.getElementById('an-faiz-grubu');
-            if(fGrubu) fGrubu.style.display = 'none';
 
             if(type === 'Gider') {
                 kLabel.innerText = "Gider Kalemi";
@@ -1342,32 +1348,41 @@
                     <option value="Dışardan Yemek">Dışardan Yemek</option>
                     <option value="Kahve">Kahve</option>
                     <option value="Faiz">Faiz</option>
+                    <option value="Diğer">Diğer</option>
                 </select>`;
-                refreshCustomSelect(document.getElementById('an-kalem'));
             } else {
-                kLabel.innerText = "Ne İçin / Nereden?";
-                kKonteyner.innerHTML = `<input type="text" id="an-kalem" class="form-control" placeholder="Örn: Maaş, Bonus">`;
+                kLabel.innerText = "Gelir Kalemi";
+                kKonteyner.innerHTML = `<select id="an-kalem" class="form-control" onchange="checkAnlikKalem()">
+                    <option value="Sınav Görevi">Sınav Görevi</option>
+                    <option value="Özel Ders">Özel Ders</option>
+                    <option value="Faiz Geliri">Faiz Geliri</option>
+                    <option value="Diğer">Diğer</option>
+                </select>`;
             }
+            refreshCustomSelect(document.getElementById('an-kalem'));
 
             const labelEl = document.getElementById('an-yontem-label');
             const selectEl = document.getElementById('an-yontem');
-            if(labelEl) labelEl.innerText = type === 'Gelir' ? 'Giriş Yapılacak Hesap' : 'Ödeme Hesabı';
-            if(selectEl) {
-                selectEl.innerHTML = type === 'Gelir' ? window.vadesizOptions : window.hesapOptions;
-                refreshCustomSelect(selectEl);
-            }
+            labelEl.innerText = type === 'Gelir' ? 'Giriş Yapılacak Hesap' : 'Ödeme Hesabı';
+            selectEl.innerHTML = type === 'Gelir' ? window.vadesizOptions : window.hesapOptions;
+            refreshCustomSelect(selectEl);
         }
 
         function checkAnlikKalem() {
             const kalem = getCustomVal('an-kalem');
             const fGrubu = document.getElementById('an-faiz-grubu');
-            const fSelect = document.getElementById('an-faiz-detay');
+            const dKonteyner = document.getElementById('an-diger-konteyner');
+            
+            // Her şeyi gizle, sadece seçilene göre aç
+            fGrubu.style.display = 'none';
+            dKonteyner.style.display = 'none';
+
             if (kalem === "Faiz") {
                 fGrubu.style.display = 'block';
-                fSelect.innerHTML = window.faizOptions;
-                refreshCustomSelect(fSelect);
-            } else {
-                fGrubu.style.display = 'none';
+                document.getElementById('an-faiz-detay').innerHTML = window.faizOptions;
+                refreshCustomSelect(document.getElementById('an-faiz-detay'));
+            } else if (kalem === "Diğer") {
+                dKonteyner.style.display = 'block';
             }
         }
 
@@ -1417,28 +1432,34 @@
         }
 
         async function submitAnlik() {
-            let kalem = (currentAnlikType === 'Gider') ? getCustomVal('an-kalem') : document.getElementById('an-kalem').value;
+            const anaKalemSecimi = getCustomVal('an-kalem');
+            let finalKalem = anaKalemSecimi;
+            
             const tutar = document.getElementById('an-tutar').value;
             const yontem = getCustomVal('an-yontem');
-            const secilenTarih = document.getElementById('an-tarih').value; // format: "YYYY-MM-DD"
+            const secilenTarih = document.getElementById('an-tarih').value;
 
-            if(!kalem || !tutar || !secilenTarih) return alert("Lütfen tüm alanları doldurun!");
+            if(!anaKalemSecimi || !tutar || !secilenTarih) return alert("Eksik alanları doldurun!");
 
-            // --- TARİH FORMATLAMA (GG.AA.YYYY SS:DD:SN) ---
+            // DİĞER: Metin kutusundaki veriyi al
+            if (anaKalemSecimi === "Diğer") {
+                finalKalem = document.getElementById('an-kalem-diger').value;
+                if(!finalKalem) return alert("Lütfen kalem adını manuel yazın!");
+            }
+            // FAİZ: Banka detayını ekle
+            else if (anaKalemSecimi === "Faiz") {
+                const faizDetay = getCustomVal('an-faiz-detay');
+                if(!faizDetay) return alert("Faiz uygulanan hesabı seçin!");
+                finalKalem = faizDetay + " Faizi";
+            }
+
+            // --- TARİH FORMATLAMA ---
             const simdi = new Date();
             const saat = String(simdi.getHours()).padStart(2, '0');
             const dak = String(simdi.getMinutes()).padStart(2, '0');
             const sn = String(simdi.getSeconds()).padStart(2, '0');
-            
-            const tParca = secilenTarih.split('-'); // ["2026", "04", "10"]
-            const tamTarihFormati = `${tParca[2]}.${tParca[1]}.${tParca[0]} ${saat}:${dak}:${sn}`;
-            // Sonuç: 10.04.2026 11:44:00 formatına ulaştık.
-
-            if (currentAnlikType === 'Gider' && kalem === "Faiz") {
-                const faizHesabi = getCustomVal('an-faiz-detay');
-                if(!faizHesabi) return alert("Lütfen faiz uygulanan hesabı seçin!");
-                kalem = faizHesabi + " Faizi";
-            }
+            const tParca = secilenTarih.split('-');
+            const tamTarih = `${tParca[2]}.${tParca[1]}.${tParca[0]} ${saat}:${dak}:${sn}`;
 
             const odTuru = window.hesapTurleri[yontem] || "Banka Hesabı";
             
@@ -1446,12 +1467,12 @@
                 action: "yeni_hareket", 
                 tur: currentAnlikType, 
                 kategori: "Değişken", 
-                kalem: kalem, 
+                kalem: finalKalem, // Log D sütununa gidecek veri
                 yontem: yontem, 
                 tutar: tutar, 
                 taksit: 1, 
                 odeme_turu: odTuru,
-                tarih: tamTarihFormati // Artık tam formatlı tarih gidiyor
+                tarih: tamTarih
             }, 'btn-submit-anlik');
         }
 
