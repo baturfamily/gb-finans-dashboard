@@ -1210,22 +1210,21 @@
             // YENİ 12 SÜTUNLU TARİHÇE FORMATI:
             // 0:Tarih, 1:Top.Varlık, 2:Yatırım, 3:Net Varlık, 4:Top.Borç, 5:Can Yakan, 6:Planlı, 7:Faiz, 8:Kasa, 9:Kart Borcu, 10:Dolar Kuru, 11:Skor
             
-            // TAHMİN YOK: DİREKT SÜTUN İNDEKSLERİ (A=0, B=1, C=2 ... K=10, L=11)
-            let pastToplamVarlik = parseSaha(bestRow[1]); // B Sütunu
-            let pastYatirim      = parseSaha(bestRow[2]); // C Sütunu
-            let pastNetServet    = parseSaha(bestRow[3]); // D Sütunu
-            let pastBorc         = parseSaha(bestRow[4]); // E Sütunu
-            let pastCanYakan     = parseSaha(bestRow[5]); // F Sütunu
-            let pastPlanli       = parseSaha(bestRow[6]); // G Sütunu
-            let pastFaiz         = parseSaha(bestRow[7]); // H Sütunu
-            let pastKasa         = parseSaha(bestRow[8]); // I Sütunu
-            let pastKart         = parseSaha(bestRow[9]); // J Sütunu
-            let pastDolarKuru    = parseSaha(bestRow[10]); // K Sütunu (Direkt Kur)
-            let pastSkor         = parseSaha(bestRow[11]); // L Sütunu (Finansal Skor)
+           // YENİ 12 SÜTUNLU (0-11) TARİHÇE HARİTASI
+            let pastToplamVarlik = parseSaha(bestRow[1]);
+            let pastYatirim      = parseSaha(bestRow[2]);
+            let pastNetServet    = parseSaha(bestRow[3]);
+            let pastBorc         = parseSaha(bestRow[4]);
+            let pastCanYakan     = parseSaha(bestRow[5]);
+            let pastPlanli       = parseSaha(bestRow[6]);
+            let pastFaiz         = parseSaha(bestRow[7]);
+            let pastKasa         = parseSaha(bestRow[8]);
+            let pastKart         = parseSaha(bestRow[9]);
+            let pastSkor         = parseSaha(bestRow[11]);
             
-            // Matematiksel Çökme Koruması: Dolar kuru K sütununda boşsa (0 ise), sayıyı 0'a bölüp sonsuz (Infinity) hatası vermemesi için sadece bölme işleminde 1 kabul ediyoruz.
-            let bolunecekKur = pastDolarKuru > 0 ? pastDolarKuru : 1; 
-            let pastNetServetUSD = pastNetServet / bolunecekKur;
+            // GEÇMİŞİ BOŞVER: Güncel dolar kuru neyse ona böl. SIFIR TAHMİN.
+            let guncelDolarKuru  = window.currentStats.usdRate || 1;
+            let pastNetServetUSD = pastNetServet / guncelDolarKuru;
 
             // Trend Rozetlerini Çizdir (PWA arayüzündekilerle eşleştirme)
             if(document.getElementById('trend-toplam-varlik')) renderTrend('trend-toplam-varlik', window.currentStats.toplamVarlik, pastToplamVarlik, false);
