@@ -844,18 +844,24 @@
                 </div>
             </div>
 
+            <div id="an-ek-aciklama-grup" style="display:none; margin-bottom: 15px;">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; cursor: pointer;" onclick="toggleEkInput()">
+                    <input type="checkbox" id="an-ek-check" style="width: 18px; height: 18px; pointer-events: none;">
+                    <span style="font-size: 13px; color: var(--text-muted);">Ek açıklama yazmak için dokun</span>
+                </div>
+                <div id="an-ek-input-konteyner" style="display: none;">
+                    <input type="text" id="an-ek-input" class="form-control" placeholder="Örn: Okul, İspark, Shell vb.">
+                </div>
+            </div>
+
             <div class="form-group" id="an-diger-konteyner" style="display:none; margin-top: -10px; margin-bottom: 15px;">
                 <label>Lütfen Kalem Adını Yazın</label>
-                <input type="text" id="an-kalem-diger" class="form-control" placeholder="Örn: Hırdavat, Bağış vb.">
+                <input type="text" id="an-kalem-diger" class="form-control" placeholder="Kalem adı...">
             </div>
 
             <div class="form-group" id="an-faiz-grubu" style="display:none; background: rgba(245, 158, 11, 0.05); padding: 15px; border-radius: 14px; border: 1px dashed rgba(245, 158, 11, 0.3); margin-top: -10px; margin-bottom: 15px;">
                 <label style="color: var(--amber);">Hangi bankanın hesabı ya da kredi kartının faizi?</label>
                 <select id="an-faiz-detay" class="form-control"></select>
-            </div>
-
-            <div class="form-group">
-                <div class="quick-tags" id="anlik-quick-tags"></div>
             </div>
 
             <div class="form-group">
@@ -1324,7 +1330,14 @@
         let currentAnlikType = 'Gider';
         let currentDuzenliType = 'Gider';
 
-        // 1. Sekme değiştiğinde ve ekran açıldığında çalışan ayarlar
+        function toggleEkInput() {
+            const check = document.getElementById('an-ek-check');
+            const konteyner = document.getElementById('an-ek-input-konteyner');
+            check.checked = !check.checked;
+            konteyner.style.display = check.checked ? 'block' : 'none';
+            if(check.checked) document.getElementById('an-ek-input').focus();
+        }
+
         function setAnlikFilter(type, btn) {
             vibe(); 
             currentAnlikType = type;
@@ -1333,9 +1346,13 @@
 
             document.getElementById('an-tarih').valueAsDate = new Date();
             
-            // Gizli kutuları sıfırla
+            // Tüm yan kutuları sıfırla
             document.getElementById('an-faiz-grubu').style.display = 'none';
             document.getElementById('an-diger-konteyner').style.display = 'none';
+            document.getElementById('an-ek-aciklama-grup').style.display = 'none';
+            document.getElementById('an-ek-check').checked = false;
+            document.getElementById('an-ek-input-konteyner').style.display = 'none';
+            document.getElementById('an-ek-input').value = "";
 
             const kLabel = document.getElementById('an-kalem-label');
             const kKonteyner = document.getElementById('an-kalem-konteyner');
@@ -1372,10 +1389,11 @@
             const kalem = getCustomVal('an-kalem');
             const fGrubu = document.getElementById('an-faiz-grubu');
             const dKonteyner = document.getElementById('an-diger-konteyner');
+            const ekGrup = document.getElementById('an-ek-aciklama-grup');
             
-            // Her şeyi gizle, sadece seçilene göre aç
             fGrubu.style.display = 'none';
             dKonteyner.style.display = 'none';
+            ekGrup.style.display = 'none';
 
             if (kalem === "Faiz") {
                 fGrubu.style.display = 'block';
@@ -1383,6 +1401,9 @@
                 refreshCustomSelect(document.getElementById('an-faiz-detay'));
             } else if (kalem === "Diğer") {
                 dKonteyner.style.display = 'block';
+            } else if (kalem && kalem !== "Faiz Geliri") {
+                // İstisna kalemler haricinde ek açıklama sorusunu göster
+                ekGrup.style.display = 'block';
             }
         }
 
@@ -1441,19 +1462,27 @@
 
             if(!anaKalemSecimi || !tutar || !secilenTarih) return alert("Eksik alanları doldurun!");
 
-            // DİĞER: Metin kutusundaki veriyi al
+            // 1. DİĞER Kontrolü
             if (anaKalemSecimi === "Diğer") {
                 finalKalem = document.getElementById('an-kalem-diger').value;
-                if(!finalKalem) return alert("Lütfen kalem adını manuel yazın!");
+                if(!finalKalem) return alert("Lütfen kalem adını yazın!");
             }
-            // FAİZ: Banka detayını ekle
+            // 2. FAİZ Kontrolü
             else if (anaKalemSecimi === "Faiz") {
                 const faizDetay = getCustomVal('an-faiz-detay');
                 if(!faizDetay) return alert("Faiz uygulanan hesabı seçin!");
                 finalKalem = faizDetay + " Faizi";
             }
+            // 3. EK AÇIKLAMA Kontrolü (YENİ)
+            else {
+                const ekCheck = document.getElementById('an-ek-check');
+                const ekInput = document.getElementById('an-ek-input').value;
+                if(ekCheck.checked && ekInput) {
+                    finalKalem = `${anaKalemSecimi} - ${ekInput}`;
+                }
+            }
 
-            // --- TARİH FORMATLAMA ---
+            // TARİH FORMATLAMA
             const simdi = new Date();
             const saat = String(simdi.getHours()).padStart(2, '0');
             const dak = String(simdi.getMinutes()).padStart(2, '0');
@@ -1467,7 +1496,7 @@
                 action: "yeni_hareket", 
                 tur: currentAnlikType, 
                 kategori: "Değişken", 
-                kalem: finalKalem, // Log D sütununa gidecek veri
+                kalem: finalKalem, 
                 yontem: yontem, 
                 tutar: tutar, 
                 taksit: 1, 
