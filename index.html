@@ -395,6 +395,17 @@
                             <div class="trend-box tabular-nums" id="trend-net-servet-usd" style="margin-top:0; font-size: 11px;"></div>
                         </div>
                     </div>
+                    
+                    <div class="summary-grid sensitive-data" style="margin-top: 16px; background: rgba(0,0,0,0.4); border-radius: 16px; border: 1px solid rgba(255,255,255,0.03);">
+                        <div class="summary-item br-right" style="padding: 12px; text-align: center;">
+                            <span style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Borç / Varlık</span>
+                            <span id="val-borc-varlik-orani" class="tabular-nums" style="font-size: 16px; font-weight: 800; color: #cbd5e1; margin-top: 4px;">%0</span>
+                        </div>
+                        <div class="summary-item" style="padding: 12px; text-align: center;">
+                            <span style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Nakit Koruma (Survival)</span>
+                            <span id="val-nakit-koruma" class="tabular-nums" style="font-size: 16px; font-weight: 800; color: var(--emerald); margin-top: 4px;">0 Ay</span>
+                        </div>
+                    </div>
                     <div id="varlik-dagilimi-alani" class="sensitive-data" style="margin-top: 20px; width: 100%; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px; text-align: left;">
                         <div style="font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:12px; text-transform:uppercase; letter-spacing:0.5px;">Varlık Dağılımı</div>
                         <div id="varlik-listesi"></div>
@@ -515,7 +526,10 @@
                         </div>
                         <div style="display:flex; justify-content:space-between; margin-top:8px; font-size:12px; color:var(--text-muted); font-weight:500;">
                             <span>Toplam Limit: <span id="val-kart-limit" style="color:#cbd5e1;">₺0,00</span></span>
-                            <span id="val-kart-doluluk" style="background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 8px;">%0 Dolu</span>
+                            <div style="display: flex; gap: 8px;">
+                                <span id="val-kart-puan" style="background: rgba(16, 185, 129, 0.15); color: var(--emerald); padding: 2px 8px; border-radius: 8px; font-weight: 700; display: none;">0 Puan</span>
+                                <span id="val-kart-doluluk" style="background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 8px;">%0 Dolu</span>
+                            </div>
                         </div>
                     </div>
 
@@ -2216,6 +2230,14 @@
 
                     animateValue("val-net-servet", window.currentStats.netServet, 1200);
                     animateValueUSD("val-net-servet-usd", window.currentStats.netServetUSD, 1200);
+                    
+                    // YENİ METRİKLERİ YAZDIR
+                    if(document.getElementById('val-borc-varlik-orani')) document.getElementById('val-borc-varlik-orani').innerText = data.borcVarlikOrani || "%0";
+                    if(document.getElementById('val-nakit-koruma')) {
+                        let aylar = data.nakitKorumaSuresi || 0;
+                        let renk = aylar > 6 ? "var(--emerald)" : (aylar > 3 ? "var(--amber)" : "var(--rose)");
+                        document.getElementById('val-nakit-koruma').innerHTML = `<span style="color:${renk}">${aylar} Ay</span>`;
+                    }
 
                     window.kartlarVerisi = data.kartlarDetayli || [];
                     
@@ -2648,6 +2670,7 @@
                         kullanilabilir: Math.max(0, kartObj.limit - kartObj.borc),
                         doluluk: kartObj.limit > 0 ? Math.round((kartObj.borc / kartObj.limit) * 100) : 0,
                         donemIci: kartObj.donemIci, gelecek: kartObj.gelecek
+                        if(kartObj.puan > 0) { document.getElementById('val-kart-puan').style.display='block'; document.getElementById('val-kart-puan').innerText='⭐ '+kartObj.puan+' Puan'; } else { document.getElementById('val-kart-puan').style.display='none'; }
                     };
                     document.getElementById('lbl-kart-donemici').innerHTML = `Dönem İçi <span style="font-size:10px; color:var(--rose); opacity:0.8; margin-left:4px;">(AYIN ${kartObj.ekstre}'SİNDEN ÖNCE)</span>`;
                     document.getElementById('lbl-kart-gelecek').innerHTML = `Gelecek Dönem <span style="font-size:10px; color:var(--amber); opacity:0.8; margin-left:4px;">(AYIN ${kartObj.ekstre}'Sİ VE SONRASI)</span>`;
