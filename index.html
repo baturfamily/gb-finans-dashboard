@@ -1176,14 +1176,14 @@
             let bestRow = gecmisKayitlar.length > 0 ? gecmisKayitlar[gecmisKayitlar.length - 1] : window.tarihceData[0];
             if(!bestRow) return;
             
-            renderTrend('trend-net-servet', window.currentStats.netServet, parseSaha(bestRow[1]), false); 
-            renderTrend('trend-net-servet-usd', window.currentStats.netServetUSD, parseSaha(bestRow[8] || (window.currentStats.netServet / window.currentStats.usdRate)), false, '$'); 
-            renderTrend('trend-borc', window.currentStats.toplamBorc, parseSaha(bestRow[2]), true); 
-            renderTrend('trend-can-yakan', window.currentStats.toplamCanYakan, parseSaha(bestRow[3]), true); 
-            renderTrend('trend-planli', window.currentStats.toplamPlanli, parseSaha(bestRow[4]), true); 
-            renderTrend('trend-faiz', window.currentStats.tahminiFaiz, parseSaha(bestRow[5]), true); 
-            renderTrend('trend-kasa', window.currentStats.toplamKasa, parseSaha(bestRow[6]), false); 
-            renderTrend('trend-kart', window.currentStats.kartToplam, parseSaha(bestRow[7]), true);
+            renderTrend('trend-net-servet', window.currentStats.netServet, parseSaha(bestRow[3]), false); 
+            renderTrend('trend-net-servet-usd', window.currentStats.netServetUSD, (parseSaha(bestRow[3]) / (parseSaha(bestRow[10]) || window.currentStats.usdRate)), false, '$'); 
+            renderTrend('trend-borc', window.currentStats.toplamBorc, parseSaha(bestRow[4]), true); 
+            renderTrend('trend-can-yakan', window.currentStats.toplamCanYakan, parseSaha(bestRow[5]), true); 
+            renderTrend('trend-planli', window.currentStats.toplamPlanli, parseSaha(bestRow[6]), true); 
+            renderTrend('trend-faiz', window.currentStats.tahminiFaiz, parseSaha(bestRow[7]), true); 
+            renderTrend('trend-kasa', window.currentStats.toplamKasa, parseSaha(bestRow[8]), false); 
+            renderTrend('trend-kart', window.currentStats.kartToplam, parseSaha(bestRow[9]), true);
         }
 
         function renderTrend(elementId, current, past, isDebt, symbol = '₺') {
