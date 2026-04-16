@@ -2715,8 +2715,14 @@
                         kullanilabilir: Math.max(0, kartObj.limit - kartObj.borc),
                         doluluk: kartObj.limit > 0 ? Math.round((kartObj.borc / kartObj.limit) * 100) : 0,
                         donemIci: kartObj.donemIci, gelecek: kartObj.gelecek
-                        if(kartObj.puan > 0) { document.getElementById('val-kart-puan').style.display='block'; document.getElementById('val-kart-puan').innerText='⭐ '+kartObj.puan+' Puan'; } else { document.getElementById('val-kart-puan').style.display='none'; }
                     };
+                    
+                    if(kartObj.puan > 0) { 
+                        document.getElementById('val-kart-puan').style.display='block'; 
+                        document.getElementById('val-kart-puan').innerText='⭐ '+kartObj.puan+' Puan'; 
+                    } else { 
+                        document.getElementById('val-kart-puan').style.display='none'; 
+                    }
                     document.getElementById('lbl-kart-donemici').innerHTML = `Dönem İçi <span style="font-size:10px; color:var(--rose); opacity:0.8; margin-left:4px;">(AYIN ${kartObj.ekstre}'SİNDEN ÖNCE)</span>`;
                     document.getElementById('lbl-kart-gelecek').innerHTML = `Gelecek Dönem <span style="font-size:10px; color:var(--amber); opacity:0.8; margin-left:4px;">(AYIN ${kartObj.ekstre}'Sİ VE SONRASI)</span>`;
                 } else { return; }
