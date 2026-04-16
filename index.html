@@ -2215,9 +2215,30 @@
         }
 
         async function verileriCek() {
-            const durumEl = document.getElementById('baglanti-durumu'); durumEl.innerHTML = '<span class="spinner" style="border-left-color: var(--amber);"></span>Bağlanıyor'; durumEl.style.color = "var(--amber)";
+            const durumEl = document.getElementById('baglanti-durumu'); 
+            durumEl.innerHTML = '<span class="spinner" style="border-left-color: var(--amber);"></span>Bağlanıyor'; 
+            durumEl.style.color = "var(--amber)";
+            
+            // Eğer varsa eski hata kutusunu temizle
+            const eskiHataKutusu = document.getElementById('debug-hata-kutusu');
+            if(eskiHataKutusu) eskiHataKutusu.remove();
+
+            let rawText = ""; // API'den dönen ham metni tutmak için
+
             try {
-                const response = await fetch(API_URL); const data = await response.json();
+                const response = await fetch(API_URL); 
+                
+                // 1. Önce ham metni alıyoruz (JSON parse hatası varsa görebilmek için)
+                rawText = await response.text();
+                
+                // 2. Metni JSON'a çevirmeye çalışıyoruz
+                let data;
+                try {
+                    data = JSON.parse(rawText);
+                } catch (parseHata) {
+                    throw new Error("JSON Parse Hatası: API'den gelen veri bozuk.\n" + parseHata.message + "\n\nAPI Yanıtı Özeti:\n" + rawText.substring(0, 150) + "...");
+                }
+
                 if(data.durum === "basarili") {
                     durumEl.innerText = "Senkronize Edildi"; durumEl.style.color = "var(--text-muted)";
                     
@@ -2496,6 +2517,7 @@
                         if(islemData && islemData.length > 0) { 
                             islemData.forEach(islem => { 
                                 let isaret = "-"; let bgClass = "rgba(244, 63, 94, 0.15)"; let colorClass = "var(--rose)"; 
+                                
                                 if (islem.tur === "Gelir") {
                                     isaret = "+"; bgClass = "rgba(16, 185, 129, 0.15)"; colorClass = "var(--emerald)";
                                 } else if (islem.tur === "Transfer") {
@@ -2503,6 +2525,7 @@
                                 } else if (islem.tur === "Borç_Odeme") {
                                     isaret = "✓"; bgClass = "rgba(59, 130, 246, 0.15)"; colorClass = "var(--blue)"; 
                                 }
+
                                 aHTML += `<div class="t-row" style="padding: 12px 0;"><div class="t-details" style="min-width:0; padding-right:10px;"><div class="t-name" style="font-size:14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${islem.kalem}</div><div class="t-meta tabular-nums" style="font-size:11px;">${islem.tarih} • ${islem.odeme}</div></div><div class="t-amt tabular-nums" style="background:${bgClass}; color:${colorClass}; padding:4px 8px; border-radius:8px; font-size:13px; font-weight:700; flex-shrink:0;">${isaret} ${formatTL(islem.tutar)}</div></div>`; 
                             }); 
                         } else { 
@@ -2642,8 +2665,26 @@
                 } else { throw new Error("API hatası"); }
             } catch (error) { 
                 console.error("Dashboard Veri Çekme Hatası:", error);
-                document.getElementById('baglanti-durumu').innerText = "Hata (Sayfayı Yenileyin)"; 
-                document.getElementById('baglanti-durumu').style.color = "var(--rose)"; 
+                
+                const durumEl = document.getElementById('baglanti-durumu');
+                durumEl.innerText = "Hata Oluştu!"; 
+                durumEl.style.color = "var(--rose)"; 
+                
+                // HATA KUTUSUNU OLUŞTUR VE EKRANA BAS
+                const eskiHataKutusu = document.getElementById('debug-hata-kutusu');
+                if(eskiHataKutusu) eskiHataKutusu.remove();
+                
+                const hataKutusu = document.createElement('div');
+                hataKutusu.id = 'debug-hata-kutusu';
+                hataKutusu.style.cssText = "margin: 20px; padding: 15px; background: rgba(244, 63, 94, 0.15); border: 1px solid var(--rose); border-radius: 12px; color: #fff; font-family: monospace; font-size: 11px; white-space: pre-wrap; overflow-x: auto;";
+                
+                let hataMetni = "🚨 SİSTEM HATASI 🚨\n\n";
+                hataMetni += "Açıklama: " + error.message + "\n\n";
+                
+                hataKutusu.innerText = hataMetni;
+                
+                // Hata kutusunu başlığın hemen altına ekle
+                document.querySelector('.top-container').insertAdjacentElement('afterend', hataKutusu);
             }
         }
 
