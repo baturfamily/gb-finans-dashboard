@@ -858,6 +858,11 @@
                 <select id="an-yontem" class="form-control"></select>
             </div>
 
+            <div class="form-group">
+                <label>İşlem Tarihi</label>
+                <input type="date" id="an-tarih" class="form-control">
+            </div>
+
             <button class="btn-submit" id="btn-submit-anlik" onclick="submitAnlik()">Şimdi Kaydet</button>
         </div>
 
@@ -1314,53 +1319,59 @@
         let currentAnlikType = 'Gider';
         let currentDuzenliType = 'Gider';
 
+        // 1. Sekme değiştiğinde ve ekran açıldığında çalışan ayarlar
         function setAnlikFilter(type, btn) {
-    vibe(); currentAnlikType = type;
-    document.querySelectorAll('#anlik-segment .segment-btn').forEach(b => b.classList.remove('active'));
-    if(btn) btn.classList.add('active');
+            vibe(); 
+            currentAnlikType = type;
+            document.querySelectorAll('#anlik-segment .segment-btn').forEach(b => b.classList.remove('active'));
+            if(btn) btn.classList.add('active');
 
-    const kLabel = document.getElementById('an-kalem-label');
-    const kKonteyner = document.getElementById('an-kalem-konteyner');
-    const fGrubu = document.getElementById('an-faiz-grubu');
-    if(fGrubu) fGrubu.style.display = 'none';
+            // TARİH: Her açılışta bugünü otomatik seç
+            document.getElementById('an-tarih').valueAsDate = new Date();
 
-    if(type === 'Gider') {
-        kLabel.innerText = "Gider Kalemi";
-        kKonteyner.innerHTML = `<select id="an-kalem" class="form-control" onchange="checkAnlikKalem()">
-            <option value="Market">Market</option>
-            <option value="Yakıt">Yakıt</option>
-            <option value="Dışardan Yemek">Dışardan Yemek</option>
-            <option value="Kahve">Kahve</option>
-            <option value="Faiz">Faiz</option>
-        </select>`;
-        refreshCustomSelect(document.getElementById('an-kalem'));
-    } else {
-        kLabel.innerText = "Ne İçin / Nereden?";
-        kKonteyner.innerHTML = `<input type="text" id="an-kalem" class="form-control" placeholder="Örn: Maaş, Bonus">`;
-    }
+            const kLabel = document.getElementById('an-kalem-label');
+            const kKonteyner = document.getElementById('an-kalem-konteyner');
+            const fGrubu = document.getElementById('an-faiz-grubu');
+            if(fGrubu) fGrubu.style.display = 'none';
 
-    const labelEl = document.getElementById('an-yontem-label');
-    const selectEl = document.getElementById('an-yontem');
-    if(labelEl) labelEl.innerText = type === 'Gelir' ? 'Giriş Yapılacak Hesap' : 'Ödeme Hesabı';
-    if(selectEl) {
-        selectEl.innerHTML = type === 'Gelir' ? window.vadesizOptions : window.hesapOptions;
-        refreshCustomSelect(selectEl);
-    }
-}
+            // Gider ise liste göster, Gelir ise yazı yazma alanı göster
+            if(type === 'Gider') {
+                kLabel.innerText = "Gider Kalemi";
+                kKonteyner.innerHTML = `<select id="an-kalem" class="form-control" onchange="checkAnlikKalem()">
+                    <option value="Market">Market</option>
+                    <option value="Yakıt">Yakıt</option>
+                    <option value="Dışardan Yemek">Dışardan Yemek</option>
+                    <option value="Kahve">Kahve</option>
+                    <option value="Faiz">Faiz</option>
+                </select>`;
+                refreshCustomSelect(document.getElementById('an-kalem'));
+            } else {
+                kLabel.innerText = "Ne İçin / Nereden?";
+                kKonteyner.innerHTML = `<input type="text" id="an-kalem" class="form-control" placeholder="Örn: Maaş, Bonus">`;
+            }
 
-// YENİ: Faiz seçimini kontrol eden fonksiyon
-function checkAnlikKalem() {
-    const kalem = getCustomVal('an-kalem');
-    const fGrubu = document.getElementById('an-faiz-grubu');
-    const fSelect = document.getElementById('an-faiz-detay');
-    if (kalem === "Faiz") {
-        fGrubu.style.display = 'block';
-        fSelect.innerHTML = window.faizOptions;
-        refreshCustomSelect(fSelect);
-    } else {
-        fGrubu.style.display = 'none';
-    }
-}
+            const labelEl = document.getElementById('an-yontem-label');
+            const selectEl = document.getElementById('an-yontem');
+            if(labelEl) labelEl.innerText = type === 'Gelir' ? 'Giriş Yapılacak Hesap' : 'Ödeme Hesabı';
+            if(selectEl) {
+                selectEl.innerHTML = type === 'Gelir' ? window.vadesizOptions : window.hesapOptions;
+                refreshCustomSelect(selectEl);
+            }
+        }
+
+        // 2. Faiz seçilince banka listesini açan kontrol
+        function checkAnlikKalem() {
+            const kalem = getCustomVal('an-kalem');
+            const fGrubu = document.getElementById('an-faiz-grubu');
+            const fSelect = document.getElementById('an-faiz-detay');
+            if (kalem === "Faiz") {
+                fGrubu.style.display = 'block';
+                fSelect.innerHTML = window.faizOptions;
+                refreshCustomSelect(fSelect);
+            } else {
+                fGrubu.style.display = 'none';
+            }
+        }
 
         function setDuzenliFilter(type, btn) {
             vibe(); currentDuzenliType = type;
@@ -1407,22 +1418,37 @@ function checkAnlikKalem() {
             }
         }
 
+        // 3. Verileri toplayıp Backend'e (Google Sheets) gönderen fonksiyon
         async function submitAnlik() {
-    let kalem = getCustomVal('an-kalem');
-    const tutar = document.getElementById('an-tutar').value;
-    const yontem = getCustomVal('an-yontem');
-    if(!kalem || !tutar) return alert("Lütfen Kalem ve Tutar girin!");
+            let kalem = (currentAnlikType === 'Gider') ? getCustomVal('an-kalem') : document.getElementById('an-kalem').value;
+            const tutar = document.getElementById('an-tutar').value;
+            const yontem = getCustomVal('an-yontem');
+            const tarih = document.getElementById('an-tarih').value; // Seçilen Tarih
 
-    // Faiz özel durumu: Seçilen hesabı kalem adına ekle
-    if (kalem === "Faiz") {
-        const faizHesabi = getCustomVal('an-faiz-detay');
-        if(!faizHesabi) return alert("Lütfen faiz uygulanan hesabı seçin!");
-        kalem = faizHesabi + " Faizi";
-    }
+            if(!kalem || !tutar) return alert("Lütfen tüm alanları doldurun!");
 
-    const odTuru = window.hesapTurleri[yontem] || "Banka Hesabı";
-    apiIstekAt({ action: "yeni_hareket", tur: currentAnlikType, kategori: "Değişken", kalem: kalem, yontem: yontem, tutar: tutar, taksit: 1, odeme_turu: odTuru }, 'btn-submit-anlik');
-}
+            // Faiz seçildiyse kalem adını güncelle
+            if (currentAnlikType === 'Gider' && kalem === "Faiz") {
+                const faizHesabi = getCustomVal('an-faiz-detay');
+                if(!faizHesabi) return alert("Lütfen faiz uygulanan hesabı seçin!");
+                kalem = faizHesabi + " Faizi";
+            }
+
+            const odTuru = window.hesapTurleri[yontem] || "Banka Hesabı";
+            
+            // Backend'e gönderilecek veri paketi
+            apiIstekAt({ 
+                action: "yeni_hareket", 
+                tur: currentAnlikType, 
+                kategori: "Değişken", 
+                kalem: kalem, 
+                yontem: yontem, 
+                tutar: tutar, 
+                taksit: 1, 
+                odeme_turu: odTuru,
+                tarih: tarih // Tarih verisi eklendi
+            }, 'btn-submit-anlik');
+        }
 
         async function submitDuzenli() {
             const tur = getCustomVal('du-tur');
