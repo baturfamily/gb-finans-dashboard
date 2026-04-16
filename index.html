@@ -1326,7 +1326,7 @@
             document.querySelectorAll('#anlik-segment .segment-btn').forEach(b => b.classList.remove('active'));
             if(btn) btn.classList.add('active');
 
-            // TARİH: Her açılışta bugünü otomatik seç
+            // Ekran açıldığında tarihi otomatik bugüne ayarla
             document.getElementById('an-tarih').valueAsDate = new Date();
 
             const kLabel = document.getElementById('an-kalem-label');
@@ -1334,7 +1334,6 @@
             const fGrubu = document.getElementById('an-faiz-grubu');
             if(fGrubu) fGrubu.style.display = 'none';
 
-            // Gider ise liste göster, Gelir ise yazı yazma alanı göster
             if(type === 'Gider') {
                 kLabel.innerText = "Gider Kalemi";
                 kKonteyner.innerHTML = `<select id="an-kalem" class="form-control" onchange="checkAnlikKalem()">
@@ -1359,7 +1358,6 @@
             }
         }
 
-        // 2. Faiz seçilince banka listesini açan kontrol
         function checkAnlikKalem() {
             const kalem = getCustomVal('an-kalem');
             const fGrubu = document.getElementById('an-faiz-grubu');
@@ -1418,16 +1416,24 @@
             }
         }
 
-        // 3. Verileri toplayıp Backend'e (Google Sheets) gönderen fonksiyon
         async function submitAnlik() {
             let kalem = (currentAnlikType === 'Gider') ? getCustomVal('an-kalem') : document.getElementById('an-kalem').value;
             const tutar = document.getElementById('an-tutar').value;
             const yontem = getCustomVal('an-yontem');
-            const tarih = document.getElementById('an-tarih').value; // Seçilen Tarih
+            const secilenTarih = document.getElementById('an-tarih').value; // format: "YYYY-MM-DD"
 
-            if(!kalem || !tutar) return alert("Lütfen tüm alanları doldurun!");
+            if(!kalem || !tutar || !secilenTarih) return alert("Lütfen tüm alanları doldurun!");
 
-            // Faiz seçildiyse kalem adını güncelle
+            // --- TARİH FORMATLAMA (GG.AA.YYYY SS:DD:SN) ---
+            const simdi = new Date();
+            const saat = String(simdi.getHours()).padStart(2, '0');
+            const dak = String(simdi.getMinutes()).padStart(2, '0');
+            const sn = String(simdi.getSeconds()).padStart(2, '0');
+            
+            const tParca = secilenTarih.split('-'); // ["2026", "04", "10"]
+            const tamTarihFormati = `${tParca[2]}.${tParca[1]}.${tParca[0]} ${saat}:${dak}:${sn}`;
+            // Sonuç: 10.04.2026 11:44:00 formatına ulaştık.
+
             if (currentAnlikType === 'Gider' && kalem === "Faiz") {
                 const faizHesabi = getCustomVal('an-faiz-detay');
                 if(!faizHesabi) return alert("Lütfen faiz uygulanan hesabı seçin!");
@@ -1436,7 +1442,6 @@
 
             const odTuru = window.hesapTurleri[yontem] || "Banka Hesabı";
             
-            // Backend'e gönderilecek veri paketi
             apiIstekAt({ 
                 action: "yeni_hareket", 
                 tur: currentAnlikType, 
@@ -1446,7 +1451,7 @@
                 tutar: tutar, 
                 taksit: 1, 
                 odeme_turu: odTuru,
-                tarih: tarih // Tarih verisi eklendi
+                tarih: tamTarihFormati // Artık tam formatlı tarih gidiyor
             }, 'btn-submit-anlik');
         }
 
