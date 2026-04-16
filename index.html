@@ -406,6 +406,23 @@
                             <span id="val-nakit-koruma" class="tabular-nums" style="font-size: 16px; font-weight: 800; color: var(--emerald); margin-top: 4px;">0 Ay</span>
                         </div>
                     </div>
+                    <div class="summary-grid sensitive-data" style="margin-top: 12px; grid-template-columns: repeat(3, 1fr); background: rgba(0,0,0,0.4); border-radius: 16px; border: 1px solid rgba(255,255,255,0.03);">
+                        <div class="summary-item br-right" style="padding: 10px 4px; text-align: center;">
+                            <span style="font-size: 9px; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Top. Varlık</span>
+                            <span id="val-toplam-varlik" class="tabular-nums" style="font-size: 13px; font-weight: 800; color: #fff; margin-top: 4px;">₺0</span>
+                            <div id="trend-toplam-varlik" class="trend-box tabular-nums" style="font-size: 9px; margin-top: 4px; display: block;"></div>
+                        </div>
+                        <div class="summary-item br-right" style="padding: 10px 4px; text-align: center;">
+                            <span style="font-size: 9px; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Yatırım</span>
+                            <span id="val-yatirim" class="tabular-nums" style="font-size: 13px; font-weight: 800; color: var(--emerald); margin-top: 4px;">₺0</span>
+                            <div id="trend-yatirim" class="trend-box tabular-nums" style="font-size: 9px; margin-top: 4px; display: block;"></div>
+                        </div>
+                        <div class="summary-item" style="padding: 10px 4px; text-align: center;">
+                            <span style="font-size: 9px; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Fin. Skor</span>
+                            <span id="val-skor" class="tabular-nums" style="font-size: 14px; font-weight: 800; color: var(--blue); margin-top: 4px;">0</span>
+                            <div id="trend-skor" class="trend-box tabular-nums" style="font-size: 9px; margin-top: 4px; display: block;"></div>
+                        </div>
+                    </div>
                     <div id="varlik-dagilimi-alani" class="sensitive-data" style="margin-top: 20px; width: 100%; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px; text-align: left;">
                         <div style="font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:12px; text-transform:uppercase; letter-spacing:0.5px;">Varlık Dağılımı</div>
                         <div id="varlik-listesi"></div>
@@ -2286,6 +2303,11 @@
                         let renk = aylar > 6 ? "var(--emerald)" : (aylar > 3 ? "var(--amber)" : "var(--rose)");
                         document.getElementById('val-nakit-koruma').innerHTML = `<span style="color:${renk}">${aylar} Ay</span>`;
                     }
+                    
+                    // TOPLAM VARLIK, YATIRIM VE SKOR YAZDIRMA
+                    if(document.getElementById('val-toplam-varlik')) setHtml('val-toplam-varlik', formatTL(data.toplamVarlik || 0));
+                    if(document.getElementById('val-yatirim')) setHtml('val-yatirim', formatTL(data.toplamYatirim || 0));
+                    if(document.getElementById('val-skor')) setText('val-skor', data.finansalSkor || 0);
 
                     window.kartlarVerisi = data.kartlarDetayli || [];
                     
