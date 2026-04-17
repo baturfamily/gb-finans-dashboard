@@ -2477,25 +2477,15 @@ async function submitYeniHesap() {
                 }
             });
         }
-        if (data.kartlarDetayli && data.kartlarDetayli.length > 0) {
-            data.kartlarDetayli.forEach(kart => {
-                krediKartlariHTML += `<option value="${kart.isim}">${kart.isim}</option>`;
-                kartOptions += `<option value="${kart.isim}">${kart.isim}</option>`;
-                window.hesapTurleri[kart.isim] = 'Kredi Kartı';
-                // Kartları da faiz listesine ekle
-                window.faizOptions += `<option value="${kart.isim}">${kart.isim}</option>`;
-            });
-        }
-                    
-                    if (data.kartlarDetayli && data.kartlarDetayli.length > 0) {
-                        data.kartlarDetayli.forEach(kart => {
-                            krediKartlariHTML += `<option value="${kart.isim}">${kart.isim}</option>`;
-                            kartOptions += `<option value="${kart.isim}">${kart.isim}</option>`;
-                            window.hesapTurleri[kart.isim] = 'Kredi Kartı';
-                        });
-                    }
-                    
-                    window.hesapOptions = digerHesaplarHTML + krediKartlariHTML;
+       if (data.kartlarDetayli && data.kartlarDetayli.length > 0) {
+    data.kartlarDetayli.forEach(kart => {
+        krediKartlariHTML += `<option value="${kart.isim}">${kart.isim}</option>`;
+        kartOptions += `<option value="${kart.isim}">${kart.isim}</option>`;
+        window.hesapTurleri[kart.isim] = 'Kredi Kartı';
+        // Kartları da faiz listesine ekle
+        window.faizOptions += `<option value="${kart.isim}">${kart.isim}</option>`;
+    });
+}
                         
                     let kartDurumOptions = `<option value="hepsi">Tüm Kartlar (Özet)</option>`;
                     window.kartlarVerisi.forEach(k => {
