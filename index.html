@@ -1902,7 +1902,10 @@
             // LİSTEYE ELEMANLARI EKLE
             filteredData.forEach(k => { 
                 let sureMetni = k.kalan_ay === "Süresiz" ? "∞" : `${k.kalan_ay} Ay`;
-                let label = `${k.gun}. Gün - ${k.kalem} / ₺${k.tutar} (${sureMetni})`;
+                
+                // Sayıya göre doğru Türkçe ekini bul ve formatı "Ayın 15'i" yap
+                let ek = turkceEkBul(k.gun);
+                let label = `Ayın ${k.gun}${ek} - ${k.kalem} / ₺${k.tutar} (${sureMetni})`;
                 
                 if(k.durum !== "Aktif") label += " [İPTAL/BİTTİ]";
                 sel.innerHTML += `<option value="${k.satir}" data-yon="${k.yon}" data-tur="${k.tur}" data-tutar="${k.tutar}" data-yontem="${k.yontem}" data-gun="${k.gun}" data-sure="${k.kalan_ay}" data-durum="${k.durum}">${label}</option>`; 
