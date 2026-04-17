@@ -1689,15 +1689,45 @@
 
         function swapTransfer() {
             vibe();
-            const c = document.getElementById('t-cikis'); 
-            const g = document.getElementById('t-giris');
+            const cikisEl = document.getElementById('t-cikis');
+            const girisEl = document.getElementById('t-giris');
             
-            const tempVal = c.value; 
-            c.value = g.value; 
-            g.value = tempVal;
+            const eskiCikis = cikisEl.value;
+            const eskiGiris = girisEl.value;
 
-            refreshCustomSelect(c);
-            refreshCustomSelect(g);
+            // Eğer ikisi de boşsa (Seçiniz durumundaysa) takas yapmaya gerek yok
+            if (!eskiCikis && !eskiGiris) return;
+
+            // Değerleri hafızada yer değiştir
+            const yeniCikis = eskiGiris;
+            const yeniGiris = eskiCikis;
+
+            // Tüm seçenekleri al
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = window.vadesizOptions;
+            const tumSecenekler = Array.from(tempDiv.querySelectorAll('option')).filter(o => o.value !== "");
+
+            // Çıkış listesini YENİ değerlere göre tekrar oluştur
+            let yeniCikisHTML = `<option value="">Seçiniz...</option>`;
+            tumSecenekler.forEach(opt => {
+                if (opt.value !== yeniGiris) {
+                    yeniCikisHTML += `<option value="${opt.value}" ${opt.value === yeniCikis ? 'selected' : ''}>${opt.text}</option>`;
+                }
+            });
+            cikisEl.innerHTML = yeniCikisHTML;
+
+            // Giriş listesini YENİ değerlere göre tekrar oluştur
+            let yeniGirisHTML = `<option value="">Seçiniz...</option>`;
+            tumSecenekler.forEach(opt => {
+                if (opt.value !== yeniCikis) {
+                    yeniGirisHTML += `<option value="${opt.value}" ${opt.value === yeniGiris ? 'selected' : ''}>${opt.text}</option>`;
+                }
+            });
+            girisEl.innerHTML = yeniGirisHTML;
+
+            // Arayüzü (tasarımı) yenile
+            refreshCustomSelect(cikisEl);
+            refreshCustomSelect(girisEl);
         }
 
         function markError(id) {
