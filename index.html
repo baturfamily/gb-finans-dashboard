@@ -1383,6 +1383,12 @@
             labelEl.innerText = type === 'Gelir' ? 'Giriş Yapılacak Hesap' : 'Ödeme Hesabı';
             selectEl.innerHTML = type === 'Gelir' ? window.vadesizOptions : window.hesapOptions;
             refreshCustomSelect(selectEl);
+
+            // DÜZELTME: Seçili gelen varsayılan kaleme göre (Market veya Sınav Görevi) 
+            // Ek Açıklama kutusunu otomatik görünür yapması için fonksiyonu el ile tetikliyoruz.
+            setTimeout(() => {
+                checkAnlikKalem();
+            }, 50);
         }
 
         function checkAnlikKalem() {
