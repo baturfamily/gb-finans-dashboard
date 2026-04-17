@@ -1063,13 +1063,13 @@
 
     <div class="form-group" style="position:relative;">
         <label>Çıkış Yapılan (Gönderen)</label>
-        <select id="t-cikis" class="form-control"></select>
+        <select id="t-cikis" class="form-control" onchange="updateTransferOptions()"></select>
         <button class="swap-btn" onclick="swapTransfer()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21 16-4 4-4-4"/><path d="M17 20V4"/><path d="m3 8 4-4 4 4"/><path d="M7 4v16"/></svg></button>
     </div>
 
     <div class="form-group">
         <label>Giriş Yapılan (Alan)</label>
-        <select id="t-giris" class="form-control"></select>
+        <select id="t-giris" class="form-control" onchange="updateTransferOptions()"></select>
     </div>
 
     <div class="form-group">
@@ -2557,7 +2557,7 @@ async function submitYeniHesap() {
         window.duzenliGiderOptions = krediKartlariHTML + bankaHesaplariHTML + nakitHTML; // Kartlar En Üstte
         window.duzenliGelirOptions = bankaHesaplariHTML + nakitHTML; // Kartlar Yok
         window.hesapOptions = krediKartlariHTML + bankaHesaplariHTML + nakitHTML;
-        window.vadesizOptions = bankaHesaplariHTML + nakitHTML;
+        window.vadesizOptions = `<option value="">Seçiniz...</option>` + bankaHesaplariHTML + nakitHTML;
 
         // 3. TÜM AÇILIR MENÜLERİ (DROPDOWN) GÜNCELLE
         const hesapMenuIDler = ['an-yontem', 'du-yontem', 'so-yontem', 'bo-yontem', 't-cikis', 't-giris', 'kbo-yontem', 'sg-yontem'];
