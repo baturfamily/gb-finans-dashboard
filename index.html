@@ -461,8 +461,11 @@
                         <div class="summary-item br-right br-bottom"><span class="summary-label" style="color:var(--amber);">Tahmini Yük (Bu Ay)</span><span class="summary-val text-red tabular-nums sensitive-data" id="val-tahmini-faiz">₺ 0,00</span><div class="trend-box tabular-nums sensitive-data" id="trend-faiz" style="font-size:11px; margin-top:6px;"></div></div>
                         <div class="summary-item br-bottom"><span class="summary-label" style="white-space: normal; line-height: 1.3; font-size: 12px; margin-bottom: 4px;">01.04.2026'dan İtibaren Toplam</span><span class="summary-val tabular-nums sensitive-data" id="val-toplam-odenen-faiz" style="color:#cbd5e1;">₺ 0,00</span></div>
                         <div class="summary-item" style="grid-column: span 2; padding: 16px 12px 12px 12px;">
-                            <span class="summary-label" style="margin-bottom: 12px; color:#e2e8f0; font-size:12px; text-transform:uppercase; letter-spacing:0.5px;">Bu Ay Gerçekleşen (Ödenen) Faizler</span>
-                            <div class="list-row" style="padding: 8px 0; border-bottom: 1px dashed rgba(255,255,255,0.05);"><span class="list-label" style="font-size:14px; color:var(--text-muted);">YapıKredi KMH</span><span class="list-value tabular-nums text-red" style="font-size:15px;" id="val-faiz-yk">₺ 0,00</span></div>
+  <span class="summary-label" style="margin-bottom: 12px; color:#e2e8f0; font-size:12px; text-transform:uppercase; letter-spacing:0.5px;">Bu Ay Gerçekleşen (Ödenen) Faizler</span>
+  <div id="faiz-detay-listesi">
+      <div class="list-row" style="padding: 8px 0; border: none;"><span class="list-label" style="font-size:14px; color:var(--text-muted);">Yükleniyor...</span></div>
+  </div>
+</div>
                             <div class="list-row" style="padding: 8px 0; border-bottom: 1px dashed rgba(255,255,255,0.05);"><span class="list-label" style="font-size:14px; color:var(--text-muted);">İş Bankası KMH</span><span class="list-value tabular-nums text-red" style="font-size:15px;" id="val-faiz-is">₺ 0,00</span></div>
                             <div class="list-row" style="padding: 8px 0; border: none;"><span class="list-label" style="font-size:14px; color:var(--text-muted);">Kredi Kartı Faizi</span><span class="list-value tabular-nums text-red" style="font-size:15px;" id="val-faiz-kk">₺ 0,00</span></div>
                         </div>
@@ -2576,7 +2579,8 @@
                     }
                     setHtml('borc-listesi', borcHTML);
 
-                    setHtml('val-kasa', formatTL(data.toplamKasa)); setHtml('val-borc', formatTL(data.toplamBorc)); setHtml('val-borc-acil', formatTL(data.toplamCanYakan)); setHtml('val-borc-planli', formatTL(data.toplamPlanli)); setHtml('val-tahmini-faiz', formatTL(data.tahminiFaiz || 0)); setHtml('val-toplam-odenen-faiz', formatTL(data.toplamOdenenFaiz || 0)); setHtml('val-faiz-yk', formatTL(data.faizYKB || 0)); setHtml('val-faiz-is', formatTL(data.faizIs || 0)); setHtml('val-faiz-kk', formatTL(data.faizKK || 0)); 
+                    setHtml('val-kasa', formatTL(data.toplamKasa)); setHtml('val-borc', formatTL(data.toplamBorc)); setHtml('val-borc-acil', formatTL(data.toplamCanYakan)); setHtml('val-borc-planli', formatTL(data.toplamPlanli)); setHtml('val-tahmini-faiz', formatTL(data.aylikFaizGuncel || 0)); 
+setHtml('val-toplam-odenen-faiz', formatTL(data.toplamOdenenFaiz || 0)); setHtml('val-tahmini-faiz', formatTL(data.tahminiFaiz || 0)); setHtml('val-toplam-odenen-faiz', formatTL(data.toplamOdenenFaiz || 0)); setHtml('val-faiz-yk', formatTL(data.faizYKB || 0)); setHtml('val-faiz-is', formatTL(data.faizIs || 0)); setHtml('val-faiz-kk', formatTL(data.faizKK || 0)); 
                     
                     renderKartDurumu();
 
