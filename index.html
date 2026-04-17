@@ -1364,7 +1364,7 @@
                     <option value="Yakıt">Yakıt</option>
                     <option value="Dışardan Yemek">Dışardan Yemek</option>
                     <option value="Kahve">Kahve</option>
-                    <option value="Faiz">Faiz</option>
+                    <option value="Banka Faizi">Banka Faizi</option>
                     <option value="Diğer">Diğer</option>
                 </select>`;
             } else {
@@ -1401,13 +1401,13 @@
             dKonteyner.style.display = 'none';
             ekGrup.style.display = 'none';
 
-            if (kalem === "Faiz") {
+            if (kalem === "Banka Faizi") {
                 fGrubu.style.display = 'block';
                 document.getElementById('an-faiz-detay').innerHTML = window.faizOptions;
                 refreshCustomSelect(document.getElementById('an-faiz-detay'));
             } else if (kalem === "Diğer") {
                 dKonteyner.style.display = 'block';
-            } else if (kalem && kalem !== "Faiz Geliri") {
+            } else if (kalem && kalem !== "Faiz Geliri" && kalem !== "Banka Faizi") {
                 // İstisna kalemler haricinde ek açıklama sorusunu göster
                 ekGrup.style.display = 'block';
             }
@@ -1474,7 +1474,7 @@
                 if(!finalKalem) return alert("Lütfen kalem adını yazın!");
             }
             // 2. FAİZ Kontrolü
-            else if (anaKalemSecimi === "Faiz") {
+            else if (anaKalemSecimi === "Banka Faizi") {
                 const faizDetay = getCustomVal('an-faiz-detay');
                 if(!faizDetay) return alert("Faiz uygulanan hesabı seçin!");
                 finalKalem = faizDetay + " Faizi";
