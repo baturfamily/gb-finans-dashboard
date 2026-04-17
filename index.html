@@ -2664,7 +2664,15 @@ async function submitYeniHesap() {
                 refreshCustomSelect(menuEl); 
             }
         });
-
+// --- KREDİ KARTI DURUMU MENÜSÜNÜ DOLDURMA ---
+        let kartDurumOptions = `<option value="hepsi">Tüm Kartlar (Özet)</option>`;
+        if (data.kartlarDetayli && data.kartlarDetayli.length > 0) {
+            data.kartlarDetayli.forEach(k => {
+                kartDurumOptions += `<option value="${k.isim}">${k.isim}</option>`;
+            });
+        }
+        setHtml('dashboard-kart-secim', kartDurumOptions);
+        refreshCustomSelect(document.getElementById('dashboard-kart-secim'));
                     let kartIsimleri = data.kartlarDetayli ? data.kartlarDetayli.map(k => k.isim.trim()) : [];
                     let safBorclarListe = data.borclarListe ? data.borclarListe.filter(b => !b.isim.includes("(KMH)") && !kartIsimleri.includes(b.isim.trim())) : [];
 
