@@ -879,42 +879,55 @@
         </div>
 
             <div id="section-duzenli" class="form-section">
-                <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Geri Dön</span>
-                
-                <div class="segment-control" style="margin-bottom: 16px;" id="duzenli-segment">
-                    <div class="segment-btn active" onclick="setDuzenliFilter('Gider', this)">Düzenli Gider</div>
-                    <div class="segment-btn" onclick="setDuzenliFilter('Gelir', this)">Düzenli Gelir (Maaş, ekders vb.)</div>
-                </div>
+    <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Geri Dön</span>
+    
+    <div class="segment-control" style="margin-bottom: 16px;" id="duzenli-segment">
+        <div class="segment-btn active-gider" onclick="setDuzenliFilter('Gider', this)">Düzenli Gider</div>
+        <div class="segment-btn" onclick="setDuzenliFilter('Gelir', this)">Düzenli Gelir</div>
+    </div>
 
-                <div class="form-group">
-                    <label>Kayıt Türü</label>
-                    <select id="du-tur" class="form-control" onchange="checkDuzenliTur()"></select>
-                </div>
-                <div id="du-info-box" style="display:none; font-size:12px; color:var(--blue); background:rgba(59, 130, 246, 0.1); padding:10px; border-radius:10px; margin-top:-10px; margin-bottom:15px; border:1px solid rgba(59,130,246,0.2);">
-                    </div>
+    <div class="form-group">
+        <label>Tutar (₺)</label>
+        <input type="text" inputmode="decimal" id="du-tutar" class="form-control" placeholder="0,00">
+    </div>
 
-                <div class="form-group">
-                    <label>Açıklama (Kalem Adı)</label>
-                    <input type="text" id="du-kalem" class="form-control" placeholder="Örn: Kira, Netflix, Maaş">
-                </div>
+    <div class="form-group">
+        <label id="lbl-du-tur">Kayıt Türü</label>
+        <select id="du-tur" class="form-control" onchange="checkDuzenliTur()"></select>
+    </div>
 
-                <div class="form-group">
-                    <label id="du-yontem-label">Ödeme Hesabı</label>
-                    <select id="du-yontem" class="form-control"></select>
-                </div>
+    <div id="du-info-box" style="display:none; font-size:12px; color:var(--blue); background:rgba(59, 130, 246, 0.1); padding:10px; border-radius:10px; margin-top:-10px; margin-bottom:15px; border:1px solid rgba(59,130,246,0.2);">
+    </div>
 
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                    <div class="form-group"><label>Tutar (₺)</label><input type="text" inputmode="decimal" id="du-tutar" class="form-control"></div>
-                    <div class="form-group"><label>Günü (1-31)</label><input type="text" inputmode="numeric" id="du-gun" class="form-control"></div>
-                </div>
+    <div class="form-group">
+        <label>Kalem Adı</label>
+        <input type="text" id="du-kalem" class="form-control" placeholder="Örn: Kira, Maaş, Netflix">
+    </div>
 
-                <div class="form-group">
-                    <label style="display:flex; justify-content:space-between;">Süresi (Ay) <span onclick="document.getElementById('du-sure').value='Süresiz'" style="color:var(--emerald); font-size:11px; cursor:pointer;">∞ Süresiz</span></label>
-                    <input type="text" id="du-sure" class="form-control" placeholder="Örn: 12">
-                </div>
+    <div class="form-group">
+        <label id="du-yontem-label">Ödeme Şekli</label>
+        <select id="du-yontem" class="form-control"></select>
+    </div>
 
-                <button class="btn-submit" id="btn-submit-duzenli" onclick="submitDuzenli()">Kuralı Oluştur</button>
-            </div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+        <div class="form-group">
+            <label id="lbl-du-gun">Ödeme Günü (1-31)</label>
+            <input type="text" inputmode="numeric" id="du-gun" class="form-control">
+        </div>
+        <div class="form-group">
+            <label id="lbl-du-sure" style="display:flex; justify-content:space-between; white-space: nowrap;">Ödeme Süresi (Ay)</label>
+            <input type="text" id="du-sure" class="form-control" placeholder="Örn: 12">
+        </div>
+    </div>
+    
+    <div style="margin-top: -10px; margin-bottom: 20px; text-align: right;">
+        <span id="helper-du-sure" onclick="document.getElementById('du-sure').value='Süresiz'" style="color:var(--emerald); font-size:11px; cursor:pointer; font-weight:600;">
+            Süresiz ödeme için tıklayın
+        </span>
+    </div>
+
+    <button class="btn-submit" id="btn-submit-duzenli" onclick="submitDuzenli()">Kuralı Oluştur</button>
+</div>
 
             <div id="section-sabit-onayla" class="form-section">
                 <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Geri Dön</span>
@@ -1434,31 +1447,48 @@
         }
 
         function setDuzenliFilter(type, btn) {
-            vibe(); currentDuzenliType = type;
-            document.querySelectorAll('#duzenli-segment .segment-btn').forEach(b => b.classList.remove('active'));
-            if(btn) btn.classList.add('active');
-            
-            let html = type === 'Gelir' ? '<option value="Maaş">Maaş</option><option value="Ek Ders">Ek Ders</option><option value="Sabit Gelir">Diğer Düzenli Gelir</option>' :
-            '<option value="Fatura">Fatura</option><option value="Abonelik">Abonelik (Netflix, Spotify vb.)</option><option value="Taksit">Taksitli Alışveriş</option><option value="Kredi">Banka Kredisi</option><option value="Yatırım">Yatırım (BES, Altın, Fon)</option><option value="Sabit Gider">Diğer Sabit Gider</option>';
-            setHtml('du-tur', html);
-            
-            const yontemEl = document.getElementById('du-yontem');
-            if(yontemEl) {
-                yontemEl.innerHTML = type === 'Gelir' ? window.vadesizOptions : window.hesapOptions;
-                refreshCustomSelect(yontemEl);
-            }
-            
-            const duYontemLabel = document.getElementById('du-yontem-label');
-            if(duYontemLabel) {
-                duYontemLabel.innerText = type === 'Gelir' ? 'Paranın Gireceği Hesap' : 'Ödeme Hesabı';
-            }
-            refreshCustomSelect(document.getElementById('du-tur'));
-            checkDuzenliTur(); 
-            const kalemInput = document.getElementById('du-kalem');
-            if(kalemInput) {
-                kalemInput.placeholder = type === 'Gelir' ? "Örn: Maaş, Ek Ders, Kira Geliri" : "Örn: Ev Kirası, Netflix, Aidat";
-            }
-        }
+    vibe(); currentDuzenliType = type;
+    
+    // 1. Sekme Renklerini Ayarla
+    document.querySelectorAll('#duzenli-segment .segment-btn').forEach(b => {
+        b.classList.remove('active', 'active-gider', 'active-gelir');
+    });
+
+    if(type === 'Gider') {
+        btn.classList.add('active-gider');
+    } else {
+        btn.classList.add('active-gelir');
+    }
+    
+    // 2. Etiketleri ve Hesap Listesini Güncelle
+    const lblYontem = document.getElementById('du-yontem-label');
+    const lblGun = document.getElementById('lbl-du-gun');
+    const lblSure = document.getElementById('lbl-du-sure');
+    const helperSure = document.getElementById('helper-du-sure');
+    const selectYontem = document.getElementById('du-yontem');
+
+    if(type === 'Gider') {
+        lblYontem.innerText = "Ödeme Şekli";
+        lblGun.innerText = "Ödeme Günü (1-31)";
+        lblSure.innerText = "Ödeme Süresi (Ay)";
+        helperSure.innerText = "Süresiz ödeme için tıklayın";
+        selectYontem.innerHTML = window.duzenliGiderOptions;
+        
+        setHtml('du-tur', '<option value="Fatura">Fatura</option><option value="Abonelik">Abonelik</option><option value="Taksit">Taksitli Alışveriş</option><option value="Kredi">Banka Kredisi</option><option value="Yatırım">Yatırım</option><option value="Sabit Gider">Diğer Sabit Gider</option>');
+    } else {
+        lblYontem.innerText = "Paranın Gireceği Hesap";
+        lblGun.innerText = "Gelir Günü (1-31)";
+        lblSure.innerText = "Gelir Süresi (Ay)";
+        helperSure.innerText = "Süresiz gelir için tıklayın";
+        selectYontem.innerHTML = window.duzenliGelirOptions;
+        
+        setHtml('du-tur', '<option value="Maaş">Maaş</option><option value="Ek Ders">Ek Ders</option><option value="Sabit Gelir">Diğer Düzenli Gelir</option>');
+    }
+
+    refreshCustomSelect(selectYontem);
+    refreshCustomSelect(document.getElementById('du-tur'));
+    checkDuzenliTur();
+}
 
         function checkDuzenliTur() {
             const tur = getCustomVal('du-tur');
