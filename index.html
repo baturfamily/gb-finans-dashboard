@@ -930,72 +930,74 @@
 </div>
 
             <div id="section-sabit-onayla" class="form-section">
-                <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Geri Dön</span>
-                
-                <div class="segment-control" style="margin-bottom: 12px;" id="so-main-segment">
-    <div class="segment-btn active" onclick="setSabitMainFilter('Gider', this)">Bekleyen Giderler</div>
-    <div class="segment-btn" onclick="setSabitMainFilter('Gelir', this)">Bekleyen Gelirler</div>
-</div>
-
-<div id="so-sub-filters" style="display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none;">
+    <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Geri Dön</span>
+    
+    <div class="segment-control" style="margin-bottom: 16px;" id="so-main-segment">
+        <div class="segment-btn active-gider" onclick="setSabitMainFilter('Gider', this)">Bekleyen Giderler</div>
+        <div class="segment-btn" onclick="setSabitMainFilter('Gelir', this)">Bekleyen Gelirler</div>
     </div>
 
-<div class="form-group">
-    <label>Bekleyen İşlemi Seçin</label>
-    <select id="so-kural" class="form-control" onchange="onKuralChange()"></select>
+    <div class="form-group">
+        <label>Kategori Seçin</label>
+        <select id="so-kategori" class="form-control" onchange="onKategoriChange()"></select>
+    </div>
+
+    <div class="form-group">
+        <label>Bekleyen İşlemi Seçin</label>
+        <select id="so-kural" class="form-control" onchange="onKuralChange()"></select>
+    </div>
+
+    <div style="background: rgba(59, 130, 246, 0.1); border: 1px dashed rgba(59, 130, 246, 0.3); padding: 12px; border-radius: 12px; margin-bottom: 8px; text-align:center;">
+        <div style="font-size: 11px; color: var(--blue); font-weight: 700; margin-bottom: 4px; letter-spacing: 0.5px;">KAYITLI / GEÇEN AYKİ TUTAR</div>
+        <div style="font-size: 22px; font-weight: 800; color: #fff;" id="so-referans-tutar">₺0,00</div>
+    </div>
+
+    <div style="text-align:right; margin-bottom: 16px;">
+        <span onclick="submitPasGec()" style="color: var(--rose); font-size: 12px; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; background: rgba(244, 63, 94, 0.1); padding: 4px 10px; border-radius: 8px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 4 15 12 5 20"></polygon><line x1="19" y1="5" x2="19" y2="19"></line></svg> İşlemi Bu Ay Pas Geç
+        </span>
+    </div>
+
+    <div class="form-group">
+        <label id="lbl-so-tutar">Bu Ay Gerçekleşen Net Tutar (₺)</label>
+        <input type="text" inputmode="decimal" id="so-guncel-tutar" class="form-control" oninput="hesaplaKalanParcali()">
+    </div>
+
+    <div class="form-group" style="margin-top:-6px; margin-bottom:20px;">
+        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--text-muted); font-size: 12px; font-weight:500;">
+            <input type="checkbox" id="so-kalici-check" style="width: 16px; height: 16px; accent-color: var(--blue);">
+            Bu tutarı gelecek aylar için kalıcı yap
+        </label>
+    </div>
+
+    <div class="form-group">
+        <label>Ödeme/Tahsilat Şekli</label>
+        <select id="so-odeme-sekli" class="form-control" onchange="toggleParcaliOdeme()">
+            <option value="tek">Tek Hesaptan İşlem Yap</option>
+            <option value="parcali">Parça Parça (Farklı Hesaplardan)</option>
+        </select>
+    </div>
+
+    <div id="so-tek-hesap-alani">
+        <div class="form-group">
+            <label id="lbl-so-yontem">İşlem Yapılacak Hesap</label>
+            <select id="so-yontem" class="form-control"></select>
+        </div>
+    </div>
+
+    <div id="so-parcali-hesap-alani" style="display:none; background: rgba(0,0,0,0.2); padding: 16px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px dashed rgba(255,255,255,0.1);">
+            <span style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Hedef: <span id="so-hedef-tutar" style="color:#fff; font-weight:800;" class="tabular-nums">₺0</span></span>
+            <span style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Kalan: <span id="so-kalan-tutar" style="color:var(--rose); font-weight:800;" class="tabular-nums">₺0</span></span>
+        </div>
+        <div id="so-parcalar-container"></div>
+        <button onclick="addParca()" style="background: rgba(255,255,255,0.05); border: 1px dashed rgba(255,255,255,0.2); color: #cbd5e1; width: 100%; padding: 12px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 10px; transition: 0.2s;">
+            + Yeni Hesap / Parça Ekle
+        </button>
+    </div>
+
+    <button class="btn-submit" id="btn-submit-sabit-onayla" onclick="submitSabitOnayla()">Onayla ve Kaydet</button>
 </div>
-
-                <div style="background: rgba(59, 130, 246, 0.1); border: 1px dashed rgba(59, 130, 246, 0.3); padding: 12px; border-radius: 12px; margin-bottom: 8px; text-align:center;">
-                    <div style="font-size: 11px; color: var(--blue); font-weight: 700; margin-bottom: 4px; letter-spacing: 0.5px;">KAYITLI / GEÇEN AYKİ TUTAR</div>
-                    <div style="font-size: 22px; font-weight: 800; color: #fff;" id="so-referans-tutar">₺0,00</div>
-                </div>
-
-                <div style="text-align:right; margin-bottom: 16px;">
-                    <span onclick="submitPasGec()" style="color: var(--rose); font-size: 12px; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; background: rgba(244, 63, 94, 0.1); padding: 4px 10px; border-radius: 8px;">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 4 15 12 5 20"></polygon><line x1="19" y1="5" x2="19" y2="19"></line></svg> İşlemi Bu Ay Pas Geç
-                    </span>
-                </div>
-
-                <div class="form-group">
-                    <label id="lbl-so-tutar">Bu Ay Gerçekleşen Net Tutar (₺)</label>
-                    <input type="text" inputmode="decimal" id="so-guncel-tutar" class="form-control" oninput="hesaplaKalanParcali()">
-                </div>
-
-                <div class="form-group" style="margin-top:-6px; margin-bottom:20px;">
-                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--text-muted); font-size: 12px; font-weight:500;">
-                        <input type="checkbox" id="so-kalici-check" style="width: 16px; height: 16px; accent-color: var(--blue);">
-                        Bu tutarı gelecek aylar için kalıcı şablon yap (Güncelle)
-                    </label>
-                </div>
-
-                <div class="form-group">
-                    <label>Ödeme/Tahsilat Şekli</label>
-                    <select id="so-odeme-sekli" class="form-control" onchange="toggleParcaliOdeme()">
-                        <option value="tek">Tek Hesaptan İşlem Yap</option>
-                        <option value="parcali">Parça Parça (Farklı Hesaplardan)</option>
-                    </select>
-                </div>
-
-                <div id="so-tek-hesap-alani">
-                    <div class="form-group">
-                        <label id="lbl-so-yontem">İşlem Yapılacak Hesap</label>
-                        <select id="so-yontem" class="form-control"></select>
-                    </div>
-                </div>
-
-                <div id="so-parcali-hesap-alani" style="display:none; background: rgba(0,0,0,0.2); padding: 16px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 16px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px dashed rgba(255,255,255,0.1);">
-                        <span style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Hedef: <span id="so-hedef-tutar" style="color:#fff; font-weight:800;" class="tabular-nums">₺0</span></span>
-                        <span style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Kalan: <span id="so-kalan-tutar" style="color:var(--rose); font-weight:800;" class="tabular-nums">₺0</span></span>
-                    </div>
-                    <div id="so-parcalar-container"></div>
-                    <button onclick="addParca()" style="background: rgba(255,255,255,0.05); border: 1px dashed rgba(255,255,255,0.2); color: #cbd5e1; width: 100%; padding: 12px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 10px; transition: 0.2s;">
-                        + Yeni Hesap / Parça Ekle
-                    </button>
-                </div>
-
-                <button class="btn-submit" id="btn-submit-sabit-onayla" onclick="submitSabitOnayla()">Onayla ve Kaydet</button>
-            </div>
 
             <div id="section-ozel-borc" class="form-section">
                 <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Geri Dön</span>
@@ -1825,62 +1827,57 @@
         }
 
         let currentSabitMainType = 'Gider';
-        let currentSabitSubType = 'Hepsi';
 
         function setSabitMainFilter(yon, btnElement) {
             vibe();
             currentSabitMainType = yon;
-            currentSabitSubType = 'Hepsi';
 
+            // Sekme renklerini anlık işlemdeki gibi kırmızı/yeşil yap
             if (btnElement) {
-                document.querySelectorAll('#so-main-segment .segment-btn').forEach(btn => btn.classList.remove('active'));
-                btnElement.classList.add('active');
+                document.querySelectorAll('#so-main-segment .segment-btn').forEach(btn => {
+                    btn.classList.remove('active', 'active-gider', 'active-gelir');
+                });
+                if(yon === 'Gider') {
+                    btnElement.classList.add('active-gider');
+                } else {
+                    btnElement.classList.add('active-gelir');
+                }
             }
 
-            renderSabitSubFilters();
-            applySabitFilters();
+            renderSabitKategori();
         }
 
-        function renderSabitSubFilters() {
-            const container = document.getElementById('so-sub-filters');
-            let html = `<div class="tag-pill active" onclick="setSabitSubFilter('Hepsi', this)" style="border-radius: 20px; font-size: 12px; padding: 6px 14px; white-space: nowrap;">Hepsi</div>`;
-
-            if (currentSabitMainType === 'Gider') {
-                html += `
-                    <div class="tag-pill" onclick="setSabitSubFilter('Fatura', this)" style="border-radius: 20px; font-size: 12px; padding: 6px 14px; white-space: nowrap;">Faturalar</div>
-                    <div class="tag-pill" onclick="setSabitSubFilter('Kredi', this)" style="border-radius: 20px; font-size: 12px; padding: 6px 14px; white-space: nowrap;">Krediler</div>
-                    <div class="tag-pill" onclick="setSabitSubFilter('Diger', this)" style="border-radius: 20px; font-size: 12px; padding: 6px 14px; white-space: nowrap;">Diğer Giderler</div>
-                `;
-            } else {
-                html += `
-                    <div class="tag-pill" onclick="setSabitSubFilter('Maaş', this)" style="border-radius: 20px; font-size: 12px; padding: 6px 14px; white-space: nowrap;">Maaş</div>
-                    <div class="tag-pill" onclick="setSabitSubFilter('Ek Ders', this)" style="border-radius: 20px; font-size: 12px; padding: 6px 14px; white-space: nowrap;">Ek Ders</div>
-                    <div class="tag-pill" onclick="setSabitSubFilter('Sabit Gelir', this)" style="border-radius: 20px; font-size: 12px; padding: 6px 14px; white-space: nowrap;">Diğer Gelirler</div>
-                `;
-            }
-            container.innerHTML = html;
-        }
-
-        function setSabitSubFilter(subType, el) {
-            vibe();
-            currentSabitSubType = subType;
-            document.querySelectorAll('#so-sub-filters .tag-pill').forEach(c => {
-                c.classList.remove('active');
-                c.style.background = 'rgba(255,255,255,0.06)';
-                c.style.color = '#cbd5e1';
-            });
+        function renderSabitKategori() {
+            const katSelect = document.getElementById('so-kategori');
+            let html = `<option value="Hepsi">Tüm Kategoriler</option>`;
             
-            el.classList.add('active');
-            el.style.background = 'var(--brand-gradient)';
-            el.style.color = 'white';
+            if(currentSabitMainType === 'Gider') {
+                html += `<option value="Fatura">Faturalar</option>
+                         <option value="Kredi">Krediler</option>
+                         <option value="Sabit Gider">Diğer Sabit Giderler</option>`;
+            } else {
+                html += `<option value="Maaş">Maaş</option>
+                         <option value="Ek Ders">Ek Ders</option>
+                         <option value="Sabit Gelir">Diğer Sabit Gelirler</option>`;
+            }
+            katSelect.innerHTML = html;
+            refreshCustomSelect(katSelect);
+            
+            // Kategori değiştikten sonra alt listeyi otomatik filtrele
+            onKategoriChange();
+        }
 
+        function onKategoriChange() {
             applySabitFilters();
         }
 
         function applySabitFilters() {
             const sel = document.getElementById('so-kural');
-            if (!sel) return;
+            const katSelect = document.getElementById('so-kategori');
+            if (!sel || !katSelect) return;
             
+            // CustomSelect mantığına uygun okuma
+            const secilenKategori = getCustomVal('so-kategori') || "Hepsi";
             sel.innerHTML = "";
             
             let filteredData = window.sabitDataRaw.filter(k => {
@@ -1889,28 +1886,36 @@
 
                 if (kYon !== currentSabitMainType) return false;
 
-                if (currentSabitSubType !== 'Hepsi') {
-                    if (currentSabitMainType === 'Gider' && currentSabitSubType === 'Diger') {
-                        if (kTur === 'Fatura' || kTur === 'Kredi') return false; 
-                    } else if (kTur !== currentSabitSubType) {
-                        return false;
-                    }
+                if (secilenKategori !== 'Hepsi') {
+                    if (kTur !== secilenKategori) return false;
                 }
                 return true;
             });
 
+            // LİSTEYİ GÜNE GÖRE SIRALA (En yakın gün en üstte)
+            filteredData.sort((a, b) => {
+                let gunA = parseInt(a.gun) || 31;
+                let gunB = parseInt(b.gun) || 31;
+                return gunA - gunB;
+            });
+
+            // LİSTEYE ELEMANLARI EKLE
             filteredData.forEach(k => { 
-                let label = `${k.kalem} - ₺${k.tutar} (${k.kalan_ay} Ay)`;
+                let sureMetni = k.kalan_ay === "Süresiz" ? "∞" : `${k.kalan_ay} Ay`;
+                let label = `${k.gun}. Gün - ${k.kalem} / ₺${k.tutar} (${sureMetni})`;
+                
+                if(k.durum !== "Aktif") label += " [İPTAL/BİTTİ]";
                 sel.innerHTML += `<option value="${k.satir}" data-yon="${k.yon}" data-tur="${k.tur}" data-tutar="${k.tutar}" data-yontem="${k.yontem}" data-gun="${k.gun}" data-sure="${k.kalan_ay}" data-durum="${k.durum}">${label}</option>`; 
             });
             
             if (filteredData.length === 0) sel.innerHTML = `<option value="">Bu kategoride bekleyen işlem yok.</option>`;
             
+            // Metinleri Dinamik Olarak Değiştir
             const lblYontem = document.getElementById('lbl-so-yontem');
             if(lblYontem) lblYontem.innerText = currentSabitMainType === 'Gelir' ? 'Paranın Gireceği Hesap' : 'Paranın Çıktığı Hesap';
             
             const lblTutar = document.getElementById('lbl-so-tutar');
-            if(lblTutar) lblTutar.innerText = currentSabitMainType === 'Gelir' ? 'Tahsil Edilen Net Tutar (₺)' : 'Bu Ay Gerçekleşen Net Tutar (₺)';
+            if(lblTutar) lblTutar.innerText = currentSabitMainType === 'Gelir' ? 'Net Gelir Tutarı (₺)' : 'Bu Ay Gerçekleşen Net Tutar (₺)';
 
             refreshCustomSelect(sel);
             onKuralChange();
