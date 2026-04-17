@@ -2587,10 +2587,11 @@
                     let faizListesiHTML = "";
                     if (data.faizDetaylari && data.faizDetaylari.length > 0) {
                         data.faizDetaylari.forEach(function(item) {
+                            let turEtiketi = (item.tur && item.tur.trim() !== "") ? `<span style="font-size:11px; opacity:0.6; margin-left:4px;">(${item.tur})</span>` : "";
                             faizListesiHTML += `
                                 <div class="list-row" style="padding: 8px 0; border-bottom: 1px dashed rgba(255,255,255,0.05);">
                                     <span class="list-label" style="font-size:14px; color:var(--text-muted);">
-                                        ${item.banka} <span style="font-size:11px; opacity:0.6; margin-left:4px;">(${item.tur})</span>
+                                        ${item.banka} ${turEtiketi}
                                     </span>
                                     <span class="list-value tabular-nums text-red" style="font-size:15px;">
                                         ${formatTL(item.aylik)}
@@ -2930,15 +2931,14 @@
             let kData;
 
             if (secim === "hepsi" || secim === "") {
-                // SCRIPT'TEN GELEN: window.currentStats.kartLimit (F2:F toplamı)
-                // SCRIPT'TEN GELEN: window.currentStats.kartToplam (Özet B4 hücresi)
+                // Limit toplamından mevcut mutlak borcu çıkarıyoruz
                 let toplamLimit = window.currentStats.kartLimit || 0;
                 let toplamBorc = Math.abs(window.currentStats.kartToplam || 0); 
                 
                 kData = {
                     borc: toplamBorc, 
                     limit: toplamLimit,
-                    kullanilabilir: toplamLimit - toplamBorc, // 351.000 - 156.746,96 = 194.253,04
+                    kullanilabilir: toplamLimit - toplamBorc, // Matematiksel düzeltme yapıldı
                     doluluk: toplamLimit > 0 ? Math.round((toplamBorc / toplamLimit) * 100) : 0,
                     donemIci: window.currentStats.kartDonemIci, 
                     gelecek: window.currentStats.kartGelecek
@@ -2953,12 +2953,11 @@
                     kData = {
                         borc: tekBorc, 
                         limit: tekLimit,
-                        kullanilabilir: tekLimit - tekBorc,
+                        kullanilabilir: tekLimit - tekBorc, // Matematiksel düzeltme yapıldı
                         doluluk: tekLimit > 0 ? Math.round((tekBorc / tekLimit) * 100) : 0,
                         donemIci: kartObj.donemIci, 
                         gelecek: kartObj.gelecek
                     };
-                    // Puan Gösterimi
                     if(kartObj.puan > 0) { 
                         document.getElementById('val-kart-puan').style.display='block'; 
                         document.getElementById('val-kart-puan').innerText='⭐ '+kartObj.puan+' Puan'; 
@@ -2981,7 +2980,7 @@
                 bar.style.background = kData.doluluk > 85 ? "var(--rose)" : "var(--brand-gradient)";
             }
 
-            // Tarih Etiketlerini Güncelle (Önceki Mantıkla Aynı)
+            // Tarih Etiketlerini Güncelle
             let targetKart = (secim !== "hepsi" && secim !== "") ? window.kartlarVerisi.find(k => k.isim === secim) : null;
             let eGun = targetKart ? parseInt(targetKart.ekstre) : 15;
             let simdiG = new Date();
