@@ -1460,7 +1460,7 @@
         btn.classList.add('active-gelir');
     }
     
-    // 2. Etiketleri ve Hesap Listesini Güncelle
+    // 2. DOM Elemanlarını ve Etiketleri Güncelle
     const lblYontem = document.getElementById('du-yontem-label');
     const lblGun = document.getElementById('lbl-du-gun');
     const lblSure = document.getElementById('lbl-du-sure');
@@ -1473,7 +1473,6 @@
         lblSure.innerText = "Ödeme Süresi (Ay)";
         helperSure.innerText = "Süresiz ödeme için tıklayın";
         selectYontem.innerHTML = window.duzenliGiderOptions;
-        
         setHtml('du-tur', '<option value="Fatura">Fatura</option><option value="Abonelik">Abonelik</option><option value="Taksit">Taksitli Alışveriş</option><option value="Kredi">Banka Kredisi</option><option value="Yatırım">Yatırım</option><option value="Sabit Gider">Diğer Sabit Gider</option>');
     } else {
         lblYontem.innerText = "Paranın Gireceği Hesap";
@@ -1481,7 +1480,6 @@
         lblSure.innerText = "Gelir Süresi (Ay)";
         helperSure.innerText = "Süresiz gelir için tıklayın";
         selectYontem.innerHTML = window.duzenliGelirOptions;
-        
         setHtml('du-tur', '<option value="Maaş">Maaş</option><option value="Ek Ders">Ek Ders</option><option value="Sabit Gelir">Diğer Düzenli Gelir</option>');
     }
 
@@ -2488,88 +2486,78 @@ async function submitYeniHesap() {
 
                     window.kartlarVerisi = data.kartlarDetayli || [];
                     
-                    window.hesapTurleri = { "Nakit": "Nakit" };
-                    window.hesapOptions = "";
-                    window.vadesizOptions = "";
-                    window.faizOptions = ""; // Faiz listesi için yeni değişken
-        let kartOptions = `<option value="">-- Kart Seçin --</option>`;
+                    // --- HESAPLARI SIFIRLA VE SIRALAMAYI HAZIRLA ---
+        window.hesapTurleri = { "Nakit": "Nakit" }; 
+        window.faizOptions = ""; 
+        let bankaHesaplariHTML = "";
+        let nakitHTML = "";
         let krediKartlariHTML = "";
-        let digerHesaplarHTML = "";
+        let kartOptions = `<option value="">-- Kart Seçin --</option>`;
+
+        // 1. Banka ve Nakit hesaplarını ayır
         if (data.bankalar && data.bankalar.length > 0) {
             data.bankalar.forEach(banka => {
-                digerHesaplarHTML += `<option value="${banka.isim}">${banka.isim}</option>`;
-                window.vadesizOptions += `<option value="${banka.isim}">${banka.isim}</option>`;
-                window.hesapTurleri[banka.isim] = (banka.tur === 'Nakit' || banka.isim.toLowerCase().includes('nakit')) ? 'Nakit' : 'Banka Hesabı';
-                // Nakit hariç faiz listesine ekle
-                if(banka.tur !== 'Nakit' && !banka.isim.toLowerCase().includes('nakit')) {
-                    window.faizOptions += `<option value="${banka.isim}">${banka.isim}</option>`;
+                let opt = `<option value="${banka.isim}">${banka.isim}</option>`;
+                if (banka.tur === 'Nakit' || banka.isim.toLowerCase().includes('nakit')) {
+                    nakitHTML += opt;
+                } else {
+                    bankaHesaplariHTML += opt;
+                    window.faizOptions += opt; 
                 }
+                window.hesapTurleri[banka.isim] = (banka.tur === 'Nakit' || banka.isim.toLowerCase().includes('nakit')) ? 'Nakit' : 'Banka Hesabı';
             });
         }
+
+        // 2. Kredi Kartlarını al
         if (data.kartlarDetayli && data.kartlarDetayli.length > 0) {
             data.kartlarDetayli.forEach(kart => {
-                krediKartlariHTML += `<option value="${kart.isim}">${kart.isim}</option>`;
-                kartOptions += `<option value="${kart.isim}">${kart.isim}</option>`;
+                let opt = `<option value="${kart.isim}">${kart.isim}</option>`;
+                krediKartlariHTML += opt;
+                kartOptions += opt;
                 window.hesapTurleri[kart.isim] = 'Kredi Kartı';
-                // Kartları da faiz listesine ekle
-                window.faizOptions += `<option value="${kart.isim}">${kart.isim}</option>`;
+                window.faizOptions += opt; 
             });
         }
-                    
-                    window.hesapOptions = digerHesaplarHTML + krediKartlariHTML;
-                        
-                    let kartDurumOptions = `<option value="hepsi">Tüm Kartlar (Özet)</option>`;
-                    window.kartlarVerisi.forEach(k => {
-                        kartDurumOptions += `<option value="${k.isim}">${k.isim}</option>`;
-                    });
-                    setHtml('dashboard-kart-secim', kartDurumOptions);
-                    refreshCustomSelect(document.getElementById('dashboard-kart-secim'));
 
-                    const hesapMenuIDler = ['an-yontem', 'du-yontem', 'so-yontem', 'bo-yontem', 't-cikis', 't-giris', 'kbo-yontem', 'sg-yontem'];
-                    hesapMenuIDler.forEach(id => {
-                        const menuEl = document.getElementById(id);
-                        if(menuEl) {
-                            let eskiSecim = menuEl.value;
-                            if (!eskiSecim) {
-                                const spanTxt = menuEl.parentElement?.querySelector('.custom-select-trigger span');
-                                if (spanTxt && spanTxt.innerText !== "Seçiniz...") eskiSecim = spanTxt.innerText;
-                            }
-                            
-                            if(id === 'an-yontem' && currentAnlikType === 'Gelir') {
-                                menuEl.innerHTML = window.vadesizOptions;
-                            } else if(id === 'du-yontem' && currentDuzenliType === 'Gelir') {
-                                menuEl.innerHTML = window.vadesizOptions;
-                            } else if(id === 't-cikis' || id === 't-giris' || id === 'kbo-yontem' || id === 'bo-yontem') {
-                                menuEl.innerHTML = window.vadesizOptions;
-                            } else {
-                                menuEl.innerHTML = window.hesapOptions;
-                            }
+        // --- ÖZEL SIRALAMALAR ---
+        window.duzenliGiderOptions = krediKartlariHTML + bankaHesaplariHTML + nakitHTML; // Kartlar En Üstte
+        window.duzenliGelirOptions = bankaHesaplariHTML + nakitHTML; // Kartlar Yok
+        window.hesapOptions = krediKartlariHTML + bankaHesaplariHTML + nakitHTML;
+        window.vadesizOptions = bankaHesaplariHTML + nakitHTML;
 
-                            let varMi = false;
-                            Array.from(menuEl.options).forEach(opt => { if(opt.value === eskiSecim) varMi = true; });
-                            if(varMi) menuEl.value = eskiSecim;
-                            else if(menuEl.options.length > 0) menuEl.selectedIndex = 0;
-                            refreshCustomSelect(menuEl);
-                        }
-                    });
+        // 3. TÜM AÇILIR MENÜLERİ (DROPDOWN) GÜNCELLE
+        const hesapMenuIDler = ['an-yontem', 'du-yontem', 'so-yontem', 'bo-yontem', 't-cikis', 't-giris', 'kbo-yontem', 'sg-yontem'];
+        hesapMenuIDler.forEach(id => {
+            const menuEl = document.getElementById(id);
+            if(menuEl) {
+                let eskiSecim = menuEl.value;
+                
+                // Menü içeriğini türüne göre doldur
+                if(id === 'du-yontem') {
+                    menuEl.innerHTML = (currentDuzenliType === 'Gelir' ? window.duzenliGelirOptions : window.duzenliGiderOptions);
+                } else if(id === 'an-yontem' && currentAnlikType === 'Gelir') {
+                    menuEl.innerHTML = window.vadesizOptions;
+                } else if(['t-cikis', 't-giris', 'kbo-yontem', 'bo-yontem'].includes(id)) {
+                    menuEl.innerHTML = window.vadesizOptions;
+                } else {
+                    menuEl.innerHTML = window.hesapOptions;
+                }
+                
+                if(eskiSecim) menuEl.value = eskiSecim;
+                refreshCustomSelect(menuEl);
+            }
+        });
 
-                    const kartMenuIDler = ['kbo-secim', 'kl-secim', 'keg-secim'];
-                    kartMenuIDler.forEach(id => {
-                        const menuEl = document.getElementById(id);
-                        if(menuEl) {
-                            let eskiSecim = menuEl.value;
-                            if (!eskiSecim) {
-                                const spanTxt = menuEl.parentElement?.querySelector('.custom-select-trigger span');
-                                if (spanTxt && spanTxt.innerText !== "Seçiniz...") eskiSecim = spanTxt.innerText;
-                            }
-                            menuEl.innerHTML = kartOptions;
-                            let varMi = false;
-                            Array.from(menuEl.options).forEach(opt => { if(opt.value === eskiSecim) varMi = true; });
-                            if(varMi) menuEl.value = eskiSecim;
-                            else menuEl.selectedIndex = 0;
-                            refreshCustomSelect(menuEl);
-                        }
-                    });
+        // Kart özel menülerini güncelle
+        ['kbo-secim', 'kl-secim', 'keg-secim'].forEach(id => {
+            const menuEl = document.getElementById(id);
+            if(menuEl) { 
+                let eskiSecim = menuEl.value;
+                menuEl.innerHTML = kartOptions; 
+                if(eskiSecim) menuEl.value = eskiSecim;
+                refreshCustomSelect(menuEl); 
+            }
+        });
 
                     let kartIsimleri = data.kartlarDetayli ? data.kartlarDetayli.map(k => k.isim.trim()) : [];
                     let safBorclarListe = data.borclarListe ? data.borclarListe.filter(b => !b.isim.includes("(KMH)") && !kartIsimleri.includes(b.isim.trim())) : [];
