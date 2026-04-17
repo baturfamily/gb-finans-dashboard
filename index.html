@@ -1643,6 +1643,9 @@
 
             if(id === 'section-transfer') {
     document.getElementById('t-tarih').valueAsDate = new Date();
+    document.getElementById('t-cikis').value = "";
+    document.getElementById('t-giris').value = "";
+    updateTransferOptions(); // Listeleri Seçiniz haline getirir
 }
             
             if(id === 'section-kart-borc-ode') {
@@ -2257,26 +2260,65 @@
             apiIstekAt(payload, 'btn-submit-borc-ode');
         }
 
+        function updateTransferOptions() {
+    const cikisEl = document.getElementById('t-cikis');
+    const girisEl = document.getElementById('t-giris');
+    
+    const seciliCikis = cikisEl.value;
+    const seciliGiris = girisEl.value;
+
+    // Tüm vadesiz hesapları diziye alalım (Seçiniz seçeneği hariç)
+    // window.vadesizOptions içindeki HTML string'i geçici bir div ile elementlere ayırıyoruz
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = window.vadesizOptions;
+    const tumSecenekler = Array.from(tempDiv.querySelectorAll('option')).filter(o => o.value !== "");
+
+    // Çıkış listesini güncelle (Giriş'te seçili olanı çıkar)
+    let yeniCikisHTML = `<option value="">Seçiniz...</option>`;
+    tumSecenekler.forEach(opt => {
+        if (opt.value !== seciliGiris) {
+            yeniCikisHTML += `<option value="${opt.value}" ${opt.value === seciliCikis ? 'selected' : ''}>${opt.text}</option>`;
+        }
+    });
+    cikisEl.innerHTML = yeniCikisHTML;
+    refreshCustomSelect(cikisEl);
+
+    // Giriş listesini güncelle (Çıkış'ta seçili olanı çıkar)
+    let yeniGirisHTML = `<option value="">Seçiniz...</option>`;
+    tumSecenekler.forEach(opt => {
+        if (opt.value !== seciliCikis) {
+            yeniGirisHTML += `<option value="${opt.value}" ${opt.value === seciliGiris ? 'selected' : ''}>${opt.text}</option>`;
+        }
+    });
+    girisEl.innerHTML = yeniGirisHTML;
+    refreshCustomSelect(girisEl);
+}
+
         async function submitTransfer() {
     const cikis = getCustomVal('t-cikis');
     const giris = getCustomVal('t-giris');
     const tutar = document.getElementById('t-tutar').value;
     const secilenTarih = document.getElementById('t-tarih').value;
 
+    // --- BURAYA EKLE (HATA KONTROLLERİ) ---
     if(!tutar) return markError('t-tutar');
-    if(!cikis) return markError('t-cikis');
-    if(!giris) return markError('t-giris');
+    
+    // Senin istediğin kontrol satırları:
+    if(!cikis || cikis === "" || cikis === "Seçiniz...") return markError('t-cikis');
+    if(!giris || giris === "" || giris === "Seçiniz...") return markError('t-giris');
+    
     if(!secilenTarih) return markError('t-tarih');
-    if(cikis === giris) { alert("Farklı hesaplar seçin."); return; }
+    if(cikis === giris) { alert("Çıkış ve Giriş hesabı aynı olamaz."); return; }
 
-    // Log dosyası için hassas tarih formatı oluşturma (DD.MM.YYYY HH:mm:ss)
+    // --- LOG DOSYASI İÇİN TARİH AYARLARI ---
     const simdi = new Date();
     const saat = String(simdi.getHours()).padStart(2, '0');
     const dak = String(simdi.getMinutes()).padStart(2, '0');
     const sn = String(simdi.getSeconds()).padStart(2, '0');
-    const tParca = secilenTarih.split('-'); // input type="date" formatı YYYY-MM-DD gelir
+    const tParca = secilenTarih.split('-'); 
     const tamTarih = `${tParca[2]}.${tParca[1]}.${tParca[0]} ${saat}:${dak}:${sn}`;
 
+    // İşlemi gönder
     apiIstekAt({ 
         action: "transfer_yap", 
         transfer_yeri: giris, 
