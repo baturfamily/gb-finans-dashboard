@@ -398,27 +398,31 @@
                         </div>
                     </div>
                     
-                    <div class="summary-grid sensitive-data" style="margin-top: 16px; background: rgba(0,0,0,0.4); border-radius: 16px; border: 1px solid rgba(255,255,255,0.03);">
-                        <div class="summary-item br-right" style="padding: 12px; text-align: center;">
-                            <span style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Borç / Varlık</span>
-                            <span id="val-borc-varlik-orani" class="tabular-nums" style="font-size: 16px; font-weight: 800; color: #cbd5e1; margin-top: 4px;">%0</span>
-                        </div>
-                        <div class="summary-item" style="padding: 12px; text-align: center;">
-                            <span style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Nakit Koruma (Survival)</span>
-                            <span id="val-nakit-koruma" class="tabular-nums" style="font-size: 16px; font-weight: 800; color: var(--emerald); margin-top: 4px;">0 Ay</span>
-                        </div>
-                    </div>
-                    <div class="summary-grid sensitive-data" style="margin-top: 12px; grid-template-columns: repeat(3, 1fr); background: rgba(0,0,0,0.4); border-radius: 16px; border: 1px solid rgba(255,255,255,0.03);">
-                        <div class="summary-item br-right" style="padding: 10px 4px; text-align: center;">
-                            <span style="font-size: 9px; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Top. Varlık</span>
-                            <span id="val-toplam-varlik" class="tabular-nums" style="font-size: 13px; font-weight: 800; color: #fff; margin-top: 4px;">₺0</span>
-                            <div id="trend-toplam-varlik" class="trend-box tabular-nums" style="font-size: 9px; margin-top: 4px; display: block;"></div>
-                        </div>
-                        <div class="summary-item br-right" style="padding: 10px 4px; text-align: center;">
-                            <span style="font-size: 9px; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Yatırım</span>
-                            <span id="val-yatirim" class="tabular-nums" style="font-size: 13px; font-weight: 800; color: var(--emerald); margin-top: 4px;">₺0</span>
-                            <div id="trend-yatirim" class="trend-box tabular-nums" style="font-size: 9px; margin-top: 4px; display: block;"></div>
-                        </div>
+                    <div class="summary-grid sensitive-data" style="margin-top: 16px; grid-template-columns: repeat(2, 1fr); background: rgba(0,0,0,0.4); border-radius: 20px; border: 1px solid rgba(255,255,255,0.03); overflow: hidden;">
+    
+    <div class="summary-item br-right br-bottom" style="padding: 15px 10px; text-align: center;">
+        <span style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Borç / Varlık</span>
+        <span id="val-borc-varlik-orani" class="tabular-nums" style="font-size: 17px; font-weight: 800; color: #cbd5e1; margin-top: 4px;">%0</span>
+    </div>
+
+    <div class="summary-item br-bottom" style="padding: 15px 10px; text-align: center;">
+        <span style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Nakit Koruma</span>
+        <span id="val-nakit-koruma" class="tabular-nums" style="font-size: 17px; font-weight: 800; color: var(--emerald); margin-top: 4px;">0 Ay</span>
+    </div>
+
+    <div class="summary-item br-right" style="padding: 15px 10px; text-align: center;">
+        <span style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Yatırım</span>
+        <span id="val-yatirim" class="tabular-nums" style="font-size: 15px; font-weight: 800; color: var(--emerald); margin-top: 4px;">₺0</span>
+        <div id="trend-yatirim" class="trend-box tabular-nums" style="font-size: 9px; margin-top: 4px; display: block;"></div>
+    </div>
+
+    <div class="summary-item" style="padding: 15px 10px; text-align: center;">
+        <span style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Fin. Skor</span>
+        <span id="val-skor" class="tabular-nums" style="font-size: 18px; font-weight: 800; color: var(--blue); margin-top: 4px;">0</span>
+        <div id="trend-skor" class="trend-box tabular-nums" style="font-size: 9px; margin-top: 4px; display: block;"></div>
+    </div>
+
+</div>
                         <div class="summary-item" style="padding: 10px 4px; text-align: center;">
                             <span style="font-size: 9px; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Fin. Skor</span>
                             <span id="val-skor" class="tabular-nums" style="font-size: 14px; font-weight: 800; color: var(--blue); margin-top: 4px;">0</span>
