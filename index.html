@@ -887,7 +887,6 @@
     </div>
 
     <div class="form-group" id="du-tutar-grubu">
-        <label id="lbl-du-tutar-ana">Tutar (₺)</label>
         
         <div id="taksit-tip-secici" style="display:none; margin-bottom: 12px;">
             <div class="segment-control" style="background: rgba(255,255,255,0.05); padding: 3px; border: 1px solid rgba(255,255,255,0.05);">
@@ -895,6 +894,8 @@
                 <div class="segment-btn" id="btn-taksit-toplam" onclick="setTaksitInputType('toplam')" style="padding: 8px; font-size: 11px;">Toplam Tutarı Gir</div>
             </div>
         </div>
+
+        <label id="lbl-du-tutar-ana" style="display: block; margin-bottom: 8px;">Tutar (₺)</label>
 
         <input type="text" inputmode="decimal" id="du-tutar" class="form-control" placeholder="0,00" oninput="hesaplaTaksitYardimci()">
         
