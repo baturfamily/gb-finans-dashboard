@@ -1532,7 +1532,7 @@
         lblSure.innerText = "Ödeme Süresi (Ay)";
         helperSure.innerText = "Süresiz ödeme için tıklayın";
         selectYontem.innerHTML = window.duzenliGiderOptions;
-        setHtml('du-tur', '<option value="Fatura">Fatura</option><option value="Abonelik">Abonelik</option><option value="Taksit">Taksitli Alışveriş</option><option value="Kredi">Banka Kredisi</option><option value="Yatırım">Yatırım</option><option value="Sabit Gider">Diğer Sabit Gider</option>');
+        setHtml('du-tur', '<option value="Fatura">Fatura</option><option value="Abonelik">Abonelik</option><option value="Taksitli Alışveriş">Taksitli Alışveriş</option><option value="Kredi">Banka Kredisi</option><option value="Yatırım">Yatırım</option><option value="Sabit Gider">Diğer Sabit Gider</option>');
     } else {
         lblYontem.innerText = "Paranın Gireceği Hesap";
         lblGun.innerText = "Gelir Günü (1-31)";
@@ -1554,30 +1554,24 @@
     const yardimci = document.getElementById('taksit-hesap-yardimci');
     const tutarLabel = document.getElementById('lbl-du-tutar-ana');
     
-    // 1. Taksit Modu Kontrolü (Yeni Eklenen Kısım)
-    if(tur === 'Taksit') {
+    // Kontrol kelimesini "Taksitli Alışveriş" yaptık
+    if(tur === 'Taksitli Alışveriş') {
         if(taksitSecici) taksitSecici.style.display = 'block';
+        hesaplaTaksitYardimci(); 
     } else {
-        // Taksit seçili değilse her şeyi sıfırla ve gizle
         if(taksitSecici) taksitSecici.style.display = 'none';
         if(yardimci) yardimci.style.display = 'none';
-        taksitInputType = 'tek'; // Global değişkeni varsayılana çek
+        taksitInputType = 'tek'; 
         if(tutarLabel) tutarLabel.innerText = "Tutar (₺)";
     }
 
-    // 2. Bilgi Kutusu (InfoBox) Kontrolü (Mevcut Mantığın)
     if(!infoBox) return;
-    
-    if(tur === 'Taksit' || tur === 'Abonelik' || tur === 'Yatırım') {
+    if(tur === 'Taksitli Alışveriş' || tur === 'Abonelik' || tur === 'Yatırım') {
         infoBox.style.display = 'block';
         let msg = "";
-        if(tur === 'Abonelik') {
-            msg = "ℹ️ Abonelikler günü geldiğinde arka planda otomatik olarak ödenir. Fiyata zam gelirse 'Düzenli Kayıt Yönet' menüsünden tutarı güncellemeniz gerekir.";
-        } else if(tur === 'Taksit') {
-            msg = "ℹ️ Bu işlem, günü geldiğinde belirlediğiniz ay sayısı kadar bakiyenizden otomatik düşülecektir.";
-        } else if(tur === 'Yatırım') {
-            msg = "ℹ️ Yatırımlarınız (Örn: Agesa BES) günü geldiğinde otomatik olarak hesaplar arası transfer edilir.";
-        }
+        if(tur === 'Abonelik') msg = "ℹ️ Abonelikler günü geldiğinde otomatik olarak ödenir.";
+        else if(tur === 'Taksitli Alışveriş') msg = "ℹ️ Bu işlem, günü geldiğinde belirlediğiniz taksit sayısı kadar bakiyenizden otomatik düşülecektir.";
+        else if(tur === 'Yatırım') msg = "ℹ️ Yatırımlarınız günü geldiğinde otomatik olarak transfer edilir.";
         infoBox.innerText = msg;
     } else {
         infoBox.style.display = 'none';
@@ -1635,42 +1629,41 @@
         }
 
         async function submitDuzenli() {
-    const tur = getCustomVal('du-tur');
+    const tur = getCustomVal('du-tur'); // "Taksitli Alışveriş" gelir
     const kalem = document.getElementById('du-kalem').value;
     const yontem = getCustomVal('du-yontem');
-    let tutar = document.getElementById('du-tutar').value; // 'const' yerine 'let' yaptık ki hesaplama yapabilelim
+    let tutarInput = document.getElementById('du-tutar').value;
     const gun = document.getElementById('du-gun').value;
     const sure = document.getElementById('du-sure').value;
 
-    // --- TAKSİT HESAPLAMA MANTIĞI (YENİ) ---
-    // Eğer işlem Taksit ise ve kullanıcı "Toplam Tutar" modundaysa bölme yapıyoruz
-    if (tur === 'Taksit' && typeof taksitInputType !== 'undefined' && taksitInputType === 'toplam') {
-        const toplamTutarNum = parseSaha(tutar);
-        const taksitSayisiNum = parseInt(sure);
+    let finalTutar = parseSaha(tutarInput);
 
-        if (toplamTutarNum > 0 && taksitSayisiNum > 0) {
-            // Toplamı taksit sayısına böl ve kuruşlar için 2 basamağa sabitle
-            tutar = (toplamTutarNum / taksitSayisiNum).toFixed(2);
-        } else if (toplamTutarNum > 0 && (isNaN(taksitSayisiNum) || taksitSayisiNum <= 0)) {
-            // Eğer taksit sayısı (süre) girilmeden hesaplama yapılırsa kullanıcıyı uyar
-            return alert("Toplam tutarı bölebilmemiz için lütfen 'Ödeme Süresi (Ay)' kısmına taksit sayısını girin!");
+    // Hesaplama Mantığı
+    if (tur === 'Taksitli Alışveriş' && taksitInputType === 'toplam') {
+        const toplamTutar = parseSaha(tutarInput);
+        const taksitSayisi = parseInt(sure);
+
+        if (toplamTutar > 0 && taksitSayisi > 0) {
+            // Örn: 5000 / 5 = 1000.00
+            finalTutar = (toplamTutar / taksitSayisi).toFixed(2);
+        } else if (toplamTutar > 0) {
+            return alert("Lütfen toplam tutarı bölebilmemiz için 'Ödeme Süresi (Ay)' kısmına taksit sayısını girin!");
         }
     }
 
-    // MEVCUT DOĞRULAMALAR (Bozulmadı)
-    if(!kalem || !tutar || !gun) return alert("Lütfen Kalem Adı, Tutar ve Günü eksiksiz girin!");
-    if(!sure) return alert("Lütfen süre belirtin (Süresiz ise 'Süresiz' yazın).");
+    if(!kalem || !tutarInput || !gun) return alert("Eksik alanları doldurun!");
+    if(!sure) return alert("Lütfen süre belirtin!");
     
     const odTuru = window.hesapTurleri[yontem] || "Banka Hesabı";
 
-    // API'ye gönderim işlemi (Aynı kaldı)
+    // API'ye gönderirken tutar artık hesaplanmış haliyle (finalTutar) gider
     apiIstekAt({ 
         action: "yeni_sabit", 
         yon: currentDuzenliType, 
-        tur: tur, 
+        tur: tur, // Artık "Taksitli Alışveriş" olarak gider
         kalem: kalem, 
         yontem: yontem, 
-        tutar: tutar, 
+        tutar: finalTutar, 
         odeme_gunu: gun, 
         kalan_ay: sure, 
         odeme_turu: odTuru 
