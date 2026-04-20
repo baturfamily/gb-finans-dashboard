@@ -1551,6 +1551,7 @@ function hesaplaTaksitYardimci() {
     const yardimci = document.getElementById('taksit-hesap-yardimci');
     const tutarLabel = document.getElementById('lbl-du-tutar-ana');
     
+    // 1. Taksit Modu Görünürlük Kontrolü (Matematiksel Mantık)
     if(tur === 'Taksitli Alışveriş') {
         if(taksitSecici) taksitSecici.style.display = 'block';
         hesaplaTaksitYardimci(); 
@@ -1561,13 +1562,49 @@ function hesaplaTaksitYardimci() {
         if(tutarLabel) tutarLabel.innerText = "Tutar (₺)";
     }
 
+    // 2. Bilgi Kutusu ve Açıklama Mantığı
     if(!infoBox) return;
-    if(tur === 'Taksitli Alışveriş' || tur === 'Abonelik' || tur === 'Yatırım') {
+    
+    let msg = "";
+    // Kategorilere göre özel açıklamalar
+    switch(tur) {
+        // --- DÜZENLİ GİDERLER ---
+        case 'Fatura':
+            msg = "ℹ️ Faturalar günü geldiğinde 'Bekleyenleri Onayla' listesine düşer. Tutarı o ayki faturanıza göre güncelleyip ödeyebilirsiniz.";
+            break;
+        case 'Abonelik':
+            msg = "ℹ️ Abonelikler (Netflix, Spotify vb.) günü geldiğinde arka planda otomatik olarak ödenir. Tutar değişirse 'Düzenli Kayıt Yönet'ten güncelleyebilirsiniz.";
+            break;
+        case 'Taksitli Alışveriş':
+            msg = "ℹ️ Taksitler günü geldiğinde bakiyenizden otomatik düşer. Belirlediğiniz ay sayısı (taksit) bittiğinde kayıt otomatik olarak kapatılır.";
+            break;
+        case 'Kredi':
+            msg = "ℹ️ Kredi taksitleri günü geldiğinde 'Bekleyenleri Onayla' listesine düşer. Onay verdiğinizde taksit sayınız 1 azalır ve ödeme kaydedilir.";
+            break;
+        case 'Yatırım':
+            msg = "ℹ️ Yatırımlar (BES, Birikim vb.) günü geldiğinde seçtiğiniz hesaptan otomatik olarak düşülür ve varlıklarınıza eklenir.";
+            break;
+        case 'Sabit Gider':
+            msg = "ℹ️ Kira, aidat gibi sabit ödemeler günü geldiğinde 'Bekleyenleri Onayla' listesine düşer. Onayınızla işlem gerçekleşir.";
+            break;
+
+        // --- DÜZENLİ GELİRLER ---
+        case 'Maaş':
+            msg = "ℹ️ Maaş günü geldiğinde 'Bekleyenleri Onayla' listesine düşer. Yatan net tutarda değişiklik varsa güncelleyip kaydedebilirsiniz.";
+            break;
+        case 'Ek Ders':
+            msg = "ℹ️ Ek ders ücretleri günü geldiğinde 'Bekleyenleri Onayla' listesine düşer. O ay hak kazandığınız tutarı girip onaylayabilirsiniz.";
+            break;
+        case 'Sabit Gelir':
+            msg = "ℹ️ Kira geliri veya diğer düzenli gelirler günü geldiğinde 'Bekleyenleri Onayla' listesine düşer.";
+            break;
+        default:
+            msg = "";
+    }
+
+    // Eğer bir mesaj oluştuysa göster, oluşmadıysa kutuyu gizle
+    if(msg !== "") {
         infoBox.style.display = 'block';
-        let msg = "";
-        if(tur === 'Abonelik') msg = "ℹ️ Abonelikler günü geldiğinde otomatik olarak ödenir.";
-        else if(tur === 'Taksitli Alışveriş') msg = "ℹ️ Bu işlem, günü geldiğinde belirlediğiniz taksit sayısı kadar bakiyenizden otomatik düşülecektir.";
-        else if(tur === 'Yatırım') msg = "ℹ️ Yatırımlarınız günü geldiğinde otomatik olarak transfer edilir.";
         infoBox.innerText = msg;
     } else {
         infoBox.style.display = 'none';
