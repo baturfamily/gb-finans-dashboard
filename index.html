@@ -1099,29 +1099,23 @@
     </div>
 
     <div class="form-group">
-        <label>Güncellenecek Düzenli Kaydı Seçin</label>
-        <select id="sabit-guncelle-secim" class="form-control" onchange="doldurSabitGuncelleForm()"></select>
+        <label>Güncellenecek Düzenli Kayıt</label>
+        <select id="sg-kural" class="form-control" onchange="doldurSabitGuncelleForm()"></select>
     </div>
-    
-    <div id="sabit-guncelle-form-alani" style="display:none; margin-top:20px; border-top:1px solid rgba(255,255,255,0.1); padding-top:20px;">
+
+    <div id="sabit-guncelle-form-alani" style="display:none; border-top: 1px dashed rgba(255,255,255,0.1); padding-top:15px; margin-top: 15px;">
         <div class="form-group">
-            <label>Tutar (₺)</label>
+            <label>Kalıcı Tutar Şablonu (₺)</label>
             <input type="text" inputmode="decimal" id="sg-tutar" class="form-control">
         </div>
-        
+
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-            <div class="form-group">
-                <label>Ödeme Günü</label>
-                <input type="text" inputmode="numeric" id="sg-gun" class="form-control">
-            </div>
-            <div class="form-group">
-                <label>Kalan Süre (Ay)</label>
-                <input type="text" id="sg-sure" class="form-control" placeholder="Örn: 12 veya Süresiz">
-            </div>
+            <div class="form-group"><label>Ayın Kaçı?</label><input type="text" inputmode="numeric" id="sg-gun" class="form-control"></div>
+            <div class="form-group"><label>Kalan Ay</label><input type="text" id="sg-sure" class="form-control"></div>
         </div>
 
         <div class="form-group">
-            <label>Ödeme Şekli / Hesap</label>
+            <label>Hesap / Kart / Yöntem</label>
             <select id="sg-yontem" class="form-control"></select>
         </div>
 
@@ -1129,12 +1123,12 @@
             <label>Durum</label>
             <select id="sg-durum" class="form-control">
                 <option value="Aktif">Aktif</option>
-                <option value="Bitti">Bitti (Listeden Kalkar)</option>
-                <option value="Pasif">Pasif (Dondurulmuş)</option>
+                <option value="İptal">İptal</option>
+                <option value="Bitti">Bitti</option>
             </select>
         </div>
-        
-        <button class="btn-submit" id="btn-submit-sabit-guncelle" onclick="submitSabitGuncelle()">Değişiklikleri Kaydet</button>
+
+        <button class="btn-submit" id="btn-submit-sabit-guncelle" onclick="submitSabitGuncelle()">Kuralı Kalıcı Olarak Güncelle</button>
     </div>
 </div>
 
@@ -1969,77 +1963,87 @@ function renderSabitSelect() {
         }
 
         async function loadSabitlerAndShow(sectionId, selectId, title) {
-            const ev = event.currentTarget; const orig = ev.innerHTML; ev.innerHTML = `<span class="spinner"></span>...`; vibe();
-            try {
-                const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: "sabitleri_getir" }) });
-                const result = await res.json();
-                if(result.status === "success") {
+    const ev = event.currentTarget; const orig = ev.innerHTML; ev.innerHTML = `<span class="spinner"></span>...`; vibe();
+    try {
+        const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: "sabitleri_getir" }) });
+        const result = await res.json();
+        if(result.status === "success") {
+            
+            // --- BURASI SENİN ORİJİNAL BEKLEYENLERİ ONAYLA KODUN (HİÇ DOKUNULMADI) ---
+            if(sectionId === 'section-sabit-onayla') {
+                const sSimdi = new Date();
+                const sBuAy = sSimdi.getMonth();
+                const sBuYil = sSimdi.getFullYear();
+
+                window.sabitDataRaw = result.data.filter(k => {
+                    if (k.durum !== 'Aktif') return false;
+
+                    let turu = k.tur ? k.tur.toString().trim() : "";
                     
-                    if(sectionId === 'section-sabit-onayla') {
-                        const sSimdi = new Date();
-                        const sBuAy = sSimdi.getMonth();
-                        const sBuYil = sSimdi.getFullYear();
+                    // Otomatik olanları gizle (Onay ekranına DÜŞMEYECEK)
+                    if (turu === 'Taksit' || turu === 'Abonelik' || turu === 'Yatırım' || turu === 'Taksitli Alışveriş') return false;
 
-                        window.sabitDataRaw = result.data.filter(k => {
-                            if (k.durum !== 'Aktif') return false;
+                    // Bu ay ödenmiş olanları listeden düşür
+                    let zatenOdendiMi = false;
+                    if (k.son_islem && k.son_islem.toString().trim() !== "") {
+                        let islemTarihiStr = k.son_islem.toString().trim();
+                        let sTarih;
+                        
+                        if (islemTarihiStr.includes("T")) {
+                             sTarih = new Date(islemTarihiStr);
+                        } else if (islemTarihiStr.includes(".")) {
+                             let parts = islemTarihiStr.split(" ")[0].split(".");
+                             if (parts.length === 3) sTarih = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
+                        } else {
+                             sTarih = new Date(islemTarihiStr);
+                        }
 
-                            let turu = k.tur ? k.tur.toString().trim() : "";
-                            
-                            // Otomatik olanları gizle (Onay ekranına DÜŞMEYECEK)
-                            if (turu === 'Taksit' || turu === 'Abonelik' || turu === 'Yatırım' || turu === 'Taksitli Alışveriş') return false;
-
-                            // Bu ay ödenmiş olanları listeden düşür
-                            let zatenOdendiMi = false;
-                            if (k.son_islem && k.son_islem.toString().trim() !== "") {
-                                let islemTarihiStr = k.son_islem.toString().trim();
-                                let sTarih;
-                                
-                                if (islemTarihiStr.includes("T")) {
-                                     sTarih = new Date(islemTarihiStr);
-                                } else if (islemTarihiStr.includes(".")) {
-                                     let parts = islemTarihiStr.split(" ")[0].split(".");
-                                     if (parts.length === 3) sTarih = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
-                                } else {
-                                     sTarih = new Date(islemTarihiStr);
-                                }
-
-                                if (sTarih && !isNaN(sTarih.getTime()) && sTarih.getMonth() === sBuAy && sTarih.getFullYear() === sBuYil) {
-                                    zatenOdendiMi = true;
-                                }
-                            }
-                            return !zatenOdendiMi;
-                        });
-                        showSection(sectionId, title);
-                        document.getElementById('so-odeme-sekli').value = 'tek';
-                        document.getElementById('so-kalici-check').checked = false;
-                        toggleParcaliOdeme();
-                        refreshCustomSelect(document.getElementById('so-odeme-sekli'));
-
-                        if(document.querySelectorAll('#so-main-segment .segment-btn').length > 0) {
-                            let ilkBtn = document.querySelectorAll('#so-main-segment .segment-btn')[0];
-                            setSabitMainFilter('Gider', ilkBtn);
+                        if (sTarih && !isNaN(sTarih.getTime()) && sTarih.getMonth() === sBuAy && sTarih.getFullYear() === sBuYil) {
+                            zatenOdendiMi = true;
                         }
                     }
-                    else {
-                        const sel = document.getElementById(selectId); sel.innerHTML = "";
-                        let filteredData = result.data;
-                        
-                        filteredData.forEach(k => { 
+                    return !zatenOdendiMi;
+                });
+                showSection(sectionId, title);
+                document.getElementById('so-odeme-sekli').value = 'tek';
+                document.getElementById('so-kalici-check').checked = false;
+                toggleParcaliOdeme();
+                refreshCustomSelect(document.getElementById('so-odeme-sekli'));
+
+                if(document.querySelectorAll('#so-main-segment .segment-btn').length > 0) {
+                    let ilkBtn = document.querySelectorAll('#so-main-segment .segment-btn')[0];
+                    setSabitMainFilter('Gider', ilkBtn);
+                }
+            }
+            // --- DÜZENLİ KAYIT GÜNCELLEME KISMI (YENİ SEKME MANTIĞI BURADA) ---
+            else {
+                // Gelen veriyi hafızaya alıyoruz ki sekmeler arası geçişte internete bağlanmasın
+                window.sabitKurallarList = result.data || [];
+                showSection(sectionId, title);
+                
+                if(sectionId === 'section-sabit-guncelle') {
+                    // Güncelleme sayfası açıldıysa, filtrelemeyi başlat ve Giderleri göster
+                    currentSabitYonetFilter = 'Gider';
+                    renderSabitSelect();
+                    setTimeout(doldurSabitGuncelleForm, 100);
+                } else {
+                    // Diğer olası durumlar için eski listeleme mantığı korunuyor
+                    const sel = document.getElementById(selectId); 
+                    if(sel) {
+                        sel.innerHTML = "";
+                        window.sabitKurallarList.forEach(k => { 
                             let label = `${k.kalem} - ₺${k.tutar} (${k.kalan_ay} Ay)`;
                             if(k.durum !== "Aktif") label += " [İPTAL/BİTTİ]";
                             sel.innerHTML += `<option value="${k.satir}" data-yon="${k.yon}" data-tur="${k.tur}" data-tutar="${k.tutar}" data-yontem="${k.yontem}" data-gun="${k.gun}" data-sure="${k.kalan_ay}" data-durum="${k.durum}">${label}</option>`; 
                         });
-                        if(filteredData.length === 0) sel.innerHTML = `<option value="">Kayıt bulunamadı.</option>`;
-                        showSection(sectionId, title);
-                        
-                        if(sectionId === 'section-sabit-guncelle') {
-                            setTimeout(doldurSabitGuncelleForm, 100);
-                        }
+                        if(window.sabitKurallarList.length === 0) sel.innerHTML = `<option value="">Kayıt bulunamadı.</option>`;
                     }
                 }
-            } catch(e) { alert("Kayıtlar çekilemedi. İnternetinizi kontrol edin."); }
-            if (ev) ev.innerHTML = orig;
+            }
         }
+    } catch(e) { alert("Kayıtlar çekilemedi. İnternetinizi kontrol edin."); }
+    if (ev) ev.innerHTML = orig;
+}
 
         let currentSabitMainType = 'Gider';
 
