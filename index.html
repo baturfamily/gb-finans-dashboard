@@ -886,9 +886,21 @@
         <div class="segment-btn" onclick="setDuzenliFilter('Gelir', this)">Düzenli Gelir</div>
     </div>
 
-    <div class="form-group">
-        <label>Tutar (₺)</label>
-        <input type="text" inputmode="decimal" id="du-tutar" class="form-control" placeholder="0,00">
+    <div class="form-group" id="du-tutar-grubu">
+        <label id="lbl-du-tutar-ana">Tutar (₺)</label>
+        
+        <div id="taksit-tip-secici" style="display:none; margin-bottom: 12px;">
+            <div class="segment-control" style="background: rgba(255,255,255,0.05); padding: 3px; border: 1px solid rgba(255,255,255,0.05);">
+                <div class="segment-btn active" id="btn-taksit-tek" onclick="setTaksitInputType('tek')" style="padding: 8px; font-size: 11px;">Taksit Tutarı Gir</div>
+                <div class="segment-btn" id="btn-taksit-toplam" onclick="setTaksitInputType('toplam')" style="padding: 8px; font-size: 11px;">Toplam Tutar Gir</div>
+            </div>
+        </div>
+
+        <input type="text" inputmode="decimal" id="du-tutar" class="form-control" placeholder="0,00" oninput="hesaplaTaksitYardimci()">
+        
+        <div id="taksit-hesap-yardimci" style="display:none; font-size: 12px; color: var(--emerald); font-weight: 700; margin-top: 10px; padding: 8px; background: rgba(16, 185, 129, 0.1); border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.2);">
+            Aylık Ödeme: ₺0,00
+        </div>
     </div>
 
     <div class="form-group">
@@ -1359,6 +1371,31 @@
         let currentAnlikType = 'Gider';
         let currentDuzenliType = 'Gider';
 
+        let taksitInputType = 'tek'; 
+
+        function setTaksitInputType(type) {
+            vibe(); taksitInputType = type;
+            document.getElementById('btn-taksit-tek').classList.toggle('active', type === 'tek');
+            document.getElementById('btn-taksit-toplam').classList.toggle('active', type === 'toplam');
+            document.getElementById('lbl-du-tutar-ana').innerText = type === 'tek' ? 'Aylık Taksit Tutarı (₺)' : 'Alışverişin Toplam Tutarı (₺)';
+            hesaplaTaksitYardimci();
+        }
+
+        function hesaplaTaksitYardimci() {
+            const tur = getCustomVal('du-tur');
+            const yardimci = document.getElementById('taksit-hesap-yardimci');
+            if (tur !== 'Taksit' || taksitInputType === 'tek') { yardimci.style.display = 'none'; return; }
+
+            const girilenTutar = parseSaha(document.getElementById('du-tutar').value) || 0;
+            const taksitSayisi = parseInt(document.getElementById('du-sure').value) || 1;
+
+            if (girilenTutar > 0 && taksitSayisi > 0) {
+                const aylik = girilenTutar / taksitSayisi;
+                yardimci.style.display = 'block';
+                yardimci.innerText = `💡 Aylık Ödeme: ₺${aylik.toLocaleString('tr-TR', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+            } else { yardimci.style.display = 'none'; }
+        }
+
         function toggleEkInput() {
             const check = document.getElementById('an-ek-check');
             const konteyner = document.getElementById('an-ek-input-konteyner');
@@ -1495,22 +1532,41 @@
 }
 
         function checkDuzenliTur() {
-            const tur = getCustomVal('du-tur');
-            const infoBox = document.getElementById('du-info-box');
-            if(!infoBox) return;
-            
-            if(tur === 'Taksit' || tur === 'Abonelik' || tur === 'Yatırım') {
-                infoBox.style.display = 'block';
-                let msg = "";
-                if(tur === 'Abonelik') msg = "ℹ️ Abonelikler günü geldiğinde arka planda otomatik olarak ödenir. Fiyata zam gelirse 'Düzenli Kayıt Yönet' menüsünden tutarı güncellemeniz gerekir.";
-                else if(tur === 'Taksit') msg = "ℹ️ Bu işlem, günü geldiğinde belirlediğiniz ay sayısı kadar bakiyenizden otomatik düşülecektir.";
-                else if(tur === 'Yatırım') msg = "ℹ️ Yatırımlarınız (Örn: Agesa BES) günü geldiğinde otomatik olarak hesaplar arası transfer edilir.";
-                
-                infoBox.innerText = msg;
-            } else {
-                infoBox.style.display = 'none';
-            }
+    const tur = getCustomVal('du-tur');
+    const infoBox = document.getElementById('du-info-box');
+    const taksitSecici = document.getElementById('taksit-tip-secici');
+    const yardimci = document.getElementById('taksit-hesap-yardimci');
+    const tutarLabel = document.getElementById('lbl-du-tutar-ana');
+    
+    // 1. Taksit Modu Kontrolü (Yeni Eklenen Kısım)
+    if(tur === 'Taksit') {
+        if(taksitSecici) taksitSecici.style.display = 'block';
+    } else {
+        // Taksit seçili değilse her şeyi sıfırla ve gizle
+        if(taksitSecici) taksitSecici.style.display = 'none';
+        if(yardimci) yardimci.style.display = 'none';
+        taksitInputType = 'tek'; // Global değişkeni varsayılana çek
+        if(tutarLabel) tutarLabel.innerText = "Tutar (₺)";
+    }
+
+    // 2. Bilgi Kutusu (InfoBox) Kontrolü (Mevcut Mantığın)
+    if(!infoBox) return;
+    
+    if(tur === 'Taksit' || tur === 'Abonelik' || tur === 'Yatırım') {
+        infoBox.style.display = 'block';
+        let msg = "";
+        if(tur === 'Abonelik') {
+            msg = "ℹ️ Abonelikler günü geldiğinde arka planda otomatik olarak ödenir. Fiyata zam gelirse 'Düzenli Kayıt Yönet' menüsünden tutarı güncellemeniz gerekir.";
+        } else if(tur === 'Taksit') {
+            msg = "ℹ️ Bu işlem, günü geldiğinde belirlediğiniz ay sayısı kadar bakiyenizden otomatik düşülecektir.";
+        } else if(tur === 'Yatırım') {
+            msg = "ℹ️ Yatırımlarınız (Örn: Agesa BES) günü geldiğinde otomatik olarak hesaplar arası transfer edilir.";
         }
+        infoBox.innerText = msg;
+    } else {
+        infoBox.style.display = 'none';
+    }
+}
 
         async function submitAnlik() {
             const anaKalemSecimi = getCustomVal('an-kalem');
@@ -1563,19 +1619,47 @@
         }
 
         async function submitDuzenli() {
-            const tur = getCustomVal('du-tur');
-            const kalem = document.getElementById('du-kalem').value;
-            const yontem = getCustomVal('du-yontem');
-            const tutar = document.getElementById('du-tutar').value;
-            const gun = document.getElementById('du-gun').value;
-            const sure = document.getElementById('du-sure').value;
-            
-            if(!kalem || !tutar || !gun) return alert("Lütfen Kalem Adı, Tutar ve Günü eksiksiz girin!");
-            if(!sure) return alert("Lütfen süre belirtin (Süresiz ise 'Süresiz' yazın).");
-            
-            const odTuru = window.hesapTurleri[yontem] || "Banka Hesabı";
-            apiIstekAt({ action: "yeni_sabit", yon: currentDuzenliType, tur: tur, kalem: kalem, yontem: yontem, tutar: tutar, odeme_gunu: gun, kalan_ay: sure, odeme_turu: odTuru }, 'btn-submit-duzenli');
+    const tur = getCustomVal('du-tur');
+    const kalem = document.getElementById('du-kalem').value;
+    const yontem = getCustomVal('du-yontem');
+    let tutar = document.getElementById('du-tutar').value; // 'const' yerine 'let' yaptık ki hesaplama yapabilelim
+    const gun = document.getElementById('du-gun').value;
+    const sure = document.getElementById('du-sure').value;
+
+    // --- TAKSİT HESAPLAMA MANTIĞI (YENİ) ---
+    // Eğer işlem Taksit ise ve kullanıcı "Toplam Tutar" modundaysa bölme yapıyoruz
+    if (tur === 'Taksit' && typeof taksitInputType !== 'undefined' && taksitInputType === 'toplam') {
+        const toplamTutarNum = parseSaha(tutar);
+        const taksitSayisiNum = parseInt(sure);
+
+        if (toplamTutarNum > 0 && taksitSayisiNum > 0) {
+            // Toplamı taksit sayısına böl ve kuruşlar için 2 basamağa sabitle
+            tutar = (toplamTutarNum / taksitSayisiNum).toFixed(2);
+        } else if (toplamTutarNum > 0 && (isNaN(taksitSayisiNum) || taksitSayisiNum <= 0)) {
+            // Eğer taksit sayısı (süre) girilmeden hesaplama yapılırsa kullanıcıyı uyar
+            return alert("Toplam tutarı bölebilmemiz için lütfen 'Ödeme Süresi (Ay)' kısmına taksit sayısını girin!");
         }
+    }
+
+    // MEVCUT DOĞRULAMALAR (Bozulmadı)
+    if(!kalem || !tutar || !gun) return alert("Lütfen Kalem Adı, Tutar ve Günü eksiksiz girin!");
+    if(!sure) return alert("Lütfen süre belirtin (Süresiz ise 'Süresiz' yazın).");
+    
+    const odTuru = window.hesapTurleri[yontem] || "Banka Hesabı";
+
+    // API'ye gönderim işlemi (Aynı kaldı)
+    apiIstekAt({ 
+        action: "yeni_sabit", 
+        yon: currentDuzenliType, 
+        tur: tur, 
+        kalem: kalem, 
+        yontem: yontem, 
+        tutar: tutar, 
+        odeme_gunu: gun, 
+        kalan_ay: sure, 
+        odeme_turu: odTuru 
+    }, 'btn-submit-duzenli');
+}
 
         function toggleYeniBorc() {
             const val = getCustomVal('bo-secim');
