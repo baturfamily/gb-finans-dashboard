@@ -1728,8 +1728,10 @@ function renderSabitSelect() {
     let optionsHTML = `<option value="">-- Kayıt Seçin --</option>`;
     
     filtrelenmis.forEach(k => {
-        // İŞTE SİSTEMİN ÇALIŞMASINI SAĞLAYAN HAYATİ SATIR BURASI:
-        optionsHTML += `<option value="${k.satir}" data-yon="${k.yon}" data-tur="${k.tur}" data-tutar="${k.tutar}" data-yontem="${k.yontem}" data-gun="${k.gun}" data-sure="${k.kalan_ay}" data-durum="${k.durum}">${k.kalem} - ₺${k.tutar}</option>`;
+        // YENİ: Eğer gelir ise "Tür - Kalem" formatında yaz, değilse sadece "Kalem"
+        let gorunenAd = (k.yon === 'Gelir') ? `${k.tur} - ${k.kalem}` : k.kalem;
+        
+        optionsHTML += `<option value="${k.satir}" data-yon="${k.yon}" data-tur="${k.tur}" data-tutar="${k.tutar}" data-yontem="${k.yontem}" data-gun="${k.gun}" data-sure="${k.kalan_ay}" data-durum="${k.durum}">${gorunenAd} - ₺${k.tutar}</option>`;
     });
 
     sel.innerHTML = optionsHTML;
@@ -2110,15 +2112,16 @@ function renderSabitSelect() {
 
             // LİSTEYE ELEMANLARI EKLE
             filteredData.forEach(k => { 
-                let sureMetni = k.kalan_ay === "Süresiz" ? "∞" : `${k.kalan_ay} Ay`;
-                
-                // Sayıya göre doğru Türkçe ekini bul ve formatı "Ayın 15'i" yap
-                let ek = turkceEkBul(k.gun);
-                let label = `Ayın ${k.gun}${ek} - ${k.kalem} / ₺${k.tutar} (${sureMetni})`;
-                
-                if(k.durum !== "Aktif") label += " [İPTAL/BİTTİ]";
-                sel.innerHTML += `<option value="${k.satir}" data-yon="${k.yon}" data-tur="${k.tur}" data-tutar="${k.tutar}" data-yontem="${k.yontem}" data-gun="${k.gun}" data-sure="${k.kalan_ay}" data-durum="${k.durum}">${label}</option>`; 
-            });
+        let sureMetni = k.kalan_ay === "Süresiz" ? "∞" : `${k.kalan_ay} Ay`;
+        let ek = turkceEkBul(k.gun);
+        
+        // YENİ: Gelirleri formatlama
+        let gorunenAd = (k.yon === 'Gelir') ? `${k.tur} - ${k.kalem}` : k.kalem;
+        let label = `Ayın ${k.gun}${ek} - ${gorunenAd} / ₺${k.tutar} (${sureMetni})`;
+        
+        if(k.durum !== "Aktif") label += " [İPTAL/BİTTİ]";
+        sel.innerHTML += `<option value="${k.satir}" data-yon="${k.yon}" data-tur="${k.tur}" data-tutar="${k.tutar}" data-yontem="${k.yontem}" data-gun="${k.gun}" data-sure="${k.kalan_ay}" data-durum="${k.durum}">${label}</option>`; 
+    });
             
             if (filteredData.length === 0) sel.innerHTML = `<option value="">Bu kategoride bekleyen işlem yok.</option>`;
             
