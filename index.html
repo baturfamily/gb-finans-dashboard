@@ -1844,12 +1844,21 @@ function renderSabitSelect() {
                 toggleParcaliKartBorcOdeme();
                 refreshCustomSelect(document.getElementById('kbo-odeme-sekli'));
             }
-            if(id === 'section-ozel-borc') { 
+           if(id === 'section-ozel-borc') { 
+                // 1. Kutuları temizle
                 document.getElementById('bo-secim').value = ''; 
                 document.getElementById('bg-secim').value = ''; 
                 document.getElementById('bo-isim-yeni').style.display = 'none'; 
                 document.getElementById('bg-isim-yeni').style.display = 'none'; 
-                setNow('bo-tarih'); 
+                
+                // 2. YÖNTEM LİSTESİNİ GÜNCELLE (Kredi Kartlarını buraya ekledik)
+                document.getElementById('bo-yontem').innerHTML = window.hesapOptions; 
+                refreshCustomSelect(document.getElementById('bo-yontem'));
+                
+                // 3. TARİH AYARI (Sadece gün seçimi için bugünü ayarla)
+                document.getElementById('bo-tarih').value = new Date().toISOString().split('T')[0];
+                
+                // 4. Diğer görünümleri sıfırla
                 document.getElementById('bo-odeme-sekli').value = 'tek';
                 toggleParcaliBorcOdeme();
                 refreshCustomSelect(document.getElementById('bo-odeme-sekli'));
@@ -1857,7 +1866,6 @@ function renderSabitSelect() {
                 refreshCustomSelect(document.getElementById('bg-secim'));
                 toggleOzelBorcTab('ode');
             }
-
             if(id === 'section-varlik-guncelle') { document.getElementById('vg-secim').value = ''; document.getElementById('vg-isim-yeni').style.display = 'none'; }
             if(id === 'section-yeni-hesap') { document.getElementById('yh-tur').value = "Banka"; }
             
@@ -2441,55 +2449,47 @@ function renderSabitSelect() {
         }
         
         function submitBorcOde() {
-            let isim = getCustomVal('bo-secim');
-            if (isim === "_yeni_") isim = document.getElementById('bo-isim-yeni').value.trim();
-            const tutar = document.getElementById('bo-tutar').value;
-            const sekil = getCustomVal('bo-odeme-sekli');
-            
-            const fixBanka = (i) => {
-                if(!i) return ""; let s = i.trim();
-                if(s === "İsbankasi" || s === "İsbankası" || s === "isbankasi" || s === "İş Bankası") return "İş Bankası Hesap";
-                if(s === "YapıKredi" || s === "Yapı Kredi" || s === "yapıkredi" || s === "Yapıkredi") return "Yapıkredi Hesap";
-                return s;
-            };
+    let isim = getCustomVal('bo-secim');
+    const tutar = document.getElementById('bo-tutar').value;
+    const sekil = getCustomVal('bo-odeme-sekli');
+    const secilenTarih = document.getElementById('bo-tarih').value; // YYYY-MM-DD gelir
 
-            let err = false; 
-            if(!isim || isim === "Seçiniz...") { markError('bo-secim'); err = true; } 
-            if(!tutar) { markError('bo-tutar'); err = true; } 
+    if(!isim || !tutar || !secilenTarih) return alert("Lütfen tüm alanları doldurun!");
 
-            let payload = { action: "borc_ode", borc_adi: isim, tutar: tutar, tarih: getFormattedDateTime('bo-tarih'), odeme_sekli: sekil };
+    // ARKA PLANDA LOG FORMATINA DÖNÜŞTÜRME (DD.MM.YYYY HH:mm:ss)
+    const simdi = new Date();
+    const saat = String(simdi.getHours()).padStart(2, '0');
+    const dak = String(simdi.getMinutes()).padStart(2, '0');
+    const sn = String(simdi.getSeconds()).padStart(2, '0');
+    const tParca = secilenTarih.split('-'); // [YYYY, MM, DD]
+    const tamTarihLog = `${tParca[2]}.${tParca[1]}.${tParca[0]} ${saat}:${dak}:${sn}`;
 
-            if(sekil === 'parcali') {
-                const parcalar = []; let hataVar = false;
-                document.querySelectorAll('.parca-satiri-borc').forEach(row => {
-                    let yontem = row.querySelector('.parca-hesap-borc').value;
-                    if(!yontem || yontem.trim() === "") {
-                        const spanTxt = row.querySelector('.custom-select-trigger span');
-                        if(spanTxt) yontem = spanTxt.innerText;
-                    }
-                    const pTutarStr = row.querySelector('.parca-tutar-borc').value;
-                    const pTutarVal = parseSaha(pTutarStr);
-                    if(pTutarVal <= 0) { row.querySelector('.parca-tutar-borc').classList.add('error'); hataVar = true; }
-                    else { parcalar.push({ yontem: fixBanka(yontem), tutar: pTutarVal }); }
-                });
-                if(hataVar) return;
-                if(parcalar.length === 0) return alert("Lütfen en az bir ödeme tutarı girin.");
-                let gToplam = parcalar.reduce((acc, curr) => acc + curr.tutar, 0);
-                if(Math.abs(gToplam - parseSaha(tutar)) > 0.1) return alert("Parçaların toplamı, asıl tutara eşit olmalıdır.");
-                payload.parcalar = parcalar;
-                
-                payload.odeme_turu = window.hesapTurleri[parcalar[0].yontem] || "Banka Hesabı";
-                if(err) return;
-            } else {
-                let tekYontem = getCustomVal('bo-yontem');
-                if(!tekYontem) { markError('bo-yontem'); err = true; }
-                if(err) return;
-                payload.yontem = fixBanka(tekYontem);
-                payload.odeme_turu = window.hesapTurleri[tekYontem] || "Banka Hesabı";
-            }
-            
-            apiIstekAt(payload, 'btn-submit-borc-ode');
-        }
+    const fixBanka = (i) => {
+        if(!i) return ""; let s = i.trim();
+        if(s.toLowerCase().includes("isbankasi") || s === "İş Bankası") return "İş Bankası Hesap";
+        if(s.toLowerCase().includes("yapikredi") || s === "Yapıkredi") return "Yapıkredi Hesap";
+        return s;
+    };
+
+    let payload = { action: "borc_ode", borc_adi: isim, tutar: tutar, tarih: tamTarihLog, odeme_sekli: sekil };
+
+    if(sekil === 'parcali') {
+        const parcalar = [];
+        document.querySelectorAll('.parca-satiri-borc').forEach(row => {
+            let yontem = row.querySelector('.parca-hesap-borc').value;
+            const pTutarVal = parseSaha(row.querySelector('.parca-tutar-borc').value);
+            if(pTutarVal > 0) parcalar.push({ yontem: fixBanka(yontem), tutar: pTutarVal });
+        });
+        payload.parcalar = parcalar;
+        payload.odeme_turu = window.hesapTurleri[parcalar[0].yontem] || "Banka Hesabı";
+    } else {
+        let tekYontem = getCustomVal('bo-yontem');
+        payload.yontem = fixBanka(tekYontem);
+        payload.odeme_turu = window.hesapTurleri[tekYontem] || "Banka Hesabı";
+    }
+
+    apiIstekAt(payload, 'btn-submit-borc-ode');
+}
 
         function updateTransferOptions() {
     const cikisEl = document.getElementById('t-cikis');
@@ -2891,18 +2891,27 @@ async function submitYeniHesap() {
                     let kartIsimleri = data.kartlarDetayli ? data.kartlarDetayli.map(k => k.isim.trim()) : [];
                     let safBorclarListe = data.borclarListe ? data.borclarListe.filter(b => !b.isim.includes("(KMH)") && !kartIsimleri.includes(b.isim.trim())) : [];
 
-                    let borcHTMLOptions = `<option value="">-- Borç Seçin --</option>`;
+                    let borcOdeOptions = `<option value="">-- Borç Seçin --</option>`;
+                    let borcGuncelleOptions = `<option value="">-- Borç Seçin --</option>`;
                     let varlikHTMLOptions = `<option value="">-- Varlık Seçin --</option>`;
                     
                     const formatPlainTL = (num) => "₺" + parseFloat(num).toLocaleString('tr-TR', {minimumFractionDigits:0, maximumFractionDigits:2});
 
-                    safBorclarListe.forEach(b => borcHTMLOptions += `<option value="${b.isim}">${b.isim} - ${formatPlainTL(b.tutar)}</option>`);
+                    safBorclarListe.forEach(b => {
+                        let opt = `<option value="${b.isim}">${b.isim} - ${formatPlainTL(b.tutar)}</option>`;
+                        borcOdeOptions += opt;
+                        borcGuncelleOptions += opt;
+                    });
+
                     if(data.varliklarListe) data.varliklarListe.forEach(v => varlikHTMLOptions += `<option value="${v.isim}">${v.isim} - ${formatPlainTL(v.deger)}</option>`);
                     
-                    borcHTMLOptions += `<option value="_yeni_">+ Yeni Borç Gir (Listede Yok)</option>`;
+                    // Sadece güncelleme sekmesine yeni gir seçeneğini ekliyoruz (Borç ödemede gizli kalır)
+                    borcGuncelleOptions += `<option value="_yeni_">+ Yeni Borç Gir (Listede Yok)</option>`;
                     varlikHTMLOptions += `<option value="_yeni_">+ Yeni Varlık Gir (Listede Yok)</option>`;
                     
-                    setHtml('bo-secim', borcHTMLOptions); setHtml('bg-secim', borcHTMLOptions); setHtml('vg-secim', varlikHTMLOptions);
+                    setHtml('bo-secim', borcOdeOptions); 
+                    setHtml('bg-secim', borcGuncelleOptions); 
+                    setHtml('vg-secim', varlikHTMLOptions);
 
                     let toplamVarlik = data.toplamKasa;
                     if (data.varliklarListe) { data.varliklarListe.forEach(v => { toplamVarlik += v.deger; }); }
