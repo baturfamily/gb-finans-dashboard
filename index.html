@@ -346,6 +346,10 @@
         .ai-empty { text-align: center; padding: 60px 20px; color: var(--text-muted); }
         .ai-empty i { font-size: 40px; margin-bottom: 15px; color: var(--amber); }
 
+        /* Özel Borç Sekme Renkleri */
+        .segment-btn.active-borc-ode { background: #3b82f6 !important; color: #fff !important; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); }
+        .segment-btn.active-borc-guncelle { background: #f59e0b !important; color: #fff !important; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3); }
+
     </style>
 </head>
 <body>
@@ -1022,47 +1026,56 @@
 </div>
 
             <div id="section-ozel-borc" class="form-section">
-                <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Geri Dön</span>
-                
-                <div class="segment-control" style="margin-bottom: 16px;">
-                    <div class="segment-btn active" id="btn-tab-borc-ode" onclick="toggleOzelBorcTab('ode')">Mevcut Borcu Öde</div>
-                    <div class="segment-btn" id="btn-tab-borc-ekle" onclick="toggleOzelBorcTab('ekle')">Yeni Ekle / Güncelle</div>
-                </div>
+    <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Geri Dön</span>
+    
+    <div class="segment-control" style="margin-bottom: 16px;">
+        <div class="segment-btn active" id="btn-tab-borc-ode" onclick="toggleOzelBorcTab('ode')">Mevcut Borcu Öde</div>
+        <div class="segment-btn" id="btn-tab-borc-ekle" onclick="toggleOzelBorcTab('ekle')">Yeni Ekle / Güncelle</div>
+    </div>
 
-                <div id="tab-borc-ode">
-                    <div class="form-group"><label>Tarih ve Saat</label><input type="datetime-local" id="bo-tarih" class="form-control"></div>
-                    <div class="form-group">
-                        <label>Hangi Borcu Ödüyorsun?</label>
-                        <select id="bo-secim" class="form-control" onchange="toggleYeniBorc()"></select>
-                        <input type="text" id="bo-isim-yeni" class="form-control" placeholder="Yeni borcun adını yazın..." style="display:none; margin-top:8px;">
-                    </div>
-                    <div class="form-group"><label>Ödenen Toplam Tutar (₺)</label><input type="text" inputmode="decimal" id="bo-tutar" class="form-control" placeholder="Örn: 500" oninput="hesaplaKalanParcaliBorc()"></div>
-                    
-                    <div class="form-group">
-                        <label>Ödeme Şekli</label>
-                        <select id="bo-odeme-sekli" class="form-control" onchange="toggleParcaliBorcOdeme()">
-                            <option value="tek">Tek Hesaptan Öde</option>
-                            <option value="parcali">Parça Parça (Farklı Hesaplardan) Öde</option>
-                        </select>
-                    </div>
+    <div id="tab-borc-ode">
+        <div class="form-group">
+            <label>Hangi Borcu Ödüyorsun?</label>
+            <select id="bo-secim" class="form-control"></select>
+        </div>
+        <div class="form-group"><label>Ödenen Toplam Tutar (₺)</label><input type="text" inputmode="decimal" id="bo-tutar" class="form-control" placeholder="Örn: 500" oninput="hesaplaKalanParcaliBorc()"></div>
+        
+        <div class="form-group">
+            <label>Ödeme Şekli</label>
+            <select id="bo-odeme-sekli" class="form-control" onchange="toggleParcaliBorcOdeme()">
+                <option value="tek">Tek Hesaptan Öde</option>
+                <option value="parcali">Parça Parça (Farklı Hesaplardan) Öde</option>
+            </select>
+        </div>
 
-                    <div id="bo-tek-hesap-alani">
-                        <div class="form-group"><label>Paranın Çıktığı Yer</label><select id="bo-yontem" class="form-control"></select></div>
-                    </div>
+        <div id="bo-tek-hesap-alani">
+            <div class="form-group"><label>Paranın Çıktığı Yer</label><select id="bo-yontem" class="form-control"></select></div>
+        </div>
 
-                    <div id="bo-parcali-hesap-alani" style="display:none; background: rgba(0,0,0,0.2); padding: 16px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 16px;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px dashed rgba(255,255,255,0.1);">
-                            <span style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Hedef: <span id="bo-hedef-tutar" style="color:#fff; font-weight:800;" class="tabular-nums">₺0</span></span>
-                            <span style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Kalan: <span id="bo-kalan-tutar" style="color:var(--rose); font-weight:800;" class="tabular-nums">₺0</span></span>
-                        </div>
-                        <div id="bo-parcalar-container"></div>
-                        <button onclick="addParcaBorc()" style="background: rgba(255,255,255,0.05); border: 1px dashed rgba(255,255,255,0.2); color: #cbd5e1; width: 100%; padding: 12px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 10px; transition: 0.2s;">
-                            + Yeni Hesap / Parça Ekle
-                        </button>
-                    </div>
+        <div id="bo-parcali-hesap-alani" style="display:none; background: rgba(0,0,0,0.2); padding: 16px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 16px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px dashed rgba(255,255,255,0.1);">
+                <span style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Hedef: <span id="bo-hedef-tutar" style="color:#fff; font-weight:800;" class="tabular-nums">₺0</span></span>
+                <span style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Kalan: <span id="bo-kalan-tutar" style="color:var(--rose); font-weight:800;" class="tabular-nums">₺0</span></span>
+            </div>
+            <div id="bo-parcalar-container"></div>
+            <button onclick="addParcaBorc()" style="background: rgba(255,255,255,0.05); border: 1px dashed rgba(255,255,255,0.2); color: #cbd5e1; width: 100%; padding: 12px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 10px; transition: 0.2s;">+ Yeni Hesap / Parça Ekle</button>
+        </div>
 
-                    <button class="btn-submit" id="btn-submit-borc-ode" onclick="submitBorcOde()">Borcu Öde</button>
-                </div>
+        <div class="form-group"><label>Tarih</label><input type="date" id="bo-tarih" class="form-control"></div>
+
+        <button class="btn-submit" id="btn-submit-borc-ode" onclick="submitBorcOde()">Borcu Öde</button>
+    </div>
+
+    <div id="tab-borc-ekle" style="display: none;">
+        <div class="form-group">
+            <label>Borç Adı</label>
+            <select id="bg-secim" class="form-control" onchange="toggleYeniBorcGuncelle()"></select>
+            <input type="text" id="bg-isim-yeni" class="form-control" placeholder="Yeni borcun adını yazın..." style="display:none; margin-top:8px;">
+        </div>
+        <div class="form-group"><label>Yeni Kalan Tutar (₺)</label><input type="text" inputmode="decimal" id="bg-tutar" class="form-control"></div>
+        <button class="btn-submit" id="btn-submit-borc-guncelle" onclick="submitBorcGuncelle()">Borcu Kaydet/Güncelle</button>
+    </div>
+</div>
 
                 <div id="tab-borc-ekle" style="display: none;">
                     <div class="form-group">
@@ -1770,19 +1783,22 @@ function renderSabitSelect() {
         }
 
         function toggleOzelBorcTab(tab) {
-            vibe();
-            if(tab === 'ode') {
-                document.getElementById('btn-tab-borc-ode').classList.add('active');
-                document.getElementById('btn-tab-borc-ekle').classList.remove('active');
-                document.getElementById('tab-borc-ode').style.display = 'block';
-                document.getElementById('tab-borc-ekle').style.display = 'none';
-            } else {
-                document.getElementById('btn-tab-borc-ode').classList.remove('active');
-                document.getElementById('btn-tab-borc-ekle').classList.add('active');
-                document.getElementById('tab-borc-ode').style.display = 'none';
-                document.getElementById('tab-borc-ekle').style.display = 'block';
-            }
-        }
+    vibe();
+    const btnOde = document.getElementById('btn-tab-borc-ode');
+    const btnEkle = document.getElementById('btn-tab-borc-ekle');
+
+    if(tab === 'ode') {
+        btnOde.className = 'segment-btn active-borc-ode';
+        btnEkle.className = 'segment-btn';
+        document.getElementById('tab-borc-ode').style.display = 'block';
+        document.getElementById('tab-borc-ekle').style.display = 'none';
+    } else {
+        btnOde.className = 'segment-btn';
+        btnEkle.className = 'segment-btn active-borc-guncelle';
+        document.getElementById('tab-borc-ode').style.display = 'none';
+        document.getElementById('tab-borc-ekle').style.display = 'block';
+    }
+}
 
         async function openSectionLive(ev, sectionId, title) {
             const btn = ev.currentTarget; const orig = btn.innerHTML;
