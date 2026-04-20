@@ -1705,46 +1705,36 @@ function hesaplaTaksitYardimci() {
     }, 'btn-submit-duzenli');
 }
 
-        let currentSabitYonetFilter = 'Gider';
+        // BUNU YAPIŞTIR:
+let currentSabitYonetFilter = 'Gider';
 
-// Sekmelere tıklanınca çalışacak ana filtre
+// Sekmelere tıklandığında çalışır
 function setSabitFilter(yon, btn) {
     vibe();
     currentSabitYonetFilter = yon;
-    
-    // Buton görsellerini değiştir
     const btns = btn.parentElement.querySelectorAll('.segment-btn');
     btns.forEach(b => b.classList.remove('active-gider', 'active-gelir', 'active'));
     btn.classList.add(yon === 'Gider' ? 'active-gider' : 'active-gelir');
-    
-    // Seçim kutusunu yeni filtreye göre doldur
     renderSabitSelect();
 }
 
-// Seçim kutusuna (dropdown) sadece ilgili kayıtları çizen yardımcı
+// Listeyi Gider/Gelir'e göre süzer
 function renderSabitSelect() {
-    const selectEl = document.getElementById('sabit-guncelle-secim');
+    const sel = document.getElementById('sg-kural');
     const formAlani = document.getElementById('sabit-guncelle-form-alani');
-    
-    if (!window.sabitKurallarList) return;
+    if (!sel || !window.sabitKurallarList) return;
 
-    // Sadece mevcut sekmeye (Gider/Gelir) ait olanları ayıkla
     const filtrelenmis = window.sabitKurallarList.filter(k => k.yon === currentSabitYonetFilter);
+    let optionsHTML = `<option value="">-- Kayıt Seçin --</option>`;
+    
+    filtrelenmis.forEach(k => {
+        // İŞTE SİSTEMİN ÇALIŞMASINI SAĞLAYAN HAYATİ SATIR BURASI:
+        optionsHTML += `<option value="${k.satir}" data-yon="${k.yon}" data-tur="${k.tur}" data-tutar="${k.tutar}" data-yontem="${k.yontem}" data-gun="${k.gun}" data-sure="${k.kalan_ay}" data-durum="${k.durum}">${k.kalem} - ₺${k.tutar}</option>`;
+    });
 
-    let options = `<option value="">Seçiniz...</option>`;
-    if(filtrelenmis.length > 0) {
-        filtrelenmis.forEach(k => {
-            options += `<option value="${k.id}">${k.kalem} (${k.tur} - ${formatTL(k.tutar)})</option>`;
-        });
-    } else {
-        options = `<option value="">Bu kategoride kayıt bulunmuyor.</option>`;
-    }
-    
-    selectEl.innerHTML = options;
-    refreshCustomSelect(selectEl); // Özel tasarımı yenile
-    
-    // Filtre değiştiğinde açık olan formu güvenlik için gizle
-    if(formAlani) formAlani.style.display = 'none';
+    sel.innerHTML = optionsHTML;
+    if(formAlani) formAlani.style.display = 'none'; // Yeni seçim için formu gizle
+    refreshCustomSelect(sel);
 }
 
         function toggleYeniBorc() {
