@@ -1550,14 +1550,17 @@ function hesaplaTaksitYardimci() {
     const taksitSecici = document.getElementById('taksit-tip-secici');
     const yardimci = document.getElementById('taksit-hesap-yardimci');
     const tutarLabel = document.getElementById('lbl-du-tutar-ana');
+    const suresizBtn = document.getElementById('helper-du-sure');
     
-    // 1. Taksit Modu Görünürlük Kontrolü (Matematiksel Mantık)
+    // 1. Taksit Modu Görünürlük Kontrolü
     if(tur === 'Taksitli Alışveriş') {
         if(taksitSecici) taksitSecici.style.display = 'block';
+        if(suresizBtn) suresizBtn.style.display = 'none'; // YENİ: Taksitte süresiz olamaz
         hesaplaTaksitYardimci(); 
     } else {
         if(taksitSecici) taksitSecici.style.display = 'none';
         if(yardimci) yardimci.style.display = 'none';
+        if(suresizBtn) suresizBtn.style.display = 'inline-block'; // YENİ: Diğerlerinde geri gelsin
         taksitInputType = 'tek'; 
         if(tutarLabel) tutarLabel.innerText = "Tutar (₺)";
     }
@@ -1675,10 +1678,11 @@ function hesaplaTaksitYardimci() {
         const tNum = parseSaha(tutarInput);
         const sNum = parseInt(sure);
 
-        if (tNum > 0 && sNum > 0) {
+        // KONTROL: Süre NaN, 0 veya "Süresiz" ise bölme yapma
+        if (tNum > 0 && sNum > 0 && !isNaN(sNum)) { 
             finalTutar = parseFloat((tNum / sNum).toFixed(2));
         } else {
-            return alert("Toplam tutarı bölebilmemiz için lütfen 'Ödeme Süresi (Ay)' kısmına taksit sayısını girin!");
+            return alert("Toplam tutarı bölebilmemiz için lütfen 'Ödeme Süresi (Ay)' kısmına geçerli bir taksit sayısı girin!");
         }
     }
 
