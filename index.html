@@ -886,17 +886,20 @@
         <div class="segment-btn" onclick="setDuzenliFilter('Gelir', this)">Düzenli Gelir</div>
     </div>
 
-    <div class="form-group" id="du-tutar-grubu">
-        
-        <div id="taksit-tip-secici" style="display:none; margin-bottom: 12px;">
-            <div class="segment-control" style="background: rgba(255,255,255,0.05); padding: 3px; border: 1px solid rgba(255,255,255,0.05);">
-                <div class="segment-btn active" id="btn-taksit-tek" onclick="setTaksitInputType('tek')" style="padding: 8px; font-size: 11px;">Aylık Taksit Gir</div>
-                <div class="segment-btn" id="btn-taksit-toplam" onclick="setTaksitInputType('toplam')" style="padding: 8px; font-size: 11px;">Toplam Tutarı Gir</div>
-            </div>
+    <div class="form-group">
+        <label id="lbl-du-tur">Kayıt Türü</label>
+        <select id="du-tur" class="form-control" onchange="checkDuzenliTur()"></select>
+    </div>
+
+    <div id="taksit-tip-secici" style="display:none; margin-bottom: 12px;">
+        <div class="segment-control" style="background: rgba(255,255,255,0.05); padding: 3px; border: 1px solid rgba(255,255,255,0.05);">
+            <div class="segment-btn active" id="btn-taksit-tek" onclick="setTaksitInputType('tek')" style="padding: 8px; font-size: 11px;">Aylık Taksit Gir</div>
+            <div class="segment-btn" id="btn-taksit-toplam" onclick="setTaksitInputType('toplam')" style="padding: 8px; font-size: 11px;">Toplam Tutarı Gir</div>
         </div>
+    </div>
 
+    <div class="form-group" id="du-tutar-grubu">
         <label id="lbl-du-tutar-ana" style="display: block; margin-bottom: 8px;">Tutar (₺)</label>
-
         <input type="text" inputmode="decimal" id="du-tutar" class="form-control" placeholder="0,00" oninput="hesaplaTaksitYardimci()">
         
         <div id="taksit-hesap-yardimci" style="display:none; font-size: 12px; color: var(--emerald); font-weight: 700; margin-top: 10px; padding: 8px; background: rgba(16, 185, 129, 0.1); border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.2);">
@@ -914,20 +917,14 @@
             <input type="text" id="du-sure" class="form-control" placeholder="Örn: 12" oninput="hesaplaTaksitYardimci()">
         </div>
     </div>
-    
+
     <div style="margin-top: -10px; margin-bottom: 20px; text-align: right;">
         <span id="helper-du-sure" onclick="document.getElementById('du-sure').value='Süresiz'; document.getElementById('du-sure').style.borderColor='var(--emerald)'; checkDuzenliTur();" style="color:var(--emerald); font-size:11px; cursor:pointer; font-weight:600;">
             Süresiz ödeme için tıklayın
         </span>
     </div>
 
-    <div class="form-group">
-        <label id="lbl-du-tur">Kayıt Türü</label>
-        <select id="du-tur" class="form-control" onchange="checkDuzenliTur()"></select>
-    </div>
-
-    <div id="du-info-box" style="display:none; font-size:12px; color:var(--blue); background:rgba(59, 130, 246, 0.1); padding:10px; border-radius:10px; margin-top:-10px; margin-bottom:15px; border:1px solid rgba(59,130,246,0.2);">
-    </div>
+    <div id="du-info-box" style="display:none; font-size:12px; color:var(--blue); background:rgba(59, 130, 246, 0.1); padding:10px; border-radius:10px; margin-top:-10px; margin-bottom:15px; border:1px solid rgba(59,130,246,0.2);"></div>
 
     <div class="form-group">
         <label>Kalem Adı</label>
@@ -1375,34 +1372,34 @@
         let taksitInputType = 'tek'; 
 
         function setTaksitInputType(type) {
-            vibe(); taksitInputType = type;
-            document.getElementById('btn-taksit-tek').classList.toggle('active', type === 'tek');
-            document.getElementById('btn-taksit-toplam').classList.toggle('active', type === 'toplam');
-            document.getElementById('lbl-du-tutar-ana').innerText = type === 'tek' ? 'Aylık Taksit Tutarı (₺)' : 'Alışverişin Toplam Tutarı (₺)';
-            hesaplaTaksitYardimci();
-        }
+    vibe();
+    taksitInputType = type;
+    document.getElementById('btn-taksit-tek').classList.toggle('active', type === 'tek');
+    document.getElementById('btn-taksit-toplam').classList.toggle('active', type === 'toplam');
+    document.getElementById('lbl-du-tutar-ana').innerText = type === 'tek' ? 'Aylık Taksit Tutarı (₺)' : 'Alışverişin Toplam Tutarı (₺)';
+    hesaplaTaksitYardimci();
+}
 
-        function hesaplaTaksitYardimci() {
+function hesaplaTaksitYardimci() {
     const tur = getCustomVal('du-tur');
     const yardimci = document.getElementById('taksit-hesap-yardimci');
     
-    // Sadece Taksit seçiliyse ve "Toplam Tutar Gir" modu aktifse çalış
-    if (tur !== 'Taksit' || taksitInputType === 'tek') {
+    if (tur !== 'Taksitli Alışveriş' || taksitInputType === 'tek') {
         if(yardimci) yardimci.style.display = 'none';
         return;
     }
 
-    const tutarInput = document.getElementById('du-tutar').value;
-    const sureInput = document.getElementById('du-sure').value;
+    const tutarRaw = document.getElementById('du-tutar').value;
+    const sureRaw = document.getElementById('du-sure').value;
 
-    const girilenToplamTutar = parseSaha(tutarInput) || 0;
-    const taksitSayisi = parseInt(sureInput) || 0;
+    const toplamTutar = parseSaha(tutarRaw);
+    const aySayisi = parseInt(sureRaw);
 
-    if (girilenToplamTutar > 0 && taksitSayisi > 0) {
-        const aylikTaksit = girilenToplamTutar / taksitSayisi;
+    if (toplamTutar > 0 && aySayisi > 0) {
+        const aylik = toplamTutar / aySayisi;
         if(yardimci) {
             yardimci.style.display = 'block';
-            yardimci.innerHTML = `💡 Aylık Ödeme: <span style="font-size:14px; font-weight:800;">${formatTL(aylikTaksit)}</span>`;
+            yardimci.innerHTML = `💡 Aylık Ödeme: <span style="font-size:14px; font-weight:800;">${formatTL(aylik)}</span>`;
         }
     } else {
         if(yardimci) {
@@ -1554,7 +1551,6 @@
     const yardimci = document.getElementById('taksit-hesap-yardimci');
     const tutarLabel = document.getElementById('lbl-du-tutar-ana');
     
-    // Kontrol kelimesini "Taksitli Alışveriş" yaptık
     if(tur === 'Taksitli Alışveriş') {
         if(taksitSecici) taksitSecici.style.display = 'block';
         hesaplaTaksitYardimci(); 
@@ -1629,41 +1625,38 @@
         }
 
         async function submitDuzenli() {
-    const tur = getCustomVal('du-tur'); // "Taksitli Alışveriş" gelir
+    const tur = getCustomVal('du-tur');
     const kalem = document.getElementById('du-kalem').value;
     const yontem = getCustomVal('du-yontem');
-    let tutarInput = document.getElementById('du-tutar').value;
+    const tutarInput = document.getElementById('du-tutar').value;
     const gun = document.getElementById('du-gun').value;
     const sure = document.getElementById('du-sure').value;
 
     let finalTutar = parseSaha(tutarInput);
 
-    // Hesaplama Mantığı
     if (tur === 'Taksitli Alışveriş' && taksitInputType === 'toplam') {
-        const toplamTutar = parseSaha(tutarInput);
-        const taksitSayisi = parseInt(sure);
+        const tNum = parseSaha(tutarInput);
+        const sNum = parseInt(sure);
 
-        if (toplamTutar > 0 && taksitSayisi > 0) {
-            // Örn: 5000 / 5 = 1000.00
-            finalTutar = (toplamTutar / taksitSayisi).toFixed(2);
-        } else if (toplamTutar > 0) {
-            return alert("Lütfen toplam tutarı bölebilmemiz için 'Ödeme Süresi (Ay)' kısmına taksit sayısını girin!");
+        if (tNum > 0 && sNum > 0) {
+            finalTutar = parseFloat((tNum / sNum).toFixed(2));
+        } else {
+            return alert("Toplam tutarı bölebilmemiz için lütfen 'Ödeme Süresi (Ay)' kısmına taksit sayısını girin!");
         }
     }
 
-    if(!kalem || !tutarInput || !gun) return alert("Eksik alanları doldurun!");
+    if(!kalem || finalTutar <= 0 || !gun) return alert("Eksik alanları doldurun!");
     if(!sure) return alert("Lütfen süre belirtin!");
     
     const odTuru = window.hesapTurleri[yontem] || "Banka Hesabı";
 
-    // API'ye gönderirken tutar artık hesaplanmış haliyle (finalTutar) gider
     apiIstekAt({ 
         action: "yeni_sabit", 
         yon: currentDuzenliType, 
-        tur: tur, // Artık "Taksitli Alışveriş" olarak gider
+        tur: tur, 
         kalem: kalem, 
         yontem: yontem, 
-        tutar: finalTutar, 
+        tutar: finalTutar,
         odeme_gunu: gun, 
         kalan_ay: sure, 
         odeme_turu: odTuru 
