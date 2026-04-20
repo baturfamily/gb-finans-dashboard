@@ -2552,12 +2552,18 @@ function renderSabitSelect() {
         function doldurSabitGuncelleForm() {
             const select = document.getElementById('sg-kural');
             const opt = select.options[select.selectedIndex];
-            if(!opt || !opt.value) {
+            const formAlani = document.getElementById('sabit-guncelle-form-alani'); // Form alanını tanımladık
+
+            if(!opt || !opt.value || opt.value === "") {
                 document.getElementById('sg-tutar').value = "";
                 document.getElementById('sg-gun').value = "";
                 document.getElementById('sg-sure').value = "";
+                if(formAlani) formAlani.style.display = 'none'; // Seçim iptal edilirse formu gizle
                 return;
             }
+            
+            if(formAlani) formAlani.style.display = 'block'; // Seçim yapıldığında formu GÖSTER!
+
             document.getElementById('sg-tutar').value = opt.getAttribute('data-tutar');
             document.getElementById('sg-gun').value = opt.getAttribute('data-gun');
             document.getElementById('sg-sure').value = opt.getAttribute('data-sure');
@@ -2587,6 +2593,14 @@ function renderSabitSelect() {
             const gun = document.getElementById('sg-gun').value;
             const sure = document.getElementById('sg-sure').value;
             const durum = getCustomVal('sg-durum');
+
+            // --- YENİ EKLENEN GÜVENLİK KONTROLÜ (Taksitler süresiz olamaz) ---
+            if(window.sabitKurallarList) {
+                const kayit = window.sabitKurallarList.find(k => k.satir == kuralSatir);
+                if(kayit && kayit.tur === 'Taksitli Alışveriş' && (sure === 'Süresiz' || sure.toLowerCase() === 'süresiz')) {
+                    return alert("Güvenlik Uyarısı: Taksitli bir işlem 'Süresiz' olamaz. Lütfen kalan taksit ayını rakamla girin.");
+                }
+            }
             
             let err = false; 
             if(!kuralSatir) {markError('sg-kural'); err=true;} 
