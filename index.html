@@ -527,6 +527,9 @@
     </div>
 
     <script>
+        const SCRIPT_URL = 'YOUR_WEB_APP_URL_HERE'; // <-- LÜTFEN GÜNCELLEYİN
+        let globalData = null; 
+
         let currentTab = 'gider';
         let currentSkTab = 'Gider';
         let expenseChartInstance = null;
@@ -544,18 +547,21 @@
         }
 
         function openModal(id) { vibe(); document.getElementById(id).classList.add('active'); }
+        
         function closeModal(id) { 
             vibe(); 
             document.getElementById(id).classList.remove('active'); 
             const inputs = document.getElementById(id).querySelectorAll('input');
             inputs.forEach(i => i.value = '');
         }
+        
         function closeOnOutside(e, id) { if (e.target.id === id) closeModal(id); }
 
         function formatMoney(val) {
             return parseFloat(val || 0).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
 
+        // ZIRH 4 ÇÖZÜMÜ: Placeholder ezilmesine karşı parametrik koruma
         function populateDropdown(selectId, optionsArray, placeholder = "Seçiniz...") {
             const select = document.getElementById(selectId);
             if (!select) return;
@@ -665,9 +671,13 @@
             const varliklarIsim = data.varliklarListe ? data.varliklarListe.map(v => v.isim) : [];
             const tumHedefler = [...aktifHesaplar, ...borclarIsim, ...varliklarIsim];
 
+            // ZIRH 2 ÇÖZÜMÜ: Arka planda yenilenirken kullanıcının açık olan sekmesini ezme
+            const isYhGelir = currentTab === 'gelir';
+            const isSkGelir = currentSkTab === 'Gelir';
+
             if(data.dinamikKategoriler) {
-                populateDropdown('yh-kategori', data.dinamikKategoriler.gider); 
-                populateDropdown('sk-kategori', data.dinamikKategoriler.gider); 
+                populateDropdown('yh-kategori', isYhGelir ? data.dinamikKategoriler.gelir : data.dinamikKategoriler.gider); 
+                populateDropdown('sk-kategori', isSkGelir ? data.dinamikKategoriler.gelir : data.dinamikKategoriler.gider); 
                 populateDropdown('yh-odeme', data.dinamikKategoriler.odemeTurleri);
                 populateDropdown('sk-odeme', data.dinamikKategoriler.odemeTurleri);
                 populateDropdown('bo-odeme', data.dinamikKategoriler.odemeTurleri);
@@ -678,13 +688,15 @@
             populateDropdown('tr-cikis', aktifHesaplar);
             populateDropdown('bo-cikis', aktifHesaplar);
             populateDropdown('ko-cikis', aktifHesaplar);
-            populateDropdown('sg-yeni-cikis', aktifHesaplar); 
+            // ZIRH 4 DEVAMI: Placeholder'ı koru!
+            populateDropdown('sg-yeni-cikis', aktifHesaplar, "Değişmeyecekse Boş Bırakın"); 
             populateDropdown('tr-hedef', tumHedefler);
             
             populateDropdown('bo-isim', borclarIsim);
             const kartIsimleri = data.kartlarDetayli ? data.kartlarDetayli.map(k => k.isim) : [];
             populateDropdown('ko-isim', kartIsimleri);
 
+            // Dinamik İlerleme Çubukları
             const pbContainer = document.getElementById('dynamic-progress-bars');
             pbContainer.innerHTML = '';
             if(data.ilerlemeBarlari && data.ilerlemeBarlari.length > 0) {
@@ -708,6 +720,7 @@
                 });
             }
 
+            // Son İşlemler
             const list = document.getElementById('son-islemler-list');
             list.innerHTML = '';
             data.sonIslemler.forEach(tx => {
@@ -732,7 +745,7 @@
             if (data.pastaGrafik && data.pastaGrafik.length > 0) { drawChart(data.pastaGrafik); }
         }
 
-        // AKORDİYON ÇİZİMİ (Sıfır Hardcode - Düzenli İşlemler İçin)
+        // AKORDİYON ÇİZİMİ (Sıfır Hardcode)
         function buildAccordion(sabitler, bankalar, kartlar) {
             const container = document.getElementById('accordion-container');
             const kuralSelect = document.getElementById('sg-kural');
@@ -766,7 +779,7 @@
                 let itemsHtml = '';
 
                 items.forEach(item => {
-                    const bgKalan = item.kalanAy > 0 ? `<span style="background:rgba(255,255,255,0.1); padding:2px 6px; border-radius:4px; font-size:10px;">Kalan: ${item.kalanAy} Ay</span>` : '';
+                    const bgKalan = (!isNaN(item.kalanAy) && item.kalanAy > 0) ? `<span style="background:rgba(255,255,255,0.1); padding:2px 6px; border-radius:4px; font-size:10px;">Kalan: ${item.kalanAy} Ay</span>` : '';
                     const textColor = item.yon === 'Gelir' ? 'gelir' : '';
                     const prefix = item.yon === 'Gelir' ? '+' : '';
 
@@ -830,6 +843,7 @@
             });
         }
 
+        // ZIRH 3 ÇÖZÜMÜ: Seçili kuralın Durumu'nu (Aktif/İptal) da ekrana getirir
         function doldurGuncelleForm() {
             const secilenSatir = document.getElementById('sg-kural').value;
             if(!secilenSatir || !globalData || !globalData.tumSabitlerListe) return;
@@ -839,6 +853,8 @@
                 document.getElementById('sg-tutar').value = kural.tutar;
                 document.getElementById('sg-gun').value = kural.gun;
                 document.getElementById('sg-sure').value = kural.kalanAy || 'Süresiz';
+                document.getElementById('sg-durum').value = kural.durum || 'Aktif'; 
+                document.getElementById('sg-yeni-cikis').value = ""; // Her seçimde listeyi sıfırlar
             }
         }
 
@@ -878,7 +894,21 @@
                 payload.yontem = getCustomVal('yh-cikis');
                 payload.tutar = getCustomVal('yh-tutar');
                 payload.taksit = getCustomVal('yh-taksit');
-                payload.tarih = getCustomVal('yh-tarih');
+                
+                // ZIRH 5 ÇÖZÜMÜ: ISO Formatlı (YYYY-MM-DDThh:mm) tarihi E-Tablo için Temizler
+                let rawDate = getCustomVal('yh-tarih');
+                if (rawDate) {
+                    let d = new Date(rawDate);
+                    let day = ("0" + d.getDate()).slice(-2);
+                    let month = ("0" + (d.getMonth() + 1)).slice(-2);
+                    let year = d.getFullYear();
+                    let hours = ("0" + d.getHours()).slice(-2);
+                    let minutes = ("0" + d.getMinutes()).slice(-2);
+                    payload.tarih = `${day}.${month}.${year} ${hours}:${minutes}`;
+                } else {
+                    payload.tarih = "";
+                }
+
                 if (!payload.kategori || !payload.kalem || !payload.tutar) return showToast("Doldurulması zorunlu alanlar var!", true);
             }
             else if (action === 'transfer_yap') {
@@ -913,7 +943,12 @@
             }
             else if (action === 'sabit_guncelle') {
                 payload.satir = getCustomVal('sg-kural');
-                payload.yeni_yontem = getCustomVal('sg-yeni-cikis');
+                
+                // ZIRH 1 ÇÖZÜMÜ: Eğer yeni hesap seçilmemişse, eski hesabı ezmek yerine eski hesabı korur
+                const kuralData = globalData.tumSabitlerListe.find(k => k.satir == payload.satir);
+                const secilenYontem = getCustomVal('sg-yeni-cikis');
+                payload.yeni_yontem = secilenYontem ? secilenYontem : (kuralData ? kuralData.yontem : "");
+                
                 payload.yeni_tutar = getCustomVal('sg-tutar');
                 payload.yeni_gun = getCustomVal('sg-gun');
                 payload.yeni_sure = getCustomVal('sg-sure');
