@@ -1611,9 +1611,10 @@
                 finalKalem = faizDetay + " Faizi";
             } else {
                 const ekCheck = document.getElementById('an-ek-check');
-                const ekInput = document.getElementById('an-ek-input').value;
+                const ekInput = document.getElementById('an-ek-input').value.trim();
                 if(ekCheck && ekCheck.checked && ekInput) {
-                    finalKalem = `${anaKalemSecimi} - ${ekInput}`;
+                    // DÜZELTİLEN SATIR: Artık "Kategori - Açıklama" yapmak yerine doğrudan sadece açıklamayı (Örn: "su") alıyor.
+                    finalKalem = ekInput; 
                 }
             }
             
