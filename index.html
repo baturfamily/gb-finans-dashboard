@@ -2625,13 +2625,9 @@
                     let bakiyeBilgisi = tumBakiyeler[temizAd] ? tumBakiyeler[temizAd].bakiye : 0;
                     let hesapTuru = tumBakiyeler[temizAd] ? tumBakiyeler[temizAd].tur : "Banka Hesabı";
                     
-                    // Giderler (Ödeme Yapılacak Hesap) için: Hem Bankalar Hem Kredi Kartları
+                    // İade durumları olabileceği için TÜR FARK ETMEKSİZİN her şeyi iki listeye de ekliyoruz
                     window.hesapOptions += `<option value="${temizAd}">${temizAd} (${formatTLTam(bakiyeBilgisi)})</option>`;
-                    
-                    // Gelirler ve Transfer Girişleri için: SADECE Nakit ve Bankalar (Kredi Kartına gelir yazılamaz)
-                    if (hesapTuru !== "Kredi Kartı") {
-                        window.vadesizOptions += `<option value="${temizAd}">${temizAd}</option>`;
-                    }
+                    window.vadesizOptions += `<option value="${temizAd}">${temizAd}</option>`;
                     
                     window.hesapTurleri[temizAd] = hesapTuru;
                 });
@@ -2644,6 +2640,7 @@
                 });
                 if(data.kartlarDetayli) data.kartlarDetayli.forEach(k => {
                     window.hesapOptions += `<option value="${k.isim}">${k.isim} (${formatTLTam(k.borc * -1)})</option>`;
+                    window.vadesizOptions += `<option value="${k.isim}">${k.isim}</option>`;
                     window.hesapTurleri[k.isim] = "Kredi Kartı";
                 });
             }
