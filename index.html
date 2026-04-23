@@ -2727,10 +2727,18 @@
             let globalSira = 0;
             for (let tur in sGruplar) {
                 let g = sGruplar[tur];
+                
+                // Kategorinin tamamı ödendi mi kontrolü
+                let kategoriOdendiMi = (g.kalan === 0);
+                let modernTik = kategoriOdendiMi 
+                    ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px; flex-shrink:0;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>` 
+                    : '';
+
                 let html = `
                     <div class="sub-accordion-header" onclick="toggleSubAccordion('${globalSira}')">
                         <div style="font-size: 14px; font-weight: 600; color: #e2e8f0; display:flex; align-items:center;">
                             <svg id="sub-icon-${globalSira}" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px; color:var(--text-muted); transition: transform 0.3s ease;"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                            ${modernTik}
                             ${tur}
                         </div>
                         <div style="text-align:right;">
@@ -2755,7 +2763,7 @@
                         <div class="t-row" style="${op} padding: 12px 10px; border-bottom: 1px dashed rgba(255,255,255,0.05);">
                             <div style="margin-right: 12px; display:flex; align-items:center;">${durumIcon}</div>
                             <div class="t-details">
-                                <div class="t-name" style="font-size:13px;">${s.odendiMi ? '<span style="color:var(--emerald); margin-right:4px;">✅</span>' : ''}${s.kalem}</div>
+                                <div class="t-name" style="font-size:13px;">${s.kalem}</div>
                                 <div class="t-meta" style="font-size:10px;">Ayın ${s.gun}. Günü • ${s.yontem}</div>
                             </div>
                             <div class="t-amt ${tClass}" style="font-size:14px;">${formatTL(s.tutar)}</div>
