@@ -2518,11 +2518,6 @@
             
             setText('val-borc-varlik-orani', data.borcVarlikOrani);
             setText('val-nakit-koruma', data.nakitKorumaSuresi + ' Ay');
-            animateValue('val-yatirim', data.toplamYatirim, 1000);
-            
-            let skorRenk = data.finansalSkor >= 700 ? "var(--emerald)" : (data.finansalSkor >= 400 ? "var(--amber)" : "var(--rose)");
-            document.getElementById('val-skor').style.color = skorRenk;
-            animateValue('val-skor', data.finansalSkor, 1000);
 
             animateValue('val-kasa', data.toplamKasa, 1000);
             animateValue('val-borc', data.toplamBorc, 1000);
