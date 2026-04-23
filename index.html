@@ -2578,6 +2578,12 @@
                 let p = data.toplamVarlik > 0 ? Math.round((v.deger / data.toplamVarlik) * 100) : 0;
                 vListe.innerHTML += `<div class="t-row"><div class="t-details"><div class="t-name">${v.isim}</div><div class="progress-container" style="height:4px; margin-top:6px; background:rgba(255,255,255,0.05);"><div class="progress-bar" style="width:${p}%; background:var(--emerald);"></div></div></div><div class="t-amt text-green">${formatTL(v.deger)}</div></div>`;
             });
+            // ŞU SATIRLARI EKLE:
+            vListe.innerHTML += `
+                <div class="t-row" style="border-top: 1px solid rgba(255,255,255,0.1); margin-top: 8px; padding-top: 12px;">
+                    <div class="t-details"><div class="t-name" style="font-weight: 800; color: #fff;">Toplam Varlık</div></div>
+                    <div class="t-amt text-green" style="font-size: 18px; font-weight: 800;">${formatTL(data.toplamVarlik)}</div>
+                </div>`;
 
             const bListe = document.getElementById('borc-listesi');
             bListe.innerHTML = "";
@@ -2585,6 +2591,12 @@
                 let p = data.toplamBorc > 0 ? Math.round((b.tutar / data.toplamBorc) * 100) : 0;
                 bListe.innerHTML += `<div class="t-row"><div class="t-details"><div class="t-name">${b.isim}</div><div class="progress-container" style="height:4px; margin-top:6px; background:rgba(255,255,255,0.05);"><div class="progress-bar" style="width:${p}%; background:var(--rose);"></div></div></div><div class="t-amt text-red">${formatTL(b.tutar)}</div></div>`;
             });
+            // ŞU SATIRLARI EKLE:
+            bListe.innerHTML += `
+                <div class="t-row" style="border-top: 1px solid rgba(255,255,255,0.1); margin-top: 8px; padding-top: 12px;">
+                    <div class="t-details"><div class="t-name" style="font-weight: 800; color: #fff;">Toplam Borç</div></div>
+                    <div class="t-amt text-red" style="font-size: 18px; font-weight: 800;">${formatTL(data.toplamBorc)}</div>
+                </div>`;
 
             const bankaList = document.getElementById('banka-listesi');
             bankaList.innerHTML = "";
@@ -2722,8 +2734,10 @@
                             ${tur}
                         </div>
                         <div style="text-align:right;">
-                            <span style="font-size:12px; color:var(--emerald); font-weight:700; margin-right:6px;">₺${g.odendi.toLocaleString('tr-TR')}</span>
-                            <span style="font-size:12px; color:var(--text-muted);">/ ₺${(g.odendi + g.kalan).toLocaleString('tr-TR')}</span>
+                            <span style="font-size:11px; font-weight:700; color:${g.kalan === 0 ? 'var(--emerald)' : 'var(--amber)'};">
+    ${g.kalan === 0 ? 'TAMAMI ÖDENDİ' : '₺' + g.odendi.toLocaleString('tr-TR') + ' ÖDENDİ'}
+</span>
+<span style="font-size:11px; color:var(--text-muted); margin-left:4px;">/ ₺${(g.odendi + g.kalan).toLocaleString('tr-TR')}</span>
                         </div>
                     </div>
                     <div class="sub-accordion-content" id="sub-content-${globalSira}">
@@ -2741,7 +2755,7 @@
                         <div class="t-row" style="${op} padding: 12px 10px; border-bottom: 1px dashed rgba(255,255,255,0.05);">
                             <div style="margin-right: 12px; display:flex; align-items:center;">${durumIcon}</div>
                             <div class="t-details">
-                                <div class="t-name" style="font-size:13px;">${s.kalem}</div>
+                                <div class="t-name" style="font-size:13px;">${s.odendiMi ? '<span style="color:var(--emerald); margin-right:4px;">✅</span>' : ''}${s.kalem}</div>
                                 <div class="t-meta" style="font-size:10px;">Ayın ${s.gun}. Günü • ${s.yontem}</div>
                             </div>
                             <div class="t-amt ${tClass}" style="font-size:14px;">${formatTL(s.tutar)}</div>
