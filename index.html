@@ -2527,14 +2527,20 @@
             animateValue('val-tahmini-faiz', data.tahminiFaiz, 1000);
             animateValue('val-toplam-odenen-faiz', data.toplamOdenenFaiz, 1000);
 
-            animateValue('aylikGider', data.buAyToplamGider, 1000);
-            // setText yerine setHtml kullanarak span etiketlerinin çalışmasını sağlıyoruz
-            setHtml('butceDurum', 'Gelir: ' + formatTLTam(data.buAyToplamGelir));
-            
             const bakiye = data.buAyToplamGelir - data.buAyToplamGider;
+
+            // 1. Ortadaki Büyük Rakam: Artık "Kalan Bakiye" oldu ve renklendirildi
+            animateValue('aylikGider', bakiye, 1000);
+            document.getElementById('aylikGider').style.color = bakiye >= 0 ? 'var(--emerald)' : 'var(--rose)';
+            document.getElementById('budgetSubtitle').innerText = bakiye >= 0 ? "Kalan Bütçe" : "Aşılan Bütçe";
+
+            // 2. Alt Sol: Gelir (Aynı kalıyor)
+            setHtml('butceDurum', 'Gelir: ' + formatTLTam(data.buAyToplamGelir));
+
+            // 3. Alt Sağ: Gider olarak değiştirildi ve kırmızı yapıldı
             const bakiyeEl = document.getElementById('kalanBakiye');
-            bakiyeEl.innerHTML = 'Kalan: ' + formatTLTam(bakiye);
-            bakiyeEl.style.color = bakiye >= 0 ? 'var(--emerald)' : 'var(--rose)';
+            bakiyeEl.innerHTML = 'Gider: ' + formatTLTam(data.buAyToplamGider);
+            bakiyeEl.style.color = 'var(--rose)';
 
             const pct = data.buAyToplamGelir > 0 ? Math.min(100, (data.buAyToplamGider / data.buAyToplamGelir) * 100) : 0;
             document.getElementById('budgetBar').style.width = pct + '%';
