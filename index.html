@@ -2784,6 +2784,15 @@
                             <div class="t-amt text-red" style="font-size: 15px;">${formatTL(y.tutar)}</div>
                         </div>`;
                 });
+
+                // --- EKLEDİĞİMİZ TOPLAM SATIRI BURASI ---
+                yListe.innerHTML += `
+                    <div class="t-row" style="border-top: 1px dashed rgba(255,255,255,0.2); margin-top: 10px; padding-top: 12px; padding-right: 4px;">
+                        <div class="t-details"><div class="t-name" style="font-weight: 800; text-align: right; color: var(--text-muted);">7 Günlük Toplam:</div></div>
+                        <div class="t-amt text-red" style="font-size: 17px; font-weight: 800;">${formatTL(data.yaklasanToplam)}</div>
+                    </div>`;
+                // ---------------------------------------
+
             } else {
                 yListe.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size: 14px; padding: 10px 0;"><i class="fas fa-check-circle" style="color:var(--emerald); font-size:24px; display:block; margin-bottom:10px;"></i>Önümüzdeki 7 gün için bekleyen ödeme yok.</div>`;
             }
