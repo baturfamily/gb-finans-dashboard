@@ -431,34 +431,19 @@
                     </div>
 
                     <div class="summary-grid sensitive-data" style="margin-top: 20px; grid-template-columns: repeat(2, 1fr); background: rgba(0,0,0,0.4); border-radius: 20px; border: 1px solid rgba(255,255,255,0.03); overflow: hidden;">
-    <div class="summary-item br-right" style="padding: 15px 10px; text-align: center;">
-        <span style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Borç / Varlık</span>
-        <span id="val-borc-varlik-orani" class="tabular-nums" style="font-size: 17px; font-weight: 800; color: #cbd5e1; margin-top: 4px;">%0</span>
-        <div id="trend-borc-varlik" class="trend-box tabular-nums" style="font-size: 9px; margin-top: 4px; display: block;"></div>
-    </div>
-    <div class="summary-item" style="padding: 15px 10px; text-align: center;">
-        <span style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Nakit Koruma</span>
-        <span id="val-nakit-koruma" class="tabular-nums" style="font-size: 17px; font-weight: 800; color: var(--emerald); margin-top: 4px;">0 Ay</span>
-        <div id="trend-nakit-koruma" class="trend-box tabular-nums" style="font-size: 9px; margin-top: 4px; display: block;"></div>
-    </div>
-</div>
-                        
-                        <div class="summary-item br-bottom" style="padding: 15px 10px; text-align: center;">
-                            <span style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Nakit Koruma</span>
-                            <span id="val-nakit-koruma" class="tabular-nums" style="font-size: 17px; font-weight: 800; color: var(--emerald); margin-top: 4px;">0 Ay</span>
-                        </div>
                         
                         <div class="summary-item br-right" style="padding: 15px 10px; text-align: center;">
-                            <span style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Yatırım</span>
-                            <span id="val-yatirim" class="tabular-nums" style="font-size: 15px; font-weight: 800; color: var(--emerald); margin-top: 4px;">₺0</span>
-                            <div id="trend-yatirim" class="trend-box tabular-nums" style="font-size: 9px; margin-top: 4px; display: block;"></div>
+                            <span style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Borç / Varlık</span>
+                            <span id="val-borc-varlik-orani" class="tabular-nums" style="font-size: 17px; font-weight: 800; color: #cbd5e1; margin-top: 4px;">%0</span>
+                            <div id="trend-borc-varlik" class="trend-box tabular-nums" style="font-size: 9px; margin-top: 4px; display: block;"></div>
                         </div>
                         
                         <div class="summary-item" style="padding: 15px 10px; text-align: center;">
-                            <span style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Fin. Skor</span>
-                            <span id="val-skor" class="tabular-nums" style="font-size: 18px; font-weight: 800; color: var(--blue); margin-top: 4px;">0</span>
-                            <div id="trend-skor" class="trend-box tabular-nums" style="font-size: 9px; margin-top: 4px; display: block;"></div>
+                            <span style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Nakit Koruma</span>
+                            <span id="val-nakit-koruma" class="tabular-nums" style="font-size: 17px; font-weight: 800; color: var(--emerald); margin-top: 4px;">0 Ay</span>
+                            <div id="trend-nakit-koruma" class="trend-box tabular-nums" style="font-size: 9px; margin-top: 4px; display: block;"></div>
                         </div>
+
                     </div>
 
                     <div id="varlik-dagilimi-alani" class="sensitive-data" style="margin-top: 20px; width: 100%; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px; text-align: left;">
@@ -1299,6 +1284,7 @@
             if(btnElement) btnElement.classList.add('active');
 
             const ids = ['trend-net-servet', 'trend-net-servet-usd', 'trend-borc', 'trend-can-yakan', 'trend-planli', 'trend-faiz', 'trend-kasa', 'trend-kart', 'trend-toplam-varlik', 'trend-dolar-kuru', 'trend-borc-varlik', 'trend-nakit-koruma'];
+            if (days === 0) { ids.forEach(id => { setHtml(id, ""); }); return; }
 
             if(!window.tarihceData || window.tarihceData.length < 2) {
                 ids.forEach(id => { setHtml(id, `<span style="color:var(--text-muted); font-weight:500;">Veri yok</span>`); });
@@ -1321,44 +1307,43 @@
             const targetTime = midnightToday - ((days - 1) * 24 * 60 * 60 * 1000);
             
             let gecmisKayitlar = window.tarihceData.filter(row => { let t = parseTarihceDate(row[0]); return t > 0 && t <= targetTime; });
-            const ids = ['trend-net-servet', 'trend-net-servet-usd', 'trend-borc', 'trend-can-yakan', 'trend-planli', 'trend-faiz', 'trend-kasa', 'trend-kart', 'trend-toplam-varlik', 'trend-dolar-kuru', 'trend-borc-varlik', 'trend-nakit-koruma'];
+            let bestRow = gecmisKayitlar.length > 0 ? gecmisKayitlar[gecmisKayitlar.length - 1] : window.tarihceData[0];
+            if(!bestRow) return;
 
-// ... (aradaki parseTarihceDate vs kısımlarına dokunma) ...
-let bestRow = gecmisKayitlar.length > 0 ? gecmisKayitlar[gecmisKayitlar.length - 1] : window.tarihceData[0];
-if(!bestRow) return;
+            let pastToplamVarlik = parseSaha(bestRow[1]); 
+            let pastNetServet    = parseSaha(bestRow[2]); 
+            let pastBorc         = parseSaha(bestRow[3]); 
+            let pastCanYakan     = parseSaha(bestRow[4]); 
+            let pastPlanli       = parseSaha(bestRow[5]); 
+            let pastFaiz         = parseSaha(bestRow[6]); 
+            let pastKasa         = parseSaha(bestRow[7]); 
+            let pastKart         = parseSaha(bestRow[8]); 
+            let pastDolarKuru    = parseSaha(bestRow[9]) || 1; 
+            let pastKoruma       = parseSaha(bestRow[10]); 
+            let pastOran         = parseSaha(bestRow[11]); 
 
-// Euro yok, 12 Sütunluk (Tarih Hariç 11 Veri) Eşleşme
-let pastToplamVarlik = parseSaha(bestRow[1]); 
-let pastNetServet    = parseSaha(bestRow[2]); 
-let pastBorc         = parseSaha(bestRow[3]); 
-let pastCanYakan     = parseSaha(bestRow[4]); 
-let pastPlanli       = parseSaha(bestRow[5]); 
-let pastFaiz         = parseSaha(bestRow[6]); 
-let pastKasa         = parseSaha(bestRow[7]); 
-let pastKart         = parseSaha(bestRow[8]); 
-let pastDolarKuru    = parseSaha(bestRow[9]) || 1; 
-let pastKoruma       = parseSaha(bestRow[10]); 
-let pastOran         = parseSaha(bestRow[11]); 
+            let pastNetServetUSD = pastNetServet / pastDolarKuru; 
 
-// Geçmiş Dolar bazında net varlık, o günün kuruna bölünerek daha isabetli bulunur
-let pastNetServetUSD = pastNetServet / pastDolarKuru; 
+            if(document.getElementById('trend-toplam-varlik')) renderTrend('trend-toplam-varlik', window.currentStats.toplamVarlik, pastToplamVarlik, false);
+            if(document.getElementById('trend-net-servet')) renderTrend('trend-net-servet', window.currentStats.netServet, pastNetServet, false);
+            if(document.getElementById('trend-net-servet-usd')) renderTrend('trend-net-servet-usd', window.currentStats.netServetUSD, pastNetServetUSD, false, '$');
+            if(document.getElementById('trend-borc')) renderTrend('trend-borc', window.currentStats.toplamBorc, pastBorc, true);
+            if(document.getElementById('trend-can-yakan')) renderTrend('trend-can-yakan', window.currentStats.toplamCanYakan, pastCanYakan, true);
+            if(document.getElementById('trend-planli')) renderTrend('trend-planli', window.currentStats.toplamPlanli, pastPlanli, true);
+            if(document.getElementById('trend-faiz')) renderTrend('trend-faiz', window.currentStats.tahminiFaiz, pastFaiz, true);
+            if(document.getElementById('trend-kasa')) renderTrend('trend-kasa', window.currentStats.toplamKasa, pastKasa, false);
+            if(document.getElementById('trend-kart')) renderTrend('trend-kart', window.currentStats.kartToplam, pastKart, true);
+            if(document.getElementById('trend-dolar-kuru')) renderTrend('trend-dolar-kuru', window.currentStats.usdRate, pastDolarKuru, false, '₺');
 
-if(document.getElementById('trend-toplam-varlik')) renderTrend('trend-toplam-varlik', window.currentStats.toplamVarlik, pastToplamVarlik, false);
-if(document.getElementById('trend-net-servet')) renderTrend('trend-net-servet', window.currentStats.netServet, pastNetServet, false);
-if(document.getElementById('trend-net-servet-usd')) renderTrend('trend-net-servet-usd', window.currentStats.netServetUSD, pastNetServetUSD, false, '$');
-if(document.getElementById('trend-borc')) renderTrend('trend-borc', window.currentStats.toplamBorc, pastBorc, true);
-if(document.getElementById('trend-can-yakan')) renderTrend('trend-can-yakan', window.currentStats.toplamCanYakan, pastCanYakan, true);
-if(document.getElementById('trend-planli')) renderTrend('trend-planli', window.currentStats.toplamPlanli, pastPlanli, true);
-if(document.getElementById('trend-faiz')) renderTrend('trend-faiz', window.currentStats.tahminiFaiz, pastFaiz, true);
-if(document.getElementById('trend-kasa')) renderTrend('trend-kasa', window.currentStats.toplamKasa, pastKasa, false);
-if(document.getElementById('trend-kart')) renderTrend('trend-kart', window.currentStats.kartToplam, pastKart, true);
-if(document.getElementById('trend-dolar-kuru')) renderTrend('trend-dolar-kuru', window.currentStats.usdRate, pastDolarKuru, false, '₺');
-
-// YENİ EKLENEN İSTATİSTİKLER (Borç/Varlık Oranı ve Nakit Koruma)
-let guncelOran = parseFloat(window.currentStats.borcVarlikOrani.replace('%', '')) || 0;
-let pastOranYuzde = pastOran < 1 ? pastOran * 100 : pastOran; // 0.38 vs 38 formatını dengeler
-if(document.getElementById('trend-borc-varlik')) renderTrend('trend-borc-varlik', guncelOran, pastOranYuzde, true, '%');
-if(document.getElementById('trend-nakit-koruma')) renderTrend('trend-nakit-koruma', window.currentStats.nakitKorumaSuresi, pastKoruma, false, '');
+            let guncelOran = 0;
+            if(window.currentStats.borcVarlikOrani) {
+                guncelOran = parseFloat(window.currentStats.borcVarlikOrani.toString().replace('%', '')) || 0;
+            }
+            let pastOranYuzde = pastOran < 1 ? pastOran * 100 : pastOran; 
+            
+            if(document.getElementById('trend-borc-varlik')) renderTrend('trend-borc-varlik', guncelOran, pastOranYuzde, true, '%');
+            if(document.getElementById('trend-nakit-koruma')) renderTrend('trend-nakit-koruma', window.currentStats.nakitKorumaSuresi, pastKoruma, false, '');
+        }
 
         function renderTrend(elementId, current, past, isDebt, symbol = '₺') {
             const diff = current - past; const el = document.getElementById(elementId); if(!el) return;
