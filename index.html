@@ -1298,8 +1298,7 @@
             document.querySelectorAll('.time-btn').forEach(btn => btn.classList.remove('active'));
             if(btnElement) btnElement.classList.add('active');
 
-            const ids = ['trend-net-servet', 'trend-net-servet-usd', 'trend-borc', 'trend-can-yakan', 'trend-planli', 'trend-faiz', 'trend-kasa', 'trend-kart', 'trend-toplam-varlik', 'trend-dolar-kuru'];
-            if (days === 0) { ids.forEach(id => { setHtml(id, ""); }); return; }
+            const ids = ['trend-net-servet', 'trend-net-servet-usd', 'trend-borc', 'trend-can-yakan', 'trend-planli', 'trend-faiz', 'trend-kasa', 'trend-kart', 'trend-toplam-varlik', 'trend-dolar-kuru', 'trend-borc-varlik', 'trend-nakit-koruma'];
 
             if(!window.tarihceData || window.tarihceData.length < 2) {
                 ids.forEach(id => { setHtml(id, `<span style="color:var(--text-muted); font-weight:500;">Veri yok</span>`); });
@@ -1322,34 +1321,44 @@
             const targetTime = midnightToday - ((days - 1) * 24 * 60 * 60 * 1000);
             
             let gecmisKayitlar = window.tarihceData.filter(row => { let t = parseTarihceDate(row[0]); return t > 0 && t <= targetTime; });
-            let bestRow = gecmisKayitlar.length > 0 ? gecmisKayitlar[gecmisKayitlar.length - 1] : window.tarihceData[0];
-            if(!bestRow) return;
+            const ids = ['trend-net-servet', 'trend-net-servet-usd', 'trend-borc', 'trend-can-yakan', 'trend-planli', 'trend-faiz', 'trend-kasa', 'trend-kart', 'trend-toplam-varlik', 'trend-dolar-kuru', 'trend-borc-varlik', 'trend-nakit-koruma'];
 
-            // YENİ 13 SÜTUNLU DİZİLİME GÖRE İNDEKSLER (A=0, B=1...)
-            let pastToplamVarlik = parseSaha(bestRow[1]); // B Sütunu
-            let pastNetServet    = parseSaha(bestRow[2]); // C Sütunu
-            let pastBorc         = parseSaha(bestRow[3]); // D Sütunu
-            let pastCanYakan     = parseSaha(bestRow[4]); // E Sütunu
-            let pastPlanli       = parseSaha(bestRow[5]); // F Sütunu
-            let pastFaiz         = parseSaha(bestRow[6]); // G Sütunu
-            let pastKasa         = parseSaha(bestRow[7]); // H Sütunu
-            let pastKart         = parseSaha(bestRow[8]); // I Sütunu
-            let pastDolarKuru    = parseSaha(bestRow[9]); // J Sütunu
+// ... (aradaki parseTarihceDate vs kısımlarına dokunma) ...
+let bestRow = gecmisKayitlar.length > 0 ? gecmisKayitlar[gecmisKayitlar.length - 1] : window.tarihceData[0];
+if(!bestRow) return;
 
-            let guncelDolarKuru  = window.currentStats.usdRate || 1;
-            let pastNetServetUSD = pastNetServet / guncelDolarKuru;
+// Euro yok, 12 Sütunluk (Tarih Hariç 11 Veri) Eşleşme
+let pastToplamVarlik = parseSaha(bestRow[1]); 
+let pastNetServet    = parseSaha(bestRow[2]); 
+let pastBorc         = parseSaha(bestRow[3]); 
+let pastCanYakan     = parseSaha(bestRow[4]); 
+let pastPlanli       = parseSaha(bestRow[5]); 
+let pastFaiz         = parseSaha(bestRow[6]); 
+let pastKasa         = parseSaha(bestRow[7]); 
+let pastKart         = parseSaha(bestRow[8]); 
+let pastDolarKuru    = parseSaha(bestRow[9]) || 1; 
+let pastKoruma       = parseSaha(bestRow[10]); 
+let pastOran         = parseSaha(bestRow[11]); 
 
-            if(document.getElementById('trend-toplam-varlik')) renderTrend('trend-toplam-varlik', window.currentStats.toplamVarlik, pastToplamVarlik, false);
-            if(document.getElementById('trend-net-servet')) renderTrend('trend-net-servet', window.currentStats.netServet, pastNetServet, false);
-            if(document.getElementById('trend-net-servet-usd')) renderTrend('trend-net-servet-usd', window.currentStats.netServetUSD, pastNetServetUSD, false, '$');
-            if(document.getElementById('trend-borc')) renderTrend('trend-borc', window.currentStats.toplamBorc, pastBorc, true);
-            if(document.getElementById('trend-can-yakan')) renderTrend('trend-can-yakan', window.currentStats.toplamCanYakan, pastCanYakan, true);
-            if(document.getElementById('trend-planli')) renderTrend('trend-planli', window.currentStats.toplamPlanli, pastPlanli, true);
-            if(document.getElementById('trend-faiz')) renderTrend('trend-faiz', window.currentStats.tahminiFaiz, pastFaiz, true);
-            if(document.getElementById('trend-kasa')) renderTrend('trend-kasa', window.currentStats.toplamKasa, pastKasa, false);
-            if(document.getElementById('trend-kart')) renderTrend('trend-kart', window.currentStats.kartToplam, pastKart, true);
-            if(document.getElementById('trend-dolar-kuru')) renderTrend('trend-dolar-kuru', window.currentStats.usdRate, pastDolarKuru, false, '₺');
-        }
+// Geçmiş Dolar bazında net varlık, o günün kuruna bölünerek daha isabetli bulunur
+let pastNetServetUSD = pastNetServet / pastDolarKuru; 
+
+if(document.getElementById('trend-toplam-varlik')) renderTrend('trend-toplam-varlik', window.currentStats.toplamVarlik, pastToplamVarlik, false);
+if(document.getElementById('trend-net-servet')) renderTrend('trend-net-servet', window.currentStats.netServet, pastNetServet, false);
+if(document.getElementById('trend-net-servet-usd')) renderTrend('trend-net-servet-usd', window.currentStats.netServetUSD, pastNetServetUSD, false, '$');
+if(document.getElementById('trend-borc')) renderTrend('trend-borc', window.currentStats.toplamBorc, pastBorc, true);
+if(document.getElementById('trend-can-yakan')) renderTrend('trend-can-yakan', window.currentStats.toplamCanYakan, pastCanYakan, true);
+if(document.getElementById('trend-planli')) renderTrend('trend-planli', window.currentStats.toplamPlanli, pastPlanli, true);
+if(document.getElementById('trend-faiz')) renderTrend('trend-faiz', window.currentStats.tahminiFaiz, pastFaiz, true);
+if(document.getElementById('trend-kasa')) renderTrend('trend-kasa', window.currentStats.toplamKasa, pastKasa, false);
+if(document.getElementById('trend-kart')) renderTrend('trend-kart', window.currentStats.kartToplam, pastKart, true);
+if(document.getElementById('trend-dolar-kuru')) renderTrend('trend-dolar-kuru', window.currentStats.usdRate, pastDolarKuru, false, '₺');
+
+// YENİ EKLENEN İSTATİSTİKLER (Borç/Varlık Oranı ve Nakit Koruma)
+let guncelOran = parseFloat(window.currentStats.borcVarlikOrani.replace('%', '')) || 0;
+let pastOranYuzde = pastOran < 1 ? pastOran * 100 : pastOran; // 0.38 vs 38 formatını dengeler
+if(document.getElementById('trend-borc-varlik')) renderTrend('trend-borc-varlik', guncelOran, pastOranYuzde, true, '%');
+if(document.getElementById('trend-nakit-koruma')) renderTrend('trend-nakit-koruma', window.currentStats.nakitKorumaSuresi, pastKoruma, false, '');
 
         function renderTrend(elementId, current, past, isDebt, symbol = '₺') {
             const diff = current - past; const el = document.getElementById(elementId); if(!el) return;
