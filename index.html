@@ -2608,13 +2608,45 @@
             window.hesapOptions = "";
             window.vadesizOptions = "";
             window.hesapTurleri = { "Nakit": "Nakit" };
-            data.bankalar.forEach(b => {
-                if (b.bakiye >= 0 || b.tur === "Nakit" || b.limit > 0) {
+
+            // API'den gelen Banka ve Kart bakiyelerini hızlıca bulmak için bir sözlük oluşturalım
+            let tumBakiyeler = {};
+            if (data.bankalar) {
+                data.bankalar.forEach(b => tumBakiyeler[b.isim.trim()] = { bakiye: b.bakiye, tur: b.tur });
+            }
+            if (data.kartlarDetayli) {
+                data.kartlarDetayli.forEach(k => tumBakiyeler[k.isim.trim()] = { bakiye: (k.borc * -1), tur: "Kredi Kartı" });
+            }
+
+            // Ayarlar sekmesindeki 'Aktif Hesaplar' (E Sütunu) listesini dön
+            if (data.dinamikKategoriler && data.dinamikKategoriler.aktifHesaplar && data.dinamikKategoriler.aktifHesaplar.length > 0) {
+                data.dinamikKategoriler.aktifHesaplar.forEach(hesapAdi => {
+                    let temizAd = hesapAdi.trim();
+                    let bakiyeBilgisi = tumBakiyeler[temizAd] ? tumBakiyeler[temizAd].bakiye : 0;
+                    let hesapTuru = tumBakiyeler[temizAd] ? tumBakiyeler[temizAd].tur : "Banka Hesabı";
+                    
+                    // Giderler (Ödeme Yapılacak Hesap) için: Hem Bankalar Hem Kredi Kartları
+                    window.hesapOptions += `<option value="${temizAd}">${temizAd} (${formatTLTam(bakiyeBilgisi)})</option>`;
+                    
+                    // Gelirler ve Transfer Girişleri için: SADECE Nakit ve Bankalar (Kredi Kartına gelir yazılamaz)
+                    if (hesapTuru !== "Kredi Kartı") {
+                        window.vadesizOptions += `<option value="${temizAd}">${temizAd}</option>`;
+                    }
+                    
+                    window.hesapTurleri[temizAd] = hesapTuru;
+                });
+            } else {
+                // Eğer E Sütunu boşsa sistem çökmesin diye eski usül (Kartları da ekleyerek) yedek plan:
+                if(data.bankalar) data.bankalar.forEach(b => {
                     window.hesapOptions += `<option value="${b.isim}">${b.isim} (${formatTLTam(b.bakiye)})</option>`;
                     window.vadesizOptions += `<option value="${b.isim}">${b.isim}</option>`;
                     window.hesapTurleri[b.isim] = b.tur;
-                }
-            });
+                });
+                if(data.kartlarDetayli) data.kartlarDetayli.forEach(k => {
+                    window.hesapOptions += `<option value="${k.isim}">${k.isim} (${formatTLTam(k.borc * -1)})</option>`;
+                    window.hesapTurleri[k.isim] = "Kredi Kartı";
+                });
+            }
             window.faizOptions = "";
             data.faizDetaylari.forEach(f => window.faizOptions += `<option value="${f.banka}">${f.banka} ${f.tur}</option>`);
             
