@@ -2528,7 +2528,8 @@
             animateValue('val-toplam-odenen-faiz', data.toplamOdenenFaiz, 1000);
 
             animateValue('aylikGider', data.buAyToplamGider, 1000);
-            setText('butceDurum', 'Gelir: ' + formatTLTam(data.buAyToplamGelir));
+            // setText yerine setHtml kullanarak span etiketlerinin çalışmasını sağlıyoruz
+            setHtml('butceDurum', 'Gelir: ' + formatTLTam(data.buAyToplamGelir));
             
             const bakiye = data.buAyToplamGelir - data.buAyToplamGider;
             const bakiyeEl = document.getElementById('kalanBakiye');
