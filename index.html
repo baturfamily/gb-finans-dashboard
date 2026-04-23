@@ -431,11 +431,17 @@
                     </div>
 
                     <div class="summary-grid sensitive-data" style="margin-top: 20px; grid-template-columns: repeat(2, 1fr); background: rgba(0,0,0,0.4); border-radius: 20px; border: 1px solid rgba(255,255,255,0.03); overflow: hidden;">
-                        
-                        <div class="summary-item br-right br-bottom" style="padding: 15px 10px; text-align: center;">
-                            <span style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Borç / Varlık</span>
-                            <span id="val-borc-varlik-orani" class="tabular-nums" style="font-size: 17px; font-weight: 800; color: #cbd5e1; margin-top: 4px;">%0</span>
-                        </div>
+    <div class="summary-item br-right" style="padding: 15px 10px; text-align: center;">
+        <span style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Borç / Varlık</span>
+        <span id="val-borc-varlik-orani" class="tabular-nums" style="font-size: 17px; font-weight: 800; color: #cbd5e1; margin-top: 4px;">%0</span>
+        <div id="trend-borc-varlik" class="trend-box tabular-nums" style="font-size: 9px; margin-top: 4px; display: block;"></div>
+    </div>
+    <div class="summary-item" style="padding: 15px 10px; text-align: center;">
+        <span style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Nakit Koruma</span>
+        <span id="val-nakit-koruma" class="tabular-nums" style="font-size: 17px; font-weight: 800; color: var(--emerald); margin-top: 4px;">0 Ay</span>
+        <div id="trend-nakit-koruma" class="trend-box tabular-nums" style="font-size: 9px; margin-top: 4px; display: block;"></div>
+    </div>
+</div>
                         
                         <div class="summary-item br-bottom" style="padding: 15px 10px; text-align: center;">
                             <span style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Nakit Koruma</span>
