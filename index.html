@@ -2910,6 +2910,40 @@
         });
     });
 
+    // --- PWA CİLALAMALARI (Madde 2 ve Madde 3) ---
+
+    // 2. Modalı (Alt Menüyü) Aşağı Kaydırarak Kapatma
+    let modalTouchY = 0;
+    const actionModalContent = document.querySelector('.modal-content');
+    if (actionModalContent) {
+        actionModalContent.addEventListener('touchstart', e => {
+            if (actionModalContent.scrollTop === 0) {
+                modalTouchY = e.touches[0].clientY;
+            }
+        }, {passive: true});
+
+        actionModalContent.addEventListener('touchmove', e => {
+            if (modalTouchY > 0 && actionModalContent.scrollTop === 0) {
+                let diff = e.touches[0].clientY - modalTouchY;
+                if (diff > 60) { // 60px aşağı çekilirse menüyü kapat
+                    toggleModal();
+                    modalTouchY = 0;
+                }
+            }
+        }, {passive: true});
+
+        actionModalContent.addEventListener('touchend', () => modalTouchY = 0);
+    }
+
+    // 3. Ekranda Boşluğa veya Aşağı/Yukarı Kaydırınca Klavyeyi Gizleme
+    document.addEventListener('touchmove', function(e) {
+        if(document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') {
+            document.activeElement.blur();
+        }
+    }, {passive: true});
+
+    // ----------------------------------------------
+
     window.onload = () => { verileriCek(); };
     </script>
 </body>
