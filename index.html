@@ -2838,9 +2838,13 @@
             document.getElementById('header-date').innerText = formatliTarih;
 
         } catch (error) {
-            document.getElementById('baglanti-durumu').innerHTML = `<i class="fas fa-wifi" style="margin-right:4px;"></i>Çevrimdışı`;
-            document.getElementById('baglanti-durumu').style.color = "var(--rose)";
-        }
+                document.getElementById('baglanti-durumu').innerHTML = `SİSTEM ÇÖKTÜ!`;
+                document.getElementById('baglanti-durumu').style.color = "var(--rose)";
+                
+                // Ekrana hatanın tam nedenini basacak uyarı:
+                alert("DİKKAT! Sistem veri çekerken çöktü.\n\nHata Mesajı: " + error.message + "\n\nLütfen bu mesajı kopyalayıp bana gönder, sorunu 1 saniyede çözelim.");
+                console.error("Detaylı Hata:", error);
+            }
     }
 
     function renderKartDurumu() {
