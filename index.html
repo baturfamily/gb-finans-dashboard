@@ -2749,78 +2749,105 @@
                     </div>`;
             });
 
-            // --- GELİŞMİŞ NAKİT AKIŞI GRUPLAMA (V3) ---
-            let nakitAkisiGruplar = {
-                "Sabit Gelirler": { toplam: 0, liste: [], renk: "var(--emerald)" },
-                "Diğer Gelirler": { toplam: 0, liste: [], renk: "var(--emerald)" },
-                "Giderler (Kategorik)": { toplam: 0, liste: {}, renk: "var(--rose)" },
-                "Borç & Kart Ödemeleri": { toplam: 0, liste: [], renk: "var(--blue)" }
+            // --- SADELEŞTİRİLMİŞ KUSURSUZ NAKİT AKIŞI (V6 - KESİN ÇÖZÜM) ---
+            let buAyEkstraCikislar = 0; 
+            let borcDetayGruplar = {
+                "Kredi Kartı Ödemeleri": { toplam: 0, liste: [] },
+                "Kredi Ödemeleri": { toplam: 0, liste: [] },
+                "Diğer Borç Ödemeleri": { toplam: 0, liste: [] }
             };
 
-            // Sabit gelir isimlerini bir kümede toplayalım (Hızlı kontrol için)
-            const sabitGelirIsimleri = new Set(data.tumSabitlerListe.filter(s => s.yon === 'Gelir').map(s => s.kalem));
+            let nakitAkisiGruplar = {
+                "Toplam Gelirler": { toplam: 0, liste: [], renk: "var(--emerald)" },
+                "Toplam Giderler": { toplam: 0, liste: {}, renk: "var(--rose)" },
+                "Toplam Borç Ödemeleri": { toplam: 0, liste: [], renk: "var(--blue)" }
+            };
 
             data.buAyIslemler.forEach(islem => {
+                // Kategori bilgisini güvene alıyoruz
+                let islemKategori = (islem.kategori && islem.kategori !== "-") ? islem.kategori.toString().trim() : "Diğer / Kategorisiz";
+                let islemKalem = (islem.kalem || "").toString().trim();
+
                 if (islem.tur === 'Gelir') {
-                    if (sabitGelirIsimleri.has(islem.kalem)) {
-                        nakitAkisiGruplar["Sabit Gelirler"].toplam += islem.tutar;
-                        nakitAkisiGruplar["Sabit Gelirler"].liste.push(islem);
-                    } else {
-                        nakitAkisiGruplar["Diğer Gelirler"].toplam += islem.tutar;
-                        nakitAkisiGruplar["Diğer Gelirler"].liste.push(islem);
+                    // Hiçbir isim kontrolü yok. Gelirse direkt Gelirler havuzuna!
+                    nakitAkisiGruplar["Toplam Gelirler"].toplam += islem.tutar;
+                    nakitAkisiGruplar["Toplam Gelirler"].liste.push(islem);
+                } 
+                else if (islem.tur === 'Gider') {
+                    // Giderleri sadece Kategori adıyla grupluyoruz
+                    nakitAkisiGruplar["Toplam Giderler"].toplam += islem.tutar;
+                    
+                    if (!nakitAkisiGruplar["Toplam Giderler"].liste[islemKategori]) {
+                        nakitAkisiGruplar["Toplam Giderler"].liste[islemKategori] = 0;
                     }
-                } else if (islem.tur === 'Gider') {
-                    nakitAkisiGruplar["Giderler (Kategorik)"].toplam += islem.tutar;
-                    // Kategorilere göre grupla (Örn: Market: 500, Yemek: 200)
-                    let kat = islem.kategori || "Diğer";
-                    if (!nakitAkisiGruplar["Giderler (Kategorik)"].liste[kat]) nakitAkisiGruplar["Giderler (Kategorik)"].liste[kat] = 0;
-                    nakitAkisiGruplar["Giderler (Kategorik)"].liste[kat] += islem.tutar;
-                } else if (islem.tur === 'Kart Ödemesi' || islem.tur === 'Borç Ödemesi') {
-                    nakitAkisiGruplar["Borç & Kart Ödemeleri"].toplam += islem.tutar;
-                    nakitAkisiGruplar["Borç & Kart Ödemeleri"].liste.push(islem);
+                    nakitAkisiGruplar["Toplam Giderler"].liste[islemKategori] += islem.tutar;
+                } 
+                else if (islem.tur === 'Kart Ödemesi' || islem.tur === 'Borç Ödemesi') {
+                    buAyEkstraCikislar += islem.tutar;
+                    nakitAkisiGruplar["Toplam Borç Ödemeleri"].toplam += islem.tutar;
+                    nakitAkisiGruplar["Toplam Borç Ödemeleri"].liste.push(islem);
+
+                    // Borç Kartı Detayı
+                    if (islem.tur === 'Kart Ödemesi') {
+                        borcDetayGruplar["Kredi Kartı Ödemeleri"].toplam += islem.tutar;
+                        borcDetayGruplar["Kredi Kartı Ödemeleri"].liste.push(islem);
+                    } else {
+                        if (islemKalem.toLowerCase().includes("kredi")) {
+                            borcDetayGruplar["Kredi Ödemeleri"].toplam += islem.tutar;
+                            borcDetayGruplar["Kredi Ödemeleri"].liste.push(islem);
+                        } else {
+                            borcDetayGruplar["Diğer Borç Ödemeleri"].toplam += islem.tutar;
+                            borcDetayGruplar["Diğer Borç Ödemeleri"].liste.push(islem);
+                        }
+                    }
                 }
             });
 
-            // HTML Oluşturma
-            const nakitContainer = document.getElementById('nakit-akisi-listesi-container');
-            nakitContainer.innerHTML = "";
-            let nIdx = 200; // ID çakışması olmasın
-
-            for (let baslik in nakitAkisiGruplar) {
-                let grup = nakitAkisiGruplar[baslik];
-                if (grup.toplam === 0) continue;
-
-                let nHtml = `
-                    <div class="sub-accordion-header" onclick="toggleSubAccordion('${nIdx}')">
-                        <div style="font-size: 13px; font-weight: 600; color: #e2e8f0; display:flex; align-items:center;">
-                            <svg id="sub-icon-${nIdx}" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px; color:var(--text-muted); transition: transform 0.3s ease;"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                            ${baslik}
-                        </div>
-                        <div style="text-align:right;">
-                            <span style="font-size:13px; color:${grup.renk}; font-weight:700;">${baslik.includes('Gelir') ? '+' : '-'}${formatTL(grup.toplam)}</span>
-                        </div>
-                    </div>
-                    <div class="sub-accordion-content" id="sub-content-${nIdx}">
-                `;
-
-                // Detayları bas (Giderler kategorik, diğerleri liste usulü)
-                if (baslik === "Giderler (Kategorik)") {
-                    for (let c in grup.liste) {
-                        nHtml += `<div class="t-row" style="padding: 10px; border-bottom: 1px dashed rgba(255,255,255,0.05);"><div class="t-name" style="font-size:12px; color:var(--text-muted);">${c}</div><div class="t-amt text-red" style="font-size:13px;">-${formatTL(grup.liste[c])}</div></div>`;
-                    }
-                } else {
+            // HTML'e Basma İşlemleri (Aynı Şıklıkta)
+            const borcListContainer = document.getElementById('borc-detay-listesi-container');
+            if(borcListContainer) {
+                borcListContainer.innerHTML = "";
+                let bIdx = 100;
+                for (let baslik in borcDetayGruplar) {
+                    let grup = borcDetayGruplar[baslik];
+                    if (grup.liste.length === 0) continue;
+                    let bHtml = `<div class="sub-accordion-header" onclick="toggleSubAccordion('${bIdx}')"><div style="font-size: 13px; font-weight: 600; color: #e2e8f0; display:flex; align-items:center;"><svg id="sub-icon-${bIdx}" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px; color:var(--text-muted); transition: transform 0.3s ease;"><polyline points="9 18 15 12 9 6"></polyline></svg>${baslik}</div><div style="text-align:right;"><span style="font-size:13px; color:var(--blue); font-weight:700;">${formatTL(grup.toplam)}</span></div></div><div class="sub-accordion-content" id="sub-content-${bIdx}">`;
                     grup.liste.forEach(item => {
-                        nHtml += `<div class="t-row" style="padding: 10px; border-bottom: 1px dashed rgba(255,255,255,0.05);"><div class="t-details"><div class="t-name" style="font-size:12px;">${item.kalem}</div><div class="t-meta" style="font-size:10px;">${item.odeme}</div></div><div class="t-amt" style="font-size:13px; color:${grup.renk};">${baslik.includes('Gelir') ? '+' : '-'}${formatTL(item.tutar)}</div></div>`;
+                        bHtml += `<div class="t-row" style="padding: 12px 10px; border-bottom: 1px dashed rgba(255,255,255,0.05);"><div class="t-details"><div class="t-name" style="font-size:13px;">${item.kalem}</div><div class="t-meta" style="font-size:10px;">${item.tarih} • ${item.odeme}</div></div><div class="t-amt text-blue" style="font-size:14px;">${formatTL(item.tutar)}</div></div>`;
                     });
+                    borcListContainer.innerHTML += bHtml + `</div>`;
+                    bIdx++;
                 }
-                
-                nHtml += `</div>`;
-                nakitContainer.innerHTML += nHtml;
-                nIdx++;
             }
 
-            // Net Kalan Hesaplama
-            let netAkis = (nakitAkisiGruplar["Sabit Gelirler"].toplam + nakitAkisiGruplar["Diğer Gelirler"].toplam) - (nakitAkisiGruplar["Giderler (Kategorik)"].toplam + nakitAkisiGruplar["Borç & Kart Ödemeleri"].toplam);
+            const nakitContainer = document.getElementById('nakit-akisi-listesi-container');
+            if(nakitContainer) {
+                nakitContainer.innerHTML = "";
+                let nIdx = 200;
+                for (let baslik in nakitAkisiGruplar) {
+                    let grup = nakitAkisiGruplar[baslik];
+                    if (grup.toplam === 0) continue;
+                    let nHtml = `<div class="sub-accordion-header" onclick="toggleSubAccordion('${nIdx}')"><div style="font-size: 13px; font-weight: 600; color: #e2e8f0; display:flex; align-items:center;"><svg id="sub-icon-${nIdx}" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px; color:var(--text-muted); transition: transform 0.3s ease;"><polyline points="9 18 15 12 9 6"></polyline></svg>${baslik}</div><div style="text-align:right;"><span style="font-size:13px; color:${grup.renk}; font-weight:700;">${baslik.includes('Gelir') ? '+' : '-'}${formatTL(grup.toplam)}</span></div></div><div class="sub-accordion-content" id="sub-content-${nIdx}">`;
+                    
+                    if (baslik === "Toplam Giderler") {
+                        for (let c in grup.liste) {
+                            nHtml += `<div class="t-row" style="padding: 10px; border-bottom: 1px dashed rgba(255,255,255,0.05);"><div class="t-name" style="font-size:13px; color:var(--text-muted); font-weight:600;">${c}</div><div class="t-amt text-red" style="font-size:13px;">-${formatTL(grup.liste[c])}</div></div>`;
+                        }
+                    } else {
+                        grup.liste.forEach(item => {
+                            nHtml += `<div class="t-row" style="padding: 10px; border-bottom: 1px dashed rgba(255,255,255,0.05);"><div class="t-details"><div class="t-name" style="font-size:12px;">${item.kalem}</div><div class="t-meta" style="font-size:10px;">${item.odeme}</div></div><div class="t-amt" style="font-size:13px; color:${grup.renk};">${baslik.includes('Gelir') ? '+' : '-'}${formatTL(item.tutar)}</div></div>`;
+                        });
+                    }
+                    nakitContainer.innerHTML += nHtml + `</div>`;
+                    nIdx++;
+                }
+            }
+
+            let netAkis = (nakitAkisiGruplar["Toplam Gelirler"].toplam) - (nakitAkisiGruplar["Toplam Giderler"].toplam + nakitAkisiGruplar["Toplam Borç Ödemeleri"].toplam);
+            
+            animateValue('val-buay-borc-odeme', buAyEkstraCikislar, 1000);
+            animateValue('val-nakit-giris', nakitAkisiGruplar["Toplam Gelirler"].toplam, 1000);
+            animateValue('val-nakit-cikis', (nakitAkisiGruplar["Toplam Giderler"].toplam + nakitAkisiGruplar["Toplam Borç Ödemeleri"].toplam), 1000);
             animateValue('val-net-nakit', netAkis, 1000);
 
             const kutuNet = document.getElementById('kutu-net-nakit');
@@ -2834,6 +2861,7 @@
                 kutuNet.style.borderColor = 'rgba(16, 185, 129, 0.3)';
                 valNet.style.color = 'var(--emerald)';
             }
+            // -----------------------------------------------------------
 
             const sKategoriContainer = document.getElementById('sabitler-kategori-container');
             sKategoriContainer.innerHTML = "";
