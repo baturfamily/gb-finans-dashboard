@@ -2693,18 +2693,28 @@
         islemListesi.innerHTML = "";
         data.sonIslemler.forEach(islem => {
             // --- EVRENSEL ROTA ETİKETİ (V10) ---
+            // Eğer Transfer, Kart veya Borç ödemesiyse ve hedef (H sütunu) doluysa ismi zenginleştir
             let gosterilecekKalem = islem.kalem;
             if ((islem.tur === 'Transfer' || islem.tur === 'Kart Ödemesi' || islem.tur === 'Borç Ödemesi') && islem.hedef) {
                 gosterilecekKalem = `${islem.kalem} (${islem.odeme} ➔ ${islem.hedef})`;
             }
-            // -----------------------------------
 
             let badgeClass = islem.tur === 'Gelir' ? 'pill-green' : (islem.tur === 'Transfer' ? 'pill-gray' : 'pill-red');
             let amtClass = islem.tur === 'Gelir' ? 'text-green' : (islem.tur === 'Transfer' ? 'text-gray' : 'text-red');
             let sign = islem.tur === 'Gelir' ? '+' : (islem.tur === 'Transfer' ? '' : '-');
             
-            // Burada ${islem.kalem} yerine ${gosterilecekKalem} kullandık
-            islemListesi.innerHTML += `<div class="t-row"><div class="t-details"><div class="t-name">${gosterilecekKalem}</div><div class="t-meta">${islem.tarih} • ${islem.odeme}</div></div><div class="t-amt ${amtClass}"><div style="font-size:10px; margin-bottom:4px;" class="pill-badge ${badgeClass}">${islem.tur}</div><br>${sign}${formatTL(islem.tutar)}</div></div>`;
+            // HTML içinde ${islem.kalem} yerine yeni ${gosterilecekKalem} değişkenini kullanıyoruz
+            islemListesi.innerHTML += `
+                <div class="t-row">
+                    <div class="t-details">
+                        <div class="t-name">${gosterilecekKalem}</div>
+                        <div class="t-meta">${islem.tarih} • ${islem.odeme}</div>
+                    </div>
+                    <div class="t-amt ${amtClass}">
+                        <div style="font-size:10px; margin-bottom:4px;" class="pill-badge ${badgeClass}">${islem.tur}</div>
+                        <br>${sign}${formatTL(islem.tutar)}
+                    </div>
+                </div>`;
         });
 
         const aylikIslemlerListesi = document.getElementById('aylik-islemler-container');
