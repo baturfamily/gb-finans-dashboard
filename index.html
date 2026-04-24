@@ -2692,19 +2692,37 @@
         const islemListesi = document.getElementById('islem-listesi');
         islemListesi.innerHTML = "";
         data.sonIslemler.forEach(islem => {
+            // --- EVRENSEL ROTA ETİKETİ (V10) ---
+            let gosterilecekKalem = islem.kalem;
+            if ((islem.tur === 'Transfer' || islem.tur === 'Kart Ödemesi' || islem.tur === 'Borç Ödemesi') && islem.hedef) {
+                gosterilecekKalem = `${islem.kalem} (${islem.odeme} ➔ ${islem.hedef})`;
+            }
+            // -----------------------------------
+
             let badgeClass = islem.tur === 'Gelir' ? 'pill-green' : (islem.tur === 'Transfer' ? 'pill-gray' : 'pill-red');
             let amtClass = islem.tur === 'Gelir' ? 'text-green' : (islem.tur === 'Transfer' ? 'text-gray' : 'text-red');
             let sign = islem.tur === 'Gelir' ? '+' : (islem.tur === 'Transfer' ? '' : '-');
-            islemListesi.innerHTML += `<div class="t-row"><div class="t-details"><div class="t-name">${islem.kalem}</div><div class="t-meta">${islem.tarih} • ${islem.odeme}</div></div><div class="t-amt ${amtClass}"><div style="font-size:10px; margin-bottom:4px;" class="pill-badge ${badgeClass}">${islem.tur}</div><br>${sign}${formatTL(islem.tutar)}</div></div>`;
+            
+            // Burada ${islem.kalem} yerine ${gosterilecekKalem} kullandık
+            islemListesi.innerHTML += `<div class="t-row"><div class="t-details"><div class="t-name">${gosterilecekKalem}</div><div class="t-meta">${islem.tarih} • ${islem.odeme}</div></div><div class="t-amt ${amtClass}"><div style="font-size:10px; margin-bottom:4px;" class="pill-badge ${badgeClass}">${islem.tur}</div><br>${sign}${formatTL(islem.tutar)}</div></div>`;
         });
 
         const aylikIslemlerListesi = document.getElementById('aylik-islemler-container');
         aylikIslemlerListesi.innerHTML = "";
         data.buAyIslemler.forEach(islem => {
+            // --- EVRENSEL ROTA ETİKETİ (V10) ---
+            let gosterilecekKalem = islem.kalem;
+            if ((islem.tur === 'Transfer' || islem.tur === 'Kart Ödemesi' || islem.tur === 'Borç Ödemesi') && islem.hedef) {
+                gosterilecekKalem = `${islem.kalem} (${islem.odeme} ➔ ${islem.hedef})`;
+            }
+            // -----------------------------------
+
             let badgeClass = islem.tur === 'Gelir' ? 'pill-green' : (islem.tur === 'Transfer' ? 'pill-gray' : 'pill-red');
             let amtClass = islem.tur === 'Gelir' ? 'text-green' : (islem.tur === 'Transfer' ? 'text-gray' : 'text-red');
             let sign = islem.tur === 'Gelir' ? '+' : (islem.tur === 'Transfer' ? '' : '-');
-            aylikIslemlerListesi.innerHTML += `<div class="t-row" style="padding: 12px 0;"><div class="t-details"><div class="t-name" style="font-size: 14px;">${islem.kalem}</div><div class="t-meta" style="font-size: 11px;">${islem.tarih} • ${islem.odeme}</div></div><div class="t-amt ${amtClass}" style="font-size: 14px;">${sign}${formatTL(islem.tutar)}</div></div>`;
+
+            // Burada ${islem.kalem} yerine ${gosterilecekKalem} kullandık
+            aylikIslemlerListesi.innerHTML += `<div class="t-row" style="padding: 12px 0;"><div class="t-details"><div class="t-name" style="font-size: 14px;">${gosterilecekKalem}</div><div class="t-meta" style="font-size: 11px;">${islem.tarih} • ${islem.odeme}</div></div><div class="t-amt ${amtClass}" style="font-size: 14px;">${sign}${formatTL(islem.tutar)}</div></div>`;
         });
 
         // --- %100 EVRENSEL NAKİT AKIŞI VE BORÇ YÖNETİMİ ---
@@ -2725,42 +2743,54 @@
             : [];
 
         if (data.buAyIslemler && Array.isArray(data.buAyIslemler)) {
-            data.buAyIslemler.forEach(function(islem) {
-                // Kategori ve Kalem isimleri evrensel değişkene alındı
-                var islemKategori = (islem.kategori && islem.kategori !== "-") ? islem.kategori.toString().trim() : "Diğer / Kategorisiz";
-                var islemKalem = (islem.kalem || "").toString().trim() || "İsimsiz İşlem";
-                var odemeYontemi = (islem.odeme || "").toString().toLowerCase().trim();
+            // --- EVRENSEL VERİ ZENGİNLEŞTİRME (V10) ---
+        data.buAyIslemler.forEach(function(islem) {
+            var islemKategori = (islem.kategori && islem.kategori !== "-") ? islem.kategori.toString().trim() : "Diğer";
+            
+            // Orijinal kalem ismini alıyoruz (Örn: "Kart Borcu" veya "Para Transferi")
+            var hamKalem = (islem.kalem || "").toString().trim() || "İsimsiz İşlem";
+            var zenginKalem = hamKalem;
 
-                if (islem.tur === 'Gelir') {
-                    nakitAkisiGruplar["Toplam Gelirler"].toplam += islem.tutar;
-                    // Kelime araması yok. Direkt D sütunundaki kategori adıyla gruplar (Örn: Maaş, Kira)
-                    if (!nakitAkisiGruplar["Toplam Gelirler"].liste[islemKategori]) nakitAkisiGruplar["Toplam Gelirler"].liste[islemKategori] = 0;
-                    nakitAkisiGruplar["Toplam Gelirler"].liste[islemKategori] += islem.tutar;
-                } 
-                else if (islem.tur === 'Gider') {
-                    var krediKartiIleMiOdendi = bankaKartIsimleri.includes(odemeYontemi);
-                    if (!krediKartiIleMiOdendi) {
-                        nakitAkisiGruplar["Nakit Giderler (Banka/Kasa)"].toplam += islem.tutar;
-                        // Direkt C sütunundaki kategori adıyla gruplar (Market, Fatura)
-                        if (!nakitAkisiGruplar["Nakit Giderler (Banka/Kasa)"].liste[islemKategori]) nakitAkisiGruplar["Nakit Giderler (Banka/Kasa)"].liste[islemKategori] = 0;
-                        nakitAkisiGruplar["Nakit Giderler (Banka/Kasa)"].liste[islemKategori] += islem.tutar;
-                    }
-                } 
-                else if (islem.tur === 'Kart Ödemesi' || islem.tur === 'Borç Ödemesi') {
-                    buAyEkstraCikislar += islem.tutar;
-                    nakitAkisiGruplar["Toplam Borç Ödemeleri"].toplam += islem.tutar;
-                    
-                    // Borç ödemelerini banka/şahıs adına göre (Kalem) toplar. (Ziraat: 1000, Ahmet: 500)
-                    if (!nakitAkisiGruplar["Toplam Borç Ödemeleri"].liste[islemKalem]) nakitAkisiGruplar["Toplam Borç Ödemeleri"].liste[islemKalem] = 0;
-                    nakitAkisiGruplar["Toplam Borç Ödemeleri"].liste[islemKalem] += islem.tutar;
+            // H Sütunu (islem.hedef) doluysa ve işlem Transfer/Borç/Kart ise ismi rotalı göster
+            // Hiçbir özel isim (Ziraat vb.) kullanmıyoruz, sadece değişkenleri okuyoruz (Evrensel!)
+            if ((islem.tur === 'Transfer' || islem.tur === 'Kart Ödemesi' || islem.tur === 'Borç Ödemesi') && islem.hedef) {
+                // ROTA ŞABLONU: "İşlem Adı (Nereden ➔ Nereye)"
+                zenginKalem = hamKalem + " (" + islem.odeme + " ➔ " + islem.hedef + ")";
+            }
 
-                    // Eski borç kartı için türüne göre dinamik ayrım (Kredi kelimesi aranmaz!)
-                    var turBaslik = islem.tur === 'Kart Ödemesi' ? 'Kredi Kartı Ödemeleri' : 'Kredi ve Şahıs Ödemeleri';
-                    if (!borcDetayGruplar[turBaslik]) borcDetayGruplar[turBaslik] = { toplam: 0, liste: [] };
-                    borcDetayGruplar[turBaslik].toplam += islem.tutar;
-                    borcDetayGruplar[turBaslik].liste.push(islem);
+            var odemeYontemi = (islem.odeme || "").toString().toLowerCase().trim();
+
+            if (islem.tur === 'Gelir') {
+                nakitAkisiGruplar["Toplam Gelirler"].toplam += islem.tutar;
+                if (!nakitAkisiGruplar["Toplam Gelirler"].liste[islemKategori]) nakitAkisiGruplar["Toplam Gelirler"].liste[islemKategori] = 0;
+                nakitAkisiGruplar["Toplam Gelirler"].liste[islemKategori] += islem.tutar;
+            } 
+            else if (islem.tur === 'Gider') {
+                var krediKartiIleMiOdendi = bankaKartIsimleri.includes(odemeYontemi);
+                if (!krediKartiIleMiOdendi) {
+                    nakitAkisiGruplar["Nakit Giderler (Banka/Kasa)"].toplam += islem.tutar;
+                    if (!nakitAkisiGruplar["Nakit Giderler (Banka/Kasa)"].liste[islemKategori]) nakitAkisiGruplar["Nakit Giderler (Banka/Kasa)"].liste[islemKategori] = 0;
+                    nakitAkisiGruplar["Nakit Giderler (Banka/Kasa)"].liste[islemKategori] += islem.tutar;
                 }
-            });
+            } 
+            else if (islem.tur === 'Kart Ödemesi' || islem.tur === 'Borç Ödemesi') {
+                buAyEkstraCikislar += islem.tutar;
+                nakitAkisiGruplar["Toplam Borç Ödemeleri"].toplam += islem.tutar;
+                
+                // Gruplama yaparken artık Zenginleştirilmiş İsmi kullanıyoruz
+                if (!nakitAkisiGruplar["Toplam Borç Ödemeleri"].liste[zenginKalem]) nakitAkisiGruplar["Toplam Borç Ödemeleri"].liste[zenginKalem] = 0;
+                nakitAkisiGruplar["Toplam Borç Ödemeleri"].liste[zenginKalem] += islem.tutar;
+
+                // Geçmiş Borç Kartı Detayı
+                var turBaslik = islem.tur === 'Kart Ödemesi' ? 'Kredi Kartı Ödemeleri' : 'Kredi ve Şahıs Ödemeleri';
+                if (!borcDetayGruplar[turBaslik]) borcDetayGruplar[turBaslik] = { toplam: 0, liste: [] };
+                borcDetayGruplar[turBaslik].toplam += islem.tutar;
+                
+                // Listenin içine yeni isimlendirilmiş işlemi yerleştiriyoruz
+                var kopyaIslem = {...islem, kalem: zenginKalem};
+                borcDetayGruplar[turBaslik].liste.push(kopyaIslem);
+            }
+        });
         }
 
         // HTML: Borç Detayları Kartı
