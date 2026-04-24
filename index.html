@@ -2541,29 +2541,6 @@
         animateValue('val-tahmini-faiz', data.tahminiFaiz, 1000);
         animateValue('val-toplam-odenen-faiz', data.toplamOdenenFaiz, 1000);
 
-        const bakiye = data.buAyToplamGelir - data.buAyToplamGider;
-        animateValue('aylikGider', bakiye, 1000);
-        document.getElementById('aylikGider').style.color = bakiye >= 0 ? 'var(--emerald)' : 'var(--rose)';
-        document.getElementById('budgetSubtitle').innerText = bakiye >= 0 ? "Kalan Bütçe" : "Aşılan Bütçe";
-        setHtml('butceDurum', 'Gelir: ' + formatTLTam(data.buAyToplamGelir));
-
-        const bakiyeEl = document.getElementById('kalanBakiye');
-        bakiyeEl.innerHTML = 'Gider: ' + formatTLTam(data.buAyToplamGider);
-        bakiyeEl.style.color = 'var(--rose)';
-
-        const pct = data.buAyToplamGelir > 0 ? Math.min(100, (data.buAyToplamGider / data.buAyToplamGelir) * 100) : 0;
-        document.getElementById('budgetBar').style.width = pct + '%';
-        document.getElementById('budgetPercent').innerText = '%' + Math.round(pct);
-
-        let tasarrufOrani = data.buAyToplamGelir > 0 ? ((bakiye / data.buAyToplamGelir) * 100).toFixed(1) : 0;
-        document.getElementById('tasarruf-orani-badge').innerHTML = `Tasarruf: %${tasarrufOrani}`;
-
-        animateValue('mevcutKalanProjek', bakiye, 1000);
-        animateValue('gelecekSabitler', data.odenecekSabitToplam, 1000);
-        const ozgurPara = bakiye - data.odenecekSabitToplam;
-        const ozgurEl = document.getElementById('ozgurPara');
-        ozgurEl.innerHTML = formatTL(ozgurPara);
-        ozgurEl.style.color = ozgurPara > 0 ? 'var(--emerald)' : (ozgurPara < 0 ? 'var(--rose)' : '#fff');
         updateTrends(0, document.querySelectorAll('.time-btn')[0]);
 
         const fListe = document.getElementById('faiz-detay-listesi');
@@ -2709,38 +2686,52 @@
             });
         }
 
-        // --- AYLIK İŞLEMLER LİSTESİ (V11 RESPONSIVE STACKING) ---
-        const aylikIslemlerListesi = document.getElementById('aylik-islemler-container');
-        if (aylikIslemlerListesi) {
-            aylikIslemlerListesi.innerHTML = "";
-            data.buAyIslemler.forEach(islem => {
-                let hamKalem = islem.kalem || "İsimsiz İşlem";
-                
-                // Aynı Akıllı Yığınlama (Stacking) Mantığı
-                let kalemHtml = `<div style="font-size: 14px; font-weight: 600; line-height: 1.2;">${hamKalem}</div>`;
-                
-                if ((islem.tur === 'Transfer' || islem.tur === 'Kart Ödemesi' || islem.tur === 'Borç Ödemesi') && islem.hedef) {
-                    kalemHtml = `
-                        <div style="font-size: 14px; font-weight: 600; line-height: 1.2;">${hamKalem}</div>
-                        <div style="font-size: 10px; color: var(--text-muted); font-weight: 400; margin-top: 3px; display: flex; align-items: center;">
-                            ${islem.odeme} <span style="margin: 0 4px; opacity: 0.5;">➔</span> ${islem.hedef}
-                        </div>`;
-                }
+        // --- V12: AYLIK SAF HARCAMA VE TÜKETİM ANALİZİ ---
+        let safGiderToplam = 0;
+        let safGiderListesi = [];
 
-                let amtClass = islem.tur === 'Gelir' ? 'text-green' : (islem.tur === 'Transfer' ? 'text-gray' : 'text-red');
-                let sign = islem.tur === 'Gelir' ? '+' : (islem.tur === 'Transfer' ? '' : '-');
-                
-                aylikIslemlerListesi.innerHTML += `
-                    <div class="t-row" style="align-items: flex-start; padding: 12px 0;">
-                        <div class="t-details" style="flex: 1; min-width: 0;">
-                            <div class="t-name">${kalemHtml}</div>
-                            <div class="t-meta" style="font-size: 11px; margin-top: 4px; opacity: 0.6;">${islem.tarih}</div>
-                        </div>
-                        <div class="t-amt ${amtClass}" style="text-align: right; flex-shrink: 0; margin-left: 10px; font-size: 14px; font-weight: 700;">
-                            ${sign}${formatTL(islem.tutar)}
-                        </div>
-                    </div>`;
+        // 1. Sadece 'Gider' türündekileri ayıkla (Transfer, Borç, Kart Ödemesi ve Gelirler hariç)
+        if (data.buAyIslemler && data.buAyIslemler.length > 0) {
+            data.buAyIslemler.forEach(islem => {
+                if (islem.tur === 'Gider') {
+                    safGiderToplam += islem.tutar;
+                    safGiderListesi.push(islem);
+                }
             });
+        }
+
+        // 2. Günlük Ortalama Hesaplama (Bugünün tarihine böler)
+        let simdi = new Date();
+        let gecenGun = simdi.getDate() || 1;
+        let gunlukOrtalama = safGiderToplam / gecenGun;
+
+        // 3. Rakamları Ekrana Bas (Animasyonlu ve formatlı)
+        animateValue('saf-gider-toplam', safGiderToplam, 800);
+        const avgEl = document.getElementById('saf-gunluk-ortalama');
+        if(avgEl) avgEl.innerHTML = formatTL(gunlukOrtalama) + `<span style="font-size:10px; opacity:0.5; font-weight:400;"> /gün</span>`;
+
+        // 4. Listeyi SADECE Saf Giderlerle Doldur (Stacked/V11 Format)
+        const giderContainer = document.getElementById('saf-gider-listesi');
+        if (giderContainer) {
+            giderContainer.innerHTML = "";
+            if (safGiderListesi.length === 0) {
+                giderContainer.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-muted); font-size:12px;">Bu ay henüz tüketim harcaması kaydedilmedi.</div>`;
+            } else {
+                safGiderListesi.forEach(islem => {
+                    let kalemHtml = `<div style="font-size: 13px; font-weight: 600; line-height: 1.2;">${islem.kalem}</div>`;
+                    
+                    giderContainer.innerHTML += `
+                        <div class="t-row" style="align-items: flex-start; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.03);">
+                            <div class="t-details" style="flex: 1; min-width: 0;">
+                                <div class="t-name">${kalemHtml}</div>
+                                <div class="t-meta" style="font-size: 10px; margin-top: 4px; opacity: 0.6;">${islem.tarih} • ${islem.odeme}</div>
+                            </div>
+                            <div class="t-amt text-red" style="text-align: right; flex-shrink: 0; margin-left: 10px;">
+                                <div style="font-size: 14px; font-weight: 800;">-${formatTL(islem.tutar)}</div>
+                            </div>
+                        </div>`;
+                });
+            }
         }
 
         // --- %100 EVRENSEL NAKİT AKIŞI VE BORÇ YÖNETİMİ ---
