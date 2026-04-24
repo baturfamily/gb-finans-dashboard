@@ -2749,7 +2749,7 @@
                     </div>`;
             });
 
-            // --- GERÇEK NAKİT AKIŞI (ÇİFT SAYIM KORUMALI) ---
+            // --- SADELEŞTİRİLMİŞ KUSURSUZ NAKİT AKIŞI (V6 - KESİN ÇÖZÜM) ---
             let buAyEkstraCikislar = 0; 
             let borcDetayGruplar = {
                 "Kredi Kartı Ödemeleri": { toplam: 0, liste: [] },
@@ -2759,43 +2759,35 @@
 
             let nakitAkisiGruplar = {
                 "Toplam Gelirler": { toplam: 0, liste: [], renk: "var(--emerald)" },
-                "Nakit Giderler (Banka/Kasa)": { toplam: 0, liste: {}, renk: "var(--rose)" },
+                "Toplam Giderler": { toplam: 0, liste: {}, renk: "var(--rose)" },
                 "Toplam Borç Ödemeleri": { toplam: 0, liste: [], renk: "var(--blue)" }
             };
 
-            // Kredi kartı isimlerini eşleşme için temizleyip alıyoruz
-            const kartIsimleri = (data.kartlarDetayli && Array.isArray(data.kartlarDetayli)) 
-                ? data.kartlarDetayli.map(k => (k.isim || "").toString().toLowerCase().trim()) 
-                : [];
-
             data.buAyIslemler.forEach(islem => {
+                // Kategori bilgisini güvene alıyoruz
                 let islemKategori = (islem.kategori && islem.kategori !== "-") ? islem.kategori.toString().trim() : "Diğer / Kategorisiz";
                 let islemKalem = (islem.kalem || "").toString().trim();
-                let odemeYontemi = (islem.odeme || "").toString().toLowerCase().trim();
 
                 if (islem.tur === 'Gelir') {
+                    // Hiçbir isim kontrolü yok. Gelirse direkt Gelirler havuzuna!
                     nakitAkisiGruplar["Toplam Gelirler"].toplam += islem.tutar;
                     nakitAkisiGruplar["Toplam Gelirler"].liste.push(islem);
                 } 
                 else if (islem.tur === 'Gider') {
-                    // Kredi kartıyla mı ödenmiş?
-                    let krediKartiIleMiOdendi = kartIsimleri.includes(odemeYontemi);
-
-                    if (!krediKartiIleMiOdendi) {
-                        // Kredi kartı değilse gerçek nakit çıkışıdır, Nakit Akışına dahil et
-                        nakitAkisiGruplar["Nakit Giderler (Banka/Kasa)"].toplam += islem.tutar;
-                        
-                        if (!nakitAkisiGruplar["Nakit Giderler (Banka/Kasa)"].liste[islemKategori]) {
-                            nakitAkisiGruplar["Nakit Giderler (Banka/Kasa)"].liste[islemKategori] = 0;
-                        }
-                        nakitAkisiGruplar["Nakit Giderler (Banka/Kasa)"].liste[islemKategori] += islem.tutar;
+                    // Giderleri sadece Kategori adıyla grupluyoruz
+                    nakitAkisiGruplar["Toplam Giderler"].toplam += islem.tutar;
+                    
+                    if (!nakitAkisiGruplar["Toplam Giderler"].liste[islemKategori]) {
+                        nakitAkisiGruplar["Toplam Giderler"].liste[islemKategori] = 0;
                     }
+                    nakitAkisiGruplar["Toplam Giderler"].liste[islemKategori] += islem.tutar;
                 } 
                 else if (islem.tur === 'Kart Ödemesi' || islem.tur === 'Borç Ödemesi') {
                     buAyEkstraCikislar += islem.tutar;
                     nakitAkisiGruplar["Toplam Borç Ödemeleri"].toplam += islem.tutar;
                     nakitAkisiGruplar["Toplam Borç Ödemeleri"].liste.push(islem);
 
+                    // Borç Kartı Detayı
                     if (islem.tur === 'Kart Ödemesi') {
                         borcDetayGruplar["Kredi Kartı Ödemeleri"].toplam += islem.tutar;
                         borcDetayGruplar["Kredi Kartı Ödemeleri"].liste.push(islem);
@@ -2811,7 +2803,7 @@
                 }
             });
 
-            // HTML'e Basma (Borçlar)
+            // HTML'e Basma İşlemleri (Aynı Şıklıkta)
             const borcListContainer = document.getElementById('borc-detay-listesi-container');
             if(borcListContainer) {
                 borcListContainer.innerHTML = "";
@@ -2828,7 +2820,6 @@
                 }
             }
 
-            // HTML'e Basma (Nakit Akışı)
             const nakitContainer = document.getElementById('nakit-akisi-listesi-container');
             if(nakitContainer) {
                 nakitContainer.innerHTML = "";
@@ -2838,7 +2829,7 @@
                     if (grup.toplam === 0) continue;
                     let nHtml = `<div class="sub-accordion-header" onclick="toggleSubAccordion('${nIdx}')"><div style="font-size: 13px; font-weight: 600; color: #e2e8f0; display:flex; align-items:center;"><svg id="sub-icon-${nIdx}" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px; color:var(--text-muted); transition: transform 0.3s ease;"><polyline points="9 18 15 12 9 6"></polyline></svg>${baslik}</div><div style="text-align:right;"><span style="font-size:13px; color:${grup.renk}; font-weight:700;">${baslik.includes('Gelir') ? '+' : '-'}${formatTL(grup.toplam)}</span></div></div><div class="sub-accordion-content" id="sub-content-${nIdx}">`;
                     
-                    if (baslik === "Nakit Giderler (Banka/Kasa)") {
+                    if (baslik === "Toplam Giderler") {
                         for (let c in grup.liste) {
                             nHtml += `<div class="t-row" style="padding: 10px; border-bottom: 1px dashed rgba(255,255,255,0.05);"><div class="t-name" style="font-size:13px; color:var(--text-muted); font-weight:600;">${c}</div><div class="t-amt text-red" style="font-size:13px;">-${formatTL(grup.liste[c])}</div></div>`;
                         }
@@ -2852,21 +2843,23 @@
                 }
             }
 
-            let netAkis = (nakitAkisiGruplar["Toplam Gelirler"].toplam) - (nakitAkisiGruplar["Nakit Giderler (Banka/Kasa)"].toplam + nakitAkisiGruplar["Toplam Borç Ödemeleri"].toplam);
+            let netAkis = (nakitAkisiGruplar["Toplam Gelirler"].toplam) - (nakitAkisiGruplar["Toplam Giderler"].toplam + nakitAkisiGruplar["Toplam Borç Ödemeleri"].toplam);
             
             animateValue('val-buay-borc-odeme', buAyEkstraCikislar, 1000);
             animateValue('val-nakit-giris', nakitAkisiGruplar["Toplam Gelirler"].toplam, 1000);
-            animateValue('val-nakit-cikis', (nakitAkisiGruplar["Nakit Giderler (Banka/Kasa)"].toplam + nakitAkisiGruplar["Toplam Borç Ödemeleri"].toplam), 1000);
+            animateValue('val-nakit-cikis', (nakitAkisiGruplar["Toplam Giderler"].toplam + nakitAkisiGruplar["Toplam Borç Ödemeleri"].toplam), 1000);
             animateValue('val-net-nakit', netAkis, 1000);
 
             const kutuNet = document.getElementById('kutu-net-nakit');
             const valNet = document.getElementById('val-net-nakit');
             if (netAkis < 0) {
-                if(kutuNet) { kutuNet.style.background = 'rgba(244, 63, 94, 0.1)'; kutuNet.style.borderColor = 'rgba(244, 63, 94, 0.3)'; }
-                if(valNet) valNet.style.color = 'var(--rose)';
+                kutuNet.style.background = 'rgba(244, 63, 94, 0.1)';
+                kutuNet.style.borderColor = 'rgba(244, 63, 94, 0.3)';
+                valNet.style.color = 'var(--rose)';
             } else {
-                if(kutuNet) { kutuNet.style.background = 'rgba(16, 185, 129, 0.1)'; kutuNet.style.borderColor = 'rgba(16, 185, 129, 0.3)'; }
-                if(valNet) valNet.style.color = 'var(--emerald)';
+                kutuNet.style.background = 'rgba(16, 185, 129, 0.1)';
+                kutuNet.style.borderColor = 'rgba(16, 185, 129, 0.3)';
+                valNet.style.color = 'var(--emerald)';
             }
             // -----------------------------------------------------------
 
