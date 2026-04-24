@@ -2727,23 +2727,39 @@
             });
         }
 
+        // --- AYLIK İŞLEMLER LİSTESİ (V11 RESPONSIVE STACKING) ---
         const aylikIslemlerListesi = document.getElementById('aylik-islemler-container');
-        aylikIslemlerListesi.innerHTML = "";
-        data.buAyIslemler.forEach(islem => {
-            // --- EVRENSEL ROTA ETİKETİ (V10) ---
-            let gosterilecekKalem = islem.kalem;
-            if ((islem.tur === 'Transfer' || islem.tur === 'Kart Ödemesi' || islem.tur === 'Borç Ödemesi') && islem.hedef) {
-                gosterilecekKalem = `${islem.kalem} (${islem.odeme} ➔ ${islem.hedef})`;
-            }
-            // -----------------------------------
+        if (aylikIslemlerListesi) {
+            aylikIslemlerListesi.innerHTML = "";
+            data.buAyIslemler.forEach(islem => {
+                let hamKalem = islem.kalem || "İsimsiz İşlem";
+                
+                // Aynı Akıllı Yığınlama (Stacking) Mantığı
+                let kalemHtml = `<div style="font-size: 14px; font-weight: 600; line-height: 1.2;">${hamKalem}</div>`;
+                
+                if ((islem.tur === 'Transfer' || islem.tur === 'Kart Ödemesi' || islem.tur === 'Borç Ödemesi') && islem.hedef) {
+                    kalemHtml = `
+                        <div style="font-size: 14px; font-weight: 600; line-height: 1.2;">${hamKalem}</div>
+                        <div style="font-size: 10px; color: var(--text-muted); font-weight: 400; margin-top: 3px; display: flex; align-items: center;">
+                            ${islem.odeme} <span style="margin: 0 4px; opacity: 0.5;">➔</span> ${islem.hedef}
+                        </div>`;
+                }
 
-            let badgeClass = islem.tur === 'Gelir' ? 'pill-green' : (islem.tur === 'Transfer' ? 'pill-gray' : 'pill-red');
-            let amtClass = islem.tur === 'Gelir' ? 'text-green' : (islem.tur === 'Transfer' ? 'text-gray' : 'text-red');
-            let sign = islem.tur === 'Gelir' ? '+' : (islem.tur === 'Transfer' ? '' : '-');
-
-            // Burada ${islem.kalem} yerine ${gosterilecekKalem} kullandık
-            aylikIslemlerListesi.innerHTML += `<div class="t-row" style="padding: 12px 0;"><div class="t-details"><div class="t-name" style="font-size: 14px;">${gosterilecekKalem}</div><div class="t-meta" style="font-size: 11px;">${islem.tarih} • ${islem.odeme}</div></div><div class="t-amt ${amtClass}" style="font-size: 14px;">${sign}${formatTL(islem.tutar)}</div></div>`;
-        });
+                let amtClass = islem.tur === 'Gelir' ? 'text-green' : (islem.tur === 'Transfer' ? 'text-gray' : 'text-red');
+                let sign = islem.tur === 'Gelir' ? '+' : (islem.tur === 'Transfer' ? '' : '-');
+                
+                aylikIslemlerListesi.innerHTML += `
+                    <div class="t-row" style="align-items: flex-start; padding: 12px 0;">
+                        <div class="t-details" style="flex: 1; min-width: 0;">
+                            <div class="t-name">${kalemHtml}</div>
+                            <div class="t-meta" style="font-size: 11px; margin-top: 4px; opacity: 0.6;">${islem.tarih}</div>
+                        </div>
+                        <div class="t-amt ${amtClass}" style="text-align: right; flex-shrink: 0; margin-left: 10px; font-size: 14px; font-weight: 700;">
+                            ${sign}${formatTL(islem.tutar)}
+                        </div>
+                    </div>`;
+            });
+        }
 
         // --- %100 EVRENSEL NAKİT AKIŞI VE BORÇ YÖNETİMİ ---
         var buAyEkstraCikislar = 0; 
