@@ -2677,7 +2677,13 @@
             let vgOptions = `<option value="">-- Varlık Seçin --</option><option value="_yeni_">+ Yeni Varlık Ekle</option>`;
             data.varliklarListe.forEach(v => vgOptions += `<option value="${v.isim}">${v.isim} (${formatTLTam(v.deger)})</option>`);
             const vgSecim = document.getElementById('vg-secim'); if(vgSecim) { vgSecim.innerHTML = vgOptions; refreshCustomSelect(vgSecim); }
+            // Kart Borcu Ödeme modalındaki hesap listesini doldur
+            const kboYontem = document.getElementById('kbo-yontem'); 
+            if(kboYontem) { kboYontem.innerHTML = window.hesapOptions; refreshCustomSelect(kboYontem); }
 
+            // Özel Borç Ödeme modalındaki hesap listesini doldur
+            const boYontem = document.getElementById('bo-yontem'); 
+            if(boYontem) { boYontem.innerHTML = window.hesapOptions; refreshCustomSelect(boYontem); }
             const islemListesi = document.getElementById('islem-listesi');
             islemListesi.innerHTML = "";
             data.sonIslemler.forEach(islem => {
