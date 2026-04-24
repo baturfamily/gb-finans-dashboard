@@ -2867,12 +2867,13 @@
             }
         }
         
-        // --- V19: BACKEND DESTEKLİ NAKİT AKIŞI RAKAMLARI ---
-        // PWA listeleri çizer ama ana rakamları Google Sheets'in (Analiz sayfasının) formüllerinden çeker
-        animateValue('val-buay-borc-odeme', data.backendBorcCikis || 0, 1000);
-        animateValue('val-nakit-giris', data.backendNakitGiris || 0, 1000);
-        animateValue('val-nakit-cikis', data.backendNakitCikis || 0, 1000);
-        animateValue('val-net-nakit', data.backendNetNakit || 0, 1000);
+        // Artık uzun PWA hesaplamasını siliyoruz, direkt Backend'in formülünü çekiyoruz
+        var netAkis = data.backendNetNakit || 0;
+
+        animateValue('val-buay-borc-odeme', buAyEkstraCikislar, 1000);
+        animateValue('val-nakit-giris', nakitAkisiGruplar["Toplam Gelirler"].toplam, 1000);
+        animateValue('val-nakit-cikis', (nakitAkisiGruplar["Nakit Giderler (Banka/Kasa)"].toplam + nakitAkisiGruplar["Toplam Borç Ödemeleri"].toplam), 1000);
+        animateValue('val-net-nakit', netAkis, 1000); // Senin animasyonlu sayacını kullanmaya devam ediyoruz
 
         const kutuNet = document.getElementById('kutu-net-nakit');
         const valNet = document.getElementById('val-net-nakit');
