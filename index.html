@@ -536,12 +536,33 @@
 </div>
 
             <div class="card accordion" id="acc-harcama-grafik">
-                <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
-                    <h3 style="text-align: center; width: 100%;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right:4px;"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg> Aylık Gider Dağılımı</h3>
-                    <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
+        <h3><svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg> Gider Dağılımı</h3>
+        <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    </div>
+    <div class="accordion-content">
+        <div class="budget-module" style="padding: 10px 5px;">
+            <div style="position: relative; height: 220px; margin-bottom: 20px;">
+                <canvas id="expenseChart" class="sensitive-data"></canvas>
+                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: none;">
+                    <div style="font-size: 10px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">SAF HARCAMA</div>
+                    <div id="pasta-toplam-rakam" class="tabular-nums sensitive-data" style="font-size: 18px; font-weight: 800; color: #fff; line-height: 1.2;">₺0,00</div>
                 </div>
-                <div class="accordion-content"><div class="chart-box"><canvas id="expenseChart" class="sensitive-data"></canvas></div></div>
             </div>
+
+            <div class="summary-grid" id="pasta-ozet-grid">
+                <div class="summary-item br-right">
+                    <span class="summary-label" style="color: var(--rose);">En Yüksek Kalem</span>
+                    <span class="summary-val text-red" id="en-cok-kategori" style="font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;">-</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Kategori Sayısı</span>
+                    <span class="summary-val tabular-nums" id="kat-sayisi">0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
             <div class="card accordion" id="acc-son-islemler">
                 <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
@@ -2946,38 +2967,85 @@
             krediListe.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size: 13px; padding: 10px 0;">Aktif kredi ilerlemesi bulunamadı.</div>`;
         }
 
-        const ctx = document.getElementById('expenseChart');
-        if(ctx) {
-            const cCtx = ctx.getContext('2d');
+        // --- V17: PREMIUM SAF GİDER GRAFİĞİ MANTIĞI ---
+        const ctxPasta = document.getElementById('expenseChart');
+        if (ctxPasta) {
+            const cCtx = ctxPasta.getContext('2d');
+            let pastaData = {};
+            let pastaSafToplam = 0;
+
+            // 1. Evrensel Filtreleme (Sadece "Gider" türü, borç/kredi kartı ödemeleri hariç)
+            if (data.buAyIslemler && data.buAyIslemler.length > 0) {
+                data.buAyIslemler.forEach(islem => {
+                    if (islem.tur === 'Gider') { 
+                        let kat = islem.kalem || "Diğer";
+                        pastaData[kat] = (pastaData[kat] || 0) + islem.tutar;
+                        pastaSafToplam += islem.tutar;
+                    }
+                });
+            }
+
             if (expenseChartInstance) expenseChartInstance.destroy();
-            let labels = [], dataPoints = [];
-            data.pastaGrafik.forEach(item => { labels.push(item.isim); dataPoints.push(item.toplam); });
-            if(dataPoints.length > 0) {
+
+            // Rakamları büyükten küçüğe sırala
+            const sortedKategoriler = Object.entries(pastaData).sort((a, b) => b[1] - a[1]);
+            const labels = sortedKategoriler.map(x => x[0]);
+            const values = sortedKategoriler.map(x => x[1]);
+
+            if (values.length > 0) {
+                // Koyu temaya uygun neon/premium renk paleti
+                const premiumColors = ['#f43f5e', '#f59e0b', '#3b82f6', '#10b981', '#8b5cf6', '#ec4899', '#06b6d4', '#f97316', '#6366f1', '#14b8a6'];
+
                 expenseChartInstance = new Chart(cCtx, {
                     type: 'doughnut',
                     data: {
                         labels: labels,
                         datasets: [{
-                            data: dataPoints,
-                            backgroundColor: ['#6366f1', '#a855f7', '#ec4899', '#f43f5e', '#f59e0b', '#10b981', '#3b82f6', '#14b8a6', '#8b5cf6', '#06b6d4'],
-                            borderWidth: 0, hoverOffset: 4
+                            data: values,
+                            backgroundColor: premiumColors.slice(0, labels.length),
+                            borderWidth: 0, // Çizgileri kaldır, daha pürüzsüz
+                            hoverOffset: 8  // Üzerine basınca dışarı taşma efekti
                         }]
                     },
                     options: {
-                        responsive: true, maintainAspectRatio: false, cutout: '75%',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '75%', // Halkanın ortasını genişletir (Premium hissiyatı)
                         plugins: {
-                            legend: { position: 'right', labels: { color: '#cbd5e1', font: { family: 'Inter', size: 11 }, padding: 15, usePointStyle: true, boxWidth: 6 } },
+                            legend: { display: false }, // Kalabalık yazıları gizle
                             tooltip: {
-                                backgroundColor: 'rgba(15, 23, 42, 0.9)', titleColor: '#fff', bodyColor: '#cbd5e1', borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1, padding: 12, cornerRadius: 12,
-                                callbacks: { label: function(context) { let val = context.raw || 0; return ' ₺' + val.toLocaleString('tr-TR'); } }
+                                backgroundColor: '#1e2128',
+                                titleColor: '#94a3b8',
+                                bodyColor: '#fff',
+                                bodyFont: { weight: 'bold' },
+                                padding: 12,
+                                cornerRadius: 8,
+                                displayColors: true,
+                                callbacks: {
+                                    label: function(context) {
+                                        let val = context.raw || 0;
+                                        let perc = ((val / pastaSafToplam) * 100).toFixed(1);
+                                        // Tooltip içinde şık para formatı ve yüzde
+                                        return ` ${formatTL(val)} (%${perc})`;
+                                    }
+                                }
                             }
                         }
                     }
                 });
+
+                // 3. UI Kutu Rakamlarını Güncelleme
+                const pastaToplamEl = document.getElementById('pasta-toplam-rakam');
+                const enCokEl = document.getElementById('en-cok-kategori');
+                const katSayisiEl = document.getElementById('kat-sayisi');
+
+                if(pastaToplamEl) pastaToplamEl.innerHTML = formatTL(pastaSafToplam);
+                if(enCokEl) enCokEl.innerHTML = labels[0] || "-";
+                if(katSayisiEl) katSayisiEl.innerHTML = labels.length;
             } else {
-                cCtx.clearRect(0,0,ctx.width,ctx.height);
+                cCtx.clearRect(0,0,ctxPasta.width,ctxPasta.height);
                 cCtx.font = "13px Inter"; cCtx.fillStyle = "#94a3b8"; cCtx.textAlign = "center";
-                cCtx.fillText("Bu ay henüz veri yok", ctx.canvas.width/2, ctx.canvas.height/2);
+                cCtx.fillText("Bu ay henüz saf harcama yok", ctxPasta.canvas.width/2, ctxPasta.canvas.height/2);
             }
         }
 
