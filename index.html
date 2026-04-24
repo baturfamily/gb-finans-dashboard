@@ -2599,39 +2599,37 @@
             renderKartDurumu();
         }
 
+        // --- V16: TAM BAKİYE ENTEGRASYONU (KESİN ÇÖZÜM) ---
         window.hesapOptions = "";
         window.vadesizOptions = "";
         window.hesapTurleri = { "Nakit": "Nakit" };
         let tumBakiyeler = {};
         
+        // Önce tüm banka ve kart bakiyelerini bir havuzda topla
         if (data.bankalar) data.bankalar.forEach(b => tumBakiyeler[b.isim.trim()] = { bakiye: b.bakiye, tur: b.tur });
         if (data.kartlarDetayli) data.kartlarDetayli.forEach(k => tumBakiyeler[k.isim.trim()] = { bakiye: (k.borc * -1), tur: "Kredi Kartı" });
         
+        // Eğer 'aktifHesaplar' listesi varsa oradan yürü
         if (data.dinamikKategoriler && data.dinamikKategoriler.aktifHesaplar) {
             data.dinamikKategoriler.aktifHesaplar.forEach(hesapAdi => {
                 let temizAd = hesapAdi.trim();
-                let bakiyeBilgisi = tumBakiyeler[temizAd] ? tumBakiyeler[temizAd].bakiye : 0;
-                let hesapTuru = tumBakiyeler[temizAd] ? tumBakiyeler[temizAd].tur : "Banka Hesabı";
-                
-                // Ortak HTML Option Formatı (Bakiyeli)
-                let bakiyeMetni = formatTLTam(bakiyeBilgisi);
-                let optHtml = `<option value="${temizAd}">${temizAd} (${bakiyeMetni})</option>`;
+                let b = tumBakiyeler[temizAd] || { bakiye: 0, tur: "Banka Hesabı" };
+                let optHtml = `<option value="${temizAd}">${temizAd} (${formatTLTam(b.bakiye)})</option>`;
                 
                 window.hesapOptions += optHtml;
-                window.vadesizOptions += optHtml; // Artık Vadesiz/Gelir listesi de bakiyeli!
-                window.hesapTurleri[temizAd] = hesapTuru;
+                window.vadesizOptions += optHtml;
+                window.hesapTurleri[temizAd] = b.tur;
             });
         } else {
+            // Eğer aktifHesaplar yoksa (Yedek Plan), bankaları ve kartları tek tek ekle ama YİNE BAKİYELİ ekle!
             if(data.bankalar) data.bankalar.forEach(b => {
-                let bakiyeMetni = formatTLTam(b.bakiye);
-                let optHtml = `<option value="${b.isim}">${b.isim} (${bakiyeMetni})</option>`;
+                let optHtml = `<option value="${b.isim}">${b.isim} (${formatTLTam(b.bakiye)})</option>`;
                 window.hesapOptions += optHtml;
                 window.vadesizOptions += optHtml;
                 window.hesapTurleri[b.isim] = b.tur;
             });
             if(data.kartlarDetayli) data.kartlarDetayli.forEach(k => {
-                let bakiyeMetni = formatTLTam(k.borc * -1);
-                let optHtml = `<option value="${k.isim}">${k.isim} (${bakiyeMetni})</option>`;
+                let optHtml = `<option value="${k.isim}">${k.isim} (${formatTLTam(k.borc * -1)})</option>`;
                 window.hesapOptions += optHtml;
                 window.vadesizOptions += optHtml;
                 window.hesapTurleri[k.isim] = "Kredi Kartı";
