@@ -523,6 +523,45 @@
                 </div>
             </div>
 
+            <div class="card accordion" id="acc-borc-odemeleri">
+                <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
+                    <h3 style="text-align: center; width: 100%; color: var(--blue);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right:4px;"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Geçmiş Borç & Kart Ödemeleri</h3>
+                    <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+                <div class="accordion-content">
+                    <div style="text-align: center; padding: 10px 0;">
+                        <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 6px; font-weight: 500;">Bu Ay Kapatılan Yükümlülükler</div>
+                        <div id="val-buay-borc-odeme" class="tabular-nums" style="font-size: 28px; font-weight: 800; color: #fff; letter-spacing: -1px;">₺0,00</div>
+                        <div style="font-size: 11px; color: var(--text-muted); margin-top: 10px; background: rgba(59, 130, 246, 0.1); padding: 8px; border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.2);">
+                            * Bu rakam "Aylık Gider"e dahil değildir. Kredi kartı, şahıs borcu veya kredi ödemelerini kapsar.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card accordion" id="acc-nakit-akisi">
+                <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
+                    <h3 style="text-align: center; width: 100%; color: var(--emerald);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right:4px;"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> Aylık Net Nakit Akışı</h3>
+                    <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+                <div class="accordion-content">
+                    <div class="summary-grid" style="grid-template-columns: 1fr; gap: 4px; background: transparent; border:none; margin-top: 0;">
+                        <div style="background: rgba(0,0,0,0.25); padding: 12px 14px; border-radius: 12px; display:flex; justify-content:space-between; align-items:center; border: 1px solid rgba(255,255,255,0.03);">
+                            <span style="font-size:13px; color:var(--text-muted); font-weight:600;">Toplam Nakit Girişi (Gelir)</span>
+                            <span id="val-nakit-giris" class="tabular-nums" style="font-size:16px; font-weight:700; color:var(--emerald);">₺0,00</span>
+                        </div>
+                        <div style="background: rgba(0,0,0,0.25); padding: 12px 14px; border-radius: 12px; display:flex; justify-content:space-between; align-items:center; border: 1px solid rgba(255,255,255,0.03);">
+                            <span style="font-size:13px; color:var(--text-muted); font-weight:600;">Toplam Nakit Çıkışı (Gider + Borç Öd.)</span>
+                            <span id="val-nakit-cikis" class="tabular-nums" style="font-size:16px; font-weight:700; color:var(--rose);">₺0,00</span>
+                        </div>
+                        <div style="background: rgba(16, 185, 129, 0.1); padding: 16px 14px; border-radius: 12px; display:flex; justify-content:space-between; align-items:center; margin-top: 8px; border: 1px dashed rgba(16, 185, 129, 0.3);" id="kutu-net-nakit">
+                            <span style="font-size:14px; color:#fff; font-weight:700;">Net Kalan (Cepteki Para)</span>
+                            <span id="val-net-nakit" class="tabular-nums" style="font-size:19px; font-weight:800; color:var(--emerald);">₺0,00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="card accordion" id="acc-harcama-grafik">
                 <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
                     <h3 style="text-align: center; width: 100%;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right:4px;"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg> Aylık Gider Dağılımı</h3>
@@ -2715,6 +2754,37 @@
                         <div class="t-amt ${amtClass}" style="font-size: 14px;">${sign}${formatTL(islem.tutar)}</div>
                     </div>`;
             });
+
+            // --- YENİ EKLENEN: NAKİT AKIŞI HESAPLAMALARI ---
+            let buAyEkstraCikislar = 0; // Gider dışındaki çıkışlar (Borç, Kart ödemesi vb.)
+            data.buAyIslemler.forEach(islem => {
+                if (islem.tur === 'Kart Ödemesi' || islem.tur === 'Borç Ödemesi') {
+                    buAyEkstraCikislar += islem.tutar;
+                }
+            });
+
+            let toplamNakitCikis = data.buAyToplamGider + buAyEkstraCikislar;
+            let netNakitAkisi = data.buAyToplamGelir - toplamNakitCikis;
+
+            // Animasyonla ekrana bas
+            animateValue('val-buay-borc-odeme', buAyEkstraCikislar, 1000);
+            animateValue('val-nakit-giris', data.buAyToplamGelir, 1000);
+            animateValue('val-nakit-cikis', toplamNakitCikis, 1000);
+            animateValue('val-net-nakit', netNakitAkisi, 1000);
+
+            // Eksiye düştüyse kırmızı, kardaysa yeşil yap
+            const kutuNetNakit = document.getElementById('kutu-net-nakit');
+            const valNetNakit = document.getElementById('val-net-nakit');
+            if (netNakitAkisi < 0) {
+                kutuNetNakit.style.background = 'rgba(244, 63, 94, 0.1)';
+                kutuNetNakit.style.borderColor = 'rgba(244, 63, 94, 0.3)';
+                valNetNakit.style.color = 'var(--rose)';
+            } else {
+                kutuNetNakit.style.background = 'rgba(16, 185, 129, 0.1)';
+                kutuNetNakit.style.borderColor = 'rgba(16, 185, 129, 0.3)';
+                valNetNakit.style.color = 'var(--emerald)';
+            }
+            // ------------------------------------------------
 
             const sKategoriContainer = document.getElementById('sabitler-kategori-container');
             sKategoriContainer.innerHTML = "";
