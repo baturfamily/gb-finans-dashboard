@@ -496,29 +496,28 @@
         <section id="section-islemler" class="tab-section">
             <div class="card accordion" id="acc-aylik-butce">
                 <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
-                    <h3 style="text-align: center; width: 100%;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right:4px;"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 15h0M2 9.5h20"/></svg> Aylık Gider & Bütçe</h3>
+                    <h3 style="text-align: center; width: 100%;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right:4px;">
+                            <rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 15h0M2 9.5h20"/>
+                        </svg> Aylık Saf Harcamalar
+                    </h3>
                     <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
                 </div>
                 <div class="accordion-content">
                     <div class="budget-module">
-                        <div class="budget-amount tabular-nums sensitive-data" id="aylikGider">Yükleniyor...</div>
-                        <div class="budget-subtitle" id="budgetSubtitle">Kalan / Aşılan Bütçe</div>
-                        <div class="budget-progress-container"><div class="budget-progress-bar" id="budgetBar"></div><div id="budgetPercent" class="tabular-nums">%0</div></div>
-                        <div class="budget-footer tabular-nums sensitive-data"><span id="butceDurum">Gelir: ₺0,00</span><span id="kalanBakiye">Kalan: ₺0,00</span></div>
-                        <div id="tasarruf-orani-badge" class="trend-badge tabular-nums" style="background: rgba(59, 130, 246, 0.15); color: var(--blue); border: 1px solid rgba(59, 130, 246, 0.2); margin-top: 8px;">Tasarruf: %0</div>
-                        <div id="aylikTrend" class="trend-badge tabular-nums" style="display: none;"></div>
+                        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px; padding: 5px 5px 15px 5px; border-bottom: 1px dashed rgba(255,255,255,0.1);">
+                            <div>
+                                <div style="font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; margin-bottom: 4px;">Toplam Tüketim</div>
+                                <div class="tabular-nums sensitive-data" style="font-size: 24px; font-weight: 800; color: var(--red); letter-spacing: -0.5px;" id="saf-gider-toplam">0 ₺</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; margin-bottom: 4px;">Günlük Ortalama</div>
+                                <div class="tabular-nums sensitive-data" style="font-size: 16px; font-weight: 700; color: #fff;" id="saf-gunluk-ortalama">0 ₺</div>
+                            </div>
+                        </div>
                         
-                        <div class="budget-footer tabular-nums sensitive-data" style="margin-top: 16px; padding-top: 14px; border-top: 1px dashed rgba(255,255,255,0.1); flex-direction: column; gap: 8px; text-align: left;">
-                            <div style="font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Ay Sonu Nakit Akışı</div>
-                            <div style="display: flex; justify-content: space-between;"><span style="font-size:14px; color:#cbd5e1;">Mevcut Kalan:</span><span id="mevcutKalanProjek" style="color: #fff; font-weight: 600; font-size:14px;">₺0,00</span></div>
-                            <div style="display: flex; justify-content: space-between;"><span style="font-size:14px; color:var(--text-muted);">Ödenecek Sabitler:</span><span id="gelecekSabitler" style="color: var(--rose); font-weight: 600; font-size:14px;">-₺0,00</span></div>
-                            <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); padding: 10px 12px; border-radius: 8px; margin-top: 4px; border: 1px solid rgba(255,255,255,0.05);"><span style="color: #f8fafc; font-size: 14px; font-weight:600;">Gerçek Özgür Para:</span><span id="ozgurPara" style="font-size: 17px; font-weight: 800;">₺0,00</span></div>
-                        </div>
-
-                        <div id="aylik-islemler-alani" class="sensitive-data" style="margin-top: 20px; text-align: left; border-top: 1px solid var(--border-color); padding-top: 16px;">
-                            <div style="font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:10px; text-transform:uppercase; letter-spacing:0.5px;">Bu Ayki Tüm İşlemler</div>
-                            <div class="custom-scrollbar" id="aylik-islemler-container" style="max-height: 250px; overflow-y: auto; overflow-x: hidden; padding-right: 8px; overscroll-behavior: contain;"></div>
-                        </div>
+                        <div style="font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:10px; text-transform:uppercase; letter-spacing:0.5px; text-align: left;">Sadece Gider Kalemleri</div>
+                        <div class="custom-scrollbar sensitive-data" id="saf-gider-listesi" style="max-height: 250px; overflow-y: auto; overflow-x: hidden; padding-right: 8px; overscroll-behavior: contain; text-align: left;"></div>
                     </div>
                 </div>
             </div>
