@@ -2690,16 +2690,23 @@
         const boYontem = document.getElementById('bo-yontem'); if(boYontem) { boYontem.innerHTML = window.hesapOptions; refreshCustomSelect(boYontem); }
 
         // --- İŞLEMLER SEKEMESİ EN ALTAKİ "SON 10 İŞLEM" KARTI (V10) ---
+        // --- İŞLEMLER SEKEMESİ EN ALTAKİ "SON 10 İŞLEM" KARTI (V11 RESPONSIVE) ---
         const islemListesi = document.getElementById('islem-listesi');
         if (islemListesi) {
             islemListesi.innerHTML = "";
             data.sonIslemler.forEach(islem => {
-                // Rota Belirleme: Eğer Transfer, Kart veya Borç ödemesiyse ismi zenginleştir
-                let gosterilecekKalem = islem.kalem || "İsimsiz İşlem";
+                let hamKalem = islem.kalem || "İsimsiz İşlem";
                 
-                // Evrensel kural: H sütunu (islem.hedef) doluysa ve ilgili türdeyse rotayı çiz
+                // --- AKILLI YIĞINLAMA (STACKING) MANTIĞI ---
+                // Metni yan yana değil, rotayı ismin altına alıyoruz ki iPhone ekranında sığsın.
+                let kalemHtml = `<div style="font-size: 13px; font-weight: 600; line-height: 1.2;">${hamKalem}</div>`;
+                
                 if ((islem.tur === 'Transfer' || islem.tur === 'Kart Ödemesi' || islem.tur === 'Borç Ödemesi') && islem.hedef) {
-                    gosterilecekKalem = `${gosterilecekKalem} (${islem.odeme} ➔ ${islem.hedef})`;
+                    kalemHtml = `
+                        <div style="font-size: 13px; font-weight: 600; line-height: 1.2;">${hamKalem}</div>
+                        <div style="font-size: 10px; color: var(--text-muted); font-weight: 400; margin-top: 3px; display: flex; align-items: center;">
+                            ${islem.odeme} <span style="margin: 0 4px; opacity: 0.5;">➔</span> ${islem.hedef}
+                        </div>`;
                 }
 
                 let badgeClass = islem.tur === 'Gelir' ? 'pill-green' : (islem.tur === 'Transfer' ? 'pill-gray' : 'pill-red');
@@ -2707,15 +2714,14 @@
                 let sign = islem.tur === 'Gelir' ? '+' : (islem.tur === 'Transfer' ? '' : '-');
                 
                 islemListesi.innerHTML += `
-                    <div class="t-row">
-                        <div class="t-details">
-                            <div class="t-name" style="font-size: 13px; font-weight: 600;">${gosterilecekKalem}</div>
-                            <div class="t-meta" style="font-size: 11px;">${islem.tarih} • ${islem.odeme}</div>
+                    <div class="t-row" style="align-items: flex-start; padding: 12px 10px;">
+                        <div class="t-details" style="flex: 1; min-width: 0;">
+                            <div class="t-name">${kalemHtml}</div>
+                            <div class="t-meta" style="font-size: 10px; margin-top: 4px; opacity: 0.6;">${islem.tarih}</div>
                         </div>
-                        <div class="t-amt ${amtClass}">
-                            <div style="font-size:10px; margin-bottom:4px;" class="pill-badge ${badgeClass}">${islem.tur}</div>
-                            <br>
-                            <span style="font-size: 14px; font-weight: 700;">${sign}${formatTL(islem.tutar)}</span>
+                        <div class="t-amt ${amtClass}" style="text-align: right; flex-shrink: 0; margin-left: 10px;">
+                            <div style="font-size: 9px; margin-bottom: 2px; display: inline-block; vertical-align: middle;" class="pill-badge ${badgeClass}">${islem.tur}</div>
+                            <div style="font-size: 14px; font-weight: 800; margin-top: 2px;">${sign}${formatTL(islem.tutar)}</div>
                         </div>
                     </div>`;
             });
