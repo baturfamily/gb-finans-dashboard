@@ -2748,7 +2748,7 @@
                         <div class="t-amt ${amtClass}" style="font-size: 14px;">${sign}${formatTL(islem.tutar)}</div>
                     </div>`;
             });
-
+            
             // --- KUSURSUZ NAKİT AKIŞI VE ÇİFT SAYIM KORUMASI (V7) ---
             let buAyEkstraCikislar = 0; 
             let borcDetayGruplar = {
@@ -2865,93 +2865,7 @@
                 if(valNet) valNet.style.color = 'var(--emerald)';
             }
             // -----------------------------------------------------------
-
-            const nakitContainer = document.getElementById('nakit-akisi-listesi-container');
-            if(nakitContainer) {
-                nakitContainer.innerHTML = "";
-                let nIdx = 200;
-                for (let baslik in nakitAkisiGruplar) {
-                    let grup = nakitAkisiGruplar[baslik];
-                    if (grup.toplam === 0) continue;
-                    let nHtml = `<div class="sub-accordion-header" onclick="toggleSubAccordion('${nIdx}')"><div style="font-size: 13px; font-weight: 600; color: #e2e8f0; display:flex; align-items:center;"><svg id="sub-icon-${nIdx}" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px; color:var(--text-muted); transition: transform 0.3s ease;"><polyline points="9 18 15 12 9 6"></polyline></svg>${baslik}</div><div style="text-align:right;"><span style="font-size:13px; color:${grup.renk}; font-weight:700;">${baslik.includes('Gelir') ? '+' : '-'}${formatTL(grup.toplam)}</span></div></div><div class="sub-accordion-content" id="sub-content-${nIdx}">`;
-                    
-                    if (baslik === "Nakit Giderler (Banka/Kasa)") {
-                        for (let c in grup.liste) {
-                            nHtml += `<div class="t-row" style="padding: 10px; border-bottom: 1px dashed rgba(255,255,255,0.05);"><div class="t-name" style="font-size:13px; color:var(--text-muted); font-weight:600;">${c}</div><div class="t-amt text-red" style="font-size:13px;">-${formatTL(grup.liste[c])}</div></div>`;
-                        }
-                    } else {
-                        grup.liste.forEach(item => {
-                            nHtml += `<div class="t-row" style="padding: 10px; border-bottom: 1px dashed rgba(255,255,255,0.05);"><div class="t-details"><div class="t-name" style="font-size:12px;">${item.kalem}</div><div class="t-meta" style="font-size:10px;">${item.odeme}</div></div><div class="t-amt" style="font-size:13px; color:${grup.renk};">${baslik.includes('Gelir') ? '+' : '-'}${formatTL(item.tutar)}</div></div>`;
-                        });
-                    }
-                    nakitContainer.innerHTML += nHtml + `</div>`;
-                    nIdx++;
-                }
-            }
-
-            let netAkis = (nakitAkisiGruplar["Toplam Gelirler"].toplam) - (nakitAkisiGruplar["Nakit Giderler (Banka/Kasa)"].toplam + nakitAkisiGruplar["Toplam Borç Ödemeleri"].toplam);
             
-            animateValue('val-buay-borc-odeme', buAyEkstraCikislar, 1000);
-            animateValue('val-nakit-giris', nakitAkisiGruplar["Toplam Gelirler"].toplam, 1000);
-            animateValue('val-nakit-cikis', (nakitAkisiGruplar["Nakit Giderler (Banka/Kasa)"].toplam + nakitAkisiGruplar["Toplam Borç Ödemeleri"].toplam), 1000);
-            animateValue('val-net-nakit', netAkis, 1000);
-
-            const kutuNet = document.getElementById('kutu-net-nakit');
-            const valNet = document.getElementById('val-net-nakit');
-            if (netAkis < 0) {
-                kutuNet.style.background = 'rgba(244, 63, 94, 0.1)';
-                kutuNet.style.borderColor = 'rgba(244, 63, 94, 0.3)';
-                valNet.style.color = 'var(--rose)';
-            } else {
-                kutuNet.style.background = 'rgba(16, 185, 129, 0.1)';
-                kutuNet.style.borderColor = 'rgba(16, 185, 129, 0.3)';
-                valNet.style.color = 'var(--emerald)';
-            }
-            // -----------------------------------------------------------
-
-            const nakitContainer = document.getElementById('nakit-akisi-listesi-container');
-            if(nakitContainer) {
-                nakitContainer.innerHTML = "";
-                let nIdx = 200;
-                for (let baslik in nakitAkisiGruplar) {
-                    let grup = nakitAkisiGruplar[baslik];
-                    if (grup.toplam === 0) continue;
-                    let nHtml = `<div class="sub-accordion-header" onclick="toggleSubAccordion('${nIdx}')"><div style="font-size: 13px; font-weight: 600; color: #e2e8f0; display:flex; align-items:center;"><svg id="sub-icon-${nIdx}" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px; color:var(--text-muted); transition: transform 0.3s ease;"><polyline points="9 18 15 12 9 6"></polyline></svg>${baslik}</div><div style="text-align:right;"><span style="font-size:13px; color:${grup.renk}; font-weight:700;">${baslik.includes('Gelir') ? '+' : '-'}${formatTL(grup.toplam)}</span></div></div><div class="sub-accordion-content" id="sub-content-${nIdx}">`;
-                    
-                    if (baslik === "Toplam Giderler") {
-                        for (let c in grup.liste) {
-                            nHtml += `<div class="t-row" style="padding: 10px; border-bottom: 1px dashed rgba(255,255,255,0.05);"><div class="t-name" style="font-size:13px; color:var(--text-muted); font-weight:600;">${c}</div><div class="t-amt text-red" style="font-size:13px;">-${formatTL(grup.liste[c])}</div></div>`;
-                        }
-                    } else {
-                        grup.liste.forEach(item => {
-                            nHtml += `<div class="t-row" style="padding: 10px; border-bottom: 1px dashed rgba(255,255,255,0.05);"><div class="t-details"><div class="t-name" style="font-size:12px;">${item.kalem}</div><div class="t-meta" style="font-size:10px;">${item.odeme}</div></div><div class="t-amt" style="font-size:13px; color:${grup.renk};">${baslik.includes('Gelir') ? '+' : '-'}${formatTL(item.tutar)}</div></div>`;
-                        });
-                    }
-                    nakitContainer.innerHTML += nHtml + `</div>`;
-                    nIdx++;
-                }
-            }
-
-            let netAkis = (nakitAkisiGruplar["Toplam Gelirler"].toplam) - (nakitAkisiGruplar["Toplam Giderler"].toplam + nakitAkisiGruplar["Toplam Borç Ödemeleri"].toplam);
-            
-            animateValue('val-buay-borc-odeme', buAyEkstraCikislar, 1000);
-            animateValue('val-nakit-giris', nakitAkisiGruplar["Toplam Gelirler"].toplam, 1000);
-            animateValue('val-nakit-cikis', (nakitAkisiGruplar["Toplam Giderler"].toplam + nakitAkisiGruplar["Toplam Borç Ödemeleri"].toplam), 1000);
-            animateValue('val-net-nakit', netAkis, 1000);
-
-            const kutuNet = document.getElementById('kutu-net-nakit');
-            const valNet = document.getElementById('val-net-nakit');
-            if (netAkis < 0) {
-                kutuNet.style.background = 'rgba(244, 63, 94, 0.1)';
-                kutuNet.style.borderColor = 'rgba(244, 63, 94, 0.3)';
-                valNet.style.color = 'var(--rose)';
-            } else {
-                kutuNet.style.background = 'rgba(16, 185, 129, 0.1)';
-                kutuNet.style.borderColor = 'rgba(16, 185, 129, 0.3)';
-                valNet.style.color = 'var(--emerald)';
-            }
-            // -----------------------------------------------------------
-
             const sKategoriContainer = document.getElementById('sabitler-kategori-container');
             sKategoriContainer.innerHTML = "";
             let sOdenenGider = 0; let sKalanGider = 0;
