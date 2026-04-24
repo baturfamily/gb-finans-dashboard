@@ -523,23 +523,6 @@
                 </div>
             </div>
 
-            <div class="card accordion" id="acc-borc-odemeleri">
-    <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
-        <h3 style="text-align: center; width: 100%; color: var(--blue);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right:4px;"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Geçmiş Borç & Kart Ödemeleri</h3>
-        <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-    </div>
-    <div class="accordion-content">
-        <div style="text-align: center; padding: 10px 0 20px 0; border-bottom: 1px dashed rgba(255,255,255,0.1); margin-bottom: 10px;">
-            <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px; font-weight: 600; text-transform: uppercase;">Bu Ay Kapatılan Toplam Borç</div>
-            <div id="val-buay-borc-odeme" class="tabular-nums" style="font-size: 28px; font-weight: 800; color: #fff; letter-spacing: -1px;">₺0,00</div>
-        </div>
-
-        <div id="borc-detay-listesi-container">
-            <div style="text-align:center; padding:10px; color:var(--text-muted); font-size:12px;">Yükleniyor...</div>
-        </div>
-    </div>
-</div>
-
             <div class="card accordion" id="acc-nakit-akisi">
     <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
         <h3 style="text-align: center; width: 100%; color: var(--emerald);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right:4px;"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> Aylık Net Nakit Akışı</h3>
@@ -2817,15 +2800,6 @@
                 if (!nakitAkisiGruplar["Toplam Borç Ödemeleri"].liste[zenginKalem]) nakitAkisiGruplar["Toplam Borç Ödemeleri"].liste[zenginKalem] = 0;
                 nakitAkisiGruplar["Toplam Borç Ödemeleri"].liste[zenginKalem] += islem.tutar;
 
-                // Geçmiş Borç Kartı Detayı
-                var turBaslik = islem.tur === 'Kart Ödemesi' ? 'Kredi Kartı Ödemeleri' : 'Kredi ve Şahıs Ödemeleri';
-                if (!borcDetayGruplar[turBaslik]) borcDetayGruplar[turBaslik] = { toplam: 0, liste: [] };
-                borcDetayGruplar[turBaslik].toplam += islem.tutar;
-                
-                // Listenin içine yeni isimlendirilmiş işlemi yerleştiriyoruz
-                var kopyaIslem = {...islem, kalem: zenginKalem};
-                borcDetayGruplar[turBaslik].liste.push(kopyaIslem);
-            }
         });
         }
 
