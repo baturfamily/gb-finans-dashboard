@@ -2701,8 +2701,8 @@
         }
 
         // 2. Günlük Ortalama Hesaplama (Bugünün tarihine böler)
-        let simdi = new Date();
-        let gecenGun = simdi.getDate() || 1;
+        let bugunZaman = new Date(); // İsim çakışması düzeltildi!
+        let gecenGun = bugunZaman.getDate() || 1;
         let gunlukOrtalama = safGiderToplam / gecenGun;
 
         // 3. Rakamları Ekrana Bas (Animasyonlu ve formatlı)
