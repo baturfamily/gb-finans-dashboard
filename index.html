@@ -2689,33 +2689,37 @@
         const kboYontem = document.getElementById('kbo-yontem'); if(kboYontem) { kboYontem.innerHTML = window.hesapOptions; refreshCustomSelect(kboYontem); }
         const boYontem = document.getElementById('bo-yontem'); if(boYontem) { boYontem.innerHTML = window.hesapOptions; refreshCustomSelect(boYontem); }
 
+        // --- İŞLEMLER SEKEMESİ EN ALTAKİ "SON 10 İŞLEM" KARTI (V10) ---
         const islemListesi = document.getElementById('islem-listesi');
-        islemListesi.innerHTML = "";
-        data.sonIslemler.forEach(islem => {
-            // --- EVRENSEL ROTA ETİKETİ (V10) ---
-            // Eğer Transfer, Kart veya Borç ödemesiyse ve hedef (H sütunu) doluysa ismi zenginleştir
-            let gosterilecekKalem = islem.kalem;
-            if ((islem.tur === 'Transfer' || islem.tur === 'Kart Ödemesi' || islem.tur === 'Borç Ödemesi') && islem.hedef) {
-                gosterilecekKalem = `${islem.kalem} (${islem.odeme} ➔ ${islem.hedef})`;
-            }
+        if (islemListesi) {
+            islemListesi.innerHTML = "";
+            data.sonIslemler.forEach(islem => {
+                // Rota Belirleme: Eğer Transfer, Kart veya Borç ödemesiyse ismi zenginleştir
+                let gosterilecekKalem = islem.kalem || "İsimsiz İşlem";
+                
+                // Evrensel kural: H sütunu (islem.hedef) doluysa ve ilgili türdeyse rotayı çiz
+                if ((islem.tur === 'Transfer' || islem.tur === 'Kart Ödemesi' || islem.tur === 'Borç Ödemesi') && islem.hedef) {
+                    gosterilecekKalem = `${gosterilecekKalem} (${islem.odeme} ➔ ${islem.hedef})`;
+                }
 
-            let badgeClass = islem.tur === 'Gelir' ? 'pill-green' : (islem.tur === 'Transfer' ? 'pill-gray' : 'pill-red');
-            let amtClass = islem.tur === 'Gelir' ? 'text-green' : (islem.tur === 'Transfer' ? 'text-gray' : 'text-red');
-            let sign = islem.tur === 'Gelir' ? '+' : (islem.tur === 'Transfer' ? '' : '-');
-            
-            // HTML içinde ${islem.kalem} yerine yeni ${gosterilecekKalem} değişkenini kullanıyoruz
-            islemListesi.innerHTML += `
-                <div class="t-row">
-                    <div class="t-details">
-                        <div class="t-name">${gosterilecekKalem}</div>
-                        <div class="t-meta">${islem.tarih} • ${islem.odeme}</div>
-                    </div>
-                    <div class="t-amt ${amtClass}">
-                        <div style="font-size:10px; margin-bottom:4px;" class="pill-badge ${badgeClass}">${islem.tur}</div>
-                        <br>${sign}${formatTL(islem.tutar)}
-                    </div>
-                </div>`;
-        });
+                let badgeClass = islem.tur === 'Gelir' ? 'pill-green' : (islem.tur === 'Transfer' ? 'pill-gray' : 'pill-red');
+                let amtClass = islem.tur === 'Gelir' ? 'text-green' : (islem.tur === 'Transfer' ? 'text-gray' : 'text-red');
+                let sign = islem.tur === 'Gelir' ? '+' : (islem.tur === 'Transfer' ? '' : '-');
+                
+                islemListesi.innerHTML += `
+                    <div class="t-row">
+                        <div class="t-details">
+                            <div class="t-name" style="font-size: 13px; font-weight: 600;">${gosterilecekKalem}</div>
+                            <div class="t-meta" style="font-size: 11px;">${islem.tarih} • ${islem.odeme}</div>
+                        </div>
+                        <div class="t-amt ${amtClass}">
+                            <div style="font-size:10px; margin-bottom:4px;" class="pill-badge ${badgeClass}">${islem.tur}</div>
+                            <br>
+                            <span style="font-size: 14px; font-weight: 700;">${sign}${formatTL(islem.tutar)}</span>
+                        </div>
+                    </div>`;
+            });
+        }
 
         const aylikIslemlerListesi = document.getElementById('aylik-islemler-container');
         aylikIslemlerListesi.innerHTML = "";
