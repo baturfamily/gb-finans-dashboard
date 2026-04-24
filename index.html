@@ -2715,19 +2715,15 @@
             });
         }
 
-        // 2. Zaman ve İlerleme Hesapları
-        const v13_tarih = new Date();
-        const v13_toplamGun = new Date(suankiYil, suankiAy + 1, 0).getDate();
-        let v13_gecenGun = 1;
-        
-        if (v13_tarih.getMonth() === suankiAy && v13_tarih.getFullYear() === suankiYil) {
-            v13_gecenGun = v13_tarih.getDate();
-        } else {
-            v13_gecenGun = v13_toplamGun;
-        }
+        // 2. Zaman ve İlerleme Hesapları (Evrensel Çözüm)
+const v13_tarih = new Date();
+// Bulunduğumuz ayın toplam kaç gün çektiğini bulur
+const v13_toplamGun = new Date(v13_tarih.getFullYear(), v13_tarih.getMonth() + 1, 0).getDate();
+// Bugün ayın kaçıncı günüyse onu alır
+const v13_gecenGun = v13_tarih.getDate() || 1;
 
-        const v13_ortalama = v13_safToplam / v13_gecenGun;
-        const v13_ayYuzde = (v13_gecenGun / v13_toplamGun) * 100;
+const v13_ortalama = v13_safToplam / v13_gecenGun;
+const v13_ayYuzde = (v13_gecenGun / v13_toplamGun) * 100;
 
         // 3. UI Güncelleme (Rakamlar)
         animateValue('saf-gider-toplam', v13_safToplam, 800);
