@@ -2728,7 +2728,7 @@ const v13_ayYuzde = (v13_gecenGun / v13_toplamGun) * 100;
         // 3. UI Güncelleme (Rakamlar)
         animateValue('saf-gider-toplam', v13_safToplam, 800);
         const v13_avgEl = document.getElementById('saf-gunluk-ortalama');
-        if(v13_avgEl) v13_avgEl.innerText = formatTL(v13_ortalama);
+        if(v13_avgEl) v13_avgEl.innerHTML = formatTL(v13_ortalama);
 
         // 4. UI Güncelleme (İlerleme Çubuğu)
         const v13_bar = document.getElementById('saf-harcama-bar');
