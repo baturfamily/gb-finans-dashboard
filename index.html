@@ -2967,18 +2967,24 @@
             krediListe.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size: 13px; padding: 10px 0;">Aktif kredi ilerlemesi bulunamadı.</div>`;
         }
 
-        // --- V17.1: PREMIUM SAF GİDER GRAFİĞİ (AKILLI GRUPLAMA) ---
+        // --- V17.2: PREMIUM SAF GİDER GRAFİĞİ (FAİZ BİRLEŞTİRMELİ) ---
         const ctxPasta = document.getElementById('expenseChart');
         if (ctxPasta) {
             const cCtx = ctxPasta.getContext('2d');
             let pastaData = {};
             let pastaSafToplam = 0;
 
-            // 1. Evrensel Filtreleme
+            // 1. Evrensel Filtreleme ve Faiz Birleştirme
             if (data.buAyIslemler && data.buAyIslemler.length > 0) {
                 data.buAyIslemler.forEach(islem => {
                     if (islem.tur === 'Gider') { 
                         let kat = islem.kalem || "Diğer";
+                        
+                        // YENİ EKLENEN KISIM: Faizleri tek bir dilimde (sepette) topla
+                        if (kat.toLowerCase().includes("faiz")) {
+                            kat = "Toplam Faiz Gideri";
+                        }
+                        
                         pastaData[kat] = (pastaData[kat] || 0) + islem.tutar;
                         pastaSafToplam += islem.tutar;
                     }
@@ -3042,7 +3048,6 @@
                                     label: function(context) {
                                         let val = context.raw || 0;
                                         let perc = ((val / pastaSafToplam) * 100).toFixed(1);
-                                        // HTML hatasını çözmek için düz metin formatı:
                                         return ` ₺${val.toLocaleString('tr-TR', {minimumFractionDigits: 2})} (%${perc})`;
                                     }
                                 }
@@ -3058,14 +3063,15 @@
 
                 if(pastaToplamEl) pastaToplamEl.innerHTML = formatTL(pastaSafToplam);
                 if(enCokEl) enCokEl.innerHTML = sortedKategoriler[0] ? sortedKategoriler[0][0] : "-";
-                if(katSayisiEl) katSayisiEl.innerHTML = sortedKategoriler.length; // Kategori sayısını gerçek 40 olarak gösterir
+                // Gerçek kategori sayısını vermek için faizleri birleştirdiğimiz yeni listeyi kullanıyoruz
+                if(katSayisiEl) katSayisiEl.innerHTML = sortedKategoriler.length; 
             } else {
                 cCtx.clearRect(0,0,ctxPasta.width,ctxPasta.height);
                 cCtx.font = "13px Inter"; cCtx.fillStyle = "#94a3b8"; cCtx.textAlign = "center";
                 cCtx.fillText("Bu ay henüz saf harcama yok", ctxPasta.canvas.width/2, ctxPasta.canvas.height/2);
             }
         }
-
+          
         const simdi = new Date();
         const saatDak = String(simdi.getHours()).padStart(2, '0') + ':' + String(simdi.getMinutes()).padStart(2, '0');
         document.getElementById('last-update').innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px; vertical-align:middle;"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>${saatDak}`;
