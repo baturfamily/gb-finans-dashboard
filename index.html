@@ -2603,27 +2603,37 @@
         window.vadesizOptions = "";
         window.hesapTurleri = { "Nakit": "Nakit" };
         let tumBakiyeler = {};
+        
         if (data.bankalar) data.bankalar.forEach(b => tumBakiyeler[b.isim.trim()] = { bakiye: b.bakiye, tur: b.tur });
         if (data.kartlarDetayli) data.kartlarDetayli.forEach(k => tumBakiyeler[k.isim.trim()] = { bakiye: (k.borc * -1), tur: "Kredi Kartı" });
-
+        
         if (data.dinamikKategoriler && data.dinamikKategoriler.aktifHesaplar) {
             data.dinamikKategoriler.aktifHesaplar.forEach(hesapAdi => {
                 let temizAd = hesapAdi.trim();
                 let bakiyeBilgisi = tumBakiyeler[temizAd] ? tumBakiyeler[temizAd].bakiye : 0;
                 let hesapTuru = tumBakiyeler[temizAd] ? tumBakiyeler[temizAd].tur : "Banka Hesabı";
-                window.hesapOptions += `<option value="${temizAd}">${temizAd} (${formatTLTam(bakiyeBilgisi)})</option>`;
-                window.vadesizOptions += `<option value="${temizAd}">${temizAd}</option>`;
+                
+                // Ortak HTML Option Formatı (Bakiyeli)
+                let bakiyeMetni = formatTLTam(bakiyeBilgisi);
+                let optHtml = `<option value="${temizAd}">${temizAd} (${bakiyeMetni})</option>`;
+                
+                window.hesapOptions += optHtml;
+                window.vadesizOptions += optHtml; // Artık Vadesiz/Gelir listesi de bakiyeli!
                 window.hesapTurleri[temizAd] = hesapTuru;
             });
         } else {
             if(data.bankalar) data.bankalar.forEach(b => {
-                window.hesapOptions += `<option value="${b.isim}">${b.isim} (${formatTLTam(b.bakiye)})</option>`;
-                window.vadesizOptions += `<option value="${b.isim}">${b.isim}</option>`;
+                let bakiyeMetni = formatTLTam(b.bakiye);
+                let optHtml = `<option value="${b.isim}">${b.isim} (${bakiyeMetni})</option>`;
+                window.hesapOptions += optHtml;
+                window.vadesizOptions += optHtml;
                 window.hesapTurleri[b.isim] = b.tur;
             });
             if(data.kartlarDetayli) data.kartlarDetayli.forEach(k => {
-                window.hesapOptions += `<option value="${k.isim}">${k.isim} (${formatTLTam(k.borc * -1)})</option>`;
-                window.vadesizOptions += `<option value="${k.isim}">${k.isim}</option>`;
+                let bakiyeMetni = formatTLTam(k.borc * -1);
+                let optHtml = `<option value="${k.isim}">${k.isim} (${bakiyeMetni})</option>`;
+                window.hesapOptions += optHtml;
+                window.vadesizOptions += optHtml;
                 window.hesapTurleri[k.isim] = "Kredi Kartı";
             });
         }
