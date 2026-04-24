@@ -2967,14 +2967,14 @@
             krediListe.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size: 13px; padding: 10px 0;">Aktif kredi ilerlemesi bulunamadı.</div>`;
         }
 
-        // --- V17: PREMIUM SAF GİDER GRAFİĞİ MANTIĞI ---
+        // --- V17.1: PREMIUM SAF GİDER GRAFİĞİ (AKILLI GRUPLAMA) ---
         const ctxPasta = document.getElementById('expenseChart');
         if (ctxPasta) {
             const cCtx = ctxPasta.getContext('2d');
             let pastaData = {};
             let pastaSafToplam = 0;
 
-            // 1. Evrensel Filtreleme (Sadece "Gider" türü, borç/kredi kartı ödemeleri hariç)
+            // 1. Evrensel Filtreleme
             if (data.buAyIslemler && data.buAyIslemler.length > 0) {
                 data.buAyIslemler.forEach(islem => {
                     if (islem.tur === 'Gider') { 
@@ -2989,12 +2989,29 @@
 
             // Rakamları büyükten küçüğe sırala
             const sortedKategoriler = Object.entries(pastaData).sort((a, b) => b[1] - a[1]);
-            const labels = sortedKategoriler.map(x => x[0]);
-            const values = sortedKategoriler.map(x => x[1]);
+            
+            // 2. Akıllı Gruplama (Sadece ilk 6 kategoriyi göster, gerisini "Diğer" yap)
+            let labels = [];
+            let values = [];
+            let digerToplam = 0;
+
+            sortedKategoriler.forEach((item, index) => {
+                if (index < 6) { 
+                    labels.push(item[0]);
+                    values.push(item[1]);
+                } else {
+                    digerToplam += item[1];
+                }
+            });
+
+            if (digerToplam > 0) {
+                labels.push("Diğer Kalemler");
+                values.push(digerToplam);
+            }
 
             if (values.length > 0) {
-                // Koyu temaya uygun neon/premium renk paleti
-                const premiumColors = ['#f43f5e', '#f59e0b', '#3b82f6', '#10b981', '#8b5cf6', '#ec4899', '#06b6d4', '#f97316', '#6366f1', '#14b8a6'];
+                // İlk 6 için canlı renkler, 'Diğer' için profesyonel bir gri (#64748b)
+                const premiumColors = ['#f43f5e', '#f59e0b', '#3b82f6', '#10b981', '#8b5cf6', '#ec4899', '#64748b'];
 
                 expenseChartInstance = new Chart(cCtx, {
                     type: 'doughnut',
@@ -3003,16 +3020,16 @@
                         datasets: [{
                             data: values,
                             backgroundColor: premiumColors.slice(0, labels.length),
-                            borderWidth: 0, // Çizgileri kaldır, daha pürüzsüz
-                            hoverOffset: 8  // Üzerine basınca dışarı taşma efekti
+                            borderWidth: 0, 
+                            hoverOffset: 8  
                         }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        cutout: '75%', // Halkanın ortasını genişletir (Premium hissiyatı)
+                        cutout: '75%', 
                         plugins: {
-                            legend: { display: false }, // Kalabalık yazıları gizle
+                            legend: { display: false }, 
                             tooltip: {
                                 backgroundColor: '#1e2128',
                                 titleColor: '#94a3b8',
@@ -3025,8 +3042,8 @@
                                     label: function(context) {
                                         let val = context.raw || 0;
                                         let perc = ((val / pastaSafToplam) * 100).toFixed(1);
-                                        // Tooltip içinde şık para formatı ve yüzde
-                                        return ` ${formatTL(val)} (%${perc})`;
+                                        // HTML hatasını çözmek için düz metin formatı:
+                                        return ` ₺${val.toLocaleString('tr-TR', {minimumFractionDigits: 2})} (%${perc})`;
                                     }
                                 }
                             }
@@ -3040,8 +3057,8 @@
                 const katSayisiEl = document.getElementById('kat-sayisi');
 
                 if(pastaToplamEl) pastaToplamEl.innerHTML = formatTL(pastaSafToplam);
-                if(enCokEl) enCokEl.innerHTML = labels[0] || "-";
-                if(katSayisiEl) katSayisiEl.innerHTML = labels.length;
+                if(enCokEl) enCokEl.innerHTML = sortedKategoriler[0] ? sortedKategoriler[0][0] : "-";
+                if(katSayisiEl) katSayisiEl.innerHTML = sortedKategoriler.length; // Kategori sayısını gerçek 40 olarak gösterir
             } else {
                 cCtx.clearRect(0,0,ctxPasta.width,ctxPasta.height);
                 cCtx.font = "13px Inter"; cCtx.fillStyle = "#94a3b8"; cCtx.textAlign = "center";
