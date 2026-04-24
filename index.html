@@ -2719,16 +2719,18 @@
         const v14_tarih = new Date();
         const v14_gecenGun = v14_tarih.getDate() || 1;
         
-        // PWA'nın yaptığı toplamı eziyor, direkt E-Tablodan geleni kullanıyoruz:
+        // 2. BACKEND Entegrasyonu (Tüm hesaplamalar E-Tablodan gelir)
         const gercekSafHarcama = data.backendSafHarcama || 0;
-        const v14_ortalama = gercekSafHarcama / v14_gecenGun;
+        const gercekGunlukOrtalama = data.backendGunlukOrtalama || 0;
 
-        // 3. UI Güncelleme
+        // 3. UI Güncelleme (Sadece rakamları ekrana basıyoruz)
         const safToplamEl = document.getElementById('saf-gider-toplam');
         const safOrtalamaEl = document.getElementById('saf-gunluk-ortalama');
         
         if(safToplamEl) safToplamEl.innerHTML = formatTL(gercekSafHarcama);
-        if(safOrtalamaEl) safOrtalamaEl.innerHTML = formatTL(v14_ortalama) + `<span style="font-size:11px; opacity:0.5; font-weight:500; margin-left:4px;">/gün</span>`;
+        if(safOrtalamaEl) {
+            safOrtalamaEl.innerHTML = formatTL(gercekGunlukOrtalama) + `<span style="font-size:11px; opacity:0.5; font-weight:500; margin-left:4px;">/gün</span>`;
+        }
 
         // 4. Liste Render (Uygulamanın evrensel liste formatı)
         const v14_container = document.getElementById('saf-gider-listesi');
