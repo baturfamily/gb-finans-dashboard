@@ -496,44 +496,26 @@
         <section id="section-islemler" class="tab-section">
             <div class="card accordion" id="acc-aylik-butce">
     <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
-        <h3 style="text-align: center; width: 100%;">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right:6px;">
-                <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
-            </svg> Saf Harcama Analizi
-        </h3>
+        <h3><svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> Saf Harcama Analizi</h3>
         <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
     </div>
     <div class="accordion-content">
-        <div class="budget-module" style="padding: 10px 5px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <div>
-                    <div style="font-size: 10px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px;">TOPLAM TÜKETİM</div>
-                    <div class="tabular-nums sensitive-data" style="font-size: 28px; font-weight: 900; color: var(--red); line-height: 1;" id="saf-gider-toplam">0 ₺</div>
-                </div>
-                <div style="text-align: right;">
-                    <div style="display: inline-block; background: rgba(255,255,255,0.05); padding: 6px 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
-                        <div style="font-size: 9px; color: var(--text-muted); font-weight: 700; margin-bottom: 2px;">GÜNLÜK ORT.</div>
-                        <div class="tabular-nums sensitive-data" style="font-size: 15px; font-weight: 800; color: #fff;" id="saf-gunluk-ortalama">0 ₺</div>
-                    </div>
-                </div>
+        <div class="summary-grid" style="margin-bottom: 16px;">
+            <div class="summary-item br-right">
+                <span class="summary-label" style="color: var(--rose);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg> Toplam Tüketim</span>
+                <span class="summary-val text-red tabular-nums sensitive-data" id="saf-gider-toplam">₺0,00</span>
             </div>
-
-            <div style="margin-bottom: 25px;">
-                <div style="display: flex; justify-content: space-between; font-size: 10px; color: var(--text-muted); margin-bottom: 6px; font-weight: 600;">
-                    <span id="ay-ilerleme-notu">Ayın 0. günü</span>
-                    <span id="ay-kalan-gun">0 gün kaldı</span>
-                </div>
-                <div style="height: 6px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden;">
-                    <div id="saf-harcama-bar" style="height: 100%; width: 0%; background: linear-gradient(90deg, var(--red), #ff4d4d); border-radius: 10px; transition: width 1s ease-out;"></div>
-                </div>
+            <div class="summary-item">
+                <span class="summary-label">Günlük Ortalama</span>
+                <span class="summary-val tabular-nums sensitive-data" id="saf-gunluk-ortalama">₺0,00</span>
             </div>
-            
-            <div style="font-size:11px; font-weight:700; color:var(--text-muted); margin-bottom:12px; text-transform:uppercase; letter-spacing:1px; text-align: left; display: flex; align-items: center;">
-                <span style="width: 8px; height: 8px; background: var(--red); border-radius: 50%; margin-right: 8px;"></span>
-                Harcama Detayları
-            </div>
-            <div class="custom-scrollbar sensitive-data" id="saf-gider-listesi" style="max-height: 300px; overflow-y: auto; overflow-x: hidden; padding-right: 8px; overscroll-behavior: contain; text-align: left;"></div>
         </div>
+
+        <div style="font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:12px; text-transform:uppercase; letter-spacing:0.5px;">
+            Harcama Detayları
+        </div>
+        
+        <div class="custom-scrollbar sensitive-data" id="saf-gider-listesi" style="max-height: 280px; overflow-y: auto; overflow-x: hidden; padding-right: 8px; overscroll-behavior: contain;"></div>
     </div>
 </div>
 
@@ -2701,60 +2683,48 @@
             });
         }
 
-        // --- V13: GELİŞMİŞ SAF HARCAMA VE TÜKETİM ANALİZİ ---
-        let v13_safToplam = 0;
-        let v13_safListe = [];
+        // --- V14: SAF HARCAMA (ORİJİNAL TASARIM UYUMU) ---
+        let v14_safToplam = 0;
+        let v14_safListe = [];
 
-        // 1. Filtreleme
+        // 1. Filtreleme (Sadece Giderler)
         if (data.buAyIslemler && data.buAyIslemler.length > 0) {
             data.buAyIslemler.forEach(islem => {
                 if (islem.tur === 'Gider') {
-                    v13_safToplam += islem.tutar;
-                    v13_safListe.push(islem);
+                    v14_safToplam += islem.tutar;
+                    v14_safListe.push(islem);
                 }
             });
         }
 
-        // 2. Zaman ve İlerleme Hesapları (Evrensel Çözüm)
-const v13_tarih = new Date();
-// Bulunduğumuz ayın toplam kaç gün çektiğini bulur
-const v13_toplamGun = new Date(v13_tarih.getFullYear(), v13_tarih.getMonth() + 1, 0).getDate();
-// Bugün ayın kaçıncı günüyse onu alır
-const v13_gecenGun = v13_tarih.getDate() || 1;
+        // 2. Zaman Hesaplaması (Evrensel)
+        const v14_tarih = new Date();
+        const v14_gecenGun = v14_tarih.getDate() || 1;
+        const v14_ortalama = v14_safToplam / v14_gecenGun;
 
-const v13_ortalama = v13_safToplam / v13_gecenGun;
-const v13_ayYuzde = (v13_gecenGun / v13_toplamGun) * 100;
-
-        // 3. UI Güncelleme (Rakamlar)
-        animateValue('saf-gider-toplam', v13_safToplam, 800);
-        const v13_avgEl = document.getElementById('saf-gunluk-ortalama');
-        if(v13_avgEl) v13_avgEl.innerHTML = formatTL(v13_ortalama);
-
-        // 4. UI Güncelleme (İlerleme Çubuğu)
-        const v13_bar = document.getElementById('saf-harcama-bar');
-        const v13_notu = document.getElementById('ay-ilerleme-notu');
-        const v13_kalan = document.getElementById('ay-kalan-gun');
+        // 3. UI Güncelleme (Rakamları formatlı basıyoruz)
+        const safToplamEl = document.getElementById('saf-gider-toplam');
+        const safOrtalamaEl = document.getElementById('saf-gunluk-ortalama');
         
-        if(v13_bar) v13_bar.style.width = v13_ayYuzde + '%';
-        if(v13_notu) v13_notu.innerText = `Ayın ${v13_gecenGun}. günü`;
-        if(v13_kalan) v13_kalan.innerText = `${v13_toplamGun - v13_gecenGun} gün kaldı`;
+        if(safToplamEl) safToplamEl.innerHTML = formatTL(v14_safToplam);
+        if(safOrtalamaEl) safOrtalamaEl.innerHTML = formatTL(v14_ortalama) + `<span style="font-size:11px; opacity:0.5; font-weight:500; margin-left:4px;">/gün</span>`;
 
-        // 5. Liste Render (Stacked V11 Format)
-        const v13_container = document.getElementById('saf-gider-listesi');
-        if (v13_container) {
-            v13_container.innerHTML = "";
-            if (v13_safListe.length === 0) {
-                v13_container.innerHTML = `<div style="text-align:center; padding:30px; color:var(--text-muted); font-size:12px; opacity:0.6;">Bu ay henüz harcama kaydedilmedi.</div>`;
+        // 4. Liste Render (Uygulamanın evrensel liste formatı)
+        const v14_container = document.getElementById('saf-gider-listesi');
+        if (v14_container) {
+            v14_container.innerHTML = "";
+            if (v14_safListe.length === 0) {
+                v14_container.innerHTML = `<div style="text-align:center; padding:20px 0; color:var(--text-muted); font-size:13px;">Harcama kaydı bulunamadı.</div>`;
             } else {
-                v13_safListe.forEach(islem => {
-                    v13_container.innerHTML += `
-                        <div class="t-row" style="align-items: flex-start; padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.03);">
+                v14_safListe.forEach(islem => {
+                    v14_container.innerHTML += `
+                        <div class="t-row" style="align-items: flex-start; padding: 14px 0; border-bottom: 1px dashed rgba(255,255,255,0.05);">
                             <div class="t-details" style="flex: 1; min-width: 0;">
-                                <div style="font-size: 13.5px; font-weight: 600; color: #fff; line-height: 1.2;">${islem.kalem}</div>
-                                <div style="font-size: 10px; margin-top: 5px; color: var(--text-muted);">${islem.tarih} • ${islem.odeme}</div>
+                                <div style="font-size: 13.5px; font-weight: 600; color: #e2e8f0; line-height: 1.3;">${islem.kalem}</div>
+                                <div style="font-size: 10px; margin-top: 4px; color: var(--text-muted);">${islem.tarih} • ${islem.odeme}</div>
                             </div>
-                            <div class="t-amt" style="text-align: right; flex-shrink: 0; margin-left: 12px;">
-                                <div style="font-size: 15px; font-weight: 800; color: var(--red);">${formatTL(islem.tutar)}</div>
+                            <div class="t-amt text-red" style="text-align: right; flex-shrink: 0; margin-left: 10px;">
+                                <div style="font-size: 15px; font-weight: 700;">-${formatTL(islem.tutar)}</div>
                             </div>
                         </div>`;
                 });
