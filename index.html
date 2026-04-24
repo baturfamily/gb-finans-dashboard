@@ -2746,9 +2746,6 @@
 
         // --- %100 EVRENSEL NAKİT AKIŞI VE BORÇ YÖNETİMİ ---
         var buAyEkstraCikislar = 0; 
-        
-        // Eski Borç Kartı İçin: İçinde "kredi" kelimesi arama YOK! Sadece işlem türüne (Tur) bakar.
-        var borcDetayGruplar = {}; 
 
         // Nakit Akışı: Tüm listeler ARRAY ([]) değil OBJECT ({}) yapıldı. Böylece kendi içlerinde otomatik gruplanırlar.
         var nakitAkisiGruplar = {
@@ -2801,23 +2798,6 @@
                 nakitAkisiGruplar["Toplam Borç Ödemeleri"].liste[zenginKalem] += islem.tutar;
 
         });
-        }
-
-        // HTML: Borç Detayları Kartı
-        var borcListContainer = document.getElementById('borc-detay-listesi-container');
-        if(borcListContainer) {
-            borcListContainer.innerHTML = "";
-            var bIdx = 100;
-            for (var bBaslik in borcDetayGruplar) {
-                var bGrup = borcDetayGruplar[bBaslik];
-                if (bGrup.liste.length === 0) continue;
-                var bHtml = `<div class="sub-accordion-header" onclick="toggleSubAccordion('${bIdx}')"><div style="font-size: 13px; font-weight: 600; color: #e2e8f0; display:flex; align-items:center;"><svg id="sub-icon-${bIdx}" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px; color:var(--text-muted); transition: transform 0.3s ease;"><polyline points="9 18 15 12 9 6"></polyline></svg>${bBaslik}</div><div style="text-align:right;"><span style="font-size:13px; color:var(--blue); font-weight:700;">${formatTL(bGrup.toplam)}</span></div></div><div class="sub-accordion-content" id="sub-content-${bIdx}">`;
-                bGrup.liste.forEach(function(item) {
-                    bHtml += `<div class="t-row" style="padding: 12px 10px; border-bottom: 1px dashed rgba(255,255,255,0.05);"><div class="t-details"><div class="t-name" style="font-size:13px;">${item.kalem}</div><div class="t-meta" style="font-size:10px;">${item.tarih} • ${item.odeme}</div></div><div class="t-amt text-blue" style="font-size:14px;">${formatTL(item.tutar)}</div></div>`;
-                });
-                borcListContainer.innerHTML += bHtml + `</div>`;
-                bIdx++;
-            }
         }
 
         // HTML: Nakit Akışı (Tam Evrensel Render, İsim Sormaz!)
