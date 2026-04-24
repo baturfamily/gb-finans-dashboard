@@ -2715,16 +2715,19 @@
             });
         }
 
-        // 2. Zaman Hesaplaması (Evrensel)
+        // 2. Zaman ve BACKEND Entegrasyonu
         const v14_tarih = new Date();
         const v14_gecenGun = v14_tarih.getDate() || 1;
-        const v14_ortalama = v14_safToplam / v14_gecenGun;
+        
+        // PWA'nın yaptığı toplamı eziyor, direkt E-Tablodan geleni kullanıyoruz:
+        const gercekSafHarcama = data.backendSafHarcama || 0;
+        const v14_ortalama = gercekSafHarcama / v14_gecenGun;
 
-        // 3. UI Güncelleme (Rakamları formatlı basıyoruz)
+        // 3. UI Güncelleme
         const safToplamEl = document.getElementById('saf-gider-toplam');
         const safOrtalamaEl = document.getElementById('saf-gunluk-ortalama');
         
-        if(safToplamEl) safToplamEl.innerHTML = formatTL(v14_safToplam);
+        if(safToplamEl) safToplamEl.innerHTML = formatTL(gercekSafHarcama);
         if(safOrtalamaEl) safOrtalamaEl.innerHTML = formatTL(v14_ortalama) + `<span style="font-size:11px; opacity:0.5; font-weight:500; margin-left:4px;">/gün</span>`;
 
         // 4. Liste Render (Uygulamanın evrensel liste formatı)
@@ -2862,12 +2865,13 @@
             }
         }
         
-        var netAkis = (nakitAkisiGruplar["Toplam Gelirler"].toplam) - (nakitAkisiGruplar["Nakit Giderler (Banka/Kasa)"].toplam + nakitAkisiGruplar["Toplam Borç Ödemeleri"].toplam);
-        
+        // Artık uzun PWA hesaplamasını siliyoruz, direkt Backend'in formülünü çekiyoruz
+        var netAkis = data.backendNetNakit || 0;
+
         animateValue('val-buay-borc-odeme', buAyEkstraCikislar, 1000);
         animateValue('val-nakit-giris', nakitAkisiGruplar["Toplam Gelirler"].toplam, 1000);
         animateValue('val-nakit-cikis', (nakitAkisiGruplar["Nakit Giderler (Banka/Kasa)"].toplam + nakitAkisiGruplar["Toplam Borç Ödemeleri"].toplam), 1000);
-        animateValue('val-net-nakit', netAkis, 1000);
+        animateValue('val-net-nakit', netAkis, 1000); // Senin animasyonlu sayacını kullanmaya devam ediyoruz
 
         const kutuNet = document.getElementById('kutu-net-nakit');
         const valNet = document.getElementById('val-net-nakit');
