@@ -1899,20 +1899,11 @@
                             
                             if (turu.includes('taksit') || turu.includes('abonelik') || turu.includes('yatırım') || turu.includes('otomatik')) return false;
                             
-                            let zatenOdendiMi = false;
-                            if (k.son_islem && k.son_islem.toString().trim() !== "") {
-                                let islemTarihiStr = k.son_islem.toString().trim(); let sTarih;
-                                if (islemTarihiStr.includes("T")) sTarih = new Date(islemTarihiStr);
-                                else if (islemTarihiStr.includes(".")) {
-                                    let parts = islemTarihiStr.split(" ")[0].split(".");
-                                    if (parts.length === 3) sTarih = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
-                                } else sTarih = new Date(islemTarihiStr);
-                                
-                                if (sTarih && !isNaN(sTarih.getTime()) && sTarih.getMonth() === sBuAy && sTarih.getFullYear() === sBuYil) {
-                                    zatenOdendiMi = true;
-                                }
-                            }
-                            return !zatenOdendiMi;
+                            // --- V20: SÜPER HIZLI DURUM KONTROLÜ (Tarih Objesi Yaratmaz) ---
+            // Backend'den 'odendiMi' geliyorsa onu kullan; gelmiyorsa "Örn: .04.2026" metnini tarih içinde ara.
+            let buAyMevcut = "." + ("0" + (sBuAy + 1)).slice(-2) + "." + sBuYil; 
+            let zatenOdendiMi = k.odendiMi || k.aylikDurum === "ödendi" || (k.son_islem && k.son_islem.toString().includes(buAyMevcut));
+            return !zatenOdendiMi;
                         });
                         
                         showSection(sectionId, title);
