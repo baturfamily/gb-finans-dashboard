@@ -2870,7 +2870,33 @@
                 });
 
                 siraliKategoriler.forEach(function(isim) {
-                    nHtml += `<div class="t-row" style="padding: 10px; border-bottom: 1px dashed rgba(255,255,255,0.05);"><div class="t-name" style="font-size:13px; color:var(--text-muted); font-weight:600;">${isim}</div><div class="t-amt ${yaziRenk}" style="font-size:13px;">${isaret}${formatTL(nGrup.liste[isim])}</div></div>`;
+                    // Kategorilerin içindeki (A ➔ B) rotasını alt satıra şıkça taşıyoruz
+                    let anaIsim = isim;
+                    let altSatir = "";
+                    if (isim.includes("➔")) {
+                        let parcalar = isim.split("(");
+                        anaIsim = parcalar[0].trim();
+                        altSatir = parcalar[1] ? parcalar[1].replace(")", "").trim() : "";
+                    }
+
+                    let kalemHtml = `<div style="font-size: 13px; color: var(--text-muted); font-weight: 600; line-height: 1.2;">${anaIsim}</div>`;
+                    if (altSatir !== "") {
+                        kalemHtml = `
+                            <div style="font-size: 13px; color: var(--text-muted); font-weight: 600; line-height: 1.2;">${anaIsim}</div>
+                            <div style="font-size: 10px; color: rgba(255,255,255,0.3); font-weight: 400; margin-top: 3px; display: flex; align-items: center;">
+                                ${altSatir}
+                            </div>`;
+                    }
+
+                    nHtml += `
+                        <div class="t-row" style="align-items: flex-start; padding: 12px 10px; border-bottom: 1px dashed rgba(255,255,255,0.05);">
+                            <div class="t-name" style="flex: 1; min-width: 0;">
+                                ${kalemHtml}
+                            </div>
+                            <div class="t-amt ${yaziRenk}" style="text-align: right; flex-shrink: 0; margin-left: 10px; font-size: 13px; font-weight: 700;">
+                                ${isaret}${formatTL(nGrup.liste[isim])}
+                            </div>
+                        </div>`;
                 });
                 nakitContainer.innerHTML += nHtml + `</div>`;
                 nIdx++;
