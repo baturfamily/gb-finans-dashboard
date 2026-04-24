@@ -2315,27 +2315,37 @@
         }
 
         function doldurSabitGuncelleForm() {
-            const select = document.getElementById('sg-kural'); const opt = select.options[select.selectedIndex];
-            const formAlani = document.getElementById('sabit-guncelle-form-alani');
-            
-            if(!opt || !opt.value || opt.value === "") {
-                document.getElementById('sg-tutar').value = ""; document.getElementById('sg-gun').value = "";
-                document.getElementById('sg-sure').value = "";
-                if(formAlani) formAlani.style.display = 'none';
-                return;
-            }
-            if(formAlani) formAlani.style.display = 'block';
-            
-            document.getElementById('sg-tutar').value = opt.getAttribute('data-tutar');
-            document.getElementById('sg-gun').value = opt.getAttribute('data-gun');
-            document.getElementById('sg-sure').value = opt.getAttribute('data-sure');
-            
-            const yontem = opt.getAttribute('data-yontem'); const durum = opt.getAttribute('data-durum');
-            const yontemSel = document.getElementById('sg-yontem');
-            if(yontemSel) { yontemSel.value = yontem; refreshCustomSelect(yontemSel); }
-            const durumSel = document.getElementById('sg-durum');
-            if(durumSel) { durumSel.value = durum; refreshCustomSelect(durumSel); }
-        }
+    const select = document.getElementById('sg-kural'); const opt = select.options[select.selectedIndex];
+    const formAlani = document.getElementById('sabit-guncelle-form-alani');
+
+    if(!opt || !opt.value || opt.value === "") {
+        document.getElementById('sg-tutar').value = ""; document.getElementById('sg-gun').value = "";
+        document.getElementById('sg-sure').value = "";
+        if(formAlani) formAlani.style.display = 'none';
+        return;
+    }
+    if(formAlani) formAlani.style.display = 'block';
+
+    document.getElementById('sg-tutar').value = opt.getAttribute('data-tutar');
+    document.getElementById('sg-gun').value = opt.getAttribute('data-gun');
+    document.getElementById('sg-sure').value = opt.getAttribute('data-sure');
+
+    const yontem = opt.getAttribute('data-yontem'); 
+    const durum = opt.getAttribute('data-durum');
+    const yon = opt.getAttribute('data-yon'); // İşlemin Gelir mi Gider mi olduğunu alıyoruz
+
+    const yontemSel = document.getElementById('sg-yontem');
+    if(yontemSel) { 
+        // 1. Önce Ayarlar E3'ten gelen hesap listesini kutuya basıyoruz (Gelirse Vadesiz, Giderse Tüm Kart/Hesaplar)
+        yontemSel.innerHTML = (yon === 'Gelir') ? window.vadesizOptions : window.hesapOptions;
+        
+        // 2. Sonra işlemin kayıtlı hesabını otomatik seçili hale getiriyoruz
+        yontemSel.value = yontem; 
+        refreshCustomSelect(yontemSel); 
+    }
+    const durumSel = document.getElementById('sg-durum');
+    if(durumSel) { durumSel.value = durum; refreshCustomSelect(durumSel); }
+}
 
         function submitSabitGuncelle() {
             if(!confirm("Bu güncelleme, kuralın bugünden sonraki işlemlerine yansıyacaktır. Geçmiş aylardaki ödemelerinizi ve bakiyelerinizi etkilemeyecektir. Devam etmek istiyor musunuz?")) return
