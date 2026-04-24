@@ -2796,11 +2796,16 @@
 
                 var nHtml = `<div class="sub-accordion-header" onclick="toggleSubAccordion('${nIdx}')"><div style="font-size: 13px; font-weight: 600; color: #e2e8f0; display:flex; align-items:center;"><svg id="sub-icon-${nIdx}" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px; color:var(--text-muted); transition: transform 0.3s ease;"><polyline points="9 18 15 12 9 6"></polyline></svg>${nBaslik}</div><div style="text-align:right;"><span style="font-size:13px; color:${nGrup.renk}; font-weight:700;">${isaret}${formatTL(nGrup.toplam)}</span></div></div><div class="sub-accordion-content" id="sub-content-${nIdx}">`;
                 
-                // İŞTE EVRENSELLİK BURADA: "Eğer gelir ise şöyle bas, gider ise böyle bas" KURALI ÇÖPE ATILDI!
-                // İçeride ne varsa (Market, Ek Ders, Kredi Kartı) adını ve toplamını otomatik basar.
-                for (var isim in nGrup.liste) {
+                // İŞTE EVRENSELLİK VE OTOMATİK SIRALAMA BURADA!
+                // Objeyi bir diziye çevirip, tutarlarına göre matematiksel olarak BÜYÜKTEN KÜÇÜĞE sıralarız.
+                // Özel hiçbir kelime aramaz, sadece rakamın büyüklüğüne bakar!
+                var siraliKategoriler = Object.keys(nGrup.liste).sort(function(a, b) {
+                    return nGrup.liste[b] - nGrup.liste[a]; 
+                });
+
+                siraliKategoriler.forEach(function(isim) {
                     nHtml += `<div class="t-row" style="padding: 10px; border-bottom: 1px dashed rgba(255,255,255,0.05);"><div class="t-name" style="font-size:13px; color:var(--text-muted); font-weight:600;">${isim}</div><div class="t-amt ${yaziRenk}" style="font-size:13px;">${isaret}${formatTL(nGrup.liste[isim])}</div></div>`;
-                }
+                });
                 nakitContainer.innerHTML += nHtml + `</div>`;
                 nIdx++;
             }
