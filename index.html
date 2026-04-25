@@ -1740,9 +1740,10 @@ finalKalem = anaKalemSecimi + " - " + ekInput;
             const filtrelenmis = window.sabitKurallarList.filter(k => k.yon === currentSabitYonetFilter);
             let optionsHTML = `<option value="">-- Kayıt Seçin --</option>`;
             
-            filtrelenmis.forEach(k => {
-                let gorunenAd = (k.yon === 'Gelir') ? `${k.tur} - ${k.kalem}` : k.kalem;
-                if(k.durum !== "Aktif") gorunenAd += " [İPTAL/BİTTİ]";
+            ffiltrelenmis.forEach(k => {
+            // Evrensel Kural: Kategori varsa Açıklama ile birleştir (Gelir/Gider fark etmeksizin)
+            let gorunenAd = (k.tur && k.tur !== "-") ? (k.kalem ? `${k.tur} - ${k.kalem}` : k.tur) : k.kalem;
+            if(k.durum !== "Aktif") gorunenAd += " [İPTAL/BİTTİ]";
                 optionsHTML += `<option value="${k.satir}" data-yon="${k.yon}" data-tur="${k.tur}" data-tutar="${k.tutar}" data-yontem="${k.yontem}" data-gun="${k.gun}" data-sure="${k.kalan_ay}" data-durum="${k.durum}">${gorunenAd} - ₺${k.tutar}</option>`;
             });
             
@@ -1998,10 +1999,11 @@ finalKalem = anaKalemSecimi + " - " + ekInput;
             });
             
             filteredData.forEach(k => {
-                let sureMetni = k.kalan_ay === "Süresiz" ? "∞" : `${k.kalan_ay} Ay`;
-                let ek = turkceEkBul(k.gun);
-                let gorunenAd = (k.yon === 'Gelir') ? `${k.tur} - ${k.kalem}` : k.kalem;
-                let label = `Ayın ${k.gun}${ek} - ${gorunenAd} / ₺${k.tutar} (${sureMetni})`;
+            let sureMetni = k.kalan_ay === "Süresiz" ? "∞" : `${k.kalan_ay} Ay`;
+            let ek = turkceEkBul(k.gun);
+            // Evrensel Kural: Kategori varsa Açıklama ile birleştir
+            let gorunenAd = (k.tur && k.tur !== "-") ? (k.kalem ? `${k.tur} - ${k.kalem}` : k.tur) : k.kalem;
+            let label = `Ayın ${k.gun}${ek} - ${gorunenAd} / ₺${k.tutar} (${sureMetni})`;
                 if(k.durum !== "Aktif") label += " [İPTAL/BİTTİ]";
                 sel.innerHTML += `<option value="${k.satir}" data-yon="${k.yon}" data-tur="${k.tur}" data-tutar="${k.tutar}" data-yontem="${k.yontem}" data-gun="${k.gun}" data-sure="${k.kalan_ay}" data-durum="${k.durum}">${label}</option>`;
             });
