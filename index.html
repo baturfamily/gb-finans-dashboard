@@ -1589,11 +1589,22 @@
                 selectYontem.innerHTML = window.vadesizOptions;
             }
             
-            let turler = window.dinamikKategoriler.hareketTurleri || [];
-            let optionsHTML = "";
-            turler.forEach(t => optionsHTML += `<option value="${t}">${t}</option>`);
-            if(optionsHTML === "") optionsHTML = `<option value="Diğer">Diğer</option>`;
-            selectTur.innerHTML = optionsHTML;
+            // --- YENİ EVRENSEL KATEGORİ MANTIĞI ---
+// Seçime göre E-Tablo'dan gelen Gider veya Gelir kategorilerini getirir
+let turler = type === 'Gider' ? window.dinamikKategoriler.gider : window.dinamikKategoriler.gelir;
+let optionsHTML = "";
+if (turler && turler.length > 0) {
+    turler.forEach(t => optionsHTML += `<option value="${t}">${t}</option>`);
+} else {
+    optionsHTML = `<option value="Diğer">Diğer</option>`;
+}
+selectTur.innerHTML = optionsHTML;
+
+// Etiketi de kullanıcının seçimine göre dinamik olarak değiştir
+const lblTur = document.getElementById('lbl-du-tur');
+if (lblTur) {
+    lblTur.innerText = type === 'Gider' ? "Gider Kategorisi" : "Gelir Kategorisi";
+}
             
             refreshCustomSelect(selectYontem);
             refreshCustomSelect(selectTur);
