@@ -2676,11 +2676,9 @@ document.getElementById('bo-isim-yeni').style.display = 'none'; document.getElem
         let bgOptions = `<option value="">-- Borç Seçin --</option><option value="_yeni_">+ Yeni Borç Ekle</option>`;
 let boOptions = `<option value="">-- Borç Seçin --</option><option value="_yeni_">+ Sistem Dışı Yeni Borç Öde</option>`;
 data.borclarListe.forEach(b => {
-    // Evrensel Filtre: İsminin içinde "KMH" geçen hesapları Özel Borç menüsünden gizler
-    if (!b.isim.toUpperCase().includes("KMH")) {
-        bgOptions += `<option value="${b.isim}">${b.isim} (Kalan: ${formatTLTam(b.tutar)})</option>`;
-        boOptions += `<option value="${b.isim}">${b.isim} (Kalan: ${formatTLTam(b.tutar)})</option>`;
-    }
+    // Sadece Backend'in gönderdiği listeyi olduğu gibi basar (Sıfır Hardcode)
+    bgOptions += `<option value="${b.isim}">${b.isim} (Kalan: ${formatTLTam(b.tutar)})</option>`;
+    boOptions += `<option value="${b.isim}">${b.isim} (Kalan: ${formatTLTam(b.tutar)})</option>`;
 });
 
         const bgSecim = document.getElementById('bg-secim'); if(bgSecim) { bgSecim.innerHTML = bgOptions; refreshCustomSelect(bgSecim); }
