@@ -1645,13 +1645,13 @@
                 if(!faizDetay) return alert("Faiz uygulanan hesabı seçin!");
                 finalKalem = faizDetay + " Faizi";
             } else {
-                const ekCheck = document.getElementById('an-ek-check');
-                const ekInput = document.getElementById('an-ek-input').value.trim();
-                if(ekCheck && ekCheck.checked && ekInput) {
-                    // DÜZELTİLEN SATIR: Artık "Kategori - Açıklama" yapmak yerine doğrudan sadece açıklamayı (Örn: "su") alıyor.
-                    finalKalem = ekInput; 
-                }
-            }
+const ekCheck = document.getElementById('an-ek-check');
+const ekInput = document.getElementById('an-ek-input').value.trim();
+if(ekCheck && ekCheck.checked && ekInput) {
+// Evrensel Kural: Kategori seçimi ile ek açıklamayı otomatik birleştirir (Örn: Dışardan Yemek - Test)
+finalKalem = anaKalemSecimi + " - " + ekInput;
+}
+}
             
             const simdi = new Date();
             const saat = String(simdi.getHours()).padStart(2, '0');
