@@ -869,11 +869,18 @@
             </div>
 
             <div id="section-kart-limit-guncelle" class="form-section">
-                <span class="back-link" onclick="showSection('section-kart-merkezi', '💳 Kredi Kartı İşlemleri')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Kart İşlemlerine Dön</span>
-                <div class="form-group"><label>Hangi Kartın Limiti Güncellenecek?</label><select id="kl-secim" class="form-control"></select></div>
-                <div class="form-group"><label>Yeni Toplam Limit (₺)</label><input type="text" inputmode="decimal" id="kl-yeni-limit" class="form-control" placeholder="Örn: 250000"></div>
-                <button class="btn-submit" id="btn-submit-limit-guncelle" onclick="submitLimitGuncelle()">Limiti Güncelle</button>
-            </div>
+    <span class="back-link" onclick="showSection('section-kart-merkezi', ' 💳  Kredi Kartı İşlemleri')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Kart İşlemlerine Dön</span>
+    
+    <div class="form-group"><label>Hangi Kartın Limiti Güncellenecek?</label><select id="kl-secim" class="form-control" onchange="updateMevcutLimit()"></select></div>
+    
+    <div class="form-group" id="kl-mevcut-limit-grup" style="display:none; background: rgba(59, 130, 246, 0.05); padding: 15px; border-radius: 14px; border: 1px dashed rgba(59, 130, 246, 0.3); margin-top: -10px; margin-bottom: 15px;">
+        <label style="color: var(--blue);">Mevcut Kayıtlı Limit</label>
+        <div id="kl-mevcut-val" style="font-size: 18px; font-weight: 800; color: #fff;">₺0,00</div>
+    </div>
+    
+    <div class="form-group"><label>Yeni Toplam Limit (₺)</label><input type="text" inputmode="decimal" id="kl-yeni-limit" class="form-control" placeholder="Örn: 250000"></div>
+    <button class="btn-submit" id="btn-submit-limit-guncelle" onclick="submitLimitGuncelle()">Limiti Güncelle</button>
+</div>
 
             <div id="section-kart-ekstre-guncelle" class="form-section">
                 <span class="back-link" onclick="showSection('section-kart-merkezi', '💳 Kredi Kartı İşlemleri')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Kart İşlemlerine Dön</span>
@@ -1836,6 +1843,10 @@ document.getElementById('bo-isim-yeni').style.display = 'none'; document.getElem
                 document.getElementById('vg-secim').value = ''; document.getElementById('vg-isim-yeni').value = '';
                 document.getElementById('vg-isim-yeni').style.display = 'none'; refreshCustomSelect(document.getElementById('vg-secim'));
             }
+            if(id === 'section-kart-limit-guncelle') {
+  document.getElementById('kl-mevcut-limit-grup').style.display = 'none';
+  document.getElementById('kl-yeni-limit').value = '';
+}
         }
 
         function fillInput(id, text) { vibe(); document.getElementById(id).value = text; }
@@ -2456,6 +2467,26 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
             bakiye: borc
         }, 'btn-submit-yeni-kart');
     }
+
+        function updateMevcutLimit() {
+  const kartAdi = getCustomVal('kl-secim');
+  const grup = document.getElementById('kl-mevcut-limit-grup');
+  const valEl = document.getElementById('kl-mevcut-val');
+  
+  if(!kartAdi || kartAdi.includes("Seçin")) { 
+    grup.style.display = 'none'; 
+    return; 
+  }
+  
+  // Uygulamanın hafızasındaki (window.kartlarDetayli) kart verisini bulur
+  const kart = window.kartlarDetayli.find(k => k.isim === kartAdi);
+  if(kart) {
+    grup.style.display = 'block';
+    valEl.innerHTML = formatTL(kart.limit); // Mevcut limiti TL formatında gösterir
+  } else { 
+    grup.style.display = 'none'; 
+  }
+}
 
     function submitLimitGuncelle() {
         const isim = getCustomVal('kl-secim');
