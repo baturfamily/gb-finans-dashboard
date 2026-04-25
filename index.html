@@ -1740,7 +1740,7 @@ finalKalem = anaKalemSecimi + " - " + ekInput;
             const filtrelenmis = window.sabitKurallarList.filter(k => k.yon === currentSabitYonetFilter);
             let optionsHTML = `<option value="">-- Kayıt Seçin --</option>`;
             
-            ffiltrelenmis.forEach(k => {
+            filtrelenmis.forEach(k => {
             // Evrensel Kural: Kategori varsa Açıklama ile birleştir (Gelir/Gider fark etmeksizin)
             let gorunenAd = (k.tur && k.tur !== "-") ? (k.kalem ? `${k.tur} - ${k.kalem}` : k.tur) : k.kalem;
             if(k.durum !== "Aktif") gorunenAd += " [İPTAL/BİTTİ]";
