@@ -1825,8 +1825,8 @@ finalKalem = anaKalemSecimi + " - " + ekInput;
                 toggleParcaliKartBorcOdeme(); refreshCustomSelect(document.getElementById('kbo-odeme-sekli'));
             }
             if(id === 'section-ozel-borc') {
-                document.getElementById('bo-secim').value = ''; document.getElementById('bo-isim-yeni').value = '';
-                document.getElementById('bo-isim-yeni').style.display = 'none'; setNow('bo-tarih');
+document.getElementById('bo-secim').value = ''; document.getElementById('bo-isim-yeni').value = '';
+document.getElementById('bo-isim-yeni').style.display = 'none'; document.getElementById('bo-tarih').valueAsDate = new Date();
                 document.getElementById('bo-odeme-sekli').value = 'tek'; toggleParcaliBorcOdeme();
                 refreshCustomSelect(document.getElementById('bo-odeme-sekli')); refreshCustomSelect(document.getElementById('bo-secim'));
             }
@@ -2674,11 +2674,14 @@ finalKalem = anaKalemSecimi + " - " + ekInput;
         data.faizDetaylari.forEach(f => window.faizOptions += `<option value="${f.banka}">${f.banka} ${f.tur}</option>`);
 
         let bgOptions = `<option value="">-- Borç Seçin --</option><option value="_yeni_">+ Yeni Borç Ekle</option>`;
-        let boOptions = `<option value="">-- Borç Seçin --</option><option value="_yeni_">+ Sistem Dışı Yeni Borç Öde</option>`;
-        data.borclarListe.forEach(b => {
-            bgOptions += `<option value="${b.isim}">${b.isim} (Kalan: ${formatTLTam(b.tutar)})</option>`;
-            boOptions += `<option value="${b.isim}">${b.isim} (Kalan: ${formatTLTam(b.tutar)})</option>`;
-        });
+let boOptions = `<option value="">-- Borç Seçin --</option><option value="_yeni_">+ Sistem Dışı Yeni Borç Öde</option>`;
+data.borclarListe.forEach(b => {
+    // Evrensel Filtre: İsminin içinde "KMH" geçen hesapları Özel Borç menüsünden gizler
+    if (!b.isim.toUpperCase().includes("KMH")) {
+        bgOptions += `<option value="${b.isim}">${b.isim} (Kalan: ${formatTLTam(b.tutar)})</option>`;
+        boOptions += `<option value="${b.isim}">${b.isim} (Kalan: ${formatTLTam(b.tutar)})</option>`;
+    }
+});
 
         const bgSecim = document.getElementById('bg-secim'); if(bgSecim) { bgSecim.innerHTML = bgOptions; refreshCustomSelect(bgSecim); }
         const boSecim = document.getElementById('bo-secim'); if(boSecim) { boSecim.innerHTML = boOptions; refreshCustomSelect(boSecim); }
