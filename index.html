@@ -1741,8 +1741,10 @@ finalKalem = anaKalemSecimi + " - " + ekInput;
             let optionsHTML = `<option value="">-- Kayıt Seçin --</option>`;
             
             filtrelenmis.forEach(k => {
-            // Evrensel Kural: Kategori varsa Açıklama ile birleştir (Gelir/Gider fark etmeksizin)
-            let gorunenAd = (k.tur && k.tur !== "-") ? (k.kalem ? `${k.tur} - ${k.kalem}` : k.tur) : k.kalem;
+            // Evrensel Kural (Boşluk/Hata Korumalı): Kategori varsa Açıklama ile birleştir
+let temizTur = (k.tur || "").toString().trim();
+let temizKalem = (k.kalem || "").toString().trim();
+let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${temizKalem}` : temizTur) : (temizKalem || "İsimsiz Kayıt");
             if(k.durum !== "Aktif") gorunenAd += " [İPTAL/BİTTİ]";
                 optionsHTML += `<option value="${k.satir}" data-yon="${k.yon}" data-tur="${k.tur}" data-tutar="${k.tutar}" data-yontem="${k.yontem}" data-gun="${k.gun}" data-sure="${k.kalan_ay}" data-durum="${k.durum}">${gorunenAd} - ₺${k.tutar}</option>`;
             });
@@ -2001,8 +2003,10 @@ document.getElementById('bo-isim-yeni').style.display = 'none'; document.getElem
             filteredData.forEach(k => {
             let sureMetni = k.kalan_ay === "Süresiz" ? "∞" : `${k.kalan_ay} Ay`;
             let ek = turkceEkBul(k.gun);
-            // Evrensel Kural: Kategori varsa Açıklama ile birleştir
-            let gorunenAd = (k.tur && k.tur !== "-") ? (k.kalem ? `${k.tur} - ${k.kalem}` : k.tur) : k.kalem;
+            // Evrensel Kural (Boşluk/Hata Korumalı): Kategori varsa Açıklama ile birleştir
+let temizTur = (k.tur || "").toString().trim();
+let temizKalem = (k.kalem || "").toString().trim();
+let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${temizKalem}` : temizTur) : (temizKalem || "İsimsiz Kayıt");
             let label = `Ayın ${k.gun}${ek} - ${gorunenAd} / ₺${k.tutar} (${sureMetni})`;
                 if(k.durum !== "Aktif") label += " [İPTAL/BİTTİ]";
                 sel.innerHTML += `<option value="${k.satir}" data-yon="${k.yon}" data-tur="${k.tur}" data-tutar="${k.tutar}" data-yontem="${k.yontem}" data-gun="${k.gun}" data-sure="${k.kalan_ay}" data-durum="${k.durum}">${label}</option>`;
