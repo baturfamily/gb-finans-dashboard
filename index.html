@@ -2638,11 +2638,37 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
         vListe.innerHTML += `<div class="t-row" style="border-top: 1px solid rgba(255,255,255,0.1); margin-top: 8px; padding-top: 12px;"><div class="t-details"><div class="t-name" style="font-weight: 800; color: #fff;">Toplam Varlık</div></div><div class="t-amt text-green" style="font-size: 18px; font-weight: 800;">${formatTL(data.toplamVarlik)}</div></div>`;
 
         const bListe = document.getElementById('borc-listesi');
-        bListe.innerHTML = "";
-        data.borclarListe.forEach(b => {
-            let p = data.toplamBorc > 0 ? Math.round((b.tutar / data.toplamBorc) * 100) : 0;
-            bListe.innerHTML += `<div class="t-row"><div class="t-details"><div class="t-name">${b.isim}</div><div class="progress-container" style="height:4px; margin-top:6px; background:rgba(255,255,255,0.05);"><div class="progress-bar" style="width:${p}%; background:var(--rose);"></div></div></div><div class="t-amt text-red">${formatTL(b.tutar)}</div></div>`;
-        });
+bListe.innerHTML = "";
+
+// 1. Havuz oluştur (Backend'den gelen özel borçlar ile başla) [cite: 5029]
+let tumBorclarHavuzu = [...data.borclarListe];
+
+// 2. KMH Borçlarını ekle (Bakiyesi eksi olan banka hesapları) [cite: 5036, 5040]
+if(data.bankalar) {
+  data.bankalar.forEach(banka => {
+    if(banka.bakiye < 0) {
+      tumBorclarHavuzu.push({ isim: banka.isim + " (KMH)", tutar: Math.abs(banka.bakiye) });
+    }
+  });
+}
+
+// 3. Kredi Kartı Borçlarını ekle [cite: 5046, 5062]
+if(data.kartlarDetayli) {
+  data.kartlarDetayli.forEach(kart => {
+    if(kart.borc > 0) {
+      tumBorclarHavuzu.push({ isim: kart.isim, tutar: kart.borc });
+    }
+  });
+}
+
+// 4. Tutara göre büyükten küçüğe sırala (Görsel düzen için)
+tumBorclarHavuzu.sort((a,b) => b.tutar - a.tutar);
+
+// 5. Birleştirilmiş listeyi render et [cite: 5031]
+tumBorclarHavuzu.forEach(b => {
+  let p = data.toplamBorc > 0 ? Math.round((b.tutar / data.toplamBorc) * 100) : 0;
+  bListe.innerHTML += `<div class="t-row"><div class="t-details"><div class="t-name">${b.isim}</div><div class="progress-container" style="height:4px; margin-top:6px; background:rgba(255,255,255,0.05);"><div class="progress-bar" style="width:${p}%; background:var(--rose);"></div></div></div><div class="t-amt text-red">${formatTL(b.tutar)}</div></div>`;
+});
         bListe.innerHTML += `<div class="t-row" style="border-top: 1px solid rgba(255,255,255,0.1); margin-top: 8px; padding-top: 12px;"><div class="t-details"><div class="t-name" style="font-weight: 800; color: #fff;">Toplam Borç</div></div><div class="t-amt text-red" style="font-size: 18px; font-weight: 800;">${formatTL(data.toplamBorc)}</div></div>`;
 
         const bankaList = document.getElementById('banka-listesi');
