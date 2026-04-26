@@ -2869,9 +2869,10 @@ window.kartlarDetayli.forEach(k => {
         const kegSecim = document.getElementById('keg-secim'); if(kegSecim) { kegSecim.innerHTML = kartIsimleriList; refreshCustomSelect(kegSecim); }
         const kboSecim = document.getElementById('kbo-secim'); if(kboSecim) { kboSecim.innerHTML = kartIsimleriList; refreshCustomSelect(kboSecim); }
         
-        let vgOptions = `<option value="">-- Varlık Seçin --</option><option value="_yeni_">+ Yeni Varlık Ekle</option>`;
-        data.varliklarListe.forEach(v => vgOptions += `<option value="${v.isim}">${v.isim} (${formatTLTam(v.deger)})</option>`);
-        const vgSecim = document.getElementById('vg-secim'); if(vgSecim) { vgSecim.innerHTML = vgOptions; refreshCustomSelect(vgSecim); }
+        let vgOptions = `<option value="">-- Varlık Seçin --</option>`;
+    data.varliklarListe.forEach(v => vgOptions += `<option value="${v.isim}">${v.isim} (${formatTLTam(v.deger)})</option>`);
+    const vgSecim = document.getElementById('vg-secim'); if(vgSecim) { vgSecim.innerHTML = vgOptions; refreshCustomSelect(vgSecim); }
+    const vsSecim = document.getElementById('vs-secim'); if(vsSecim) { vsSecim.innerHTML = vgOptions; refreshCustomSelect(vsSecim); }
         
         const kboYontem = document.getElementById('kbo-yontem'); if(kboYontem) { kboYontem.innerHTML = window.hesapOptions; refreshCustomSelect(kboYontem); }
         const boYontem = document.getElementById('bo-yontem'); if(boYontem) { boYontem.innerHTML = window.hesapOptions; refreshCustomSelect(boYontem); }
