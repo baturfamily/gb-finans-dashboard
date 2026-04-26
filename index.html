@@ -3238,7 +3238,7 @@ window.kartlarDetayli.forEach(k => {
                         labels: labels,
                         datasets: [{
                             data: values,
-                            backgroundColor: premiumColors.slice(0, labels.length),
+                            backgroundColor: labels.map((label, index) => label === "Diğer" ? '#64748b' : premiumColors[index]),
                             borderWidth: 0, 
                             hoverOffset: 8  
                         }]
