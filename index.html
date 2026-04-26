@@ -3309,6 +3309,11 @@ window.kartlarDetayli.forEach(k => {
         if (!sel) return;
         
         const val = sel.value;
+        const trendKartEl = document.getElementById('trend-kart');
+        if (trendKartEl) {
+      // Eğer seçim 'hepsi' (Tüm Kartlar) ise göster, değilse gizle
+      trendKartEl.style.display = (val === 'hepsi') ? 'block' : 'none';
+  }
         let cKullanilabilir = 0, cLimit = 0, cBorc = 0, cDonemIci = 0, cGelecek = 0;
         
         if (val === 'hepsi') {
