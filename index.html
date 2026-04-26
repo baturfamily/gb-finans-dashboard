@@ -553,12 +553,13 @@
                 </div>
             </div>
 
-            <div id="pasta-top5-container" style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px;">
-    <div style="font-size:11px; font-weight:700; color:var(--text-muted); margin-bottom:12px; text-transform:uppercase; letter-spacing:0.5px;">
-        En Yüksek 5 Tüketim Kategorisi
+            <div id="pasta-top5-container" style="margin-top: 24px; padding: 0 5px;">
+    <div style="display: flex; justify-content: space-between; font-size:10px; font-weight:700; color:var(--text-muted); margin-bottom:12px; text-transform:uppercase; letter-spacing:1px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;">
+        <span>KATEGORİ</span>
+        <span>TUTAR / PAY</span>
     </div>
-    <div id="pasta-ozet-grid">
-        </div>
+    <div id="pasta-ozet-grid" style="display: flex; flex-direction: column;"></div>
+</div>
 </div>
         </div>
     </div>
@@ -3266,35 +3267,33 @@ window.kartlarDetayli.forEach(k => {
                     }
                 });
 
-                // Saf harcama toplamını merkeze yaz
-const pastaToplamEl = document.getElementById('pasta-toplam-rakam');
-if(pastaToplamEl) pastaToplamEl.innerHTML = formatTL(pastaSafToplam);
+                const pastaToplamEl = document.getElementById('pasta-toplam-rakam');
+        if(pastaToplamEl) pastaToplamEl.innerHTML = formatTL(pastaSafToplam);
 
-// Top 5 Listesini Oluştur
-const top5Container = document.getElementById('pasta-ozet-grid');
-if (top5Container) {
-    top5Container.innerHTML = ""; // İçini temizle
-    
-    // sortedKategoriler zaten büyükten küçüğe sıralı
-    sortedKategoriler.slice(0, 5).forEach((item, index) => {
-        const katAdi = item[0];
-        const katTutar = item[1];
-        const yuzde = pastaSafToplam > 0 ? ((katTutar / pastaSafToplam) * 100).toFixed(1) : 0;
+        // --- TOP 5 LİSTESİ OLUŞTURMA (SOLA YASLI) ---
+        const top5Container = document.getElementById('pasta-ozet-grid');
+        if (top5Container) {
+            top5Container.innerHTML = ""; // İçini temizle
+            
+            // Backend'den gelen sortedKategoriler'in ilk 5 elemanını dön
+            sortedKategoriler.slice(0, 5).forEach((item, index) => {
+                const katAdi = item[0];
+                const katTutar = item[1];
+                const yuzde = pastaSafToplam > 0 ? ((katTutar / pastaSafToplam) * 100).toFixed(1) : 0;
 
-        top5Container.innerHTML += `
-            <div class="t-row" style="padding: 10px 0; border-bottom: 1px dashed rgba(255,255,255,0.05); align-items: center;">
-                <div class="t-details" style="flex: 1;">
-                    <div class="t-name" style="font-size: 13px; color: #cbd5e1;">
-                        <span style="color: var(--text-muted); margin-right: 4px; font-weight: 400;">${index + 1}.</span> ${katAdi}
-                    </div>
-                </div>
-                <div class="t-amt" style="text-align: right;">
-                    <div class="text-red" style="font-size: 14px; font-weight: 700;">${formatTL(katTutar)}</div>
-                    <div style="font-size: 10px; color: var(--text-muted); font-weight: 600;">%${yuzde}</div>
-                </div>
-            </div>`;
-    });
-} 
+                top5Container.innerHTML += `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.03);">
+                        <div style="display: flex; align-items: center; flex: 1;">
+                            <span style="font-size: 11px; color: var(--text-muted); width: 22px; font-weight: 600;">${index + 1}.</span>
+                            <span style="font-size: 13px; color: #e2e8f0; font-weight: 500; text-align: left;">${katAdi}</span>
+                        </div>
+                        <div style="text-align: right; margin-left: 10px;">
+                            <div class="text-red" style="font-size: 14px; font-weight: 800; line-height: 1.2;">${formatTL(katTutar)}</div>
+                            <div style="font-size: 10px; color: var(--text-muted); font-weight: 700; margin-top: 2px;">%${yuzde}</div>
+                        </div>
+                    </div>`;
+            });
+        }
             } else {
                 cCtx.clearRect(0,0,ctxPasta.width,ctxPasta.height);
                 cCtx.font = "13px Inter"; cCtx.fillStyle = "#94a3b8"; cCtx.textAlign = "center";
