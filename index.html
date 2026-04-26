@@ -1818,11 +1818,83 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
             document.getElementById('bg-isim-yeni').style.display = val === '_yeni_' ? 'block' : 'none';
             if(val === '_yeni_') document.getElementById('bg-isim-yeni').focus();
         }
-        function toggleYeniVarlik() {
-            const val = getCustomVal('vg-secim');
-            document.getElementById('vg-isim-yeni').style.display = val === '_yeni_' ? 'block' : 'none';
-            if(val === '_yeni_') document.getElementById('vg-isim-yeni').focus();
+        function toggleVarlikTab(tab) {
+    vibe();
+    const btnGuncelle = document.getElementById('btn-tab-varlik-guncelle');
+    const btnEkleSil = document.getElementById('btn-tab-varlik-ekle-sil');
+
+    if(tab === 'guncelle') {
+        btnGuncelle.className = 'segment-btn active';
+        btnEkleSil.className = 'segment-btn';
+        document.getElementById('tab-varlik-guncelle').style.display = 'block';
+        document.getElementById('tab-varlik-ekle-sil').style.display = 'none';
+    } else {
+        btnGuncelle.className = 'segment-btn';
+        btnEkleSil.className = 'segment-btn active';
+        document.getElementById('tab-varlik-guncelle').style.display = 'none';
+        document.getElementById('tab-varlik-ekle-sil').style.display = 'block';
+        
+        const katSelect = document.getElementById('ve-kategori');
+        if(katSelect && katSelect.options.length === 0) {
+            let kHtml = "";
+            if(window.dinamikKategoriler && window.dinamikKategoriler.varlikKategorileri) {
+                window.dinamikKategoriler.varlikKategorileri.forEach(k => kHtml += `<option value="${k}">${k}</option>`);
+            } else {
+                kHtml = `<option value="Genel">Genel</option>`;
+            }
+            katSelect.innerHTML = kHtml;
+            refreshCustomSelect(katSelect);
         }
+    }
+}
+
+function submitVarlikGuncelle() {
+    let isim = getCustomVal('vg-secim');
+    const deger = document.getElementById('vg-deger').value;
+    let err = false;
+    if(!isim || isim.includes("Seçin")) { markError('vg-secim'); err = true; }
+    if(deger === "") { markError('vg-deger'); err = true; }
+    if(err) return;
+    apiIstekAt({ action: "varlik_guncelle", varlik_adi: isim, deger: deger }, 'btn-submit-varlik-guncelle');
+}
+
+function submitVarlikEkle() {
+    const isim = document.getElementById('ve-isim').value.trim();
+    const kategori = getCustomVal('ve-kategori');
+    const maliyet = document.getElementById('ve-maliyet').value;
+    const guncel = document.getElementById('ve-guncel').value;
+    const tarih = document.getElementById('ve-tarih').value;
+
+    let err = false;
+    if(!isim) { markError('ve-isim'); err = true; }
+    if(maliyet === "") { markError('ve-maliyet'); err = true; }
+    if(guncel === "") { markError('ve-guncel'); err = true; }
+    if(!tarih) { markError('ve-tarih'); err = true; }
+    if(err) return;
+
+    const simdi = new Date();
+    const saatDak = String(simdi.getHours()).padStart(2, '0') + ':' + String(simdi.getMinutes()).padStart(2, '0');
+    const tParca = tarih.split('-');
+    const tamTarihLog = `${tParca[2]}.${tParca[1]}.${tParca[0]} ${saatDak}`;
+
+    apiIstekAt({ 
+        action: "varlik_ekle", 
+        varlik_adi: isim, 
+        kategori: kategori,
+        maliyet: maliyet, 
+        deger: guncel, 
+        tarih: tamTarihLog 
+    }, 'btn-submit-varlik-ekle');
+}
+
+function submitVarlikSil() {
+    const isim = getCustomVal('vs-secim');
+    if(!isim || isim.includes("Seçin")) { markError('vs-secim'); return; }
+
+    if(!confirm(`"${isim}" adlı varlığı sistemden (log dosyasından ve pwadan) kalıcı olarak silmek istediğinize emin misiniz?`)) return;
+
+    apiIstekAt({ action: "varlik_sil", varlik_adi: isim }, 'btn-submit-varlik-sil');
+}
 
         function toggleOzelBorcTab(tab) {
             vibe();
@@ -2389,17 +2461,6 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
             const tParca = secilenTarih.split('-'); const tamTarih = `${tParca[2]}.${tParca[1]}.${tParca[0]} ${saat}:${dak}:${sn}`;
             
             apiIstekAt({ action: "transfer_yap", yontem: cikis, transfer_yeri: giris, tutar: tutar, tarih: tamTarih }, 'btn-submit-transfer');
-        }
-
-        function submitVarlikGuncelle() {
-            let isim = getCustomVal('vg-secim');
-            if(isim === '_yeni_') isim = document.getElementById('vg-isim-yeni').value.trim();
-            const deger = document.getElementById('vg-deger').value;
-            let err = false;
-            if(!isim) { markError('vg-secim'); if(isim==="") markError('vg-isim-yeni'); err = true; }
-            if(deger === "") { markError('vg-deger'); err = true; }
-            if(err) return;
-            apiIstekAt({ action: "varlik_guncelle", varlik_adi: isim, deger: deger }, 'btn-submit-varlik-guncelle');
         }
 
         function submitBorcGuncelle() {
