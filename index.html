@@ -3210,31 +3210,28 @@ window.kartlarDetayli.forEach(k => {
             // Rakamları büyükten küçüğe sırala
             const sortedKategoriler = Object.entries(pastaData).sort((a, b) => b[1] - a[1]);
             
-            // 2. Akıllı Gruplama (Top 5 + Diğer = Toplam 6 Dilim)
+            // 2. Akıllı Gruplama (Sadece ilk 6 kategoriyi göster, gerisini "Diğer" yap)
             let labels = [];
             let values = [];
             let digerToplam = 0;
 
             sortedKategoriler.forEach((item, index) => {
-                if (index < 5) { // Sadece ilk 5 kategori
+                if (index < 6) { 
                     labels.push(item[0]);
                     values.push(item[1]);
-                } else { // 5'ten sonrakileri "Diğer" havuzuna ekle
+                } else {
                     digerToplam += item[1];
                 }
             });
 
             if (digerToplam > 0) {
-                labels.push("Diğer"); // İsmi direkt "Diğer" yaptık
+                labels.push("Diğer Kalemler");
                 values.push(digerToplam);
             }
 
             if (values.length > 0) {
-                // Grafik nesnesi varsa eskisini yok et (yenileme için)
-                if (expenseChartInstance) expenseChartInstance.destroy();
-                
-                // 5 Ana Renk + 1 Gri Renk (Diğer için)
-                const premiumColors = ['#f43f5e', '#f59e0b', '#3b82f6', '#10b981', '#8b5cf6', '#64748b'];
+                // İlk 6 için canlı renkler, 'Diğer' için profesyonel bir gri (#64748b)
+                const premiumColors = ['#f43f5e', '#f59e0b', '#3b82f6', '#10b981', '#8b5cf6', '#ec4899', '#64748b'];
 
                 expenseChartInstance = new Chart(cCtx, {
                     type: 'doughnut',
@@ -3272,7 +3269,6 @@ window.kartlarDetayli.forEach(k => {
                         }
                     }
                 });
-            }
 
                 // Saf harcama toplamını merkeze yaz
 const pastaToplamEl = document.getElementById('pasta-toplam-rakam');
