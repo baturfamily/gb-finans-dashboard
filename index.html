@@ -1435,6 +1435,9 @@
             
             if(document.getElementById('trend-borc-varlik')) renderTrend('trend-borc-varlik', guncelOran, pastOranYuzde, true, '%');
             if(document.getElementById('trend-nakit-koruma')) renderTrend('trend-nakit-koruma', window.currentStats.nakitKorumaSuresi, pastKoruma, false, '');
+            if(document.getElementById('trend-saf-harcama')) renderTrend('trend-saf-harcama', window.currentStats.safHarcama, pastSafHarcama, true);
+            if(document.getElementById('trend-gunluk-ortalama')) renderTrend('trend-gunluk-ortalama', window.currentStats.gunlukOrt, pastGunlukOrt, true);
+            if(document.getElementById('trend-net-kalan')) renderTrend('trend-net-kalan', window.currentStats.netKalan, pastNetKalan, false);
         }
 
         function renderTrend(elementId, current, past, isDebt, symbol = '₺') {
