@@ -1372,7 +1372,7 @@
             document.querySelectorAll('.time-btn').forEach(btn => btn.classList.remove('active'));
             if(btnElement) btnElement.classList.add('active');
 
-            const ids = ['trend-net-servet', 'trend-net-servet-usd', 'trend-borc', 'trend-can-yakan', 'trend-planli', 'trend-faiz', 'trend-kasa', 'trend-kart', 'trend-toplam-varlik', 'trend-dolar-kuru', 'trend-borc-varlik', 'trend-nakit-koruma'];
+            const ids = ['trend-net-servet', 'trend-net-servet-usd', 'trend-borc', 'trend-can-yakan', 'trend-planli', 'trend-faiz', 'trend-kasa', 'trend-kart', 'trend-toplam-varlik', 'trend-dolar-kuru', 'trend-borc-varlik', 'trend-nakit-koruma', 'trend-saf-harcama', 'trend-gunluk-ortalama', 'trend-net-kalan'];
             if (days === 0) { ids.forEach(id => { setHtml(id, ""); }); return; }
 
             if(!window.tarihceData || window.tarihceData.length < 2) {
@@ -1409,7 +1409,10 @@
             let pastKart         = parseSaha(bestRow[8]); 
             let pastDolarKuru    = parseSaha(bestRow[9]) || 1; 
             let pastKoruma       = parseSaha(bestRow[10]); 
-            let pastOran         = parseSaha(bestRow[11]); 
+            let pastOran         = parseSaha(bestRow[11]);
+            let pastSafHarcama   = parseSaha(bestRow[12]);
+            let pastGunlukOrt    = parseSaha(bestRow[13]);
+            let pastNetKalan     = parseSaha(bestRow[14]);
 
             let pastNetServetUSD = pastNetServet / pastDolarKuru; 
 
@@ -3096,6 +3099,9 @@ window.kartlarDetayli.forEach(k => {
         var netAkis = data.backendNetNakit || 0;
 
         animateValue('val-buay-borc-odeme', buAyEkstraCikislar, 1000);
+        window.currentStats.safHarcama = gercekSafHarcama || 0;
+        window.currentStats.gunlukOrt = gercekGunlukOrtalama || 0;
+        window.currentStats.netKalan = netAkis || 0;
         animateValue('val-nakit-giris', nakitAkisiGruplar["Toplam Gelirler"].toplam, 1000);
         animateValue('val-nakit-cikis', (nakitAkisiGruplar["Nakit Giderler (Banka/Kasa)"].toplam + nakitAkisiGruplar["Toplam Borç Ödemeleri"].toplam), 1000);
         animateValue('val-net-nakit', netAkis, 1000); // Senin animasyonlu sayacını kullanmaya devam ediyoruz
