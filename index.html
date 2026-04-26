@@ -3180,8 +3180,7 @@ window.kartlarDetayli.forEach(k => {
         } else {
             krediListe.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size: 13px; padding: 10px 0;">Aktif kredi ilerlemesi bulunamadı.</div>`;
         }
-
-        // --- V17.2: PREMIUM SAF GİDER GRAFİĞİ (FAİZ BİRLEŞTİRMELİ) ---
+// --- V17.2: PREMIUM SAF GİDER GRAFİĞİ (FAİZ BİRLEŞTİRMELİ) ---
         const ctxPasta = document.getElementById('expenseChart');
         if (ctxPasta) {
             const cCtx = ctxPasta.getContext('2d');
@@ -3210,13 +3209,13 @@ window.kartlarDetayli.forEach(k => {
             // Rakamları büyükten küçüğe sırala
             const sortedKategoriler = Object.entries(pastaData).sort((a, b) => b[1] - a[1]);
             
-            // 2. Akıllı Gruplama (Sadece ilk 6 kategoriyi göster, gerisini "Diğer" yap)
+            // 2. Akıllı Gruplama (Top 5 + Diğer = Toplam 6 Dilim)
             let labels = [];
             let values = [];
             let digerToplam = 0;
 
             sortedKategoriler.forEach((item, index) => {
-                if (index < 6) { 
+                if (index < 5) {  // 6'dan 5'e düşürüldü: Alt liste ile tam uyum için
                     labels.push(item[0]);
                     values.push(item[1]);
                 } else {
@@ -3225,12 +3224,12 @@ window.kartlarDetayli.forEach(k => {
             });
 
             if (digerToplam > 0) {
-                labels.push("Diğer Kalemler");
+                labels.push("Diğer"); // "Diğer Kalemler" ismi "Diğer" olarak güncellendi
                 values.push(digerToplam);
             }
 
             if (values.length > 0) {
-                // İlk 6 için canlı renkler, 'Diğer' için profesyonel bir gri (#64748b)
+                // İlk 5 için canlı renkler, 'Diğer' için profesyonel bir gri (#64748b)
                 const premiumColors = ['#f43f5e', '#f59e0b', '#3b82f6', '#10b981', '#8b5cf6', '#ec4899', '#64748b'];
 
                 expenseChartInstance = new Chart(cCtx, {
@@ -3271,34 +3270,34 @@ window.kartlarDetayli.forEach(k => {
                 });
 
                 // Saf harcama toplamını merkeze yaz
-const pastaToplamEl = document.getElementById('pasta-toplam-rakam');
-if(pastaToplamEl) pastaToplamEl.innerHTML = formatTL(pastaSafToplam);
+                const pastaToplamEl = document.getElementById('pasta-toplam-rakam');
+                if(pastaToplamEl) pastaToplamEl.innerHTML = formatTL(pastaSafToplam);
 
-// Top 5 Listesini Oluştur
-const top5Container = document.getElementById('pasta-ozet-grid');
-if (top5Container) {
-    top5Container.innerHTML = ""; // İçini temizle
-    
-    // sortedKategoriler zaten büyükten küçüğe sıralı
-    sortedKategoriler.slice(0, 5).forEach((item, index) => {
-        const katAdi = item[0];
-        const katTutar = item[1];
-        const yuzde = pastaSafToplam > 0 ? ((katTutar / pastaSafToplam) * 100).toFixed(1) : 0;
+                // Top 5 Listesini Oluştur
+                const top5Container = document.getElementById('pasta-ozet-grid');
+                if (top5Container) {
+                    top5Container.innerHTML = ""; // İçini temizle
+                    
+                    // sortedKategoriler zaten büyükten küçüğe sıralı
+                    sortedKategoriler.slice(0, 5).forEach((item, index) => {
+                        const katAdi = item[0];
+                        const katTutar = item[1];
+                        const yuzde = pastaSafToplam > 0 ? ((katTutar / pastaSafToplam) * 100).toFixed(1) : 0;
 
-        top5Container.innerHTML += `
-            <div class="t-row" style="padding: 10px 0; border-bottom: 1px dashed rgba(255,255,255,0.05); align-items: center;">
-                <div class="t-details" style="flex: 1;">
-                    <div class="t-name" style="font-size: 13px; color: #cbd5e1;">
-                        <span style="color: var(--text-muted); margin-right: 4px; font-weight: 400;">${index + 1}.</span> ${katAdi}
-                    </div>
-                </div>
-                <div class="t-amt" style="text-align: right;">
-                    <div class="text-red" style="font-size: 14px; font-weight: 700;">${formatTL(katTutar)}</div>
-                    <div style="font-size: 10px; color: var(--text-muted); font-weight: 600;">%${yuzde}</div>
-                </div>
-            </div>`;
-    });
-}
+                        top5Container.innerHTML += `
+                            <div class="t-row" style="padding: 10px 0; border-bottom: 1px dashed rgba(255,255,255,0.05); align-items: center;">
+                                <div class="t-details" style="flex: 1;">
+                                    <div class="t-name" style="font-size: 13px; color: #cbd5e1;">
+                                        <span style="color: var(--text-muted); margin-right: 4px; font-weight: 400;">${index + 1}.</span> ${katAdi}
+                                    </div>
+                                </div>
+                                <div class="t-amt" style="text-align: right;">
+                                    <div class="text-red" style="font-size: 14px; font-weight: 700;">${formatTL(katTutar)}</div>
+                                    <div style="font-size: 10px; color: var(--text-muted); font-weight: 600;">%${yuzde}</div>
+                                </div>
+                            </div>`;
+                    });
+                }
             } else {
                 cCtx.clearRect(0,0,ctxPasta.width,ctxPasta.height);
                 cCtx.font = "13px Inter"; cCtx.fillStyle = "#94a3b8"; cCtx.textAlign = "center";
