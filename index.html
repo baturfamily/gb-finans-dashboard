@@ -615,6 +615,7 @@
                             <span style="font-size:14px; color:#e2e8f0; font-weight:600;">Toplam Güncel Borç</span>
                             <div style="text-align:right;">
                                 <span id="val-kart-toplam" class="tabular-nums" style="font-size:19px; font-weight:800; color:#fff; letter-spacing:-0.5px;">₺0,00</span>
+                                <div id="trend-kart" class="trend-box tabular-nums sensitive-data" style="margin-top:4px; font-size:11px; display:block;"></div>
                             </div>
                         </div>
                         <div style="background: var(--panel-bg); padding: 14px; display:flex; justify-content:space-between; align-items:center;">
@@ -1371,7 +1372,7 @@
             document.querySelectorAll('.time-btn').forEach(btn => btn.classList.remove('active'));
             if(btnElement) btnElement.classList.add('active');
 
-            const ids = ['trend-net-servet', 'trend-net-servet-usd', 'trend-borc', 'trend-can-yakan', 'trend-planli', 'trend-faiz', 'trend-kasa', 'trend-toplam-varlik', 'trend-dolar-kuru', 'trend-borc-varlik', 'trend-nakit-koruma', 'trend-saf-harcama', 'trend-gunluk-ortalama', 'trend-net-kalan'];
+            const ids = ['trend-net-servet', 'trend-net-servet-usd', 'trend-borc', 'trend-can-yakan', 'trend-planli', 'trend-faiz', 'trend-kasa', 'trend-kart', 'trend-toplam-varlik', 'trend-dolar-kuru', 'trend-borc-varlik', 'trend-nakit-koruma', 'trend-saf-harcama', 'trend-gunluk-ortalama', 'trend-net-kalan'];
             if (days === 0) { ids.forEach(id => { setHtml(id, ""); }); return; }
 
             if(!window.tarihceData || window.tarihceData.length < 2) {
