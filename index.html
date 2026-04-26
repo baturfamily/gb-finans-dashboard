@@ -2751,7 +2751,7 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
 
         const vListe = document.getElementById('varlik-listesi');
         vListe.innerHTML = "";
-        data.varliklarListe.forEach(v => {
+        data.varliklarListe.sort((a, b) => b.deger - a.deger).forEach(v => {
             let p = data.toplamVarlik > 0 ? Math.round((v.deger / data.toplamVarlik) * 100) : 0;
             vListe.innerHTML += `<div class="t-row"><div class="t-details"><div class="t-name">${v.isim}</div><div class="progress-container" style="height:4px; margin-top:6px; background:rgba(255,255,255,0.05);"><div class="progress-bar" style="width:${p}%; background:var(--emerald);"></div></div></div><div class="t-amt text-green">${formatTL(v.deger)}</div></div>`;
         });
@@ -2785,7 +2785,7 @@ if(data.kartlarDetayli) {
 tumBorclarHavuzu.sort((a,b) => b.tutar - a.tutar);
 
 // 5. Birleştirilmiş listeyi render et [cite: 5031]
-tumBorclarHavuzu.forEach(b => {
+tumBorclarHavuzu.sort((a, b) => b.tutar - a.tutar).forEach(b => {
   let p = data.toplamBorc > 0 ? Math.round((b.tutar / data.toplamBorc) * 100) : 0;
   bListe.innerHTML += `<div class="t-row"><div class="t-details"><div class="t-name">${b.isim}</div><div class="progress-container" style="height:4px; margin-top:6px; background:rgba(255,255,255,0.05);"><div class="progress-bar" style="width:${p}%; background:var(--rose);"></div></div></div><div class="t-amt text-red">${formatTL(b.tutar)}</div></div>`;
 });
