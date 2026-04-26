@@ -1724,8 +1724,8 @@ if (lblTur) {
 const ekCheck = document.getElementById('an-ek-check');
 const ekInput = document.getElementById('an-ek-input').value.trim();
 if(ekCheck && ekCheck.checked && ekInput) {
-// Evrensel Kural: Kategori seçimi ile ek açıklamayı otomatik birleştirir (Örn: Dışardan Yemek - Test)
-finalKalem = anaKalemSecimi + " - " + ekInput;
+// DÜZELTME: Kategoriyi birleştirmeyi bıraktık. Sadece yazılan açıklamayı (örn: Kedi Kumu) gönderir.
+finalKalem = ekInput;
 }
 }
             
