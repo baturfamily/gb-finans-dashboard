@@ -2890,7 +2890,6 @@ window.kartlarDetayli.forEach(k => {
         const kboYontem = document.getElementById('kbo-yontem'); if(kboYontem) { kboYontem.innerHTML = window.hesapOptions; refreshCustomSelect(kboYontem); }
         const boYontem = document.getElementById('bo-yontem'); if(boYontem) { boYontem.innerHTML = window.hesapOptions; refreshCustomSelect(boYontem); }
 
-        // --- İŞLEMLER SEKEMESİ EN ALTAKİ "SON 10 İŞLEM" KARTI (V10) ---
         // --- İŞLEMLER SEKEMESİ EN ALTAKİ "SON 10 İŞLEM" KARTI (V11 RESPONSIVE) ---
         const islemListesi = document.getElementById('islem-listesi');
         if (islemListesi) {
@@ -2918,7 +2917,7 @@ window.kartlarDetayli.forEach(k => {
                     <div class="t-row" style="align-items: flex-start; padding: 12px 10px;">
                         <div class="t-details" style="flex: 1; min-width: 0;">
                             <div class="t-name">${kalemHtml}</div>
-                            <div class="t-meta" style="font-size: 10px; margin-top: 4px; opacity: 0.6;">${islem.tarih}</div>
+                            <div class="t-meta" style="font-size: 10px; margin-top: 4px; opacity: 0.6;">${islem.tarih} • ${islem.kategori} • ${islem.odeme}</div>
                         </div>
                         <div class="t-amt ${amtClass}" style="text-align: right; flex-shrink: 0; margin-left: 10px;">
                             <div style="font-size: 9px; margin-bottom: 2px; display: inline-block; vertical-align: middle;" class="pill-badge ${badgeClass}">${islem.tur}</div>
