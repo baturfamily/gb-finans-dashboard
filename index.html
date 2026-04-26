@@ -1475,6 +1475,8 @@
                     else if (b.id === 'btn-submit-borc-guncelle') b.innerHTML = 'Borcu Kaydet/Güncelle';
                     else if (b.id === 'btn-submit-sabit-guncelle') b.innerHTML = 'Kuralı Kalıcı Olarak Güncelle';
                     else if (b.id === 'btn-submit-varlik-guncelle') b.innerHTML = 'Varlığı Güncelle';
+                    else if (b.id === 'btn-submit-varlik-ekle') b.innerHTML = 'Varlığı Sisteme Ekle';
+                    else if (b.id === 'btn-submit-varlik-sil') b.innerHTML = 'Seçili Varlığı Kalıcı Olarak Sil';
                     else if (b.id === 'btn-submit-yeni-hesap') b.innerHTML = 'Hesabı Oluştur';
                     else if (b.id === 'btn-submit-yeni-kart') b.innerHTML = 'Kartı Sisteme Ekle';
                     else if (b.id === 'btn-submit-kart-borc-ode') b.innerHTML = 'Kart Borcunu Öde';
@@ -1885,9 +1887,12 @@ document.getElementById('bo-isim-yeni').style.display = 'none'; document.getElem
                 refreshCustomSelect(document.getElementById('bo-odeme-sekli')); refreshCustomSelect(document.getElementById('bo-secim'));
             }
             if(id === 'section-varlik-guncelle') {
-                document.getElementById('vg-secim').value = ''; document.getElementById('vg-isim-yeni').value = '';
-                document.getElementById('vg-isim-yeni').style.display = 'none'; refreshCustomSelect(document.getElementById('vg-secim'));
-            }
+        document.getElementById('vg-secim').value = ''; 
+        document.getElementById('vs-secim').value = '';
+        refreshCustomSelect(document.getElementById('vg-secim'));
+        refreshCustomSelect(document.getElementById('vs-secim'));
+        toggleVarlikTab('guncelle');
+    }
             if(id === 'section-kart-limit-guncelle') {
   document.getElementById('kl-mevcut-limit-grup').style.display = 'none';
   document.getElementById('kl-yeni-limit').value = '';
