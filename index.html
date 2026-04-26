@@ -553,14 +553,16 @@
                 </div>
             </div>
 
-            <div id="pasta-top5-container" style="margin-top: 24px; padding: 0 5px;">
-    <div style="display: flex; justify-content: space-between; font-size:10px; font-weight:700; color:var(--text-muted); margin-bottom:12px; text-transform:uppercase; letter-spacing:1px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;">
-        <span>KATEGORİ</span>
-        <span>TUTAR / PAY</span>
-    </div>
-    <div id="pasta-ozet-grid" style="display: flex; flex-direction: column;"></div>
-</div>
-</div>
+            <div class="summary-grid" id="pasta-ozet-grid">
+                <div class="summary-item br-right">
+                    <span class="summary-label" style="color: var(--rose);">En Yüksek Kalem</span>
+                    <span class="summary-val text-red" id="en-cok-kategori" style="font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;">-</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Kategori Sayısı</span>
+                    <span class="summary-val tabular-nums" id="kat-sayisi">0</span>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -3267,33 +3269,15 @@ window.kartlarDetayli.forEach(k => {
                     }
                 });
 
+                // 3. UI Kutu Rakamlarını Güncelleme
                 const pastaToplamEl = document.getElementById('pasta-toplam-rakam');
-        if(pastaToplamEl) pastaToplamEl.innerHTML = formatTL(pastaSafToplam);
+                const enCokEl = document.getElementById('en-cok-kategori');
+                const katSayisiEl = document.getElementById('kat-sayisi');
 
-        // --- TOP 5 LİSTESİ OLUŞTURMA (SOLA YASLI) ---
-        const top5Container = document.getElementById('pasta-ozet-grid');
-        if (top5Container) {
-            top5Container.innerHTML = ""; // İçini temizle
-            
-            // Backend'den gelen sortedKategoriler'in ilk 5 elemanını dön
-            sortedKategoriler.slice(0, 5).forEach((item, index) => {
-                const katAdi = item[0];
-                const katTutar = item[1];
-                const yuzde = pastaSafToplam > 0 ? ((katTutar / pastaSafToplam) * 100).toFixed(1) : 0;
-
-                top5Container.innerHTML += `
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.03);">
-                        <div style="display: flex; align-items: center; flex: 1;">
-                            <span style="font-size: 11px; color: var(--text-muted); width: 22px; font-weight: 600;">${index + 1}.</span>
-                            <span style="font-size: 13px; color: #e2e8f0; font-weight: 500; text-align: left;">${katAdi}</span>
-                        </div>
-                        <div style="text-align: right; margin-left: 10px;">
-                            <div class="text-red" style="font-size: 14px; font-weight: 800; line-height: 1.2;">${formatTL(katTutar)}</div>
-                            <div style="font-size: 10px; color: var(--text-muted); font-weight: 700; margin-top: 2px;">%${yuzde}</div>
-                        </div>
-                    </div>`;
-            });
-        }
+                if(pastaToplamEl) pastaToplamEl.innerHTML = formatTL(pastaSafToplam);
+                if(enCokEl) enCokEl.innerHTML = sortedKategoriler[0] ? sortedKategoriler[0][0] : "-";
+                // Gerçek kategori sayısını vermek için faizleri birleştirdiğimiz yeni listeyi kullanıyoruz
+                if(katSayisiEl) katSayisiEl.innerHTML = sortedKategoriler.length; 
             } else {
                 cCtx.clearRect(0,0,ctxPasta.width,ctxPasta.height);
                 cCtx.font = "13px Inter"; cCtx.fillStyle = "#94a3b8"; cCtx.textAlign = "center";
