@@ -2745,8 +2745,14 @@ data.borclarListe.forEach(b => {
         const bgSecim = document.getElementById('bg-secim'); if(bgSecim) { bgSecim.innerHTML = bgOptions; refreshCustomSelect(bgSecim); }
         const boSecim = document.getElementById('bo-secim'); if(boSecim) { boSecim.innerHTML = boOptions; refreshCustomSelect(boSecim); }
         
-        let kartIsimleriList = `<option value="">-- Kart Seçin --</option>`;
-        window.kartlarDetayli.forEach(k => kartIsimleriList += `<option value="${k.isim}">${k.isim}</option>`);
+        // --- KREDİ KARTI LİSTESİ (BORÇ MİKTARI DESTEKLİ) ---
+let kartIsimleriList = `<option value="">-- Kart Seçin (Güncel Borç) --</option>`;
+window.kartlarDetayli.forEach(k => {
+    // Backend'den gelen 'borc' verisini formatlıyoruz
+    let borcMiktari = formatTLTam(k.borc || 0);
+    // Value: Sadece kart ismi (Sistemi bozmaz), TextContent: İsim + Borç
+    kartIsimleriList += `<option value="${k.isim}">${k.isim} — (${borcMiktari})</option>`;
+});
         
         const klSecim = document.getElementById('kl-secim'); if(klSecim) { klSecim.innerHTML = kartIsimleriList; refreshCustomSelect(klSecim); }
         const kegSecim = document.getElementById('keg-secim'); if(kegSecim) { kegSecim.innerHTML = kartIsimleriList; refreshCustomSelect(kegSecim); }
