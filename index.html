@@ -475,30 +475,36 @@
                 </div>
             </div>
 
-            <div class="card accordion" id="acc-nakit-akisi">
-                <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
-                    <h3 style="text-align: center; width: 100%; color: var(--emerald);">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right:4px;">
-                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-                        </svg> 
-                        Aylık Net Nakit Akışı
-                    </h3>
-                    <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <div class="card accordion" id="acc-nakit-akisi" style="padding-bottom: 5px;">
+                <div class="accordion-header" onclick="toggleAccordion(this.parentElement)" style="padding: 18px 15px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="background: rgba(16, 185, 129, 0.15); width: 32px; height: 32px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                            </svg>
+                        </div>
+                        <h3 style="margin: 0; font-size: 15px; font-weight: 700; color: #e2e8f0;">Aylık Net Nakit Akışı</h3>
+                    </div>
+                    <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px; opacity: 0.5;">
                         <polyline points="6 9 12 15 18 9"></polyline>
                     </svg>
                 </div>
+
                 <div class="accordion-content">
-                    <div id="nakit-akisi-listesi-container"></div>
+                    <div id="nakit-akisi-listesi-container" style="padding: 0 15px;"></div>
                 </div>
                 
-                <div style="background: rgba(16, 185, 129, 0.1); padding: 16px 14px; border-radius: 12px; display:flex; justify-content:space-between; align-items:center; margin: 10px 15px 15px 15px; border: 1px dashed rgba(16, 185, 129, 0.3);" id="kutu-net-nakit">
-                    <span style="font-size:14px; color:#fff; font-weight:700;">Net Kalan (Cepteki Para)</span>
-                    <div style="text-align: right;">
-                        <span id="val-net-nakit" class="tabular-nums" style="font-size:19px; font-weight:800; color:var(--emerald);">₺0,00</span>
-                        <div class="trend-box tabular-nums sensitive-data" id="trend-net-kalan" style="font-size:11px; margin-left: 10px; display:block;"></div>
+                <div id="kutu-net-nakit" style="background: rgba(16, 185, 129, 0.08); padding: 16px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; margin: 5px 15px 15px 15px; border: 1px solid rgba(16, 185, 129, 0.2); backdrop-filter: blur(10px);">
+                    <div style="display: flex; flex-direction: column; gap: 2px;">
+                        <span style="font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Net Kalan Para</span>
+                        <span style="font-size: 13px; color: #fff; font-weight: 500; opacity: 0.9;">Bu Ayın Bakiyesi</span>
+                    </div>
+                    <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 4px;">
+                        <span id="val-net-nakit" class="tabular-nums sensitive-data" style="font-size: 20px; font-weight: 800; color: var(--emerald); letter-spacing: -0.5px;">₺0,00</span>
+                        <div id="trend-net-kalan" class="trend-box tabular-nums sensitive-data" style="font-size: 11px; margin: 0; padding: 2px 6px; border-radius: 6px; display: inline-flex; align-items: center;"></div>
                     </div>
                 </div>
-            </div> 
+            </div>
 
             <div class="card accordion" id="acc-yaklasan-ozet">
                 <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
