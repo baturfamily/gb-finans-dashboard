@@ -2912,7 +2912,6 @@ window.kartlarDetayli.forEach(k => {
                 let sign = islem.tur === 'Gelir' ? '+' : (islem.tur === 'Transfer' ? '' : '-');
 
                 if (isOtoLog) {
-                    // YENİ: Sadece Oto-Log Listesindekiler için 3 Satırlı Etiketli (Timeline) Yapı
                     let rotaMetni = "";
                     if ((islem.tur === 'Transfer' || islem.tur === 'Kart Ödemesi' || islem.tur === 'Borç Ödemesi') && islem.hedef) {
                         rotaMetni = `${islem.odeme} ➔ ${islem.hedef}`;
@@ -2921,7 +2920,7 @@ window.kartlarDetayli.forEach(k => {
                     }
                     
                     islemListesi.innerHTML += `
-                        <div class="t-row" style="align-items: flex-start; padding: 14px 10px;">
+                        <div class="t-row" style="align-items: center; padding: 14px 10px;">
                             <div class="t-details" style="flex: 1; min-width: 0;">
                                 <div style="display: inline-flex; align-items: center; background: rgba(59, 130, 246, 0.15); color: var(--blue); padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; margin-bottom: 8px; border: 1px solid rgba(59, 130, 246, 0.2);">
                                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg> 
@@ -2931,11 +2930,10 @@ window.kartlarDetayli.forEach(k => {
                                 <div style="font-size: 11px; color: var(--text-muted); font-weight: 500; margin-top: 5px;">${islem.tarih} • ${rotaMetni}</div>
                             </div>
                             <div class="t-amt ${amtClass}" style="text-align: right; flex-shrink: 0; margin-left: 10px;">
-                                <div style="font-size: 16px; font-weight: 800; margin-top: 2px;">${sign}${formatTL(islem.tutar)}</div>
+                                <div style="font-size: 16px; font-weight: 800;">${sign}${formatTL(islem.tutar)}</div>
                             </div>
                         </div>`;
                 } else {
-                    // ESKİ: Standart Harcamalar için 2 Satırlı Orijinal Yapı
                     let kalemHtml = `<div style="font-size: 13px; font-weight: 600; line-height: 1.2;">${(islem.kategori && islem.kategori !== "-" && !hamKalem.startsWith(islem.kategori)) ? islem.kategori + " - " : ""}${hamKalem}</div>`;
                     
                     if ((islem.tur === 'Transfer' || islem.tur === 'Kart Ödemesi' || islem.tur === 'Borç Ödemesi') && islem.hedef) {
@@ -2948,14 +2946,14 @@ window.kartlarDetayli.forEach(k => {
                     }
                     
                     islemListesi.innerHTML += `
-                        <div class="t-row" style="align-items: flex-start; padding: 12px 10px;">
+                        <div class="t-row" style="align-items: center; padding: 12px 10px;">
                             <div class="t-details" style="flex: 1; min-width: 0;">
                                 <div class="t-name">${kalemHtml}</div>
                                 <div class="t-meta" style="font-size: 10px; margin-top: 4px; opacity: 0.6;">${islem.tarih} • ${altSatirBilgi}</div>
                             </div>
-                            <div class="t-amt ${amtClass}" style="text-align: right; flex-shrink: 0; margin-left: 10px;">
-                                <div style="font-size: 9px; margin-bottom: 2px; display: inline-block; vertical-align: middle;" class="pill-badge ${badgeClass}">${islem.tur}</div>
-                                <div style="font-size: 14px; font-weight: 800; margin-top: 2px;">${sign}${formatTL(islem.tutar)}</div>
+                            <div class="t-amt ${amtClass}" style="display: flex; flex-direction: column; align-items: flex-end; justify-content: center; flex-shrink: 0; margin-left: 10px; gap: 4px;">
+                                <div style="font-size: 9px; padding: 2px 6px; border-radius: 4px;" class="pill-badge ${badgeClass}">${islem.tur}</div>
+                                <div style="font-size: 14px; font-weight: 800;">${sign}${formatTL(islem.tutar)}</div>
                             </div>
                         </div>`;
                 }
