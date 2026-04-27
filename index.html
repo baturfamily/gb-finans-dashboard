@@ -1985,10 +1985,11 @@ function submitVarlikSil() {
         }
 
         async function openSectionLive(ev, sectionId, title) {
-            const btn = ev.currentTarget; const orig = btn.innerHTML;
-            btn.innerHTML = `<span class="spinner"></span>...`; vibe();
+            const btn = ev.currentTarget; 
+            btn.classList.add('premium-loader'); vibe(); // YENİ: İçeriği silmek yerine class ekliyoruz
             await verileriCek();
-            btn.innerHTML = orig; showSection(sectionId, title);
+            btn.classList.remove('premium-loader'); 
+            showSection(sectionId, title);
         }
 
         function showSection(id, title) {
@@ -2082,12 +2083,18 @@ document.getElementById('bo-isim-yeni').style.display = 'none'; document.getElem
 
         async function apiIstekAt(payload, buttonId) {
             if(document.activeElement) document.activeElement.blur();
-            const btn = document.getElementById(buttonId); const originalText = btn.innerHTML;
-            btn.innerHTML = `<span class="spinner"></span> İşleniyor...`; btn.disabled = true; vibe();
+            const btn = document.getElementById(buttonId); 
+            const originalText = btn.innerHTML;
+            
+            btn.classList.add('premium-loader'); btn.disabled = true; vibe();
+            
             try {
                 await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(payload) });
                 setTimeout(async () => {
-                    vibe(); btn.innerHTML = `Başarılı ✓`; btn.style.background = "var(--emerald)";
+                    vibe(); 
+                    btn.classList.remove('premium-loader');
+                    btn.innerHTML = `Başarılı ✓`; 
+                    btn.style.background = "var(--emerald)";
                     const fabBtn = document.getElementById('fab-btn');
                     fabBtn.innerHTML = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
                     fabBtn.style.background = "var(--emerald)";
@@ -2096,13 +2103,14 @@ document.getElementById('bo-isim-yeni').style.display = 'none'; document.getElem
                 }, 1500);
             } catch (error) {
                 alert("Bağlantı hatası: " + error);
-                btn.innerHTML = originalText; btn.disabled = false;
+                btn.classList.remove('premium-loader');
+                btn.disabled = false;
             }
         }
 
         async function loadSabitlerAndShow(sectionId, selectId, title) {
-            const ev = event.currentTarget; const orig = ev.innerHTML;
-            ev.innerHTML = `<span class="spinner"></span>...`; vibe();
+            const btn = event.currentTarget; 
+            if(btn) btn.classList.add('premium-loader'); vibe();
             try {
                 const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: "sabitleri_getir" }) });
                 const result = await res.json();
@@ -2152,7 +2160,7 @@ document.getElementById('bo-isim-yeni').style.display = 'none'; document.getElem
             } catch(e) {
                 alert("Kayıtlar çekilemedi. İnternetinizi kontrol edin.");
             }
-            if (ev) ev.innerHTML = orig;
+            if (btn) btn.classList.remove('premium-loader');
         }
 
         let currentSabitMainType = 'Gider';
@@ -2686,33 +2694,36 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
     }
 
     async function geriAl() {
-        if(!confirm("Son işlemi (harcama/gelir/transfer/ödeme) tamamen geri almak istediğinize emin misiniz? (Tüm hesaplar, cüzdan ve sabit kural durumları otomatik onarılacaktır.)")) return;
-        const btn = document.querySelector('.undo-btn');
-        const orig = btn.innerHTML;
-        btn.innerHTML = `<span class="spinner" style="border-left-color: var(--rose);"></span> Geri alınıyor...`;
-        vibe();
-        try {
-            const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: "geri_al" }) });
-            const result = await res.json();
-            if(result.status === "success") {
-                btn.innerHTML = "İşlem Geri Alındı ✓";
-                btn.style.color = "var(--emerald)";
-                btn.style.borderColor = "var(--emerald)";
-                btn.style.background = "rgba(16, 185, 129, 0.1)";
-                setTimeout(async () => {
-                    await verileriCek();
-                    btn.innerHTML = orig;
-                    btn.style = "";
-                }, 1500);
-            } else {
-                alert(result.message);
-                btn.innerHTML = orig;
+            if(!confirm("Son işlemi (harcama/gelir/transfer/ödeme) tamamen geri almak istediğinize emin misiniz? (Tüm hesaplar, cüzdan ve sabit kural durumları otomatik onarılacaktır.)")) return;
+            const btn = document.querySelector('.undo-btn');
+            const orig = btn.innerHTML;
+            
+            btn.classList.add('premium-loader'); vibe();
+            
+            try {
+                const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: "geri_al" }) });
+                const result = await res.json();
+                
+                btn.classList.remove('premium-loader');
+                
+                if(result.status === "success") {
+                    btn.innerHTML = "İşlem Geri Alındı ✓";
+                    btn.style.color = "var(--emerald)";
+                    btn.style.borderColor = "var(--emerald)";
+                    btn.style.background = "rgba(16, 185, 129, 0.1)";
+                    setTimeout(async () => {
+                        await verileriCek();
+                        btn.innerHTML = orig;
+                        btn.style = "";
+                    }, 1500);
+                } else {
+                    alert(result.message);
+                }
+            } catch(e) {
+                alert("Bağlantı hatası: " + e.message);
+                btn.classList.remove('premium-loader');
             }
-        } catch(e) {
-            alert("Bağlantı hatası: " + e.message);
-            btn.innerHTML = orig;
         }
-    }
 
     function refreshCustomSelect(selectElement) {
         if(!selectElement) return;
