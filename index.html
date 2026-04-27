@@ -448,22 +448,29 @@
             </div>
 
             <div class="card accordion" id="acc-nakit-akisi">
-    <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
-        <h3 style="text-align: center; width: 100%; color: var(--emerald);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right:4px;"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> Aylık Net Nakit Akışı</h3>
-        <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-    </div>
-    <div class="accordion-content">
-        <div id="nakit-akisi-listesi-container">
-            </div>
-
-        <div style="background: rgba(16, 185, 129, 0.1); padding: 16px 14px; border-radius: 12px; display:flex; justify-content:space-between; align-items:center; margin-top: 15px; border: 1px dashed rgba(16, 185, 129, 0.3);" id="kutu-net-nakit">
-            <span style="font-size:14px; color:#fff; font-weight:700;">Net Kalan (Cepteki Para)</span>
-            <span id="val-net-nakit" class="tabular-nums" style="font-size:19px; font-weight:800; color:var(--emerald);">₺0,00</span>
-<div class="trend-box tabular-nums sensitive-data" id="trend-net-kalan" style="font-size:11px; margin-left: 10px; display:inline-block;"></div>
-                    </div>
-                  </div>
+                <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
+                    <h3 style="text-align: center; width: 100%; color: var(--emerald);">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right:4px;">
+                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                        </svg> 
+                        Aylık Net Nakit Akışı
+                    </h3>
+                    <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
                 </div>
-            </div>
+                <div class="accordion-content">
+                    <div id="nakit-akisi-listesi-container"></div>
+                </div>
+                
+                <div style="background: rgba(16, 185, 129, 0.1); padding: 16px 14px; border-radius: 12px; display:flex; justify-content:space-between; align-items:center; margin: 10px 15px 15px 15px; border: 1px dashed rgba(16, 185, 129, 0.3);" id="kutu-net-nakit">
+                    <span style="font-size:14px; color:#fff; font-weight:700;">Net Kalan (Cepteki Para)</span>
+                    <div style="text-align: right;">
+                        <span id="val-net-nakit" class="tabular-nums" style="font-size:19px; font-weight:800; color:var(--emerald);">₺0,00</span>
+                        <div class="trend-box tabular-nums sensitive-data" id="trend-net-kalan" style="font-size:11px; margin-left: 10px; display:block;"></div>
+                    </div>
+                </div>
+            </div> 
 
             <div class="card accordion" id="acc-yaklasan-ozet">
                 <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
