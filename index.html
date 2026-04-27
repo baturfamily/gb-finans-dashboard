@@ -2987,23 +2987,48 @@ window.kartlarDetayli.forEach(k => {
             safOrtalamaEl.innerHTML = formatTL(gercekGunlukOrtalama) + `<span style="font-size:11px; opacity:0.5; font-weight:500; margin-left:4px;">/gün</span>`;
         }
 
-        // 4. Liste Render (Uygulamanın evrensel liste formatı)
+        // 4. Liste Render (Uygulamanın evrensel liste formatı - YENİ TASARIM)
         const v14_container = document.getElementById('saf-gider-listesi');
         if (v14_container) {
             v14_container.innerHTML = "";
             if (v14_safListe.length === 0) {
                 v14_container.innerHTML = `<div style="text-align:center; padding:20px 0; color:var(--text-muted); font-size:13px;">Harcama kaydı bulunamadı.</div>`;
             } else {
+                // Oto-Log listesini çekiyoruz ki burada da otomatik işlemlere mavi rozet basabilelim
+                let otoLogListesi = (data.dinamikKategoriler && data.dinamikKategoriler.otoLog) ? data.dinamikKategoriler.otoLog : [];
+
                 v14_safListe.forEach(islem => {
-                    let kategoriMetni = (islem.kategori && islem.kategori !== "-") ? `${islem.kategori} - ` : "";
+                    let hamKalem = islem.kalem || "İsimsiz İşlem";
+                    let isOtoLog = islem.kategori && islem.kategori !== "-" && otoLogListesi.includes(islem.kategori);
+                    
+                    // --- SAĞ ÜSTTEKİ ETİKET AYARI ---
+                    let badgeText = isOtoLog ? islem.kategori : (islem.tur || 'Gider');
+                    let badgeStyle = "";
+                    let badgeClass = "";
+                    let robotIcon = isOtoLog ? '<i class="fas fa-robot" style="font-size:9px; margin-right:3px;"></i>' : '';
+
+                    if (isOtoLog) {
+                        // Otomatik işlemler için mavi rozet tasarımı
+                        badgeStyle = "background: rgba(59, 130, 246, 0.15); color: var(--blue); border: 1px solid rgba(59, 130, 246, 0.2);";
+                    } else {
+                        // Normal işlemler için standart kırmızı Gider rozeti
+                        badgeClass = 'pill-red';
+                    }
+
+                    // Sol taraf yazı içeriği (Temizleme işlemi: Oto ise sadece isim, Manuel ise Kategori + İsim)
+                    let kalemGosterim = isOtoLog ? hamKalem : ((islem.kategori && islem.kategori !== "-" && !hamKalem.startsWith(islem.kategori)) ? islem.kategori + " - " + hamKalem : hamKalem);
+
                     v14_container.innerHTML += `
-                        <div class="t-row" style="align-items: flex-start; padding: 14px 0; border-bottom: 1px dashed rgba(255,255,255,0.05);">
-                            <div class="t-details" style="flex: 1; min-width: 0;">
-                                <div style="font-size: 13.5px; font-weight: 600; color: #e2e8f0; line-height: 1.3;">${(islem.kategori && islem.kategori !== "-" && !islem.kalem.startsWith(islem.kategori)) ? islem.kategori + " - " : ""}${islem.kalem}</div>
-                                <div style="font-size: 10px; margin-top: 4px; color: var(--text-muted);">${islem.tarih} • ${islem.odeme}</div>
+                        <div class="t-row" style="align-items: center; padding: 12px 10px; border-bottom: 1px solid rgba(255,255,255,0.03);">
+                            <div class="t-details" style="flex: 1; min-width: 0; padding-right: 10px;">
+                                <div style="font-size: 13px; font-weight: 600; line-height: 1.3; color: #fff;">${kalemGosterim}</div>
+                                <div style="font-size: 10px; color: var(--text-muted); margin-top: 4px; opacity: 0.7;">${islem.tarih} • ${islem.odeme}</div>
                             </div>
-                            <div class="t-amt text-red" style="text-align: right; flex-shrink: 0; margin-left: 10px;">
-                                <div style="font-size: 15px; font-weight: 700;">-${formatTL(islem.tutar)}</div>
+                            <div class="t-amt text-red" style="display: flex; flex-direction: column; align-items: flex-end; justify-content: center; flex-shrink: 0; gap: 4px;">
+                                <div class="pill-badge ${badgeClass}" style="font-size: 9px; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; font-weight: 700; ${badgeStyle}">
+                                    ${robotIcon}${badgeText}
+                                </div>
+                                <div style="font-size: 14px; font-weight: 800; letter-spacing: -0.3px;">-${formatTL(islem.tutar)}</div>
                             </div>
                         </div>`;
                 });
