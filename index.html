@@ -448,20 +448,31 @@
                     </div>
 
                     <div id="varlik-dagilimi-alani" class="sensitive-data" style="margin-top: 20px; width: 100%; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px; text-align: left;">
-                        <div style="font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:12px; text-transform:uppercase; letter-spacing:0.5px;">Varlık Dağılımı</div>
-                        <div id="varlik-listesi"></div>
+                        <div class="sub-accordion-header" onclick="toggleSubAccordion('varlik')" style="padding: 0 0 12px 0; border: none;">
+                            <div style="font-size:12px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;">Varlık Dağılımı</div>
+                            <svg id="sub-icon-varlik" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted); transition: transform 0.3s ease;"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        </div>
+                        <div class="sub-accordion-content" id="sub-content-varlik">
+                            <div id="varlik-listesi"></div>
+                        </div>
                     </div>
-                    <div id="borc-dagilimi-alani" class="sensitive-data" style="margin-top: 20px; width: 100%; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px; text-align: left;">
-                        <div style="font-size:12px; font-weight:600; color:var(--rose); margin-bottom:12px; text-transform:uppercase; letter-spacing:0.5px;">Borç Dağılımı</div>
-                        <div id="borc-listesi"></div>
+                    
+                    <div id="borc-dagilimi-alani" class="sensitive-data" style="margin-top: 10px; width: 100%; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px; text-align: left;">
+                        <div class="sub-accordion-header" onclick="toggleSubAccordion('borc')" style="padding: 0 0 12px 0; border: none;">
+                            <div style="font-size:12px; font-weight:600; color:var(--rose); text-transform:uppercase; letter-spacing:0.5px;">Borç Dağılımı</div>
+                            <svg id="sub-icon-borc" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted); transition: transform 0.3s ease;"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        </div>
+                        <div class="sub-accordion-content" id="sub-content-borc">
+                            <div id="borc-listesi"></div>
+                        </div>
                     </div>
-                </div>
             </div>
 
   <div class="card accordion" id="acc-nakit-akisi">
-    <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
-        <h3 style="text-align: center; width: 100%; color: var(--emerald);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right:4px;"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> Aylık Net Nakit Akışı</h3>
-        <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    <div class="accordion-header" onclick="toggleAccordion(this.parentElement)" style="justify-content: flex-start;">
+        <h3 style="color: var(--emerald); margin-right: auto; flex: 1; text-align: left;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right:4px;"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> Aylık Net Nakit Akışı</h3>
+        <span id="summary-net-nakit" class="tabular-nums" style="font-size: 15px; font-weight: 700; margin-right: 12px;"></span>
+        <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><polyline points="6 9 12 15 18 9"></polyline></svg>
     </div>
     <div class="accordion-content">
         <div id="nakit-akisi-listesi-container">
@@ -2905,40 +2916,64 @@ window.kartlarDetayli.forEach(k => {
         const islemListesi = document.getElementById('islem-listesi');
         if (islemListesi) {
             islemListesi.innerHTML = "";
+            let otoLogListesi = (data.dinamikKategoriler && data.dinamikKategoriler.otoLog) ? data.dinamikKategoriler.otoLog : [];
+            
             data.sonIslemler.forEach(islem => {
                 let hamKalem = islem.kalem || "İsimsiz İşlem";
-                let kategoriMetni = (islem.kategori && islem.kategori !== "-") ? `${islem.kategori} - ` : "";
-                
-                // Gelir ise Hedef (H sütunu), Gider ise Ödeme (G sütunu)
+                let isOtoLog = islem.kategori && islem.kategori !== "-" && otoLogListesi.includes(islem.kategori);
                 let altSatirBilgi = islem.tur === 'Gelir' ? (islem.hedef || islem.odeme) : islem.odeme;
-
-                // --- AKILLI YIĞINLAMA (STACKING) MANTIĞI ---
-                let kalemHtml = `<div style="font-size: 13px; font-weight: 600; line-height: 1.2;">${(islem.kategori && islem.kategori !== "-" && !hamKalem.startsWith(islem.kategori)) ? islem.kategori + " - " : ""}${hamKalem}</div>`;
-                
-                if ((islem.tur === 'Transfer' || islem.tur === 'Kart Ödemesi' || islem.tur === 'Borç Ödemesi') && islem.hedef) {
-                    kalemHtml = `
-                        <div style="font-size: 13px; font-weight: 600; line-height: 1.2;">${(islem.kategori && islem.kategori !== "-" && !hamKalem.startsWith(islem.kategori)) ? islem.kategori + " - " : ""}${hamKalem}</div>
-                        <div style="font-size: 10px; color: var(--text-muted); font-weight: 400; margin-top: 3px; display: flex; align-items: center;">
-                            ${islem.odeme} <span style="margin: 0 4px; opacity: 0.5;">➔</span> ${islem.hedef}
-                        </div>`;
-                    altSatirBilgi = islem.odeme;
-                }
-
                 let badgeClass = islem.tur === 'Gelir' ? 'pill-green' : (islem.tur === 'Transfer' ? 'pill-gray' : 'pill-red');
                 let amtClass = islem.tur === 'Gelir' ? 'text-green' : (islem.tur === 'Transfer' ? 'text-gray' : 'text-red');
                 let sign = islem.tur === 'Gelir' ? '+' : (islem.tur === 'Transfer' ? '' : '-');
-                
-                islemListesi.innerHTML += `
-                    <div class="t-row" style="align-items: flex-start; padding: 12px 10px;">
-                        <div class="t-details" style="flex: 1; min-width: 0;">
-                            <div class="t-name">${kalemHtml}</div>
-                            <div class="t-meta" style="font-size: 10px; margin-top: 4px; opacity: 0.6;">${islem.tarih} • ${altSatirBilgi}</div>
-                        </div>
-                        <div class="t-amt ${amtClass}" style="text-align: right; flex-shrink: 0; margin-left: 10px;">
-                            <div style="font-size: 9px; margin-bottom: 2px; display: inline-block; vertical-align: middle;" class="pill-badge ${badgeClass}">${islem.tur}</div>
-                            <div style="font-size: 14px; font-weight: 800; margin-top: 2px;">${sign}${formatTL(islem.tutar)}</div>
-                        </div>
-                    </div>`;
+
+                if (isOtoLog) {
+                    // YENİ: Sadece Oto-Log Listesindekiler için 3 Satırlı Etiketli (Timeline) Yapı
+                    let rotaMetni = "";
+                    if ((islem.tur === 'Transfer' || islem.tur === 'Kart Ödemesi' || islem.tur === 'Borç Ödemesi') && islem.hedef) {
+                        rotaMetni = `${islem.odeme} ➔ ${islem.hedef}`;
+                    } else {
+                        rotaMetni = altSatirBilgi;
+                    }
+                    
+                    islemListesi.innerHTML += `
+                        <div class="t-row" style="align-items: flex-start; padding: 14px 10px;">
+                            <div class="t-details" style="flex: 1; min-width: 0;">
+                                <div style="display: inline-flex; align-items: center; background: rgba(59, 130, 246, 0.15); color: var(--blue); padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; margin-bottom: 8px; border: 1px solid rgba(59, 130, 246, 0.2);">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg> 
+                                    ${islem.kategori} (Otomatik)
+                                </div>
+                                <div style="font-size: 14px; font-weight: 700; color: #fff; line-height: 1.3;">${hamKalem}</div>
+                                <div style="font-size: 11px; color: var(--text-muted); font-weight: 500; margin-top: 5px;">${islem.tarih} • ${rotaMetni}</div>
+                            </div>
+                            <div class="t-amt ${amtClass}" style="text-align: right; flex-shrink: 0; margin-left: 10px;">
+                                <div style="font-size: 16px; font-weight: 800; margin-top: 2px;">${sign}${formatTL(islem.tutar)}</div>
+                            </div>
+                        </div>`;
+                } else {
+                    // ESKİ: Standart Harcamalar için 2 Satırlı Orijinal Yapı
+                    let kalemHtml = `<div style="font-size: 13px; font-weight: 600; line-height: 1.2;">${(islem.kategori && islem.kategori !== "-" && !hamKalem.startsWith(islem.kategori)) ? islem.kategori + " - " : ""}${hamKalem}</div>`;
+                    
+                    if ((islem.tur === 'Transfer' || islem.tur === 'Kart Ödemesi' || islem.tur === 'Borç Ödemesi') && islem.hedef) {
+                        kalemHtml = `
+                            <div style="font-size: 13px; font-weight: 600; line-height: 1.2;">${(islem.kategori && islem.kategori !== "-" && !hamKalem.startsWith(islem.kategori)) ? islem.kategori + " - " : ""}${hamKalem}</div>
+                            <div style="font-size: 10px; color: var(--text-muted); font-weight: 400; margin-top: 3px; display: flex; align-items: center;">
+                                ${islem.odeme} <span style="margin: 0 4px; opacity: 0.5;">➔</span> ${islem.hedef}
+                            </div>`;
+                        altSatirBilgi = islem.odeme;
+                    }
+                    
+                    islemListesi.innerHTML += `
+                        <div class="t-row" style="align-items: flex-start; padding: 12px 10px;">
+                            <div class="t-details" style="flex: 1; min-width: 0;">
+                                <div class="t-name">${kalemHtml}</div>
+                                <div class="t-meta" style="font-size: 10px; margin-top: 4px; opacity: 0.6;">${islem.tarih} • ${altSatirBilgi}</div>
+                            </div>
+                            <div class="t-amt ${amtClass}" style="text-align: right; flex-shrink: 0; margin-left: 10px;">
+                                <div style="font-size: 9px; margin-bottom: 2px; display: inline-block; vertical-align: middle;" class="pill-badge ${badgeClass}">${islem.tur}</div>
+                                <div style="font-size: 14px; font-weight: 800; margin-top: 2px;">${sign}${formatTL(islem.tutar)}</div>
+                            </div>
+                        </div>`;
+                }
             });
         }
 
@@ -3111,6 +3146,12 @@ window.kartlarDetayli.forEach(k => {
         
         // Artık uzun PWA hesaplamasını siliyoruz, direkt Backend'in formülünü çekiyoruz
         var netAkis = data.backendNetNakit || 0;
+
+        const sumNetNakit = document.getElementById('summary-net-nakit');
+        if (sumNetNakit) {
+            sumNetNakit.innerHTML = formatTL(netAkis);
+            sumNetNakit.style.color = netAkis < 0 ? 'var(--rose)' : 'var(--emerald)';
+        }
 
         animateValue('val-buay-borc-odeme', buAyEkstraCikislar, 1000);
         window.currentStats.safHarcama = gercekSafHarcama || 0;
