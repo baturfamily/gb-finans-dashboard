@@ -447,6 +447,34 @@
                 </div>
             </div>
 
+            <div class="card">
+                <div class="sub-accordion-header" onclick="toggleSubAccordion('varlik-detay')" style="padding: 5px 0; border: none;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+                        <div>
+                            <h3 style="margin-bottom: 0; color: var(--text-muted);"><svg id="sub-icon-varlik-detay" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px; transition: 0.3s;"><polyline points="9 18 15 12 9 6"></polyline></svg> Varlık Dağılımı</h3>
+                        </div>
+                        <div id="val-kasa" class="text-green tabular-nums sensitive-data" style="font-weight:800; font-size:16px;">₺0,00</div>
+                    </div>
+                </div>
+                <div class="sub-accordion-content" id="sub-content-varlik-detay">
+                    <div id="varlik-listesi" style="margin-top:15px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px;"></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="sub-accordion-header" onclick="toggleSubAccordion('borc-detay')" style="padding: 5px 0; border: none;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+                        <div>
+                            <h3 style="margin-bottom: 0; color: var(--rose);"><svg id="sub-icon-borc-detay" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px; transition: 0.3s;"><polyline points="9 18 15 12 9 6"></polyline></svg> Borç Dağılımı</h3>
+                        </div>
+                        <div id="val-borc" class="text-red tabular-nums sensitive-data" style="font-weight:800; font-size:16px;">₺0,00</div>
+                    </div>
+                </div>
+                <div class="sub-accordion-content" id="sub-content-borc-detay">
+                    <div id="borc-listesi" style="margin-top:15px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px;"></div>
+                </div>
+            </div>
+
             <div class="card accordion" id="acc-nakit-akisi">
                 <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
                     <h3 style="text-align: center; width: 100%; color: var(--emerald);">
@@ -482,33 +510,6 @@
                 </div>
             </div>
 
-            <div class="card">
-                <div class="sub-accordion-header" onclick="toggleSubAccordion('varlik-detay')" style="padding: 5px 0; border: none;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
-                        <div>
-                            <h3 style="margin-bottom: 0; color: var(--text-muted);"><svg id="sub-icon-varlik-detay" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px; transition: 0.3s;"><polyline points="9 18 15 12 9 6"></polyline></svg> Varlık Dağılımı</h3>
-                        </div>
-                        <div id="val-kasa" class="text-green tabular-nums sensitive-data" style="font-weight:800; font-size:16px;">₺0,00</div>
-                    </div>
-                </div>
-                <div class="sub-accordion-content" id="sub-content-varlik-detay">
-                    <div id="varlik-listesi" style="margin-top:15px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px;"></div>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="sub-accordion-header" onclick="toggleSubAccordion('borc-detay')" style="padding: 5px 0; border: none;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
-                        <div>
-                            <h3 style="margin-bottom: 0; color: var(--rose);"><svg id="sub-icon-borc-detay" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px; transition: 0.3s;"><polyline points="9 18 15 12 9 6"></polyline></svg> Borç Dağılımı</h3>
-                        </div>
-                        <div id="val-borc" class="text-red tabular-nums sensitive-data" style="font-weight:800; font-size:16px;">₺0,00</div>
-                    </div>
-                </div>
-                <div class="sub-accordion-content" id="sub-content-borc-detay">
-                    <div id="borc-listesi" style="margin-top:15px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px;"></div>
-                </div>
-            </div>
 
         </section>
 
