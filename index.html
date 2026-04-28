@@ -1986,7 +1986,7 @@ function submitVarlikSil() {
 
         async function openSectionLive(ev, sectionId, title) {
             const btn = ev.currentTarget; const orig = btn.innerHTML;
-            btn.innerHTML = `<span class="spinner"></span>...`; vibe();
+            btn.innerHTML = `<div class="premium-loader"><span></span><span></span><span></span></div>`; vibe();
             await verileriCek();
             btn.innerHTML = orig; showSection(sectionId, title);
         }
@@ -2083,7 +2083,7 @@ document.getElementById('bo-isim-yeni').style.display = 'none'; document.getElem
         async function apiIstekAt(payload, buttonId) {
             if(document.activeElement) document.activeElement.blur();
             const btn = document.getElementById(buttonId); const originalText = btn.innerHTML;
-            btn.innerHTML = `<span class="spinner"></span> İşleniyor...`; btn.disabled = true; vibe();
+            btn.innerHTML = `<div class="premium-loader"><span></span><span></span><span></span></div>`; btn.disabled = true; vibe();
             try {
                 await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(payload) });
                 setTimeout(async () => {
@@ -2102,7 +2102,7 @@ document.getElementById('bo-isim-yeni').style.display = 'none'; document.getElem
 
         async function loadSabitlerAndShow(sectionId, selectId, title) {
             const ev = event.currentTarget; const orig = ev.innerHTML;
-            ev.innerHTML = `<span class="spinner"></span>...`; vibe();
+            ev.innerHTML = `<div class="premium-loader"><span></span><span></span><span></span></div>`; vibe();
             try {
                 const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: "sabitleri_getir" }) });
                 const result = await res.json();
@@ -2689,7 +2689,7 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
         if(!confirm("Son işlemi (harcama/gelir/transfer/ödeme) tamamen geri almak istediğinize emin misiniz? (Tüm hesaplar, cüzdan ve sabit kural durumları otomatik onarılacaktır.)")) return;
         const btn = document.querySelector('.undo-btn');
         const orig = btn.innerHTML;
-        btn.innerHTML = `<span class="spinner" style="border-left-color: var(--rose);"></span> Geri alınıyor...`;
+        btn.innerHTML = `<div class="premium-loader"><span style="background-color: var(--rose);"></span><span style="background-color: var(--rose);"></span><span style="background-color: var(--rose);"></span></div>`;
         vibe();
         try {
             const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: "geri_al" }) });
