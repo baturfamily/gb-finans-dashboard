@@ -3400,39 +3400,40 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
 
     window.onload = () => { verileriCek(); };
 
-// --- MİMAR DOKUNUŞU: CANLI PREMIUM LİSTE AVCISI (MUTATION OBSERVER) ---
-    // PWA içinde nerede, ne zaman bir <select> kutusu oluşursa veya değişirse, 
-    // onu saniyesinde yakalar ve premium siyah kılıfı giydirir.
-    document.addEventListener("DOMContentLoaded", function() {
-        const applyPremium = () => {
+// --- MİMAR DOKUNUŞU: KESİN VE ENGEL TANIMAZ PREMIUM MAKYAJ ---
+    // Hiçbir yüklenme event'ini beklemez, okunduğu an sayfadaki tüm listeleri ezer geçer.
+    (function() {
+        const evrenselMakyaj = () => {
             document.querySelectorAll('select').forEach(sel => {
-                // Eğer kutu henüz premium kılıfa (wrapper'a) girmemişse hemen giydir
+                // Eğer liste henüz siyah premium kılıfa (wrapper'a) girmemişse anında giydir
                 if (!sel.closest('.custom-select-wrapper') && typeof refreshCustomSelect === 'function') {
                     refreshCustomSelect(sel);
                 }
             });
         };
 
-        // 1. Sayfa ilk açıldığında mevcut olanları giydir
-        setTimeout(applyPremium, 150);
+        // 1. Kural: Hiçbir şeyi bekleme, kodu okuduğun an çalış! (PWA hız engelini aşar)
+        evrenselMakyaj();
+        
+        // İşletim sistemi takılmalarına karşı 150ms sonra tekrar kontrol et
+        setTimeout(evrenselMakyaj, 150);
 
-        // 2. Gelecekte eklenecek veya değişecek her kutuyu izle (Sihir burada)
+        // 2. Kural: Gelecekte eklenecek veya butona basınca değişecek listeleri avla
         const observer = new MutationObserver((mutations) => {
-            let listelerDegistiMi = false;
+            let degisimVar = false;
             mutations.forEach(m => {
-                // Ekrana yeni bir HTML elementi eklendiğinde tetiklenir
-                if (m.addedNodes.length > 0) listelerDegistiMi = true;
+                if (m.addedNodes.length > 0) degisimVar = true;
             });
             
-            // Eğer sen sekmeye tıkladığında liste yeniden oluştuysa, anında makyajla!
-            if (listelerDegistiMi) {
-                applyPremium();
+            // Eğer ekranda bir şeyler değiştiyse anında makyaj motorunu tekrar çalıştır
+            if (degisimVar) {
+                evrenselMakyaj();
             }
         });
 
-        // Tüm PWA gövdesini canlı olarak izlemeye başla (0 Performans Kaybı)
+        // Tüm PWA gövdesini saniye saniye izle (0 Performans Kaybı ile)
         observer.observe(document.body, { childList: true, subtree: true });
-    });
+    })();
     </script>
 </body>
 </html>
