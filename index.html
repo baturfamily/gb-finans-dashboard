@@ -1334,7 +1334,7 @@
 
                 <div class="form-group">
                     <label>Başlangıç Bakiyesi (₺)</label>
-                    <input type="text" inputmode="decimal" id="yh-bakiye" class="form-control" placeholder="Eksi bakiye için - kullanın" oninput="tutarFormatla(this)">
+                    <input type="text" inputmode="text" id="yh-bakiye" class="form-control" placeholder="Eksi bakiye için - kullanın" oninput="tutarFormatla(this)">
                 </div>
 
                 <div class="form-group">
@@ -2788,28 +2788,32 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
 
     // --- YENİ EKLENEN: CANLI TUTAR FORMATLAYICI ---
     function tutarFormatla(input) {
-        let cursorPosition = input.selectionStart;
-        let originalLength = input.value.length;
-        let value = input.value;
+    let cursorPosition = input.selectionStart;
+    let originalLength = input.value.length;
+    let value = input.value;
 
-        // Sadece rakam ve virgül kalsın, diğer karakterleri temizle
-        value = value.replace(/[^0-9,]/g, '');
+    // Eksi işaretini koru (Eğer en baştaysa)
+    let isNegative = value.startsWith('-');
 
-        // Birden fazla virgül varsa sadece ilkini koru
-        let parts = value.split(',');
-        if (parts.length > 2) value = parts[0] + ',' + parts.slice(1).join('');
+    // Rakam ve virgül dışındaki her şeyi (eksi dahil) temizle
+    value = value.replace(/[^0-9,]/g, '');
 
-        // Sadece virgülden önceki (tam sayı) kısmı noktalarla ayır (1.000.000)
-        parts = value.split(',');
-        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    // Birden fazla virgül varsa sadece ilkini koru
+    let parts = value.split(',');
+    if (parts.length > 2) value = parts[0] + ',' + parts.slice(1).join('');
 
-        input.value = parts.join(',');
+    // Tam sayı kısmını noktalarla ayır
+    parts = value.split(',');
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
-        // Kullanıcı yazarken imlecin hep en sona atlamasını engellemek için:
-        let newLength = input.value.length;
-        cursorPosition = cursorPosition + (newLength - originalLength);
-        input.setSelectionRange(cursorPosition, cursorPosition);
-    }
+    // Eğer sayı eksiyse, başına eksi işaretini geri koy
+    input.value = (isNegative ? '-' : '') + parts.join(',');
+
+    // İmleç pozisyonunu koru
+    let newLength = input.value.length;
+    cursorPosition = cursorPosition + (newLength - originalLength);
+    input.setSelectionRange(cursorPosition, cursorPosition);
+}
 
     // =========================================================================
     // 1. BÖLÜM: KAPORTA (SADECE EKRANI ÇİZEN FONKSİYON)
