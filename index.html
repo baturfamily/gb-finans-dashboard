@@ -1163,12 +1163,12 @@
                     <div class="form-group"><label>Ödenen Toplam Tutar (₺)</label><input type="text" inputmode="decimal" id="bo-tutar" class="form-control" placeholder="Örn: 500" oninput="tutarFormatla(this); hesaplaKalanParcaliBorc()"></div>
                     
                     <div class="form-group">
-                        <label>Ödeme Şekli</label>
-                        <select id="bo-odeme-sekli" class="form-control" onchange="toggleParcaliBorcOdeme()">
-                            <option value="tek">Tek Hesaptan Öde</option>
-                            <option value="parcali">Parça Parça (Farklı Hesaplardan) Öde</option>
-                        </select>
-                    </div>
+    <label>Ödeme Şekli</label>
+    <select id="bo-odeme-sekli" class="form-control" onchange="toggleParcaliBorcOdeme()">
+        <option value="" disabled selected>Seçiniz...</option> <option value="tek">Tek Hesaptan Öde</option>
+        <option value="parcali">Parça Parça (Farklı Hesaplardan) Öde</option>
+    </select>
+</div>
 
                     <div id="bo-tek-hesap-alani">
                         <div class="form-group"><label>Paranın Çıktığı Yer</label><select id="bo-yontem" class="form-control"></select></div>
@@ -1183,7 +1183,10 @@
                         <button onclick="addParcaBorc()" style="background: rgba(255,255,255,0.05); border: 1px dashed rgba(255,255,255,0.2); color: #cbd5e1; width: 100%; padding: 12px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 10px; transition: 0.2s;">+ Yeni Hesap / Parça Ekle</button>
                     </div>
 
-                    <div class="form-group"><label>Tarih</label><input type="date" id="bo-tarih" class="form-control"></div>
+                    <div class="form-group">
+    <label>Tarih</label>
+    <input type="text" id="bo-tarih" class="form-control" placeholder="Tarih Girmek İçin Dokun" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'">
+</div>
 
                     <button class="btn-submit" id="btn-submit-borc-ode" onclick="submitBorcOde()">Borcu Öde</button>
                 </div>
