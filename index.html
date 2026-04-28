@@ -3399,6 +3399,28 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
     // ----------------------------------------------
 
     window.onload = () => { verileriCek(); };
+
+        // --- MİMAR DOKUNUŞU: NOKTA ATIŞI PREMIUM LİSTELER (0 Performans Kaybı) ---
+    // Sadece HTML içinde sabit yazılmış olan belirli listeleri hedef alır.
+    document.addEventListener("DOMContentLoaded", function() {
+        setTimeout(() => {
+            const sabitListeler = [
+                'yh-tur',           // Yeni Hesap Ekle -> Tür (Banka/Kredi Kartı)
+                'bo-odeme-sekli',   // Mevcut Borcu Öde -> Ödeme Şekli
+                'kbo-odeme-sekli',  // Kart Borcu Öde -> Ödeme Şekli
+                'so-odeme-sekli',   // Bekleyen Onayla -> Ödeme Şekli
+                'sg-yon'            // Sabit Kural Ekle -> İşlem Yönü
+            ];
+
+            sabitListeler.forEach(id => {
+                const el = document.getElementById(id);
+                // Eğer kutu o an ekranda varsa (bulunduysa) tasarım giydir
+                if (el && typeof refreshCustomSelect === 'function') {
+                    refreshCustomSelect(el);
+                }
+            });
+        }, 150);
+    });
     </script>
 </body>
 </html>
