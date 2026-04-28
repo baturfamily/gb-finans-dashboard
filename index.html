@@ -3400,21 +3400,38 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
 
     window.onload = () => { verileriCek(); };
 
-// --- MİMAR DOKUNUŞU: EVRENSEL PREMIUM LİSTELER (Ultra Performanslı) ---
+// --- MİMAR DOKUNUŞU: CANLI PREMIUM LİSTE AVCISI (MUTATION OBSERVER) ---
+    // PWA içinde nerede, ne zaman bir <select> kutusu oluşursa veya değişirse, 
+    // onu saniyesinde yakalar ve premium siyah kılıfı giydirir.
     document.addEventListener("DOMContentLoaded", function() {
-        // PWA'nın kendi elementlerini çizmesi için minik bir nefes (150ms)
-        setTimeout(() => {
-            // IŞIK HIZI ARAMA: Tarayıcı motoru sadece 'select' etiketlerini şıp diye bulur
-            const tumListeler = document.getElementsByTagName('select');
-            
-            // Bulunan tüm listeleri tek tek premium makyajdan geçirir
-            for (let i = 0; i < tumListeler.length; i++) {
-                // Eğer liste varsa ve premium fonksiyonumuz yüklüyse
-                if (tumListeler[i] && typeof refreshCustomSelect === 'function') {
-                    refreshCustomSelect(tumListeler[i]);
+        const applyPremium = () => {
+            document.querySelectorAll('select').forEach(sel => {
+                // Eğer kutu henüz premium kılıfa (wrapper'a) girmemişse hemen giydir
+                if (!sel.closest('.custom-select-wrapper') && typeof refreshCustomSelect === 'function') {
+                    refreshCustomSelect(sel);
                 }
+            });
+        };
+
+        // 1. Sayfa ilk açıldığında mevcut olanları giydir
+        setTimeout(applyPremium, 150);
+
+        // 2. Gelecekte eklenecek veya değişecek her kutuyu izle (Sihir burada)
+        const observer = new MutationObserver((mutations) => {
+            let listelerDegistiMi = false;
+            mutations.forEach(m => {
+                // Ekrana yeni bir HTML elementi eklendiğinde tetiklenir
+                if (m.addedNodes.length > 0) listelerDegistiMi = true;
+            });
+            
+            // Eğer sen sekmeye tıkladığında liste yeniden oluştuysa, anında makyajla!
+            if (listelerDegistiMi) {
+                applyPremium();
             }
-        }, 150);
+        });
+
+        // Tüm PWA gövdesini canlı olarak izlemeye başla (0 Performans Kaybı)
+        observer.observe(document.body, { childList: true, subtree: true });
     });
     </script>
 </body>
