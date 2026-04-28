@@ -2091,24 +2091,55 @@ document.getElementById('bo-isim-yeni').style.display = 'none'; document.getElem
         }
 
         async function apiIstekAt(payload, buttonId) {
-            if(document.activeElement) document.activeElement.blur();
-            const btn = document.getElementById(buttonId); const originalText = btn.innerHTML;
-            btn.innerHTML = `<div class="premium-loader"><span></span><span></span><span></span></div>`; btn.disabled = true; vibe();
-            try {
-                await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(payload) });
-                setTimeout(async () => {
-                    vibe(); btn.innerHTML = `Başarılı ✓`; btn.style.background = "var(--emerald)";
-                    const fabBtn = document.getElementById('fab-btn');
-                    fabBtn.innerHTML = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
-                    fabBtn.style.background = "var(--emerald)";
-                    if(fabBtn.querySelector('svg')) fabBtn.querySelector('svg').style.transform = "rotate(0deg)";
-                    await verileriCek();
-                }, 1500);
-            } catch (error) {
-                alert("Bağlantı hatası: " + error);
-                btn.innerHTML = originalText; btn.disabled = false;
-            }
+    if(document.activeElement) document.activeElement.blur();
+
+    // --- EVRENSEL TEMİZLİK KATMANI (ARCHITECT) ---
+    // Gönderilen verileri tek tek kontrol et
+    for (let key in payload) {
+        const el = document.getElementById(key);
+        // Eğer bu veri bir inputtan geliyorsa ve para formatındaysa noktaları sil
+        if (el && el.dataset.isCurrency === "true") {
+            payload[key] = payload[key].toString().split('.').join('');
         }
+    }
+
+    const btn = document.getElementById(buttonId); 
+    const originalText = btn.innerHTML;
+    
+    // Premium Loader Başlat
+    btn.innerHTML = `<div class="premium-loader"><span></span><span></span><span></span></div>`; 
+    btn.disabled = true; 
+    vibe();
+
+    try {
+        // Temizlenmiş (noktasız) veriyi gönderiyoruz
+        await fetch(API_URL, { 
+            method: 'POST', 
+            mode: 'no-cors', 
+            headers: { 'Content-Type': 'text/plain' }, 
+            body: JSON.stringify(payload) 
+        });
+
+        setTimeout(async () => {
+            vibe(); 
+            btn.innerHTML = `Başarılı ✓`; 
+            btn.style.background = "var(--emerald)";
+            
+            const fabBtn = document.getElementById('fab-btn');
+            fabBtn.innerHTML = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+            fabBtn.style.background = "var(--emerald)";
+            
+            if(fabBtn.querySelector('svg')) fabBtn.querySelector('svg').style.transform = "rotate(0deg)";
+            
+            await verileriCek();
+        }, 1500);
+
+    } catch (error) {
+        alert("Bağlantı hatası: " + error);
+        btn.innerHTML = originalText; 
+        btn.disabled = false;
+    }
+}
 
         async function loadSabitlerAndShow(sectionId, selectId, title) {
             const ev = event.currentTarget; const orig = ev.innerHTML;
@@ -2786,34 +2817,31 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
         document.querySelectorAll('.custom-select-wrapper').forEach(w => w.classList.remove('open'));
     });
 
-    // --- YENİ EKLENEN: CANLI TUTAR FORMATLAYICI ---
+    // --- YENİLENMİŞ: EVRENSEL TUTAR FORMATLAYICI ---
     function tutarFormatla(input) {
-    let cursorPosition = input.selectionStart;
-    let originalLength = input.value.length;
-    let value = input.value;
+        let cursorPosition = input.selectionStart;
+        let originalLength = input.value.length;
+        let value = input.value;
 
-    // Eksi işaretini koru (Eğer en baştaysa)
-    let isNegative = value.startsWith('-');
+        let isNegative = value.startsWith('-');
+        value = value.replace(/[^0-9,]/g, '');
 
-    // Rakam ve virgül dışındaki her şeyi (eksi dahil) temizle
-    value = value.replace(/[^0-9,]/g, '');
+        let parts = value.split(',');
+        if (parts.length > 2) value = parts[0] + ',' + parts.slice(1).join('');
 
-    // Birden fazla virgül varsa sadece ilkini koru
-    let parts = value.split(',');
-    if (parts.length > 2) value = parts[0] + ',' + parts.slice(1).join('');
+        parts = value.split(',');
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
-    // Tam sayı kısmını noktalarla ayır
-    parts = value.split(',');
-    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        input.value = (isNegative ? '-' : '') + parts.join(',');
 
-    // Eğer sayı eksiyse, başına eksi işaretini geri koy
-    input.value = (isNegative ? '-' : '') + parts.join(',');
+        // --- KRİTİK EKLEME: Evrensellik Kimliği ---
+        // Bu inputun "formatlı bir para alanı" olduğunu işaretliyoruz
+        input.dataset.isCurrency = "true"; 
 
-    // İmleç pozisyonunu koru
-    let newLength = input.value.length;
-    cursorPosition = cursorPosition + (newLength - originalLength);
-    input.setSelectionRange(cursorPosition, cursorPosition);
-}
+        let newLength = input.value.length;
+        cursorPosition = cursorPosition + (newLength - originalLength);
+        input.setSelectionRange(cursorPosition, cursorPosition);
+    }
 
     // =========================================================================
     // 1. BÖLÜM: KAPORTA (SADECE EKRANI ÇİZEN FONKSİYON)
