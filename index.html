@@ -1308,7 +1308,7 @@
             </div>
             <div class="form-group">
                 <label>Alındığı Tarih</label>
-                <input type="date" id="ve-tarih" class="form-control">
+                <input type="text" id="ve-tarih" class="form-control" placeholder="Tarih Girmek İçin Dokun" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'">
             </div>
             <button class="btn-submit" id="btn-submit-varlik-ekle" onclick="submitVarlikEkle()" style="background: var(--emerald); width: 100%;">Varlığı Sisteme Ekle</button>
         </div>
