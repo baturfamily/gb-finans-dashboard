@@ -1486,8 +1486,14 @@
             const targetTime = midnightToday - ((days - 1) * 24 * 60 * 60 * 1000);
             
             let gecmisKayitlar = window.tarihceData.filter(row => { let t = parseTarihceDate(row[0]); return t > 0 && t <= targetTime; });
-            let bestRow = gecmisKayitlar.length > 0 ? gecmisKayitlar[gecmisKayitlar.length - 1] : window.tarihceData[0];
-            if(!bestRow) return;
+            let bestRow = null;
+if (gecmisKayitlar.length > 0) {
+    bestRow = gecmisKayitlar[gecmisKayitlar.length - 1]; 
+} else if (window.tarihceData.length > 1) {
+    bestRow = window.tarihceData[1]; // DİKKAT: 0 yerine 1 oldu!
+} else {
+    return; 
+}
 
             let pastToplamVarlik = parseSaha(bestRow[1]); 
             let pastNetServet    = parseSaha(bestRow[2]); 
