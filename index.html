@@ -3400,25 +3400,20 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
 
     window.onload = () => { verileriCek(); };
 
-        // --- MİMAR DOKUNUŞU: NOKTA ATIŞI PREMIUM LİSTELER (0 Performans Kaybı) ---
-    // Sadece HTML içinde sabit yazılmış olan belirli listeleri hedef alır.
+// --- MİMAR DOKUNUŞU: EVRENSEL PREMIUM LİSTELER (Ultra Performanslı) ---
     document.addEventListener("DOMContentLoaded", function() {
+        // PWA'nın kendi elementlerini çizmesi için minik bir nefes (150ms)
         setTimeout(() => {
-            const sabitListeler = [
-                'yh-tur',           // Yeni Hesap Ekle -> Tür (Banka/Kredi Kartı)
-                'bo-odeme-sekli',   // Mevcut Borcu Öde -> Ödeme Şekli
-                'kbo-odeme-sekli',  // Kart Borcu Öde -> Ödeme Şekli
-                'so-odeme-sekli',   // Bekleyen Onayla -> Ödeme Şekli
-                'sg-yon'            // Sabit Kural Ekle -> İşlem Yönü
-            ];
-
-            sabitListeler.forEach(id => {
-                const el = document.getElementById(id);
-                // Eğer kutu o an ekranda varsa (bulunduysa) tasarım giydir
-                if (el && typeof refreshCustomSelect === 'function') {
-                    refreshCustomSelect(el);
+            // IŞIK HIZI ARAMA: Tarayıcı motoru sadece 'select' etiketlerini şıp diye bulur
+            const tumListeler = document.getElementsByTagName('select');
+            
+            // Bulunan tüm listeleri tek tek premium makyajdan geçirir
+            for (let i = 0; i < tumListeler.length; i++) {
+                // Eğer liste varsa ve premium fonksiyonumuz yüklüyse
+                if (tumListeler[i] && typeof refreshCustomSelect === 'function') {
+                    refreshCustomSelect(tumListeler[i]);
                 }
-            });
+            }
         }, 150);
     });
     </script>
