@@ -3400,40 +3400,23 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
 
     window.onload = () => { verileriCek(); };
 
-// --- MİMAR DOKUNUŞU: KESİN VE ENGEL TANIMAZ PREMIUM MAKYAJ ---
-    // Hiçbir yüklenme event'ini beklemez, okunduğu an sayfadaki tüm listeleri ezer geçer.
-    (function() {
-        const evrenselMakyaj = () => {
-            document.querySelectorAll('select').forEach(sel => {
-                // Eğer liste henüz siyah premium kılıfa (wrapper'a) girmemişse anında giydir
-                if (!sel.closest('.custom-select-wrapper') && typeof refreshCustomSelect === 'function') {
-                    refreshCustomSelect(sel);
-                }
-            });
-        };
+// --- SADECE İSTENEN LİSTELERİ DÜZELTEN NOKTA ATIŞI KOD ---
+    setTimeout(function() {
+        // Sadece senin düzeltilmesini istediğin kutuların ID'leri:
+        const hedefler = [
+            'yh-tur',           // Yeni Hesap Ekle -> Hesap Türü
+            'bo-odeme-sekli',   // Mevcut Borcu Öde -> Ödeme Şekli
+            'kbo-odeme-sekli'   // Kart Borcu Öde -> Ödeme Şekli
+        ];
 
-        // 1. Kural: Hiçbir şeyi bekleme, kodu okuduğun an çalış! (PWA hız engelini aşar)
-        evrenselMakyaj();
-        
-        // İşletim sistemi takılmalarına karşı 150ms sonra tekrar kontrol et
-        setTimeout(evrenselMakyaj, 150);
-
-        // 2. Kural: Gelecekte eklenecek veya butona basınca değişecek listeleri avla
-        const observer = new MutationObserver((mutations) => {
-            let degisimVar = false;
-            mutations.forEach(m => {
-                if (m.addedNodes.length > 0) degisimVar = true;
-            });
-            
-            // Eğer ekranda bir şeyler değiştiyse anında makyaj motorunu tekrar çalıştır
-            if (degisimVar) {
-                evrenselMakyaj();
+        hedefler.forEach(function(id) {
+            const kutu = document.getElementById(id);
+            // Kutu bulunduysa siyah premium makyajı giydir
+            if (kutu && typeof refreshCustomSelect === 'function') {
+                refreshCustomSelect(kutu);
             }
         });
-
-        // Tüm PWA gövdesini saniye saniye izle (0 Performans Kaybı ile)
-        observer.observe(document.body, { childList: true, subtree: true });
-    })();
+    }, 500); // PWA ekranı tam çizdikten yarım saniye sonra sessizce çalışır
     </script>
 </body>
 </html>
