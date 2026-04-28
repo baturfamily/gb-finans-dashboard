@@ -2323,8 +2323,11 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
             const yontemSelect = document.getElementById('so-yontem');
             const dinamikSecenekler = yontemSelect ? yontemSelect.innerHTML : `<option value="">Hesap Seçin</option>`;
             
+            // MİMAR DOKUNUŞU: Benzersiz Kimlik
+            const uniqueId = 'parca-so-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
+            
             row.innerHTML = `
-                <select class="form-control parca-hesap" style="padding: 10px; font-size: 13px;">
+                <select id="${uniqueId}" class="form-control parca-hesap" style="padding: 10px; font-size: 13px;">
                     ${dinamikSecenekler}
                 </select>
                 <input type="text" inputmode="decimal" class="form-control parca-tutar" placeholder="Tutar" oninput="tutarFormatla(this); hesaplaKalanParcali()" style="padding: 10px; font-size: 14px;">
@@ -2332,7 +2335,8 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                 </button>
             `;
-            container.appendChild(row); refreshCustomSelect(row.querySelector('.parca-hesap'));
+            // Artık kendi kimliğiyle çiziliyor
+            container.appendChild(row); refreshCustomSelect(document.getElementById(uniqueId));
         }
 
         function hesaplaKalanParcali() {
@@ -2418,12 +2422,14 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
             const yontemSelect = document.getElementById('kbo-yontem');
             const dinamikSecenekler = yontemSelect ? yontemSelect.innerHTML : `<option value="">Hesap Seçin</option>`;
             
+            const uniqueId = 'parca-kbo-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
+            
             row.innerHTML = `
-                <select class="form-control parca-hesap-kartborc" style="padding: 10px; font-size: 13px;">${dinamikSecenekler}</select>
+                <select id="${uniqueId}" class="form-control parca-hesap-kartborc" style="padding: 10px; font-size: 13px;">${dinamikSecenekler}</select>
                 <input type="text" inputmode="decimal" class="form-control parca-tutar-kartborc" placeholder="Tutar" oninput="tutarFormatla(this); hesaplaKalanParcaliKartBorc()" style="padding: 10px; font-size: 14px;">
                 <button onclick="this.parentElement.remove(); hesaplaKalanParcaliKartBorc();" style="background: rgba(244, 63, 94, 0.15); border: none; color: var(--rose); width: 38px; height: 38px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
             `;
-            container.appendChild(row); refreshCustomSelect(row.querySelector('.parca-hesap-kartborc'));
+            container.appendChild(row); refreshCustomSelect(document.getElementById(uniqueId));
         }
 
         function hesaplaKalanParcaliKartBorc() {
@@ -2494,12 +2500,14 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
             const yontemSelect = document.getElementById('bo-yontem');
             const dinamikSecenekler = yontemSelect ? yontemSelect.innerHTML : `<option value="">Hesap Seçin</option>`;
             
+            const uniqueId = 'parca-bo-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
+            
             row.innerHTML = `
-                <select class="form-control parca-hesap-borc" style="padding: 10px; font-size: 13px;">${dinamikSecenekler}</select>
+                <select id="${uniqueId}" class="form-control parca-hesap-borc" style="padding: 10px; font-size: 13px;">${dinamikSecenekler}</select>
                 <input type="text" inputmode="decimal" class="form-control parca-tutar-borc" placeholder="Tutar" oninput="tutarFormatla(this); hesaplaKalanParcaliBorc()" style="padding: 10px; font-size: 14px;">
                 <button onclick="this.parentElement.remove(); hesaplaKalanParcaliBorc();" style="background: rgba(244, 63, 94, 0.15); border: none; color: var(--rose); width: 38px; height: 38px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
             `;
-            container.appendChild(row); refreshCustomSelect(row.querySelector('.parca-hesap-borc'));
+            container.appendChild(row); refreshCustomSelect(document.getElementById(uniqueId));
         }
 
         function hesaplaKalanParcaliBorc() {
