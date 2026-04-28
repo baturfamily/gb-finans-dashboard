@@ -2800,78 +2800,76 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
 
         updateTrends(0, document.querySelectorAll('.time-btn')[0]);
 
+        // OPTİMİZASYON 1: Faiz Listesi
         const fListe = document.getElementById('faiz-detay-listesi');
-        fListe.innerHTML = "";
+        let fHtml = "";
         if (data.faizDetaylari && data.faizDetaylari.length > 0) {
             data.faizDetaylari.forEach(f => {
-                fListe.innerHTML += `<div class="list-row"><div class="list-label"><span style="background: rgba(255,255,255,0.05); padding: 4px 8px; border-radius: 6px; font-size: 11px; margin-right: 8px;">${f.tur}</span> ${f.banka}</div><div class="list-value text-red">${formatTL(f.aylik)}</div></div>`;
+                fHtml += `<div class="list-row"><div class="list-label"><span style="background: rgba(255,255,255,0.05); padding: 4px 8px; border-radius: 6px; font-size: 11px; margin-right: 8px;">${f.tur}</span> ${f.banka}</div><div class="list-value text-red">${formatTL(f.aylik)}</div></div>`;
             });
         } else {
-            fListe.innerHTML = `<div class="list-row" style="border:none; padding:8px 0;"><span class="list-label" style="font-size:13px; color:var(--text-muted);">Bu ay gerçekleşen faiz yok.</span></div>`;
+            fHtml = `<div class="list-row" style="border:none; padding:8px 0;"><span class="list-label" style="font-size:13px; color:var(--text-muted);">Bu ay gerçekleşen faiz yok.</span></div>`;
         }
+        fListe.innerHTML = fHtml;
 
+        // OPTİMİZASYON 2: Varlık Listesi
         const vListe = document.getElementById('varlik-listesi');
-        vListe.innerHTML = "";
+        let vHtml = "";
         data.varliklarListe.sort((a, b) => b.deger - a.deger).forEach(v => {
             let p = data.toplamVarlik > 0 ? Math.round((v.deger / data.toplamVarlik) * 100) : 0;
-            vListe.innerHTML += `<div class="t-row"><div class="t-details"><div class="t-name">${v.isim}</div><div class="progress-container" style="height:4px; margin-top:6px; background:rgba(255,255,255,0.05);"><div class="progress-bar" style="width:${p}%; background:var(--emerald);"></div></div></div><div class="t-amt text-green">${formatTL(v.deger)}</div></div>`;
+            vHtml += `<div class="t-row"><div class="t-details"><div class="t-name">${v.isim}</div><div class="progress-container" style="height:4px; margin-top:6px; background:rgba(255,255,255,0.05);"><div class="progress-bar" style="width:${p}%; background:var(--emerald);"></div></div></div><div class="t-amt text-green">${formatTL(v.deger)}</div></div>`;
         });
-        vListe.innerHTML += `<div class="t-row" style="border-top: 1px solid rgba(255,255,255,0.1); margin-top: 8px; padding-top: 12px;"><div class="t-details"><div class="t-name" style="font-weight: 800; color: #fff;">Toplam Varlık</div></div><div class="t-amt text-green" style="font-size: 18px; font-weight: 800;">${formatTL(data.toplamVarlik)}</div></div>`;
+        vHtml += `<div class="t-row" style="border-top: 1px solid rgba(255,255,255,0.1); margin-top: 8px; padding-top: 12px;"><div class="t-details"><div class="t-name" style="font-weight: 800; color: #fff;">Toplam Varlık</div></div><div class="t-amt text-green" style="font-size: 18px; font-weight: 800;">${formatTL(data.toplamVarlik)}</div></div>`;
+        vListe.innerHTML = vHtml;
 
+        // OPTİMİZASYON 3: Borç Listesi
         const bListe = document.getElementById('borc-listesi');
-bListe.innerHTML = "";
+        let bHtml = "";
+        let tumBorclarHavuzu = [...data.borclarListe];
 
-// 1. Havuz oluştur (Backend'den gelen özel borçlar ile başla) [cite: 5029]
-let tumBorclarHavuzu = [...data.borclarListe];
+        if(data.bankalar) {
+          data.bankalar.forEach(banka => {
+            if(banka.bakiye < 0) {
+              tumBorclarHavuzu.push({ isim: banka.isim + " (KMH)", tutar: Math.abs(banka.bakiye) });
+            }
+          });
+        }
 
-// 2. KMH Borçlarını ekle (Bakiyesi eksi olan banka hesapları) [cite: 5036, 5040]
-if(data.bankalar) {
-  data.bankalar.forEach(banka => {
-    if(banka.bakiye < 0) {
-      tumBorclarHavuzu.push({ isim: banka.isim + " (KMH)", tutar: Math.abs(banka.bakiye) });
-    }
-  });
-}
+        if(data.kartlarDetayli) {
+          data.kartlarDetayli.forEach(kart => {
+            if(kart.borc > 0) {
+              tumBorclarHavuzu.push({ isim: kart.isim, tutar: kart.borc });
+            }
+          });
+        }
 
-// 3. Kredi Kartı Borçlarını ekle [cite: 5046, 5062]
-if(data.kartlarDetayli) {
-  data.kartlarDetayli.forEach(kart => {
-    if(kart.borc > 0) {
-      tumBorclarHavuzu.push({ isim: kart.isim, tutar: kart.borc });
-    }
-  });
-}
+        tumBorclarHavuzu.sort((a, b) => b.tutar - a.tutar).forEach(b => {
+          let p = data.toplamBorc > 0 ? Math.round((b.tutar / data.toplamBorc) * 100) : 0;
+          bHtml += `<div class="t-row"><div class="t-details"><div class="t-name">${b.isim}</div><div class="progress-container" style="height:4px; margin-top:6px; background:rgba(255,255,255,0.05);"><div class="progress-bar" style="width:${p}%; background:var(--rose);"></div></div></div><div class="t-amt text-red">${formatTL(b.tutar)}</div></div>`;
+        });
+        bHtml += `<div class="t-row" style="border-top: 1px solid rgba(255,255,255,0.1); margin-top: 8px; padding-top: 12px;"><div class="t-details"><div class="t-name" style="font-weight: 800; color: #fff;">Toplam Borç</div></div><div class="t-amt text-red" style="font-size: 18px; font-weight: 800;">${formatTL(data.toplamBorc)}</div></div>`;
+        bListe.innerHTML = bHtml;
 
-// 4. Tutara göre büyükten küçüğe sırala (Görsel düzen için)
-tumBorclarHavuzu.sort((a,b) => b.tutar - a.tutar);
-
-// 5. Birleştirilmiş listeyi render et [cite: 5031]
-tumBorclarHavuzu.sort((a, b) => b.tutar - a.tutar).forEach(b => {
-  let p = data.toplamBorc > 0 ? Math.round((b.tutar / data.toplamBorc) * 100) : 0;
-  bListe.innerHTML += `<div class="t-row"><div class="t-details"><div class="t-name">${b.isim}</div><div class="progress-container" style="height:4px; margin-top:6px; background:rgba(255,255,255,0.05);"><div class="progress-bar" style="width:${p}%; background:var(--rose);"></div></div></div><div class="t-amt text-red">${formatTL(b.tutar)}</div></div>`;
-});
-        bListe.innerHTML += `<div class="t-row" style="border-top: 1px solid rgba(255,255,255,0.1); margin-top: 8px; padding-top: 12px;"><div class="t-details"><div class="t-name" style="font-weight: 800; color: #fff;">Toplam Borç</div></div><div class="t-amt text-red" style="font-size: 18px; font-weight: 800;">${formatTL(data.toplamBorc)}</div></div>`;
-
+        // OPTİMİZASYON 4: Banka Listesi
         const bankaList = document.getElementById('banka-listesi');
-bankaList.innerHTML = "";
+        let bankaHtml = "";
+        data.bankalar.sort((a, b) => {
+            if (a.isim.trim().toLowerCase() === "nakit") return -1;
+            if (b.isim.trim().toLowerCase() === "nakit") return 1;
+            return 0;
+        });
 
-// EKLENEN SIRALAMA KODU: Nakit isimli hesabı her zaman en üste alır
-data.bankalar.sort((a, b) => {
-    if (a.isim.trim().toLowerCase() === "nakit") return -1;
-    if (b.isim.trim().toLowerCase() === "nakit") return 1;
-    return 0;
-});
-
-data.bankalar.forEach(b => {
-    let icon = b.tur === "Nakit" ? '<i class="fas fa-wallet" style="color:var(--emerald); margin-right:8px;"></i>' : '<i class="fas fa-university" style="color:var(--blue); margin-right:8px;"></i>';
-    let tutarRengi = b.bakiye < 0 ? 'text-red' : 'text-green';
-    let kmhDurumu = "";
-    if(b.bakiye < 0 && b.limit > 0) {
-        let kYuzde = Math.round((Math.abs(b.bakiye) / b.limit) * 100);
-        kmhDurumu = `<div style="font-size:10px; color:var(--text-muted); margin-top:4px;">KMH Kullanımı: %${kYuzde}</div>`;
-    }
-    bankaList.innerHTML += `<div class="t-row"><div class="t-details"><div class="t-name">${icon} ${b.isim}</div>${kmhDurumu}</div><div class="t-amt ${tutarRengi}">${formatTL(b.bakiye)}</div></div>`;
-});
+        data.bankalar.forEach(b => {
+            let icon = b.tur === "Nakit" ? '<i class="fas fa-wallet" style="color:var(--emerald); margin-right:8px;"></i>' : '<i class="fas fa-university" style="color:var(--blue); margin-right:8px;"></i>';
+            let tutarRengi = b.bakiye < 0 ? 'text-red' : 'text-green';
+            let kmhDurumu = "";
+            if(b.bakiye < 0 && b.limit > 0) {
+                let kYuzde = Math.round((Math.abs(b.bakiye) / b.limit) * 100);
+                kmhDurumu = `<div style="font-size:10px; color:var(--text-muted); margin-top:4px;">KMH Kullanımı: %${kYuzde}</div>`;
+            }
+            bankaHtml += `<div class="t-row"><div class="t-details"><div class="t-name">${icon} ${b.isim}</div>${kmhDurumu}</div><div class="t-amt ${tutarRengi}">${formatTL(b.bakiye)}</div></div>`;
+        });
+        bankaList.innerHTML = bankaHtml;
 
         window.kartlarDetayli = data.kartlarDetayli || [];
         const kSecim = document.getElementById('dashboard-kart-secim');
@@ -2883,29 +2881,24 @@ data.bankalar.forEach(b => {
             renderKartDurumu();
         }
 
-        // --- V16: TAM BAKİYE ENTEGRASYONU (KESİN ÇÖZÜM) ---
         window.hesapOptions = "";
         window.vadesizOptions = "";
         window.hesapTurleri = { "Nakit": "Nakit" };
         let tumBakiyeler = {};
         
-        // Önce tüm banka ve kart bakiyelerini bir havuzda topla
         if (data.bankalar) data.bankalar.forEach(b => tumBakiyeler[b.isim.trim()] = { bakiye: b.bakiye, tur: b.tur });
         if (data.kartlarDetayli) data.kartlarDetayli.forEach(k => tumBakiyeler[k.isim.trim()] = { bakiye: (k.borc * -1), tur: "Kredi Kartı" });
         
-        // Eğer 'aktifHesaplar' listesi varsa oradan yürü
         if (data.dinamikKategoriler && data.dinamikKategoriler.aktifHesaplar) {
             data.dinamikKategoriler.aktifHesaplar.forEach(hesapAdi => {
                 let temizAd = hesapAdi.trim();
                 let b = tumBakiyeler[temizAd] || { bakiye: 0, tur: "Banka Hesabı" };
                 let optHtml = `<option value="${temizAd}">${temizAd} (${formatTLTam(b.bakiye)})</option>`;
-                
                 window.hesapOptions += optHtml;
                 window.vadesizOptions += optHtml;
                 window.hesapTurleri[temizAd] = b.tur;
             });
         } else {
-            // Eğer aktifHesaplar yoksa (Yedek Plan), bankaları ve kartları tek tek ekle ama YİNE BAKİYELİ ekle!
             if(data.bankalar) data.bankalar.forEach(b => {
                 let optHtml = `<option value="${b.isim}">${b.isim} (${formatTLTam(b.bakiye)})</option>`;
                 window.hesapOptions += optHtml;
@@ -2924,41 +2917,37 @@ data.bankalar.forEach(b => {
         data.faizDetaylari.forEach(f => window.faizOptions += `<option value="${f.banka}">${f.banka} ${f.tur}</option>`);
 
         let bgOptions = `<option value="">-- Borç Seçin --</option><option value="_yeni_">+ Yeni Borç Ekle</option>`;
-let boOptions = `<option value="">-- Borç Seçin --</option><option value="_yeni_">+ Sistem Dışı Yeni Borç Öde</option>`;
-data.borclarListe.forEach(b => {
-    // Sadece Backend'in gönderdiği listeyi olduğu gibi basar (Sıfır Hardcode)
-    bgOptions += `<option value="${b.isim}">${b.isim} (Kalan: ${formatTLTam(b.tutar)})</option>`;
-    boOptions += `<option value="${b.isim}">${b.isim} (Kalan: ${formatTLTam(b.tutar)})</option>`;
-});
+        let boOptions = `<option value="">-- Borç Seçin --</option><option value="_yeni_">+ Sistem Dışı Yeni Borç Öde</option>`;
+        data.borclarListe.forEach(b => {
+            bgOptions += `<option value="${b.isim}">${b.isim} (Kalan: ${formatTLTam(b.tutar)})</option>`;
+            boOptions += `<option value="${b.isim}">${b.isim} (Kalan: ${formatTLTam(b.tutar)})</option>`;
+        });
 
         const bgSecim = document.getElementById('bg-secim'); if(bgSecim) { bgSecim.innerHTML = bgOptions; refreshCustomSelect(bgSecim); }
         const boSecim = document.getElementById('bo-secim'); if(boSecim) { boSecim.innerHTML = boOptions; refreshCustomSelect(boSecim); }
         
-        // --- KREDİ KARTI LİSTESİ (BORÇ MİKTARI DESTEKLİ) ---
-let kartIsimleriList = `<option value="">-- Kart Seçin (Güncel Borç) --</option>`;
-window.kartlarDetayli.forEach(k => {
-    // Backend'den gelen 'borc' verisini formatlıyoruz
-    let borcMiktari = formatTLTam(k.borc || 0);
-    // Value: Sadece kart ismi (Sistemi bozmaz), TextContent: İsim + Borç
-    kartIsimleriList += `<option value="${k.isim}">${k.isim} — (${borcMiktari})</option>`;
-});
+        let kartIsimleriList = `<option value="">-- Kart Seçin (Güncel Borç) --</option>`;
+        window.kartlarDetayli.forEach(k => {
+            let borcMiktari = formatTLTam(k.borc || 0);
+            kartIsimleriList += `<option value="${k.isim}">${k.isim} — (${borcMiktari})</option>`;
+        });
         
         const klSecim = document.getElementById('kl-secim'); if(klSecim) { klSecim.innerHTML = kartIsimleriList; refreshCustomSelect(klSecim); }
         const kegSecim = document.getElementById('keg-secim'); if(kegSecim) { kegSecim.innerHTML = kartIsimleriList; refreshCustomSelect(kegSecim); }
         const kboSecim = document.getElementById('kbo-secim'); if(kboSecim) { kboSecim.innerHTML = kartIsimleriList; refreshCustomSelect(kboSecim); }
         
         let vgOptions = `<option value="">-- Varlık Seçin --</option>`;
-    data.varliklarListe.forEach(v => vgOptions += `<option value="${v.isim}">${v.isim} (${formatTLTam(v.deger)})</option>`);
-    const vgSecim = document.getElementById('vg-secim'); if(vgSecim) { vgSecim.innerHTML = vgOptions; refreshCustomSelect(vgSecim); }
-    const vsSecim = document.getElementById('vs-secim'); if(vsSecim) { vsSecim.innerHTML = vgOptions; refreshCustomSelect(vsSecim); }
+        data.varliklarListe.forEach(v => vgOptions += `<option value="${v.isim}">${v.isim} (${formatTLTam(v.deger)})</option>`);
+        const vgSecim = document.getElementById('vg-secim'); if(vgSecim) { vgSecim.innerHTML = vgOptions; refreshCustomSelect(vgSecim); }
+        const vsSecim = document.getElementById('vs-secim'); if(vsSecim) { vsSecim.innerHTML = vgOptions; refreshCustomSelect(vsSecim); }
         
         const kboYontem = document.getElementById('kbo-yontem'); if(kboYontem) { kboYontem.innerHTML = window.hesapOptions; refreshCustomSelect(kboYontem); }
         const boYontem = document.getElementById('bo-yontem'); if(boYontem) { boYontem.innerHTML = window.hesapOptions; refreshCustomSelect(boYontem); }
 
-        // --- İŞLEMLER SEKEMESİ EN ALTAKİ "SON 10 İŞLEM" KARTI (V11 RESPONSIVE) ---
+        // OPTİMİZASYON 5: Son İşlemler Listesi
         const islemListesi = document.getElementById('islem-listesi');
         if (islemListesi) {
-            islemListesi.innerHTML = "";
+            let islemHtml = "";
             let otoLogListesi = (data.dinamikKategoriler && data.dinamikKategoriler.otoLog) ? data.dinamikKategoriler.otoLog : [];
             
             data.sonIslemler.forEach(islem => {
@@ -2966,7 +2955,6 @@ window.kartlarDetayli.forEach(k => {
                 let isOtoLog = islem.kategori && islem.kategori !== "-" && otoLogListesi.includes(islem.kategori);
                 let altSatirBilgi = islem.tur === 'Gelir' ? (islem.hedef || islem.odeme) : islem.odeme;
                 
-                // Rota Metni Ayarı (Transfer/Ödeme vs. için)
                 let rotaMetni = "";
                 if ((islem.tur === 'Transfer' || islem.tur === 'Kart Ödemesi' || islem.tur === 'Borç Ödemesi') && islem.hedef) {
                     rotaMetni = `${islem.odeme} ➔ ${islem.hedef}`;
@@ -2974,31 +2962,23 @@ window.kartlarDetayli.forEach(k => {
                     rotaMetni = altSatirBilgi;
                 }
 
-                // Renk ve İşaret Ayarları
                 let amtClass = islem.tur === 'Gelir' ? 'text-green' : (islem.tur === 'Transfer' ? 'text-gray' : 'text-red');
                 let sign = islem.tur === 'Gelir' ? '+' : (islem.tur === 'Transfer' ? '' : '-');
 
-                // --- SAĞ ÜSTTEKİ ETİKET AYARI ---
-                // Otomatikse kategori adını (örn: Abonelik), değilse işlem türünü (örn: Gider) yazar
                 let badgeText = isOtoLog ? islem.kategori : islem.tur;
                 let badgeStyle = "";
                 let badgeClass = "";
-                // Otomatik işlemlere görsel olarak hemen fark edilsin diye minik bir robot ikonu ekliyoruz
                 let robotIcon = isOtoLog ? '<i class="fas fa-robot" style="font-size:9px; margin-right:3px;"></i>' : '';
 
                 if (isOtoLog) {
-                    // Otomatik işlemler için sağ üstte çıkacak mavi özel rozet
                     badgeStyle = "background: rgba(59, 130, 246, 0.15); color: var(--blue); border: 1px solid rgba(59, 130, 246, 0.2);";
                 } else {
-                    // Normal işlemler için sağ üstte çıkacak standart rozet (kırmızı/yeşil/gri)
                     badgeClass = islem.tur === 'Gelir' ? 'pill-green' : (islem.tur === 'Transfer' ? 'pill-gray' : 'pill-red');
                 }
 
-                // Sol Taraf Yazı Ayarı (Otomatikse zaten rozette kategori yazacağı için sadece işlem adını bırakıyoruz)
                 let kalemGosterim = isOtoLog ? hamKalem : ((islem.kategori && islem.kategori !== "-" && !hamKalem.startsWith(islem.kategori)) ? islem.kategori + " - " + hamKalem : hamKalem);
 
-                // --- ORTAK HTML ÇIKTISI (Hizalama Kusursuz) ---
-                islemListesi.innerHTML += `
+                islemHtml += `
                     <div class="t-row" style="align-items: center; padding: 12px 10px; border-bottom: 1px solid rgba(255,255,255,0.03);">
                         <div class="t-details" style="flex: 1; min-width: 0; padding-right: 10px;">
                             <div style="font-size: 13px; font-weight: 600; line-height: 1.3; color: #fff;">${kalemGosterim}</div>
@@ -3012,13 +2992,12 @@ window.kartlarDetayli.forEach(k => {
                         </div>
                     </div>`;
             });
+            islemListesi.innerHTML = islemHtml;
         }
 
-        // --- V14: SAF HARCAMA (ORİJİNAL TASARIM UYUMU) ---
         let v14_safToplam = 0;
         let v14_safListe = [];
 
-        // 1. Filtreleme (Sadece Giderler)
         if (data.buAyIslemler && data.buAyIslemler.length > 0) {
             data.buAyIslemler.forEach(islem => {
                 if (islem.tur === 'Gider') {
@@ -3028,15 +3007,11 @@ window.kartlarDetayli.forEach(k => {
             });
         }
 
-        // 2. Zaman ve BACKEND Entegrasyonu
         const v14_tarih = new Date();
         const v14_gecenGun = v14_tarih.getDate() || 1;
-        
-        // 2. BACKEND Entegrasyonu (Tüm hesaplamalar E-Tablodan gelir)
         const gercekSafHarcama = data.backendSafHarcama || 0;
         const gercekGunlukOrtalama = data.backendGunlukOrtalama || 0;
 
-        // 3. UI Güncelleme (Sadece rakamları ekrana basıyoruz)
         const safToplamEl = document.getElementById('saf-gider-toplam');
         const safOrtalamaEl = document.getElementById('saf-gunluk-ortalama');
         
@@ -3045,38 +3020,33 @@ window.kartlarDetayli.forEach(k => {
             safOrtalamaEl.innerHTML = formatTL(gercekGunlukOrtalama) + `<span style="font-size:11px; opacity:0.5; font-weight:500; margin-left:4px;">/gün</span>`;
         }
 
-        // 4. Liste Render (Uygulamanın evrensel liste formatı - YENİ TASARIM)
+        // OPTİMİZASYON 6: Saf Harcama Detay Listesi
         const v14_container = document.getElementById('saf-gider-listesi');
         if (v14_container) {
-            v14_container.innerHTML = "";
             if (v14_safListe.length === 0) {
                 v14_container.innerHTML = `<div style="text-align:center; padding:20px 0; color:var(--text-muted); font-size:13px;">Harcama kaydı bulunamadı.</div>`;
             } else {
-                // Oto-Log listesini çekiyoruz ki burada da otomatik işlemlere mavi rozet basabilelim
+                let v14Html = "";
                 let otoLogListesi = (data.dinamikKategoriler && data.dinamikKategoriler.otoLog) ? data.dinamikKategoriler.otoLog : [];
 
                 v14_safListe.forEach(islem => {
                     let hamKalem = islem.kalem || "İsimsiz İşlem";
                     let isOtoLog = islem.kategori && islem.kategori !== "-" && otoLogListesi.includes(islem.kategori);
                     
-                    // --- SAĞ ÜSTTEKİ ETİKET AYARI ---
                     let badgeText = isOtoLog ? islem.kategori : (islem.tur || 'Gider');
                     let badgeStyle = "";
                     let badgeClass = "";
                     let robotIcon = isOtoLog ? '<i class="fas fa-robot" style="font-size:9px; margin-right:3px;"></i>' : '';
 
                     if (isOtoLog) {
-                        // Otomatik işlemler için mavi rozet tasarımı
                         badgeStyle = "background: rgba(59, 130, 246, 0.15); color: var(--blue); border: 1px solid rgba(59, 130, 246, 0.2);";
                     } else {
-                        // Normal işlemler için standart kırmızı Gider rozeti
                         badgeClass = 'pill-red';
                     }
 
-                    // Sol taraf yazı içeriği (Temizleme işlemi: Oto ise sadece isim, Manuel ise Kategori + İsim)
                     let kalemGosterim = isOtoLog ? hamKalem : ((islem.kategori && islem.kategori !== "-" && !hamKalem.startsWith(islem.kategori)) ? islem.kategori + " - " + hamKalem : hamKalem);
 
-                    v14_container.innerHTML += `
+                    v14Html += `
                         <div class="t-row" style="align-items: center; padding: 12px 10px; border-bottom: 1px solid rgba(255,255,255,0.03);">
                             <div class="t-details" style="flex: 1; min-width: 0; padding-right: 10px;">
                                 <div style="font-size: 13px; font-weight: 600; line-height: 1.3; color: #fff;">${kalemGosterim}</div>
@@ -3090,13 +3060,11 @@ window.kartlarDetayli.forEach(k => {
                             </div>
                         </div>`;
                 });
+                v14_container.innerHTML = v14Html;
             }
         }
 
-        // --- %100 EVRENSEL NAKİT AKIŞI VE BORÇ YÖNETİMİ ---
         var buAyEkstraCikislar = 0; 
-
-        // Nakit Akışı: Tüm listeler ARRAY ([]) değil OBJECT ({}) yapıldı. Böylece kendi içlerinde otomatik gruplanırlar.
         var nakitAkisiGruplar = {
             "Toplam Gelirler": { toplam: 0, liste: {}, renk: "var(--emerald)" },
             "Nakit Giderler (Banka/Kasa)": { toplam: 0, liste: {}, renk: "var(--rose)" },
@@ -3108,72 +3076,60 @@ window.kartlarDetayli.forEach(k => {
             : [];
 
         if (data.buAyIslemler && Array.isArray(data.buAyIslemler)) {
-            // --- EVRENSEL VERİ ZENGİNLEŞTİRME (V10) ---
-        data.buAyIslemler.forEach(function(islem) {
-            var islemKategori = (islem.kategori && islem.kategori !== "-") ? islem.kategori.toString().trim() : "Diğer";
-            
-            // Orijinal kalem ismini alıyoruz (Örn: "Kart Borcu" veya "Para Transferi")
-            var hamKalem = (islem.kalem || "").toString().trim() || "İsimsiz İşlem";
-            var zenginKalem = hamKalem;
+            data.buAyIslemler.forEach(function(islem) {
+                var islemKategori = (islem.kategori && islem.kategori !== "-") ? islem.kategori.toString().trim() : "Diğer";
+                var hamKalem = (islem.kalem || "").toString().trim() || "İsimsiz İşlem";
+                var zenginKalem = hamKalem;
 
-            // H Sütunu (islem.hedef) doluysa ve işlem Transfer/Borç/Kart ise ismi rotalı göster
-            // Hiçbir özel isim (Ziraat vb.) kullanmıyoruz, sadece değişkenleri okuyoruz (Evrensel!)
-            if ((islem.tur === 'Transfer' || islem.tur === 'Kart Ödemesi' || islem.tur === 'Borç Ödemesi') && islem.hedef) {
-                // ROTA ŞABLONU: "İşlem Adı (Nereden ➔ Nereye)"
-                zenginKalem = hamKalem + " (" + islem.odeme + " ➔ " + islem.hedef + ")";
-            }
-
-            var odemeYontemi = (islem.odeme || "").toString().toLowerCase().trim();
-
-            if (islem.tur === 'Gelir') {
-                nakitAkisiGruplar["Toplam Gelirler"].toplam += islem.tutar;
-                if (!nakitAkisiGruplar["Toplam Gelirler"].liste[islemKategori]) nakitAkisiGruplar["Toplam Gelirler"].liste[islemKategori] = 0;
-                nakitAkisiGruplar["Toplam Gelirler"].liste[islemKategori] += islem.tutar;
-            } 
-            else if (islem.tur === 'Gider') {
-                var krediKartiIleMiOdendi = bankaKartIsimleri.includes(odemeYontemi);
-                if (!krediKartiIleMiOdendi) {
-                    nakitAkisiGruplar["Nakit Giderler (Banka/Kasa)"].toplam += islem.tutar;
-                    if (!nakitAkisiGruplar["Nakit Giderler (Banka/Kasa)"].liste[islemKategori]) nakitAkisiGruplar["Nakit Giderler (Banka/Kasa)"].liste[islemKategori] = 0;
-                    nakitAkisiGruplar["Nakit Giderler (Banka/Kasa)"].liste[islemKategori] += islem.tutar;
+                if ((islem.tur === 'Transfer' || islem.tur === 'Kart Ödemesi' || islem.tur === 'Borç Ödemesi') && islem.hedef) {
+                    zenginKalem = hamKalem + " (" + islem.odeme + " ➔ " + islem.hedef + ")";
                 }
-            } 
-            else if (islem.tur === 'Kart Ödemesi' || islem.tur === 'Borç Ödemesi') {
-                buAyEkstraCikislar += islem.tutar;
-                nakitAkisiGruplar["Toplam Borç Ödemeleri"].toplam += islem.tutar;
-                
-                // Gruplama yaparken artık Zenginleştirilmiş İsmi kullanıyoruz
-                if (!nakitAkisiGruplar["Toplam Borç Ödemeleri"].liste[zenginKalem]) nakitAkisiGruplar["Toplam Borç Ödemeleri"].liste[zenginKalem] = 0;
-                nakitAkisiGruplar["Toplam Borç Ödemeleri"].liste[zenginKalem] += islem.tutar;
-        }
-        });
+
+                var odemeYontemi = (islem.odeme || "").toString().toLowerCase().trim();
+
+                if (islem.tur === 'Gelir') {
+                    nakitAkisiGruplar["Toplam Gelirler"].toplam += islem.tutar;
+                    if (!nakitAkisiGruplar["Toplam Gelirler"].liste[islemKategori]) nakitAkisiGruplar["Toplam Gelirler"].liste[islemKategori] = 0;
+                    nakitAkisiGruplar["Toplam Gelirler"].liste[islemKategori] += islem.tutar;
+                } 
+                else if (islem.tur === 'Gider') {
+                    var krediKartiIleMiOdendi = bankaKartIsimleri.includes(odemeYontemi);
+                    if (!krediKartiIleMiOdendi) {
+                        nakitAkisiGruplar["Nakit Giderler (Banka/Kasa)"].toplam += islem.tutar;
+                        if (!nakitAkisiGruplar["Nakit Giderler (Banka/Kasa)"].liste[islemKategori]) nakitAkisiGruplar["Nakit Giderler (Banka/Kasa)"].liste[islemKategori] = 0;
+                        nakitAkisiGruplar["Nakit Giderler (Banka/Kasa)"].liste[islemKategori] += islem.tutar;
+                    }
+                } 
+                else if (islem.tur === 'Kart Ödemesi' || islem.tur === 'Borç Ödemesi') {
+                    buAyEkstraCikislar += islem.tutar;
+                    nakitAkisiGruplar["Toplam Borç Ödemeleri"].toplam += islem.tutar;
+                    
+                    if (!nakitAkisiGruplar["Toplam Borç Ödemeleri"].liste[zenginKalem]) nakitAkisiGruplar["Toplam Borç Ödemeleri"].liste[zenginKalem] = 0;
+                    nakitAkisiGruplar["Toplam Borç Ödemeleri"].liste[zenginKalem] += islem.tutar;
+                }
+            });
         }
 
-        // HTML: Nakit Akışı (Tam Evrensel Render, İsim Sormaz!)
+        // OPTİMİZASYON 7: Nakit Akışı Listesi
         var nakitContainer = document.getElementById('nakit-akisi-listesi-container');
         if(nakitContainer) {
-            nakitContainer.innerHTML = "";
+            let nakitKapsayiciHtml = ""; 
             var nIdx = 200;
             for (var nBaslik in nakitAkisiGruplar) {
                 var nGrup = nakitAkisiGruplar[nBaslik];
                 if (nGrup.toplam === 0) continue;
                 
-                // Evrensel işaret ve renk ayarı (Sadece kelimenin içinde Gelir mi geçiyor Borç mu ona bakar, özel isim aramaz)
                 var isGelir = nBaslik.includes('Gelir');
                 var isaret = isGelir ? '+' : '-';
                 var yaziRenk = isGelir ? 'text-green' : (nBaslik.includes('Borç') ? 'text-blue' : 'text-red');
 
                 var nHtml = `<div class="sub-accordion-header" onclick="toggleSubAccordion('${nIdx}')"><div style="font-size: 13px; font-weight: 600; color: #e2e8f0; display:flex; align-items:center;"><svg id="sub-icon-${nIdx}" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px; color:var(--text-muted); transition: transform 0.3s ease;"><polyline points="9 18 15 12 9 6"></polyline></svg>${nBaslik}</div><div style="text-align:right;"><span style="font-size:13px; color:${nGrup.renk}; font-weight:700;">${isaret}${formatTL(nGrup.toplam)}</span></div></div><div class="sub-accordion-content" id="sub-content-${nIdx}">`;
                 
-                // İŞTE EVRENSELLİK VE OTOMATİK SIRALAMA BURADA!
-                // Objeyi bir diziye çevirip, tutarlarına göre matematiksel olarak BÜYÜKTEN KÜÇÜĞE sıralarız.
-                // Özel hiçbir kelime aramaz, sadece rakamın büyüklüğüne bakar!
                 var siraliKategoriler = Object.keys(nGrup.liste).sort(function(a, b) {
                     return nGrup.liste[b] - nGrup.liste[a]; 
                 });
 
                 siraliKategoriler.forEach(function(isim) {
-                    // Kategorilerin içindeki (A ➔ B) rotasını alt satıra şıkça taşıyoruz
                     let anaIsim = isim;
                     let altSatir = "";
                     if (isim.includes("➔")) {
@@ -3201,12 +3157,12 @@ window.kartlarDetayli.forEach(k => {
                             </div>
                         </div>`;
                 });
-                nakitContainer.innerHTML += nHtml + `</div>`;
+                nakitKapsayiciHtml += nHtml + `</div>`;
                 nIdx++;
             }
+            nakitContainer.innerHTML = nakitKapsayiciHtml;
         }
         
-        // Artık uzun PWA hesaplamasını siliyoruz, direkt Backend'in formülünü çekiyoruz
         var netAkis = data.backendNetNakit || 0;
 
         const sumNetNakit = document.getElementById('summary-net-nakit');
@@ -3221,7 +3177,7 @@ window.kartlarDetayli.forEach(k => {
         window.currentStats.netKalan = netAkis || 0;
         animateValue('val-nakit-giris', nakitAkisiGruplar["Toplam Gelirler"].toplam, 1000);
         animateValue('val-nakit-cikis', (nakitAkisiGruplar["Nakit Giderler (Banka/Kasa)"].toplam + nakitAkisiGruplar["Toplam Borç Ödemeleri"].toplam), 1000);
-        animateValue('val-net-nakit', netAkis, 1000); // Senin animasyonlu sayacını kullanmaya devam ediyoruz
+        animateValue('val-net-nakit', netAkis, 1000);
 
         const kutuNet = document.getElementById('kutu-net-nakit');
         const valNet = document.getElementById('val-net-nakit');
@@ -3237,11 +3193,12 @@ window.kartlarDetayli.forEach(k => {
             }
         }
 
+        // OPTİMİZASYON 8: Sabit İşlemler (Kategori Konteyner)
         const sKategoriContainer = document.getElementById('sabitler-kategori-container');
-        sKategoriContainer.innerHTML = "";
         let sOdenenGider = 0; let sKalanGider = 0;
-
         let sGruplar = {};
+        let sKategoriHtml = "";
+
         data.tumSabitlerListe.forEach(s => {
             if(s.yon === "Gider") {
                 if(!sGruplar[s.tur]) sGruplar[s.tur] = { odendi: 0, kalan: 0, liste: [] };
@@ -3265,56 +3222,56 @@ window.kartlarDetayli.forEach(k => {
                 html += `<div class="t-row" style="${op} padding: 12px 10px; border-bottom: 1px dashed rgba(255,255,255,0.05);"><div style="margin-right: 12px; display:flex; align-items:center;">${durumIcon}</div><div class="t-details"><div class="t-name" style="font-size:13px;">${s.kalem}</div><div class="t-meta" style="font-size:10px;">Ayın ${s.gun}. Günü • ${s.yontem}</div></div><div class="t-amt ${tClass}" style="font-size:14px;">${formatTL(s.tutar)}</div></div>`;
             });
             html += `</div>`;
-            sKategoriContainer.innerHTML += html;
+            sKategoriHtml += html;
             globalSira++;
         }
+        sKategoriContainer.innerHTML = sKategoriHtml;
 
         document.getElementById('sabit-genel-toplam').innerHTML = formatTL(sOdenenGider + sKalanGider);
         document.getElementById('sabit-odenen-toplam').innerHTML = formatTL(sOdenenGider);
         document.getElementById('sabit-kalan-toplam').innerHTML = formatTL(sKalanGider);
 
+        // OPTİMİZASYON 9: Yaklaşan Ödemeler Listesi
         const yListe = document.getElementById('yaklasan-listesi');
-        yListe.innerHTML = "";
         if (data.yaklasanOdemeler.length > 0) {
+            let yHtml = "";
             data.yaklasanOdemeler.forEach(y => {
-                // Kalemi kullanarak Sabitler listesinden Kategori bulma
                 let kural = data.tumSabitlerListe.find(k => k.kalem === y.kalem);
                 let kategoriMetni = (kural && kural.tur && kural.tur !== "-") ? `${kural.tur} - ` : "";
 
-                yListe.innerHTML += `<div class="t-row" style="background: rgba(245, 158, 11, 0.05); padding: 12px; border-radius: 12px; margin-bottom: 8px; border: 1px dashed rgba(245, 158, 11, 0.2);"><div class="t-details"><div class="t-name" style="font-size: 14px; color: var(--amber);"><i class="fas fa-exclamation-circle" style="margin-right:6px;"></i>${(kategoriMetni && !y.kalem.startsWith(kategoriMetni.replace(' - ', ''))) ? kategoriMetni : ""}${y.kalem}</div><div class="t-meta" style="font-size: 11px;">Ayın ${y.gun}. Günü • ${y.yontem}</div></div><div class="t-amt text-red" style="font-size: 15px;">${formatTL(y.tutar)}</div></div>`;
+                yHtml += `<div class="t-row" style="background: rgba(245, 158, 11, 0.05); padding: 12px; border-radius: 12px; margin-bottom: 8px; border: 1px dashed rgba(245, 158, 11, 0.2);"><div class="t-details"><div class="t-name" style="font-size: 14px; color: var(--amber);"><i class="fas fa-exclamation-circle" style="margin-right:6px;"></i>${(kategoriMetni && !y.kalem.startsWith(kategoriMetni.replace(' - ', ''))) ? kategoriMetni : ""}${y.kalem}</div><div class="t-meta" style="font-size: 11px;">Ayın ${y.gun}. Günü • ${y.yontem}</div></div><div class="t-amt text-red" style="font-size: 15px;">${formatTL(y.tutar)}</div></div>`;
             });
-            yListe.innerHTML += `<div class="t-row" style="border-top: 1px dashed rgba(255,255,255,0.2); margin-top: 10px; padding-top: 12px; padding-right: 4px;"><div class="t-details"><div class="t-name" style="font-weight: 800; text-align: right; color: var(--text-muted);">7 Günlük Toplam:</div></div><div class="t-amt text-red" style="font-size: 17px; font-weight: 800;">${formatTL(data.yaklasanToplam)}</div></div>`;
+            yHtml += `<div class="t-row" style="border-top: 1px dashed rgba(255,255,255,0.2); margin-top: 10px; padding-top: 12px; padding-right: 4px;"><div class="t-details"><div class="t-name" style="font-weight: 800; text-align: right; color: var(--text-muted);">7 Günlük Toplam:</div></div><div class="t-amt text-red" style="font-size: 17px; font-weight: 800;">${formatTL(data.yaklasanToplam)}</div></div>`;
+            yListe.innerHTML = yHtml;
         } else {
             yListe.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size: 14px; padding: 10px 0;"><i class="fas fa-check-circle" style="color:var(--emerald); font-size:24px; display:block; margin-bottom:10px;"></i>Önümüzdeki 7 gün için bekleyen ödeme yok.</div>`;
         }
 
+        // OPTİMİZASYON 10: Kredi İlerleme Listesi
         const krediListe = document.getElementById('kredi-ilerleme-container');
-        krediListe.innerHTML = "";
         if (data.ilerlemeBarlari && data.ilerlemeBarlari.length > 0) {
+            let krHtml = "";
             data.ilerlemeBarlari.forEach(kb => {
-                krediListe.innerHTML += `<div style="margin-bottom: 16px;"><div style="display:flex; justify-content:space-between; margin-bottom:6px;"><span style="font-size:13px; font-weight:600; color:#e2e8f0;">${kb.isim}</span><span style="font-size:13px; font-weight:800; color:var(--blue);">%${kb.yuzde}</span></div><div class="progress-container" style="height:8px; background:rgba(0,0,0,0.3);"><div class="progress-bar" style="width:${kb.yuzde}%; background:var(--blue); box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);"></div></div><div style="display:flex; justify-content:space-between; margin-top:6px; font-size:11px; color:var(--text-muted);"><span>Kalan: ${formatTLTam(kb.kalanTutar)}</span><span>Başlangıç: ${formatTLTam(kb.baslangicTutar)}</span></div></div>`;
+                krHtml += `<div style="margin-bottom: 16px;"><div style="display:flex; justify-content:space-between; margin-bottom:6px;"><span style="font-size:13px; font-weight:600; color:#e2e8f0;">${kb.isim}</span><span style="font-size:13px; font-weight:800; color:var(--blue);">%${kb.yuzde}</span></div><div class="progress-container" style="height:8px; background:rgba(0,0,0,0.3);"><div class="progress-bar" style="width:${kb.yuzde}%; background:var(--blue); box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);"></div></div><div style="display:flex; justify-content:space-between; margin-top:6px; font-size:11px; color:var(--text-muted);"><span>Kalan: ${formatTLTam(kb.kalanTutar)}</span><span>Başlangıç: ${formatTLTam(kb.baslangicTutar)}</span></div></div>`;
             });
+            krediListe.innerHTML = krHtml;
         } else {
             krediListe.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size: 13px; padding: 10px 0;">Aktif kredi ilerlemesi bulunamadı.</div>`;
         }
-// --- V17.2: PREMIUM SAF GİDER GRAFİĞİ (FAİZ BİRLEŞTİRMELİ) ---
+
         const ctxPasta = document.getElementById('expenseChart');
         if (ctxPasta) {
             const cCtx = ctxPasta.getContext('2d');
             let pastaData = {};
             let pastaSafToplam = 0;
 
-            // 1. Evrensel Filtreleme ve Faiz Birleştirme
             if (data.buAyIslemler && data.buAyIslemler.length > 0) {
                 data.buAyIslemler.forEach(islem => {
                     if (islem.tur === 'Gider') { 
                         let kat = islem.kalem || "Diğer";
-                        
-                        // YENİ EKLENEN KISIM: Faizleri tek bir dilimde (sepette) topla
                         if (kat.toLowerCase().includes("faiz")) {
                             kat = "Toplam Faiz Gideri";
                         }
-                        
                         pastaData[kat] = (pastaData[kat] || 0) + islem.tutar;
                         pastaSafToplam += islem.tutar;
                     }
@@ -3323,16 +3280,14 @@ window.kartlarDetayli.forEach(k => {
 
             if (expenseChartInstance) expenseChartInstance.destroy();
 
-            // Rakamları büyükten küçüğe sırala
             const sortedKategoriler = Object.entries(pastaData).sort((a, b) => b[1] - a[1]);
             
-            // 2. Akıllı Gruplama (Top 5 + Diğer = Toplam 6 Dilim)
             let labels = [];
             let values = [];
             let digerToplam = 0;
 
             sortedKategoriler.forEach((item, index) => {
-                if (index < 5) {  // 6'dan 5'e düşürüldü: Alt liste ile tam uyum için
+                if (index < 5) {  
                     labels.push(item[0]);
                     values.push(item[1]);
                 } else {
@@ -3341,12 +3296,11 @@ window.kartlarDetayli.forEach(k => {
             });
 
             if (digerToplam > 0) {
-                labels.push("Diğer"); // "Diğer Kalemler" ismi "Diğer" olarak güncellendi
+                labels.push("Diğer"); 
                 values.push(digerToplam);
             }
 
             if (values.length > 0) {
-                // İlk 5 için canlı renkler, 'Diğer' için profesyonel bir gri (#64748b)
                 const premiumColors = ['#f43f5e', '#f59e0b', '#3b82f6', '#10b981', '#8b5cf6', '#ec4899', '#64748b'];
 
                 expenseChartInstance = new Chart(cCtx, {
@@ -3386,22 +3340,19 @@ window.kartlarDetayli.forEach(k => {
                     }
                 });
 
-                // Saf harcama toplamını merkeze yaz
                 const pastaToplamEl = document.getElementById('pasta-toplam-rakam');
                 if(pastaToplamEl) pastaToplamEl.innerHTML = formatTL(pastaSafToplam);
 
-                // Top 5 Listesini Oluştur
+                // OPTİMİZASYON 11: Pasta Grafik Altı (Top 5 Listesi)
                 const top5Container = document.getElementById('pasta-ozet-grid');
                 if (top5Container) {
-                    top5Container.innerHTML = ""; // İçini temizle
-                    
-                    // sortedKategoriler zaten büyükten küçüğe sıralı
+                    let top5Html = "";
                     sortedKategoriler.slice(0, 5).forEach((item, index) => {
                         const katAdi = item[0];
                         const katTutar = item[1];
                         const yuzde = pastaSafToplam > 0 ? ((katTutar / pastaSafToplam) * 100).toFixed(1) : 0;
 
-                        top5Container.innerHTML += `
+                        top5Html += `
                             <div class="t-row" style="padding: 10px 0; border-bottom: 1px dashed rgba(255,255,255,0.05); align-items: center;">
                                 <div class="t-details" style="flex: 1;">
                                     <div class="t-name" style="font-size: 13px; color: #cbd5e1;">
@@ -3414,6 +3365,7 @@ window.kartlarDetayli.forEach(k => {
                                 </div>
                             </div>`;
                     });
+                    top5Container.innerHTML = top5Html;
                 }
             } else {
                 cCtx.clearRect(0,0,ctxPasta.width,ctxPasta.height);
