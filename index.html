@@ -2242,7 +2242,7 @@ document.getElementById('bo-isim-yeni').style.display = 'none'; document.getElem
                             if (k.durum !== 'Aktif') return false; 
                             let turu = k.tur ? k.tur.toString().trim().toLowerCase() : "";
                             
-                            if (turu.includes('taksit') || turu.includes('abonelik') || turu.includes('yatırım') || turu.includes('otomatik')) return false;
+                            if (turu.includes('taksitli alışveriş') || turu.includes('abonelik') || turu.includes('yatırım') || turu.includes('otomatik')) return false;
                             
                             let zatenOdendiMi = false;
                             if (k.son_islem && k.son_islem.toString().trim() !== "") {
