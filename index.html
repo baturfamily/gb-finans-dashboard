@@ -2610,49 +2610,72 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
         }
 
         function submitBorcOde() {
-            let isim = getCustomVal('bo-secim');
-            if(isim === '_yeni_') isim = document.getElementById('bo-isim-yeni').value.trim();
-            const tutarStr = document.getElementById('bo-tutar').value;
-            const tutar = parseSaha(tutarStr);
-            const sekil = getCustomVal('bo-odeme-sekli');
-            const secilenTarih = document.getElementById('bo-tarih').value;
+    let isim = getCustomVal('bo-secim');
+    
+    // 1. DÜZELTME: iOS cihazlarda text içine "(Kalan:" metni sızarsa, onu temizleyip saf ismi bırakır.
+    if (isim && isim.includes("(Kalan:")) { isim = isim.split("(Kalan:")[0].trim(); }
+    
+    if(isim === '_yeni_') isim = document.getElementById('bo-isim-yeni').value.trim();
+    
+    const tutarStr = document.getElementById('bo-tutar').value;
+    const tutar = parseSaha(tutarStr);
+    const sekil = getCustomVal('bo-odeme-sekli');
+    const secilenTarih = document.getElementById('bo-tarih').value;
+
+    // MİMAR KONTROLÜ: Zorunlu alanlar boşsa backend'e hiç gitme!
+    if(!isim || isim === "Seçiniz...") { markError('bo-secim'); return; }
+    if(!tutarStr || tutar <= 0) { markError('bo-tutar'); return; }
+    if(!secilenTarih) { markError('bo-tarih'); return; }
+    if(!sekil) { markError('bo-odeme-sekli'); return; }
+
+    // 2. DÜZELTME (EVRENSELLİK): Backend ne ararsa bulabilsin diye veriyi yedekli (hedef, kategori) paketliyoruz.
+    let payload = { 
+        action: "borc_ode", 
+        borc_adi: isim, 
+        hedef: isim,     // Yedekleme H Sütunu İçin
+        aciklama: isim,  // Yedekleme 
+        tutar: tutar, 
+        tarih: "", 
+        odeme_sekli: sekil 
+    };
+
+    // Tarih Ayarı
+    const simdi = new Date();
+    const tParca = secilenTarih.split('-');
+    payload.tarih = `${tParca[2]}.${tParca[1]}.${tParca[0]} ${String(simdi.getHours()).padStart(2,'0')}:${String(simdi.getMinutes()).padStart(2,'0')}`;
+
+    if(sekil === 'parcali') {
+        const parcalar = [];
+        let pErr = false;
+        document.querySelectorAll('.parca-satiri-borc').forEach(row => {
+            let y = row.querySelector('.parca-hesap-borc').value;
             
-            // MİMAR KONTROLÜ: Zorunlu alanlar boşsa backend'e hiç gitme!
-            if(!isim || isim === "Seçiniz...") { markError('bo-secim'); return; }
-            if(!tutarStr || tutar <= 0) { markError('bo-tutar'); return; }
-            if(!secilenTarih) { markError('bo-tarih'); return; }
-            if(!sekil) { markError('bo-odeme-sekli'); return; }
-            
-            let payload = { action: "borc_ode", borc_adi: isim, tutar: tutar, tarih: "", odeme_sekli: sekil };
-            
-            // Tarih Ayarı
-            const simdi = new Date();
-            const tParca = secilenTarih.split('-');
-            payload.tarih = `${tParca[2]}.${tParca[1]}.${tParca[0]} ${String(simdi.getHours()).padStart(2,'0')}:${String(simdi.getMinutes()).padStart(2,'0')}`;
-            
-            if(sekil === 'parcali') {
-                const parcalar = [];
-                let pErr = false;
-                document.querySelectorAll('.parca-satiri-borc').forEach(row => {
-                    let y = row.querySelector('.parca-hesap-borc').value;
-                    const t = parseSaha(row.querySelector('.parca-tutar-borc').value);
-                    if(!y || y === "" || t <= 0) { pErr = true; }
-                    else { parcalar.push({ yontem: y, tutar: t }); }
-                });
-                if(pErr || parcalar.length === 0) return alert("Parçalı ödeme bilgilerini eksiksiz doldurun!");
-                payload.parcalar = parcalar;
-                payload.yontem = parcalar[0].yontem; // Ana yöntem olarak ilkini gönder
-                payload.odeme_turu = window.hesapTurleri[parcalar[0].yontem] || "Banka Hesabı";
-            } else {
-                let tekYontem = getCustomVal('bo-yontem');
-                if(!tekYontem || tekYontem === "Seçiniz...") { markError('bo-yontem'); return; }
-                payload.yontem = tekYontem;
-                payload.parcalar = [{ yontem: tekYontem, tutar: tutar }];
-                payload.odeme_turu = window.hesapTurleri[tekYontem] || "Banka Hesabı";
+            // 3. DÜZELTME: iOS Özel Select Fixi (Değer okunamazsa ekrandaki yazıyı zorla okur)
+            if(!y || y.trim() === "") {
+                const spanTxt = row.querySelector('.custom-select-trigger span');
+                if(spanTxt) y = spanTxt.innerText;
             }
             
-            apiIstekAt(payload, 'btn-submit-borc-ode');
-        }
+            const t = parseSaha(row.querySelector('.parca-tutar-borc').value);
+            if(!y || y === "" || t <= 0) { pErr = true; }
+            else { parcalar.push({ yontem: y, tutar: t }); }
+        });
+        if(pErr || parcalar.length === 0) return alert("Parçalı ödeme bilgilerini eksiksiz doldurun!");
+        
+        payload.parcalar = parcalar;
+        payload.yontem = parcalar[0].yontem; // Ana yöntem olarak ilkini gönder
+        payload.odeme_turu = window.hesapTurleri[parcalar[0].yontem] || "Banka Hesabı";
+    } else {
+        let tekYontem = getCustomVal('bo-yontem');
+        if(!tekYontem || tekYontem === "Seçiniz...") { markError('bo-yontem'); return; }
+        
+        payload.yontem = tekYontem;
+        payload.parcalar = [{ yontem: tekYontem, tutar: tutar }];
+        payload.odeme_turu = window.hesapTurleri[tekYontem] || "Banka Hesabı";
+    }
+
+    apiIstekAt(payload, 'btn-submit-borc-ode');
+}
 
         function updateTransferOptions() {
             const cikisEl = document.getElementById('t-cikis');
