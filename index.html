@@ -1676,7 +1676,7 @@ if (gecmisKayitlar.length > 0) {
             const kKonteyner = document.getElementById('an-kalem-konteyner');
             
             let secenekler = type === 'Gider' ? window.dinamikKategoriler.gider : window.dinamikKategoriler.gelir;
-            let optionsHTML = "";
+            let optionsHTML = '<option value="" disabled selected>Seçiniz...</option>';
             if (secenekler && secenekler.length > 0) {
                 secenekler.forEach(item => optionsHTML += `<option value="${item}">${item}</option>`);
             } else {
@@ -1751,7 +1751,7 @@ if (gecmisKayitlar.length > 0) {
             // --- YENİ EVRENSEL KATEGORİ MANTIĞI ---
 // Seçime göre E-Tablo'dan gelen Gider veya Gelir kategorilerini getirir
 let turler = type === 'Gider' ? window.dinamikKategoriler.gider : window.dinamikKategoriler.gelir;
-let optionsHTML = "";
+let optionsHTML = '<option value="" disabled selected>Seçiniz...</option>';
 if (turler && turler.length > 0) {
     turler.forEach(t => optionsHTML += `<option value="${t}">${t}</option>`);
 } else {
@@ -1941,7 +1941,7 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
         
         const katSelect = document.getElementById('ve-kategori');
         if(katSelect && katSelect.options.length === 0) {
-            let kHtml = "";
+            let kHtml = '<option value="" disabled selected>Seçiniz...</option>';
             if(window.dinamikKategoriler && window.dinamikKategoriler.varlikKategorileri) {
                 window.dinamikKategoriler.varlikKategorileri.forEach(k => kHtml += `<option value="${k}">${k}</option>`);
             } else {
@@ -2963,7 +2963,9 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
             renderKartDurumu();
         }
 
-        window.hesapOptions = ""; window.vadesizOptions = ""; window.hesapTurleri = { "Nakit": "Nakit" };
+        window.hesapOptions = '<option value="" disabled selected>Seçiniz...</option>'; 
+        window.vadesizOptions = '<option value="" disabled selected>Seçiniz...</option>'; 
+        window.hesapTurleri = { "Nakit": "Nakit" };
         let tumBakiyeler = {};
         if (data.bankalar) data.bankalar.forEach(b => tumBakiyeler[b.isim.trim()] = { bakiye: b.bakiye, tur: b.tur });
         if (data.kartlarDetayli) data.kartlarDetayli.forEach(k => tumBakiyeler[k.isim.trim()] = { bakiye: (k.borc * -1), tur: "Kredi Kartı" });
@@ -2986,7 +2988,7 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
             });
         }
 
-        window.faizOptions = "";
+        window.faizOptions = '<option value="" disabled selected>Seçiniz...</option>';
         data.faizDetaylari.forEach(f => window.faizOptions += `<option value="${f.banka}">${f.banka} ${f.tur}</option>`);
 
         let bgOptions = `<option value="">-- Borç Seçin --</option><option value="_yeni_">+ Yeni Borç Ekle</option>`;
