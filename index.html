@@ -800,11 +800,11 @@
                         <span>Hesap<br>Ekle</span>
                     </div>
                     
-                    <div class="action-card-grid" onclick="openSectionLive(event, 'section-ozel-borc', '🏦 Borç & Kredi İşlemleri')">
+                    <div class="action-card-grid" onclick="openSectionLive(event, 'section-ozel-borc', 'Şahıs/Özel Borç İşlemleri')">
                         <div class="i-wrap" style="background: rgba(245, 158, 11, 0.15); color: var(--amber);">
                             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
                         </div>
-                        <span>Borç &<br>Kredi</span>
+                        <span>Özel<br>Borçlar</span>
                     </div>
 
                     <div class="action-card-grid" onclick="loadSabitlerAndShow('section-sabit-onayla', 'so-kural', 'Bekleyenleri Onayla')">
@@ -1151,9 +1151,8 @@
                 <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Geri Dön</span>
                 
                 <div class="segment-control" style="margin-bottom: 16px;">
-                    <div class="segment-btn active" id="btn-tab-borc-ode" onclick="toggleOzelBorcTab('ode')">Borç Öde</div>
-                    <div class="segment-btn" id="btn-tab-borc-ekle" onclick="toggleOzelBorcTab('ekle')">Şahıs Borcu</div>
-                    <div class="segment-btn" id="btn-tab-borc-kredi" onclick="toggleOzelBorcTab('kredi')">Kredi Ekle</div>
+                    <div class="segment-btn active" id="btn-tab-borc-ode" onclick="toggleOzelBorcTab('ode')">Mevcut Borcu Öde</div>
+                    <div class="segment-btn" id="btn-tab-borc-ekle" onclick="toggleOzelBorcTab('ekle')">Yeni Ekle / Güncelle</div>
                 </div>
 
                 <div id="tab-borc-ode">
@@ -1164,13 +1163,12 @@
                     <div class="form-group"><label>Ödenen Toplam Tutar (₺)</label><input type="text" inputmode="decimal" id="bo-tutar" class="form-control" placeholder="Örn: 500" oninput="tutarFormatla(this); hesaplaKalanParcaliBorc()"></div>
                     
                     <div class="form-group">
-                        <label>Ödeme Şekli</label>
-                        <select id="bo-odeme-sekli" class="form-control" onchange="toggleParcaliBorcOdeme()">
-                            <option value="" disabled selected>Seçiniz...</option>
-                            <option value="tek">Tek Hesaptan Öde</option>
-                            <option value="parcali">Parça Parça (Farklı Hesaplardan) Öde</option>
-                        </select>
-                    </div>
+    <label>Ödeme Şekli</label>
+    <select id="bo-odeme-sekli" class="form-control" onchange="toggleParcaliBorcOdeme()">
+        <option value="" disabled selected>Seçiniz...</option> <option value="tek">Tek Hesaptan Öde</option>
+        <option value="parcali">Parça Parça (Farklı Hesaplardan) Öde</option>
+    </select>
+</div>
 
                     <div id="bo-tek-hesap-alani">
                         <div class="form-group"><label>Paranın Çıktığı Yer</label><select id="bo-yontem" class="form-control"></select></div>
@@ -1186,9 +1184,9 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Tarih</label>
-                        <input type="text" id="bo-tarih" class="form-control" placeholder="Tarih Girmek İçin Dokun" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'">
-                    </div>
+    <label>Tarih</label>
+    <input type="text" id="bo-tarih" class="form-control" placeholder="Tarih Girmek İçin Dokun" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'">
+</div>
 
                     <button class="btn-submit" id="btn-submit-borc-ode" onclick="submitBorcOde()">Borcu Öde</button>
                 </div>
@@ -1202,36 +1200,7 @@
                     <div class="form-group"><label>Yeni Kalan Tutar (₺)</label><input type="text" inputmode="decimal" id="bg-tutar" class="form-control" oninput="tutarFormatla(this)"></div>
                     <button class="btn-submit" id="btn-submit-borc-guncelle" onclick="submitBorcGuncelle()">Borcu Kaydet/Güncelle</button>
                 </div>
-
-                <div id="tab-borc-kredi" style="display: none;">
-                    <div class="form-group">
-                        <label>Kredi / Banka Adı</label>
-                        <input type="text" id="kredi-isim" class="form-control" placeholder="Örn: Ziraat Kredisi">
-                    </div>
-                    <div class="form-group">
-                        <label>Toplam Kalan Borç (Faizli)</label>
-                        <input type="text" inputmode="decimal" id="kredi-toplam" class="form-control" placeholder="0,00" oninput="tutarFormatla(this)">
-                    </div>
-                    
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                        <div class="form-group">
-                            <label>Taksit Sayısı (Ay)</label>
-                            <input type="number" id="kredi-taksit" class="form-control" placeholder="Örn: 12">
-                        </div>
-                        <div class="form-group">
-                            <label>Ödeme Günü</label>
-                            <input type="number" id="kredi-gun" class="form-control" placeholder="1-31">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Ödeme Hesabı</label>
-                        <select id="kredi-hesap" class="form-control"></select>
-                        <div style="font-size:11px; color:var(--text-muted); margin-top:6px; font-weight: 500;">* Ödeme hesabını daha sonra düzenli kayıt güncelle ekranından değiştirebilirsin.</div>
-                    </div>
-
-                    <button class="btn-submit" id="btn-submit-kredi" onclick="krediSihirbaziniKaydet()" style="background: var(--blue);">Krediyi Onayla ve Planla</button>
-                </div>
+            </div>
 
             <div id="section-transfer" class="form-section">
                 <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Geri Dön</span>
@@ -2036,59 +2005,18 @@ function submitVarlikSil() {
             vibe();
             const btnOde = document.getElementById('btn-tab-borc-ode');
             const btnEkle = document.getElementById('btn-tab-borc-ekle');
-            const btnKredi = document.getElementById('btn-tab-borc-kredi');
-            
-            btnOde.className = 'segment-btn';
-            btnEkle.className = 'segment-btn';
-            btnKredi.className = 'segment-btn';
-            
-            document.getElementById('tab-borc-ode').style.display = 'none';
-            document.getElementById('tab-borc-ekle').style.display = 'none';
-            document.getElementById('tab-borc-kredi').style.display = 'none';
             
             if(tab === 'ode') {
                 btnOde.className = 'segment-btn active-borc-ode';
+                btnEkle.className = 'segment-btn';
                 document.getElementById('tab-borc-ode').style.display = 'block';
-            } else if(tab === 'ekle') {
+                document.getElementById('tab-borc-ekle').style.display = 'none';
+            } else {
+                btnOde.className = 'segment-btn';
                 btnEkle.className = 'segment-btn active-borc-guncelle';
+                document.getElementById('tab-borc-ode').style.display = 'none';
                 document.getElementById('tab-borc-ekle').style.display = 'block';
-            } else if(tab === 'kredi') {
-                btnKredi.className = 'segment-btn active-borc-ode'; 
-                document.getElementById('tab-borc-kredi').style.display = 'block';
-                
-                // MİMAR: Sekme açıldığında Ayarlar E sütunundan gelen güncel hesapları listeye bas!
-                const kHesap = document.getElementById('kredi-hesap');
-                if(kHesap) {
-                    kHesap.innerHTML = window.hesapOptions; 
-                    refreshCustomSelect(kHesap);
-                }
             }
-        }
-
-        function krediSihirbaziniKaydet() {
-            const isim = document.getElementById('kredi-isim').value.trim();
-            const tutarStr = document.getElementById('kredi-toplam').value;
-            const taksit = document.getElementById('kredi-taksit').value;
-            
-            // YENİ: Eklenen kutulardaki verileri çek
-            const gun = document.getElementById('kredi-gun').value;
-            const hesap = getCustomVal('kredi-hesap'); // Custom dropdown olduğu için getCustomVal ile çekiyoruz
-
-            // Hata kontrolleri
-            if(!isim) { markError('kredi-isim'); return; }
-            if(!tutarStr) { markError('kredi-toplam'); return; }
-            if(!taksit) { markError('kredi-taksit'); return; }
-            if(!gun || gun < 1 || gun > 31) { markError('kredi-gun'); alert("Lütfen 1 ile 31 arası geçerli bir gün girin."); return; }
-            if(!hesap || hesap.includes("Seçin")) { markError('kredi-hesap'); return; }
-
-            apiIstekAt({ 
-                action: "kredi_sihirbazi", 
-                isim: isim, 
-                toplam: parseSaha(tutarStr), 
-                taksit: parseInt(taksit),
-                gun: parseInt(gun),
-                hesap: hesap
-            }, 'btn-submit-kredi');
         }
 
         async function openSectionLive(ev, sectionId, title) {
@@ -2145,7 +2073,6 @@ document.getElementById('bo-isim-yeni').style.display = 'none'; document.getElem
             if(id === 'section-kart-limit-guncelle') {
   document.getElementById('kl-mevcut-limit-grup').style.display = 'none';
   document.getElementById('kl-yeni-limit').value = '';
-                refreshCustomSelect(document.getElementById('bo-yontem'));
 }
         }
 
@@ -2243,7 +2170,7 @@ document.getElementById('bo-isim-yeni').style.display = 'none'; document.getElem
                             if (k.durum !== 'Aktif') return false; 
                             let turu = k.tur ? k.tur.toString().trim().toLowerCase() : "";
                             
-                            if (turu.includes('taksitli alışveriş') || turu.includes('abonelik') || turu.includes('yatırım') || turu.includes('otomatik')) return false;
+                            if (turu.includes('taksit') || turu.includes('abonelik') || turu.includes('yatırım') || turu.includes('otomatik')) return false;
                             
                             let zatenOdendiMi = false;
                             if (k.son_islem && k.son_islem.toString().trim() !== "") {
@@ -2298,22 +2225,16 @@ document.getElementById('bo-isim-yeni').style.display = 'none'; document.getElem
         }
 
         function renderSabitKategori() {
-    const katSelect = document.getElementById('so-kategori');
-    let html = `<option value="Hepsi">Tüm Kategoriler</option>`;
-    
-    // MİMAR DÜZELTMESİ: Filtreyi genişletiyoruz
-    let filteredForCategories = window.sabitDataRaw.filter(k => {
-        let kYon = (k.yon || "").toString().trim();
-        return currentSabitMainType === 'Gider' ? (kYon === 'Gider' || kYon === 'Borç Ödemesi') : (kYon === 'Gelir');
-    });
-
-    let uniqueTurler = [...new Set(filteredForCategories.map(k => k.tur))];
-    uniqueTurler.forEach(tur => {
-        if(tur) html += `<option value="${tur}">${tur}</option>`;
-    });
-    
-    katSelect.innerHTML = html; refreshCustomSelect(katSelect); onKategoriChange();
-}
+            const katSelect = document.getElementById('so-kategori');
+            let html = `<option value="Hepsi">Tüm Kategoriler</option>`;
+            
+            let uniqueTurler = [...new Set(window.sabitDataRaw.filter(k => k.yon === currentSabitMainType).map(k => k.tur))];
+            uniqueTurler.forEach(tur => {
+                if(tur) html += `<option value="${tur}">${tur}</option>`;
+            });
+            
+            katSelect.innerHTML = html; refreshCustomSelect(katSelect); onKategoriChange();
+        }
 
         function onKategoriChange() { applySabitFilters(); }
 
@@ -2326,19 +2247,17 @@ document.getElementById('bo-isim-yeni').style.display = 'none'; document.getElem
             sel.innerHTML = "";
             
             let filteredData = window.sabitDataRaw.filter(k => {
-    let kYon = k.yon ? k.yon.toString().trim() : "Gider";
-    let kTur = k.tur ? k.tur.toString().trim() : "";
-
-    // MİMAR DÜZELTMESİ: Eğer Gider sekmesindeysek hem "Gider"leri hem "Borç Ödemesi"ni göster
-    if (currentSabitMainType === 'Gider') {
-        if (kYon !== 'Gider' && kYon !== 'Borç Ödemesi') return false;
-    } else {
-        if (kYon !== currentSabitMainType) return false;
-    }
-
-    if (secilenKategori !== 'Hepsi') { if (kTur !== secilenKategori) return false; }
-    return true;
-});
+                let kYon = k.yon ? k.yon.toString().trim() : "Gider";
+                let kTur = k.tur ? k.tur.toString().trim() : "";
+                if (kYon !== currentSabitMainType) return false;
+                if (secilenKategori !== 'Hepsi') { if (kTur !== secilenKategori) return false; }
+                return true;
+            });
+            
+            filteredData.sort((a, b) => {
+                let gunA = parseInt(a.gun) || 31; let gunB = parseInt(b.gun) || 31;
+                return gunA - gunB;
+            });
             
             filteredData.forEach(k => {
             let sureMetni = k.kalan_ay === "Süresiz" ? "∞" : `${k.kalan_ay} Ay`;
@@ -2610,72 +2529,38 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
         }
 
         function submitBorcOde() {
-    let isim = getCustomVal('bo-secim');
-    
-    // 1. DÜZELTME: iOS cihazlarda text içine "(Kalan:" metni sızarsa, onu temizleyip saf ismi bırakır.
-    if (isim && isim.includes("(Kalan:")) { isim = isim.split("(Kalan:")[0].trim(); }
-    
-    if(isim === '_yeni_') isim = document.getElementById('bo-isim-yeni').value.trim();
-    
-    const tutarStr = document.getElementById('bo-tutar').value;
-    const tutar = parseSaha(tutarStr);
-    const sekil = getCustomVal('bo-odeme-sekli');
-    const secilenTarih = document.getElementById('bo-tarih').value;
-
-    // MİMAR KONTROLÜ: Zorunlu alanlar boşsa backend'e hiç gitme!
-    if(!isim || isim === "Seçiniz...") { markError('bo-secim'); return; }
-    if(!tutarStr || tutar <= 0) { markError('bo-tutar'); return; }
-    if(!secilenTarih) { markError('bo-tarih'); return; }
-    if(!sekil) { markError('bo-odeme-sekli'); return; }
-
-    // 2. DÜZELTME (EVRENSELLİK): Backend ne ararsa bulabilsin diye veriyi yedekli (hedef, kategori) paketliyoruz.
-    let payload = { 
-        action: "borc_ode", 
-        borc_adi: isim, 
-        hedef: isim,     // Yedekleme H Sütunu İçin
-        aciklama: isim,  // Yedekleme 
-        tutar: tutar, 
-        tarih: "", 
-        odeme_sekli: sekil 
-    };
-
-    // Tarih Ayarı
-    const simdi = new Date();
-    const tParca = secilenTarih.split('-');
-    payload.tarih = `${tParca[2]}.${tParca[1]}.${tParca[0]} ${String(simdi.getHours()).padStart(2,'0')}:${String(simdi.getMinutes()).padStart(2,'0')}`;
-
-    if(sekil === 'parcali') {
-        const parcalar = [];
-        let pErr = false;
-        document.querySelectorAll('.parca-satiri-borc').forEach(row => {
-            let y = row.querySelector('.parca-hesap-borc').value;
+            let isim = getCustomVal('bo-secim');
+            if(isim === '_yeni_') isim = document.getElementById('bo-isim-yeni').value.trim();
+            const tutar = document.getElementById('bo-tutar').value;
+            const sekil = getCustomVal('bo-odeme-sekli');
+            const secilenTarih = document.getElementById('bo-tarih').value;
             
-            // 3. DÜZELTME: iOS Özel Select Fixi (Değer okunamazsa ekrandaki yazıyı zorla okur)
-            if(!y || y.trim() === "") {
-                const spanTxt = row.querySelector('.custom-select-trigger span');
-                if(spanTxt) y = spanTxt.innerText;
+            let err = false;
+            if(!isim) { markError('bo-secim'); if(isim==="") markError('bo-isim-yeni'); err = true; }
+            if(tutar === "") { markError('bo-tutar'); err = true; }
+            if(!secilenTarih) { markError('bo-tarih'); err = true; }
+            if(err) return;
+            
+            const simdi = new Date();
+            const tParca = secilenTarih.split('-');
+            const tamTarihLog = `${tParca[2]}.${tParca[1]}.${tParca[0]} ${String(simdi.getHours()).padStart(2,'0')}:${String(simdi.getMinutes()).padStart(2,'0')}:${String(simdi.getSeconds()).padStart(2,'0')}`;
+            
+            let payload = { action: "borc_ode", borc_adi: isim, tutar: tutar, tarih: tamTarihLog, odeme_sekli: sekil };
+            
+            if(sekil === 'parcali') {
+                const parcalar = [];
+                document.querySelectorAll('.parca-satiri-borc').forEach(row => {
+                    let yontem = row.querySelector('.parca-hesap-borc').value;
+                    const pTutarVal = parseSaha(row.querySelector('.parca-tutar-borc').value);
+                    if(pTutarVal > 0) parcalar.push({ yontem: yontem, tutar: pTutarVal });
+                });
+                payload.parcalar = parcalar; payload.odeme_turu = window.hesapTurleri[parcalar[0].yontem] || "Banka Hesabı";
+            } else {
+                let tekYontem = getCustomVal('bo-yontem'); payload.yontem = tekYontem;
+                payload.odeme_turu = window.hesapTurleri[tekYontem] || "Banka Hesabı";
             }
-            
-            const t = parseSaha(row.querySelector('.parca-tutar-borc').value);
-            if(!y || y === "" || t <= 0) { pErr = true; }
-            else { parcalar.push({ yontem: y, tutar: t }); }
-        });
-        if(pErr || parcalar.length === 0) return alert("Parçalı ödeme bilgilerini eksiksiz doldurun!");
-        
-        payload.parcalar = parcalar;
-        payload.yontem = parcalar[0].yontem; // Ana yöntem olarak ilkini gönder
-        payload.odeme_turu = window.hesapTurleri[parcalar[0].yontem] || "Banka Hesabı";
-    } else {
-        let tekYontem = getCustomVal('bo-yontem');
-        if(!tekYontem || tekYontem === "Seçiniz...") { markError('bo-yontem'); return; }
-        
-        payload.yontem = tekYontem;
-        payload.parcalar = [{ yontem: tekYontem, tutar: tutar }];
-        payload.odeme_turu = window.hesapTurleri[tekYontem] || "Banka Hesabı";
-    }
-
-    apiIstekAt(payload, 'btn-submit-borc-ode');
-}
+            apiIstekAt(payload, 'btn-submit-borc-ode');
+        }
 
         function updateTransferOptions() {
             const cikisEl = document.getElementById('t-cikis');
