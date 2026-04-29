@@ -2242,7 +2242,7 @@ document.getElementById('bo-isim-yeni').style.display = 'none'; document.getElem
                             if (k.durum !== 'Aktif') return false; 
                             let turu = k.tur ? k.tur.toString().trim().toLowerCase() : "";
                             
-                            if (turu.includes('taksit') || turu.includes('abonelik') || turu.includes('yatırım') || turu.includes('otomatik')) return false;
+                            if (turu.includes('taksitli alışveriş') || turu.includes('abonelik') || turu.includes('yatırım') || turu.includes('otomatik')) return false;
                             
                             let zatenOdendiMi = false;
                             if (k.son_islem && k.son_islem.toString().trim() !== "") {
@@ -2297,16 +2297,22 @@ document.getElementById('bo-isim-yeni').style.display = 'none'; document.getElem
         }
 
         function renderSabitKategori() {
-            const katSelect = document.getElementById('so-kategori');
-            let html = `<option value="Hepsi">Tüm Kategoriler</option>`;
-            
-            let uniqueTurler = [...new Set(window.sabitDataRaw.filter(k => k.yon === currentSabitMainType).map(k => k.tur))];
-            uniqueTurler.forEach(tur => {
-                if(tur) html += `<option value="${tur}">${tur}</option>`;
-            });
-            
-            katSelect.innerHTML = html; refreshCustomSelect(katSelect); onKategoriChange();
-        }
+    const katSelect = document.getElementById('so-kategori');
+    let html = `<option value="Hepsi">Tüm Kategoriler</option>`;
+    
+    // MİMAR DÜZELTMESİ: Filtreyi genişletiyoruz
+    let filteredForCategories = window.sabitDataRaw.filter(k => {
+        let kYon = (k.yon || "").toString().trim();
+        return currentSabitMainType === 'Gider' ? (kYon === 'Gider' || kYon === 'Borç Ödemesi') : (kYon === 'Gelir');
+    });
+
+    let uniqueTurler = [...new Set(filteredForCategories.map(k => k.tur))];
+    uniqueTurler.forEach(tur => {
+        if(tur) html += `<option value="${tur}">${tur}</option>`;
+    });
+    
+    katSelect.innerHTML = html; refreshCustomSelect(katSelect); onKategoriChange();
+}
 
         function onKategoriChange() { applySabitFilters(); }
 
@@ -2319,17 +2325,19 @@ document.getElementById('bo-isim-yeni').style.display = 'none'; document.getElem
             sel.innerHTML = "";
             
             let filteredData = window.sabitDataRaw.filter(k => {
-                let kYon = k.yon ? k.yon.toString().trim() : "Gider";
-                let kTur = k.tur ? k.tur.toString().trim() : "";
-                if (kYon !== currentSabitMainType) return false;
-                if (secilenKategori !== 'Hepsi') { if (kTur !== secilenKategori) return false; }
-                return true;
-            });
-            
-            filteredData.sort((a, b) => {
-                let gunA = parseInt(a.gun) || 31; let gunB = parseInt(b.gun) || 31;
-                return gunA - gunB;
-            });
+    let kYon = k.yon ? k.yon.toString().trim() : "Gider";
+    let kTur = k.tur ? k.tur.toString().trim() : "";
+
+    // MİMAR DÜZELTMESİ: Eğer Gider sekmesindeysek hem "Gider"leri hem "Borç Ödemesi"ni göster
+    if (currentSabitMainType === 'Gider') {
+        if (kYon !== 'Gider' && kYon !== 'Borç Ödemesi') return false;
+    } else {
+        if (kYon !== currentSabitMainType) return false;
+    }
+
+    if (secilenKategori !== 'Hepsi') { if (kTur !== secilenKategori) return false; }
+    return true;
+});
             
             filteredData.forEach(k => {
             let sureMetni = k.kalan_ay === "Süresiz" ? "∞" : `${k.kalan_ay} Ay`;
