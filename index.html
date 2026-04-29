@@ -2272,7 +2272,9 @@ document.getElementById('bo-isim-yeni').style.display = 'none'; document.getElem
 let temizTur = (k.tur || "").toString().trim();
 let temizKalem = (k.kalem || "").toString().trim();
 let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${temizKalem}` : temizTur) : (temizKalem || "İsimsiz Kayıt");
-            let label = `Ayın ${k.gun}${ek} - ${gorunenAd} / ₺${k.tutar} (${sureMetni})`;
+            // Rakamı PWA'ya uygun hale getiriyoruz (Örn: 532.18 -> 532,18)
+            let gorselTutar = Number(k.tutar).toLocaleString('tr-TR', {minimumFractionDigits: 2});
+            let label = `Ayın ${k.gun}${ek} - ${gorunenAd} / ₺${gorselTutar} (${sureMetni})`;
                 if(k.durum !== "Aktif") label += " [İPTAL/BİTTİ]";
                 sel.innerHTML += `<option value="${k.satir}" data-yon="${k.yon}" data-tur="${k.tur}" data-tutar="${k.tutar}" data-yontem="${k.yontem}" data-gun="${k.gun}" data-sure="${k.kalan_ay}" data-durum="${k.durum}">${label}</option>`;
             });
@@ -2304,7 +2306,8 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
             const yon = (opt.getAttribute('data-yon') || "").trim();
             
             document.getElementById('so-referans-tutar').innerHTML = formatTL(parseSaha(dataTutar));
-            document.getElementById('so-guncel-tutar').value = dataTutar;
+            // Input'un makyaj kodunu (tutarFormatla) bozmamak için veriyi virgülle kutuya basıyoruz
+            document.getElementById('so-guncel-tutar').value = dataTutar.toString().replace('.', ',');
             
             const lblYontem = document.getElementById('lbl-so-yontem');
             if(lblYontem) lblYontem.innerText = yon === 'Gelir' ? 'Paranın Gireceği Hesap' : 'Paranın Çıktığı Hesap';
