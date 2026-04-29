@@ -1866,6 +1866,7 @@ finalKalem = ekInput;
             
             if(!kalem || finalTutar <= 0 || !gun) return alert("Eksik alanları doldurun!");
             if(!sure) return alert("Lütfen süre belirtin!");
+            if(!yontem || yontem.includes("Seçin")) { markError('du-yontem'); return alert("Lütfen ödeme şeklini / hesabı seçin!"); }
             
             const odTuru = window.hesapTurleri[yontem] || "Banka Hesabı";
             
@@ -2400,6 +2401,7 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
                 payload.parcalar = parcalar;
             } else {
                 let tekYontem = getCustomVal('so-yontem');
+                if(!tekYontem || tekYontem.includes("Seçin")) return markError('so-yontem');
                 payload.parcalar = [{ yontem: tekYontem, tutar: parseSaha(guncelTutarStr) }];
             }
             
@@ -2479,6 +2481,7 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
                 payload.parcalar = parcalar;
             } else {
                 let tekYontem = getCustomVal('kbo-yontem');
+                if(!tekYontem || tekYontem.includes("Seçin")) return markError('kbo-yontem');
                 payload.yontem = tekYontem;
             }
             apiIstekAt(payload, 'btn-submit-kart-borc-ode');
@@ -2556,7 +2559,9 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
                 });
                 payload.parcalar = parcalar; payload.odeme_turu = window.hesapTurleri[parcalar[0].yontem] || "Banka Hesabı";
             } else {
-                let tekYontem = getCustomVal('bo-yontem'); payload.yontem = tekYontem;
+                let tekYontem = getCustomVal('bo-yontem'); 
+                if(!tekYontem || tekYontem.includes("Seçin")) return markError('bo-yontem');
+                payload.yontem = tekYontem;
                 payload.odeme_turu = window.hesapTurleri[tekYontem] || "Banka Hesabı";
             }
             apiIstekAt(payload, 'btn-submit-borc-ode');
