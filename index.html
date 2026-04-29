@@ -1212,14 +1212,26 @@
                         <label>Toplam Kalan Borç (Faizli)</label>
                         <input type="text" inputmode="decimal" id="kredi-toplam" class="form-control" placeholder="0,00" oninput="tutarFormatla(this)">
                     </div>
-                    <div class="form-group">
-                        <label>Taksit Sayısı (Ay)</label>
-                        <input type="number" id="kredi-taksit" class="form-control" placeholder="Örn: 12">
+                    
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                        <div class="form-group">
+                            <label>Taksit Sayısı (Ay)</label>
+                            <input type="number" id="kredi-taksit" class="form-control" placeholder="Örn: 12">
+                        </div>
+                        <div class="form-group">
+                            <label>Ödeme Günü</label>
+                            <input type="number" id="kredi-gun" class="form-control" placeholder="1-31">
+                        </div>
                     </div>
+
+                    <div class="form-group">
+                        <label>Ödeme Hesabı</label>
+                        <select id="kredi-hesap" class="form-control"></select>
+                        <div style="font-size:11px; color:var(--text-muted); margin-top:6px; font-weight: 500;">* Ödeme hesabını daha sonra düzenli kayıt güncelle ekranından değiştirebilirsin.</div>
+                    </div>
+
                     <button class="btn-submit" id="btn-submit-kredi" onclick="krediSihirbaziniKaydet()" style="background: var(--blue);">Krediyi Onayla ve Planla</button>
                 </div>
-
-            </div>
 
             <div id="section-transfer" class="form-section">
                 <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Geri Dön</span>
@@ -2043,6 +2055,13 @@ function submitVarlikSil() {
             } else if(tab === 'kredi') {
                 btnKredi.className = 'segment-btn active-borc-ode'; 
                 document.getElementById('tab-borc-kredi').style.display = 'block';
+                
+                // MİMAR: Sekme açıldığında Ayarlar E sütunundan gelen güncel hesapları listeye bas!
+                const kHesap = document.getElementById('kredi-hesap');
+                if(kHesap) {
+                    kHesap.innerHTML = window.hesapOptions; 
+                    refreshCustomSelect(kHesap);
+                }
             }
         }
 
@@ -2050,16 +2069,25 @@ function submitVarlikSil() {
             const isim = document.getElementById('kredi-isim').value.trim();
             const tutarStr = document.getElementById('kredi-toplam').value;
             const taksit = document.getElementById('kredi-taksit').value;
+            
+            // YENİ: Eklenen kutulardaki verileri çek
+            const gun = document.getElementById('kredi-gun').value;
+            const hesap = getCustomVal('kredi-hesap'); // Custom dropdown olduğu için getCustomVal ile çekiyoruz
 
+            // Hata kontrolleri
             if(!isim) { markError('kredi-isim'); return; }
             if(!tutarStr) { markError('kredi-toplam'); return; }
             if(!taksit) { markError('kredi-taksit'); return; }
+            if(!gun || gun < 1 || gun > 31) { markError('kredi-gun'); alert("Lütfen 1 ile 31 arası geçerli bir gün girin."); return; }
+            if(!hesap || hesap.includes("Seçin")) { markError('kredi-hesap'); return; }
 
             apiIstekAt({ 
                 action: "kredi_sihirbazi", 
                 isim: isim, 
                 toplam: parseSaha(tutarStr), 
-                taksit: parseInt(taksit) 
+                taksit: parseInt(taksit),
+                gun: parseInt(gun),
+                hesap: hesap
             }, 'btn-submit-kredi');
         }
 
