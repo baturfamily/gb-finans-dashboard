@@ -2145,6 +2145,7 @@ document.getElementById('bo-isim-yeni').style.display = 'none'; document.getElem
             if(id === 'section-kart-limit-guncelle') {
   document.getElementById('kl-mevcut-limit-grup').style.display = 'none';
   document.getElementById('kl-yeni-limit').value = '';
+                refreshCustomSelect(document.getElementById('bo-yontem'));
 }
         }
 
@@ -2611,34 +2612,45 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
         function submitBorcOde() {
             let isim = getCustomVal('bo-secim');
             if(isim === '_yeni_') isim = document.getElementById('bo-isim-yeni').value.trim();
-            const tutar = document.getElementById('bo-tutar').value;
+            const tutarStr = document.getElementById('bo-tutar').value;
+            const tutar = parseSaha(tutarStr);
             const sekil = getCustomVal('bo-odeme-sekli');
             const secilenTarih = document.getElementById('bo-tarih').value;
             
-            let err = false;
-            if(!isim) { markError('bo-secim'); if(isim==="") markError('bo-isim-yeni'); err = true; }
-            if(tutar === "") { markError('bo-tutar'); err = true; }
-            if(!secilenTarih) { markError('bo-tarih'); err = true; }
-            if(err) return;
+            // MİMAR KONTROLÜ: Zorunlu alanlar boşsa backend'e hiç gitme!
+            if(!isim || isim === "Seçiniz...") { markError('bo-secim'); return; }
+            if(!tutarStr || tutar <= 0) { markError('bo-tutar'); return; }
+            if(!secilenTarih) { markError('bo-tarih'); return; }
+            if(!sekil) { markError('bo-odeme-sekli'); return; }
             
+            let payload = { action: "borc_ode", borc_adi: isim, tutar: tutar, tarih: "", odeme_sekli: sekil };
+            
+            // Tarih Ayarı
             const simdi = new Date();
             const tParca = secilenTarih.split('-');
-            const tamTarihLog = `${tParca[2]}.${tParca[1]}.${tParca[0]} ${String(simdi.getHours()).padStart(2,'0')}:${String(simdi.getMinutes()).padStart(2,'0')}:${String(simdi.getSeconds()).padStart(2,'0')}`;
-            
-            let payload = { action: "borc_ode", borc_adi: isim, tutar: tutar, tarih: tamTarihLog, odeme_sekli: sekil };
+            payload.tarih = `${tParca[2]}.${tParca[1]}.${tParca[0]} ${String(simdi.getHours()).padStart(2,'0')}:${String(simdi.getMinutes()).padStart(2,'0')}`;
             
             if(sekil === 'parcali') {
                 const parcalar = [];
+                let pErr = false;
                 document.querySelectorAll('.parca-satiri-borc').forEach(row => {
-                    let yontem = row.querySelector('.parca-hesap-borc').value;
-                    const pTutarVal = parseSaha(row.querySelector('.parca-tutar-borc').value);
-                    if(pTutarVal > 0) parcalar.push({ yontem: yontem, tutar: pTutarVal });
+                    let y = row.querySelector('.parca-hesap-borc').value;
+                    const t = parseSaha(row.querySelector('.parca-tutar-borc').value);
+                    if(!y || y === "" || t <= 0) { pErr = true; }
+                    else { parcalar.push({ yontem: y, tutar: t }); }
                 });
-                payload.parcalar = parcalar; payload.odeme_turu = window.hesapTurleri[parcalar[0].yontem] || "Banka Hesabı";
+                if(pErr || parcalar.length === 0) return alert("Parçalı ödeme bilgilerini eksiksiz doldurun!");
+                payload.parcalar = parcalar;
+                payload.yontem = parcalar[0].yontem; // Ana yöntem olarak ilkini gönder
+                payload.odeme_turu = window.hesapTurleri[parcalar[0].yontem] || "Banka Hesabı";
             } else {
-                let tekYontem = getCustomVal('bo-yontem'); payload.yontem = tekYontem;
+                let tekYontem = getCustomVal('bo-yontem');
+                if(!tekYontem || tekYontem === "Seçiniz...") { markError('bo-yontem'); return; }
+                payload.yontem = tekYontem;
+                payload.parcalar = [{ yontem: tekYontem, tutar: tutar }];
                 payload.odeme_turu = window.hesapTurleri[tekYontem] || "Banka Hesabı";
             }
+            
             apiIstekAt(payload, 'btn-submit-borc-ode');
         }
 
