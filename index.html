@@ -1436,15 +1436,20 @@
     // 1. Metne çevir, para sembolü ve boşlukları temizle
     let s = val.toString().replace(/₺/g, "").replace(/\s/g, ""); 
     
-    // 2. KESİN ÇÖZÜM (Architect Logic): 
-    // Eğer binlik ayırıcı olarak nokta kullanılıyorsa (tutarFormatla bunu yapıyor),
-    // önce TÜM noktaları söküp atmalıyız.
-    s = s.split('.').join(''); 
+    // 2. AKILLI KONTROL: Noktanın binlik mi yoksa kuruş mu olduğunu anlar
+    if (s.includes('.') && s.includes(',')) {
+        // Hem nokta hem virgül varsa (2.865,00) nokta kesinlikle binliktir
+        s = s.split('.').join('').replace(',', '.');
+    } else if (s.includes(',')) {
+        // Sadece virgül varsa (532,18) kuruş ayracıdır
+        s = s.replace(',', '.');
+    } else if (s.includes('.')) {
+        // Sadece nokta varsa: Sağında 2 rakam varsa kuruş (532.18), 3 rakam varsa binliktir (100.000)
+        let parts = s.split('.');
+        if (parts[parts.length - 1].length > 2) { s = s.split('.').join(''); }
+    }
     
-    // 3. Kuruş ayırıcı olan virgülü matematiksel noktaya (.) çevir
-    s = s.replace(",", "."); 
-    
-    // 4. Sayıya çevir ve hata kontrolü yap
+    // 3. Sayıya çevir ve hata kontrolü yap
     let sonuc = parseFloat(s);
     return isNaN(sonuc) ? 0 : sonuc; 
 };
