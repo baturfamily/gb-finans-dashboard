@@ -3488,7 +3488,16 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
 
         document.getElementById('sabit-genel-toplam').innerHTML = formatTL(sOdenenGider + sKalanGider);
         document.getElementById('sabit-odenen-toplam').innerHTML = formatTL(sOdenenGider);
-        document.getElementById('sabit-kalan-toplam').innerHTML = formatTL(sKalanGider);
+        
+        // EVRENSEL SIFIR BORÇ MOTİVASYON MOTORU
+        const kalanKutu = document.getElementById('sabit-kalan-toplam');
+        if (sKalanGider === 0) {
+            kalanKutu.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px; vertical-align:-3px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>` + formatTL(sKalanGider);
+            kalanKutu.style.color = "var(--emerald)"; // Başarı yeşili
+        } else {
+            kalanKutu.innerHTML = formatTL(sKalanGider);
+            kalanKutu.style.color = "var(--rose)"; // Borç kırmızısı
+        }
 
         const yListe = document.getElementById('yaklasan-listesi');
         if (data.yaklasanOdemeler.length > 0) {
