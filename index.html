@@ -3145,6 +3145,12 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
         animateValue('val-net-servet', data.netServet, aSure);
         animateValueUSD('val-net-servet-usd', data.netServetUSD, aSure);
 
+        // Net Varlık Dinamik Renk Zırhı
+        const netServetEl = document.getElementById('val-net-servet');
+        if (netServetEl) {
+            netServetEl.style.color = data.netServet < 0 ? 'var(--rose)' : 'var(--emerald)';
+        }
+
         setText('val-borc-varlik-orani', data.borcVarlikOrani);
         setText('val-nakit-koruma', data.nakitKorumaSuresi + ' Ay');
         animateValue('val-kasa', data.toplamKasa, aSure);
@@ -3169,11 +3175,27 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
 
         const vListe = document.getElementById('varlik-listesi');
         let vHtml = "";
-        data.varliklarListe.sort((a, b) => b.deger - a.deger).forEach(v => {
-            let p = data.toplamVarlik > 0 ? Math.round((v.deger / data.toplamVarlik) * 100) : 0;
+        
+        // Evrensel Varlık Havuzu (Fiziki Varlıklar + Artı Bakiyeli Bankalar/Nakit)
+        let tumVarliklarHavuzu = [...data.varliklarListe];
+        if (data.bankalar) {
+            data.bankalar.forEach(banka => {
+                if (banka.bakiye > 0) { 
+                    tumVarliklarHavuzu.push({ isim: banka.isim, deger: banka.bakiye }); 
+                }
+            });
+        }
+
+        // Yüzdelerin matematiksel olarak taşmaması için havuzun anlık gerçek toplamını buluyoruz
+        let anlikToplamVarlik = 0;
+        tumVarliklarHavuzu.forEach(v => anlikToplamVarlik += (v.deger || 0));
+
+        tumVarliklarHavuzu.sort((a, b) => b.deger - a.deger).forEach(v => {
+            let p = anlikToplamVarlik > 0 ? Math.round((v.deger / anlikToplamVarlik) * 100) : 0;
             vHtml += `<div class="t-row"><div class="t-details"><div class="t-name">${v.isim}</div><div class="progress-container" style="height:4px; margin-top:6px; background:rgba(255,255,255,0.05);"><div class="progress-bar" style="width:${p}%; background:var(--emerald);"></div></div></div><div class="t-amt text-green">${formatTL(v.deger)}</div></div>`;
         });
-        vHtml += `<div class="t-row" style="border-top: 1px solid rgba(255,255,255,0.1); margin-top: 8px; padding-top: 12px;"><div class="t-details"><div class="t-name" style="font-weight: 800; color: #fff;">Toplam Varlık</div></div><div class="t-amt text-green" style="font-size: 18px; font-weight: 800;">${formatTL(data.toplamVarlik)}</div></div>`;
+        
+        vHtml += `<div class="t-row" style="border-top: 1px solid rgba(255,255,255,0.1); margin-top: 8px; padding-top: 12px;"><div class="t-details"><div class="t-name" style="font-weight: 800; color: #fff;">Toplam Varlık ve Kasa</div></div><div class="t-amt text-green" style="font-size: 18px; font-weight: 800;">${formatTL(anlikToplamVarlik)}</div></div>`;
         vListe.innerHTML = vHtml;
 
         const bListe = document.getElementById('borc-listesi');
