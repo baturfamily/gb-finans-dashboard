@@ -3135,6 +3135,19 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
     // 1. BÖLÜM: KAPORTA (SADECE EKRANI ÇİZEN FONKSİYON)
     // =========================================================================
     function ekraniCiz(data, ilkAcilisMi = false) {
+                // =========================================================
+        // YENİ AY HAYALET VERİ ZIRHI (ÇÖKMELERİ KESİN ÖNLER)
+        // =========================================================
+        if (!data.buAyIslemler || data.buAyIslemler.length === 0) {
+            data.buAyIslemler = [{ tarih: "-", tur: "Gider", kategori: "Yok", kalem: "Henüz İşlem Yok", odeme: "-", tutar: 0, hedef: "-" }];
+        }
+        if (!data.sonIslemler || data.sonIslemler.length === 0) {
+            data.sonIslemler = [{ tarih: "-", tur: "Gider", kategori: "Yok", kalem: "Henüz İşlem Yok", odeme: "-", tutar: 0, hedef: "-" }];
+        }
+        if (!data.pastaGrafik || data.pastaGrafik.length === 0) {
+            data.pastaGrafik = [{ isim: "İşlem Yok", toplam: 0 }];
+        }
+        // =========================================================
         // --- YENİ AY BOŞ VERİ ZIRHI (CRASH KORUMASI) ---
         // Diziler için koruma
         data.faizDetaylari = data.faizDetaylari || [];
