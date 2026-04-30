@@ -3046,11 +3046,9 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
         document.getElementById('premium-undo-modal').style.opacity='0'; 
         document.getElementById('premium-undo-modal').firstElementChild.style.transform='translateY(100%)';
         setTimeout(() => document.getElementById('premium-undo-modal').remove(), 400);
-        
         const btn = document.querySelector('[onclick*="geriAl"]');
         const origHTML = btn ? btn.innerHTML : "";
         if(btn) btn.innerHTML = `<div class="premium-loader"><span></span><span></span><span></span></div>`;
-
         try {
             await fetch(API_URL, { 
                 method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, 
