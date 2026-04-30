@@ -800,11 +800,11 @@
                         <span>Hesap<br>Ekle</span>
                     </div>
                     
-                    <div class="action-card-grid" onclick="openSectionLive(event, 'section-ozel-borc', 'Şahıs/Özel Borç İşlemleri')">
+                    <div class="action-card-grid" onclick="showSection('araci-borc-menusu', 'Borç/Kredi İşlemleri')">
                         <div class="i-wrap" style="background: rgba(245, 158, 11, 0.15); color: var(--amber);">
                             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
                         </div>
-                        <span>Özel<br>Borçlar</span>
+                        <span>Kredi/<br>Borç İşlemleri</span>
                     </div>
 
                     <div class="action-card-grid" onclick="loadSabitlerAndShow('section-sabit-onayla', 'so-kural', 'Bekleyenleri Onayla')">
@@ -1147,58 +1147,190 @@
                 <button class="btn-submit" id="btn-submit-sabit-onayla" onclick="submitSabitOnayla()">Onayla ve Kaydet</button>
             </div>
 
-            <div id="section-ozel-borc" class="form-section">
-                <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Geri Dön</span>
+            <!-- ========================================== -->
+            <!-- ARACI MENÜ: BORÇ / KREDİ SEÇİMİ -->
+            <!-- ========================================== -->
+            <div id="araci-borc-menusu" class="form-section">
+                <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Ana Menüye Dön</span>
+                
+                <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 20px;">
+                    <button class="btn-submit" style="height: 85px; font-size: 18px; margin: 0; width: 100%; display: flex; align-items: center; justify-content: center; gap: 15px;" onclick="openSectionLive(event, 'kredi-islemleri-screen', 'Banka Kredisi İşlemleri')">
+                        <i class="fas fa-landmark" style="font-size: 26px;"></i> Banka Kredileri
+                    </button>
+                    <button class="btn-submit" style="height: 85px; font-size: 18px; margin: 0; width: 100%; display: flex; align-items: center; justify-content: center; gap: 15px; background: linear-gradient(135deg, #10b981 0%, #059669 100%);" onclick="openSectionLive(event, 'ozel-borc-islemleri-screen', 'Şahıs & Özel Borçlar')">
+                        <i class="fas fa-handshake" style="font-size: 26px;"></i> Özel Borçlar
+                    </button>
+                </div>
+            </div>
+
+            <!-- ========================================== -->
+            <!-- 1. KREDİ BORÇLARI MODÜLÜ -->
+            <!-- ========================================== -->
+            <div id="kredi-islemleri-screen" class="form-section">
+                <span class="back-link" onclick="showSection('araci-borc-menusu', 'Borç / Kredi İşlemleri')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Seçim Menüsüne Dön</span>
                 
                 <div class="segment-control" style="margin-bottom: 16px;">
-                    <div class="segment-btn active" id="btn-tab-borc-ode" onclick="toggleOzelBorcTab('ode')">Mevcut Borcu Öde</div>
-                    <div class="segment-btn" id="btn-tab-borc-ekle" onclick="toggleOzelBorcTab('ekle')">Yeni Ekle / Güncelle</div>
+                    <div class="segment-btn active-borc-ode" id="btn-tab-kredi-ode" onclick="toggleKrediTab('ode')">Kredi Taksidi Öde</div>
+                    <div class="segment-btn" id="btn-tab-kredi-ekle" onclick="toggleKrediTab('ekle')">Yeni Kredi Tanımla</div>
                 </div>
 
-                <div id="tab-borc-ode">
+                <!-- SEKME 1: KREDİ BORCU ÖDE -->
+                <div id="tab-kredi-ode">
                     <div class="form-group">
-                        <label>Hangi Borcu Ödüyorsun?</label>
-                        <select id="bo-secim" class="form-control"></select>
+                        <label>Hangi Krediyi Ödüyorsun?</label>
+                        <select id="kredi-secim" class="form-control"></select>
                     </div>
-                    <div class="form-group"><label>Ödenen Toplam Tutar (₺)</label><input type="text" inputmode="decimal" id="bo-tutar" class="form-control" placeholder="Örn: 500" oninput="tutarFormatla(this); hesaplaKalanParcaliBorc()"></div>
+                    <div class="form-group"><label>Ödenen Tutar (₺)</label><input type="text" inputmode="decimal" id="kredi-ode-tutar" class="form-control" placeholder="Örn: 5000" oninput="tutarFormatla(this); hesaplaKalanParcaliKredi()"></div>
                     
                     <div class="form-group">
-    <label>Ödeme Şekli</label>
-    <select id="bo-odeme-sekli" class="form-control" onchange="toggleParcaliBorcOdeme()">
-        <option value="" disabled selected>Seçiniz...</option> <option value="tek">Tek Hesaptan Öde</option>
-        <option value="parcali">Parça Parça (Farklı Hesaplardan) Öde</option>
-    </select>
-</div>
-
-                    <div id="bo-tek-hesap-alani">
-                        <div class="form-group"><label>Paranın Çıktığı Yer</label><select id="bo-yontem" class="form-control"></select></div>
+                        <label>Ödeme Şekli</label>
+                        <select id="kredi-odeme-sekli" class="form-control" onchange="toggleParcaliKrediOdeme()">
+                            <option value="tek">Tek Hesaptan Öde</option>
+                            <option value="parcali">Parça Parça (Farklı Hesaplardan) Öde</option>
+                        </select>
                     </div>
 
-                    <div id="bo-parcali-hesap-alani" style="display:none; background: rgba(0,0,0,0.2); padding: 16px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 16px;">
+                    <div id="kredi-tek-hesap-alani">
+                        <div class="form-group"><label>Paranın Çıktığı Yer</label><select id="kredi-yontem" class="form-control"></select></div>
+                    </div>
+
+                    <div id="kredi-parcali-hesap-alani" style="display:none; background: rgba(0,0,0,0.2); padding: 16px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 16px;">
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px dashed rgba(255,255,255,0.1);">
-                            <span style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Hedef: <span id="bo-hedef-tutar" style="color:#fff; font-weight:800;" class="tabular-nums">₺0</span></span>
-                            <span style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Kalan: <span id="bo-kalan-tutar" style="color:var(--rose); font-weight:800;" class="tabular-nums">₺0</span></span>
+                            <span style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Hedef: <span id="kredi-hedef-tutar" style="color:#fff; font-weight:800;" class="tabular-nums">₺0</span></span>
+                            <span style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Kalan: <span id="kredi-kalan-tutar" style="color:var(--rose); font-weight:800;" class="tabular-nums">₺0</span></span>
                         </div>
-                        <div id="bo-parcalar-container"></div>
-                        <button onclick="addParcaBorc()" style="background: rgba(255,255,255,0.05); border: 1px dashed rgba(255,255,255,0.2); color: #cbd5e1; width: 100%; padding: 12px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 10px; transition: 0.2s;">+ Yeni Hesap / Parça Ekle</button>
+                        <div id="kredi-parcalar-container"></div>
+                        <button onclick="addParcaKredi()" style="background: rgba(255,255,255,0.05); border: 1px dashed rgba(255,255,255,0.2); color: #cbd5e1; width: 100%; padding: 12px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 10px; transition: 0.2s;">+ Yeni Hesap / Parça Ekle</button>
                     </div>
 
                     <div class="form-group">
-    <label>Tarih</label>
-    <input type="text" id="bo-tarih" class="form-control" placeholder="Tarih Girmek İçin Dokun" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'">
-</div>
+                        <label>Tarih</label>
+                        <input type="text" id="kredi-tarih" class="form-control" placeholder="Tarih Girmek İçin Dokun" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'">
+                    </div>
 
-                    <button class="btn-submit" id="btn-submit-borc-ode" onclick="submitBorcOde()">Borcu Öde</button>
+                    <button class="btn-submit" id="btn-submit-kredi-ode" onclick="submitKrediOde()">Kredi Taksidini Öde</button>
                 </div>
 
-                <div id="tab-borc-ekle" style="display: none;">
+                <!-- SEKME 2: YENİ KREDİ TANIMLA -->
+                <div id="tab-kredi-ekle" style="display: none;">
                     <div class="form-group">
-                        <label>Borç Adı</label>
-                        <select id="bg-secim" class="form-control" onchange="toggleYeniBorcGuncelle()"></select>
-                        <input type="text" id="bg-isim-yeni" class="form-control" placeholder="Yeni borcun adını yazın..." style="display:none; margin-top:8px;">
+                        <label>Kredi Adı</label>
+                        <input type="text" id="kredi-yeni-isim" class="form-control" placeholder="Örn: Ziraat Taşıt Kredisi">
+                        <div style="font-size:11px; color:var(--rose); margin-top:6px; font-weight: 600;">*Önemli: Lütfen geçmişte kullandığınız kredi isimleriyle aynı ismi kullanmayın.</div>
                     </div>
-                    <div class="form-group"><label>Yeni Kalan Tutar (₺)</label><input type="text" inputmode="decimal" id="bg-tutar" class="form-control" oninput="tutarFormatla(this)"></div>
-                    <button class="btn-submit" id="btn-submit-borc-guncelle" onclick="submitBorcGuncelle()">Borcu Kaydet/Güncelle</button>
+                    <div class="form-group">
+                        <label>Toplam (Faiz Dahil) Kredi Tutarı (₺)</label>
+                        <input type="text" inputmode="decimal" id="kredi-yeni-tutar" class="form-control" placeholder="Kredinin kapanacağı tüm borç tutarı..." oninput="tutarFormatla(this)">
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                        <div class="form-group">
+                            <label>Vade (Ay)</label>
+                            <input type="text" inputmode="numeric" id="kredi-yeni-vade" class="form-control" placeholder="Örn: 12">
+                        </div>
+                        <div class="form-group">
+                            <label>Aylık Taksit (₺)</label>
+                            <input type="text" inputmode="decimal" id="kredi-yeni-aylik" class="form-control" placeholder="Örn: 5000" oninput="tutarFormatla(this)">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Ödeme Günü (Ayın Kaçı?)</label>
+                        <input type="text" inputmode="numeric" id="kredi-yeni-gun" class="form-control" placeholder="1-31 Arası">
+                    </div>
+                    <div class="form-group">
+                        <label>Otomatik Ödeme Hesabı</label>
+                        <select id="kredi-yeni-hesap" class="form-control"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Tarih</label>
+                        <input type="text" id="kredi-yeni-tarih" class="form-control" placeholder="Tarih Girmek İçin Dokun" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'">
+                    </div>
+                    <button class="btn-submit" id="btn-submit-kredi-tanimla" onclick="submitYeniKredi()">Yeni Kredi Tanımla</button>
+                </div>
+            </div>
+
+            <!-- ========================================== -->
+            <!-- 2. ÖZEL BORÇLAR MODÜLÜ -->
+            <!-- ========================================== -->
+            <div id="ozel-borc-islemleri-screen" class="form-section">
+                <span class="back-link" onclick="showSection('araci-borc-menusu', 'Borç / Kredi İşlemleri')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Seçim Menüsüne Dön</span>
+                
+                <div class="segment-control" style="margin-bottom: 16px;">
+                    <div class="segment-btn active-borc-ode" id="btn-tab-ozel-ode" onclick="toggleOzelTab('ode')">Borç Öde</div>
+                    <div class="segment-btn" id="btn-tab-ozel-guncelle" onclick="toggleOzelTab('guncelle')">Güncelle</div>
+                    <div class="segment-btn" id="btn-tab-ozel-ekle" onclick="toggleOzelTab('ekle')">Yeni Tanımla</div>
+                </div>
+
+                <!-- SEKME 1: ÖZEL BORÇ ÖDE -->
+                <div id="tab-ozel-ode">
+                    <div class="form-group">
+                        <label>Hangi Özel Borcu Ödüyorsun?</label>
+                        <select id="ozel-secim" class="form-control"></select>
+                    </div>
+                    <div class="form-group"><label>Ödenen Tutar (₺)</label><input type="text" inputmode="decimal" id="ozel-ode-tutar" class="form-control" placeholder="Örn: 500" oninput="tutarFormatla(this); hesaplaKalanParcaliOzel()"></div>
+                    
+                    <div class="form-group">
+                        <label>Ödeme Şekli</label>
+                        <select id="ozel-odeme-sekli" class="form-control" onchange="toggleParcaliOzelOdeme()">
+                            <option value="tek">Tek Hesaptan Öde</option>
+                            <option value="parcali">Parça Parça (Farklı Hesaplardan) Öde</option>
+                        </select>
+                    </div>
+
+                    <div id="ozel-tek-hesap-alani">
+                        <div class="form-group"><label>Paranın Çıktığı Yer</label><select id="ozel-yontem" class="form-control"></select></div>
+                    </div>
+
+                    <div id="ozel-parcali-hesap-alani" style="display:none; background: rgba(0,0,0,0.2); padding: 16px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 16px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px dashed rgba(255,255,255,0.1);">
+                            <span style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Hedef: <span id="ozel-hedef-tutar" style="color:#fff; font-weight:800;" class="tabular-nums">₺0</span></span>
+                            <span style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Kalan: <span id="ozel-kalan-tutar" style="color:var(--rose); font-weight:800;" class="tabular-nums">₺0</span></span>
+                        </div>
+                        <div id="ozel-parcalar-container"></div>
+                        <button onclick="addParcaOzel()" style="background: rgba(255,255,255,0.05); border: 1px dashed rgba(255,255,255,0.2); color: #cbd5e1; width: 100%; padding: 12px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 10px; transition: 0.2s;">+ Yeni Hesap / Parça Ekle</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Tarih</label>
+                        <input type="text" id="ozel-tarih" class="form-control" placeholder="Tarih Girmek İçin Dokun" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'">
+                    </div>
+                    <button class="btn-submit" id="btn-submit-ozel-ode" onclick="submitOzelOde()">Borcu Öde</button>
+                </div>
+
+                <!-- SEKME 2: ÖZEL BORÇ GÜNCELLE -->
+                <div id="tab-ozel-guncelle" style="display: none;">
+                    <div class="form-group">
+                        <label>Güncellenecek Borç</label>
+                        <select id="ozel-guncelle-secim" class="form-control"></select>
+                    </div>
+                    <div class="form-group"><label>Yeni Kalan Tutar (₺)</label><input type="text" inputmode="decimal" id="ozel-guncelle-tutar" class="form-control" oninput="tutarFormatla(this)"></div>
+                    <button class="btn-submit" id="btn-submit-ozel-guncelle" onclick="submitOzelGuncelle()">Kaydet / Güncelle</button>
+                </div>
+
+                <!-- SEKME 3: YENİ ÖZEL BORÇ TANIMLA -->
+                <div id="tab-ozel-ekle" style="display: none;">
+                    <div class="form-group">
+                        <label>Özel Borç Adı</label>
+                        <input type="text" id="ozel-yeni-isim" class="form-control" placeholder="Örn: Ahmet'e Olan Borç">
+                    </div>
+                    <div class="form-group">
+                        <label>Toplam Borç Tutarı (₺)</label>
+                        <input type="text" inputmode="decimal" id="ozel-yeni-tutar" class="form-control" placeholder="Toplam tutarı girin..." oninput="tutarFormatla(this)">
+                    </div>
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; color: #fff; font-size: 14px; font-weight:600;">
+                            <input type="checkbox" id="ozel-vadeli-check" style="width: 18px; height: 18px; accent-color: var(--blue);" onchange="toggleVadeliGrup()">
+                            Bu Borç Vadeli mi?
+                        </label>
+                    </div>
+                    <div class="form-group" id="ozel-vadeli-grup" style="display:none; background: rgba(59, 130, 246, 0.05); padding: 15px; border-radius: 14px; border: 1px dashed rgba(59, 130, 246, 0.3);">
+                        <label style="color: var(--blue);">Vade Sayısı (Ay)</label>
+                        <input type="text" inputmode="numeric" id="ozel-yeni-vade" class="form-control" placeholder="Örn: 5">
+                    </div>
+                    <div class="form-group">
+                        <label>Tarih</label>
+                        <input type="text" id="ozel-yeni-tarih" class="form-control" placeholder="Tarih Girmek İçin Dokun" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'">
+                    </div>
+                    <button class="btn-submit" id="btn-submit-ozel-tanimla" onclick="submitYeniOzel()">Yeni Borç Tanımla</button>
                 </div>
             </div>
 
