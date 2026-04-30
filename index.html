@@ -1497,7 +1497,7 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbx-xS-14nAMrIU36zMkzh88JahpUppIDm2u76X7adFKEsATlV6AXNDGo2LitBXDMoT_/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbwL__awr9qe4W5RcW2Q-CnOBpRjB7hECc0nTnzlY66E5LQ9jpFKT-KA-iVjh71186Es/exec";
 
         let expenseChartInstance = null; window.tarihceData = []; window.currentStats = {};
         window.hesapOptions = ""; window.vadesizOptions = ""; window.hesapTurleri = { "Nakit": "Nakit" }; 
@@ -3275,24 +3275,8 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
             });
         }
 
-        // EVRENSEL FAİZ LİSTESİ: Nakit hariç tüm banka hesapları ve kredi kartları listelenir
         window.faizOptions = '<option value="" disabled selected>Seçiniz...</option>';
-        
-        if (data.bankalar) {
-            data.bankalar.forEach(b => {
-                // Sadece Nakit olmayanları (Banka/KMH) ekler
-                if (b.tur !== "Nakit" && b.isim.toLowerCase().trim() !== "nakit") {
-                    window.faizOptions += `<option value="${b.isim}">${b.isim} (Banka/KMH)</option>`;
-                }
-            });
-        }
-        
-        if (data.kartlarDetayli) {
-            // Tüm Kredi Kartlarını ekler
-            data.kartlarDetayli.forEach(k => {
-                window.faizOptions += `<option value="${k.isim}">${k.isim} (Kredi Kartı)</option>`;
-            });
-        }
+        data.faizDetaylari.forEach(f => window.faizOptions += `<option value="${f.banka}">${f.banka} ${f.tur}</option>`);
 
         // YENİ: Kredi ve Özel Borç Filtreleme Motoru
         let krediOptions = `<option value="" disabled selected>Seçiniz...</option>`;
