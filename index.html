@@ -2034,7 +2034,11 @@ finalKalem = ekInput;
             const formAlani = document.getElementById('sabit-guncelle-form-alani');
             if (!sel || !window.sabitKurallarList) return;
             
-            const filtrelenmis = window.sabitKurallarList.filter(k => k.yon === currentSabitYonetFilter);
+            const filtrelenmis = window.sabitKurallarList.filter(k => {
+                let kYon = k.yon ? k.yon.toString().trim() : "Gider";
+                if (currentSabitYonetFilter === 'Gider') return kYon === 'Gider' || kYon === 'Borç Ödemesi';
+                return kYon === currentSabitYonetFilter;
+            });
             let optionsHTML = `<option value="">-- Kayıt Seçin --</option>`;
             
             filtrelenmis.forEach(k => {
@@ -2344,7 +2348,10 @@ function submitVarlikSil() {
             const katSelect = document.getElementById('so-kategori');
             let html = `<option value="Hepsi">Tüm Kategoriler</option>`;
             
-            let uniqueTurler = [...new Set(window.sabitDataRaw.filter(k => k.yon === currentSabitMainType).map(k => k.tur))];
+            let uniqueTurler = [...new Set(window.sabitDataRaw.filter(k => {
+                if (currentSabitMainType === 'Gider') return k.yon === 'Gider' || k.yon === 'Borç Ödemesi';
+                return k.yon === currentSabitMainType;
+            }).map(k => k.tur))];
             uniqueTurler.forEach(tur => {
                 if(tur) html += `<option value="${tur}">${tur}</option>`;
             });
@@ -2365,7 +2372,12 @@ function submitVarlikSil() {
             let filteredData = window.sabitDataRaw.filter(k => {
                 let kYon = k.yon ? k.yon.toString().trim() : "Gider";
                 let kTur = k.tur ? k.tur.toString().trim() : "";
-                if (kYon !== currentSabitMainType) return false;
+                
+                if (currentSabitMainType === 'Gider') {
+                    if (kYon !== 'Gider' && kYon !== 'Borç Ödemesi') return false;
+                } else {
+                    if (kYon !== currentSabitMainType) return false;
+                }
                 if (secilenKategori !== 'Hepsi') { if (kTur !== secilenKategori) return false; }
                 return true;
             });
@@ -3377,7 +3389,7 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
         const sKategoriContainer = document.getElementById('sabitler-kategori-container');
         let sOdenenGider = 0; let sKalanGider = 0; let sGruplar = {}; let sKategoriHtml = "";
         data.tumSabitlerListe.forEach(s => {
-            if(s.yon === "Gider") {
+            if(s.yon === "Gider" || s.yon === "Borç Ödemesi") {
                 if(!sGruplar[s.tur]) sGruplar[s.tur] = { odendi: 0, kalan: 0, liste: [] };
                 if(s.odendiMi) { sGruplar[s.tur].odendi += s.tutar; sOdenenGider += s.tutar; }
                 else { sGruplar[s.tur].kalan += s.tutar; sKalanGider += s.tutar; }
