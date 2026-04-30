@@ -2613,13 +2613,13 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
             const btnOde = document.getElementById('btn-tab-kredi-ode');
             const btnEkle = document.getElementById('btn-tab-kredi-ekle');
             if(tab === 'ode') {
-                btnOde.className = 'segment-btn active-borc-ode'; // Mavi
+                btnOde.className = 'segment-btn active-borc-ode'; 
                 btnEkle.className = 'segment-btn';
                 document.getElementById('tab-kredi-ode').style.display = 'block'; 
                 document.getElementById('tab-kredi-ekle').style.display = 'none';
             } else {
                 btnOde.className = 'segment-btn'; 
-                btnEkle.className = 'segment-btn active-gelir'; // Yeşil (Yeni kayıt ekleme mantığına uygun)
+                btnEkle.className = 'segment-btn active-gelir';
                 document.getElementById('tab-kredi-ode').style.display = 'none'; 
                 document.getElementById('tab-kredi-ekle').style.display = 'block';
             }
