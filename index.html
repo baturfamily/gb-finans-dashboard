@@ -3597,7 +3597,24 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
 
             if (values.length > 0) {
                 const premiumColors = ['#f43f5e', '#f59e0b', '#3b82f6', '#10b981', '#8b5cf6', '#ec4899', '#64748b'];
-                expenseChartInstance = new Chart(cCtx, {
+                try {
+                    expenseChartInstance = new Chart(cCtx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: labels,
+                            datasets: [{ data: values, backgroundColor: labels.map((label, index) => label === "Diğer" ? '#64748b' : premiumColors[index]), borderWidth: 0, hoverOffset: 8 }]
+                        },
+                        options: {
+                            responsive: true, maintainAspectRatio: false, cutout: '75%', 
+                            plugins: {
+                                legend: { display: false }, 
+                                tooltip: { backgroundColor: '#1e2128', titleColor: '#94a3b8', bodyColor: '#fff', bodyFont: { weight: 'bold' }, padding: 12, cornerRadius: 8, displayColors: true,
+                                    callbacks: { label: function(context) { let val = context.raw || 0; let perc = ((val / pastaSafToplam) * 100).toFixed(1); return ` ₺${val.toLocaleString('tr-TR', {minimumFractionDigits: 2})} (%${perc})`; } }
+                                }
+                            }
+                        }
+                    });
+                } catch(e) { console.error("Grafik çizim hatası:", e); }
                     type: 'doughnut',
                     data: {
                         labels: labels,
@@ -3637,18 +3654,14 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
     }
 
 
-    // =========================================================================
-    // 2. BÖLÜM: MOTOR (HAYALET VERİ "STALE-WHILE-REVALIDATE" MİMARİSİ)
-    // =========================================================================
-    async function verileriCek() {
+        async function verileriCek() {
         const durumEl = document.getElementById('baglanti-durumu');
         const hayaletVeri = localStorage.getItem('hayalet_veri');
 
-        // 1. ADIM: EĞER HAFIZADA VERİ VARSA ANINDA (0.1 SN) EKRANA BAS
         if (hayaletVeri) {
             try {
                 const eskiData = JSON.parse(hayaletVeri);
-                ekraniCiz(eskiData, true); // true = İlk açılış olduğu için animasyonları çalıştır
+                ekraniCiz(eskiData, true); 
                 durumEl.innerHTML = `<span class="spinner"></span>Senkronize ediliyor...`;
                 durumEl.style.color = "var(--amber)";
             } catch(e) {
@@ -3657,24 +3670,24 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
                 durumEl.style.color = "var(--amber)";
             }
         } else {
-            // İlk kez giriyorsa hafızada bir şey yoktur, bağlanıyor yazar
             durumEl.innerHTML = `<span class="spinner"></span>Bağlanıyor...`;
             durumEl.style.color = "var(--amber)";
         }
 
-        // 2. ADIM: ARKA PLANDA YENİ VERİYİ ÇEK VE GÜNCELLE
         try {
             const res = await fetch(API_URL);
-            const data = await res.json();
+            const textResponse = await res.text(); // JSON yerine text olarak al, hata kontrolü için
             
-            // Yeni veriyi bir sonraki açılış için hafızaya kaydet
+            // Eğer dönen yanıt HTML (hata sayfası) ise sistemi çökertme
+            if (textResponse.includes("<html") || textResponse.includes("<body")) {
+                throw new Error("Backend'den JSON yerine HTML (Hata Sayfası) döndü.");
+            }
+
+            const data = JSON.parse(textResponse);
+            
             localStorage.setItem('hayalet_veri', JSON.stringify(data));
-            
-            // Ekranı YENİ ve GÜNCEL verilerle tekrar çiz. 
-            // Eğer hayalet veri varsa "false" (animasyonsuz anında değişim), yoksa "true" (animasyonlu)
             ekraniCiz(data, !hayaletVeri); 
             
-            // Her şey başarılıysa bağlantı durumunu yeşile çevir
             const simdi = new Date();
             const saatDak = String(simdi.getHours()).padStart(2, '0') + ':' + String(simdi.getMinutes()).padStart(2, '0');
             document.getElementById('last-update').innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px; vertical-align:middle;"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>${saatDak}`;
@@ -3682,14 +3695,9 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
             durumEl.style.color = "var(--emerald)";
 
         } catch (error) {
-            // Sadece arka plan güncellemesi çöküp, hafızada da bir şey yoksa hata ver
             durumEl.innerHTML = `ÇEVRİMDIŞI`;
             durumEl.style.color = "var(--rose)";
-            console.error("Fetch Hatası:", error);
-            
-            if (!hayaletVeri) {
-                alert("Veri çekilemedi ve cihazda kayıtlı veri bulunamadı. İnternetinizi kontrol edin.");
-            }
+            console.error("Kritik Fetch Hatası (Backend Çöktü!):", error);
         }
     }
 
