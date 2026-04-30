@@ -846,7 +846,7 @@
                         <span>Düzenli Kayıt İşlemleri</span>
                     </div>
                     
-                    <div class="action-list-item" onclick="geriAl()">
+                    <div class="action-list-item" onclick="geriAl(this)">
                         <div class="i-wrap" style="background: rgba(244, 63, 94, 0.1); color: var(--rose);">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>
                         </div>
@@ -3014,33 +3014,55 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
         apiIstekAt({ action: "kart_ekstre_guncelle", kart_adi: isim, yeni_gun: gun }, 'btn-submit-ekstre-guncelle');
     }
 
-    async function geriAl() {
-        if(!confirm("Son işlemi (harcama/gelir/transfer/ödeme) tamamen geri almak istediğinize emin misiniz? (Tüm hesaplar, cüzdan ve sabit kural durumları otomatik onarılacaktır.)")) return;
-        const btn = document.querySelector('.undo-btn');
-        const orig = btn.innerHTML;
-        btn.innerHTML = `<div class="premium-loader"><span style="background-color: var(--rose);"></span><span style="background-color: var(--rose);"></span><span style="background-color: var(--rose);"></span></div>`;
-        vibe();
-        try {
-            const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: "geri_al" }) });
-            const result = await res.json();
-            if(result.status === "success") {
-                btn.innerHTML = "İşlem Geri Alındı ✓";
-                btn.style.color = "var(--emerald)";
-                btn.style.borderColor = "var(--emerald)";
-                btn.style.background = "rgba(16, 185, 129, 0.1)";
-                setTimeout(async () => {
-                    await verileriCek();
-                    btn.innerHTML = orig;
-                    btn.style = "";
-                }, 1500);
-            } else {
-                alert(result.message);
-                btn.innerHTML = orig;
-            }
-        } catch(e) {
-            alert("Bağlantı hatası: " + e.message);
-            btn.innerHTML = orig;
+    function geriAl(el) {
+        if (!window.globalSonIslemler || window.globalSonIslemler.length === 0) {
+            alert("Geri alınabilecek finansal hareket bulunamadı."); return;
         }
+        const oldModal = document.getElementById('premium-undo-modal');
+        if(oldModal) oldModal.remove();
+
+        const overlay = document.createElement('div');
+        overlay.id = "premium-undo-modal";
+        overlay.style.cssText = "position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; display:flex; flex-direction:column; justify-content:flex-end; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); opacity:0; transition:opacity 0.3s cubic-bezier(0.32, 0.72, 0, 1);";
+
+        const son5 = window.globalSonIslemler.slice(0, 5);
+        let sheetHTML = `<div style="background:#111827; width:100%; border-radius: 32px 32px 0 0; padding:24px 20px 40px 20px; transform:translateY(100%); transition:transform 0.4s cubic-bezier(0.32, 0.72, 0, 1); border-top: 1px solid rgba(255,255,255,0.08);">`;
+        sheetHTML += `<div style="width:40px; height:5px; background:rgba(255,255,255,0.3); border-radius:3px; margin: 0 auto 24px auto;"></div><h3 style="color:#f8fafc; font-size:18px; font-weight:700; margin-bottom:8px; text-align:center; letter-spacing:-0.4px;">İşlem Geri Al</h3><p style="color:#94a3b8; font-size:14px; text-align:center; margin-bottom:24px;">İptal etmek istediğiniz hareketi seçin.</p>`;
+
+        son5.forEach((islem) => {
+            let renk = islem.tur === "Gelir" ? "var(--emerald)" : "var(--rose)";
+            sheetHTML += `<div onclick="seciliIslemiGeriAl('${islem.tarih}', '${islem.kalem.replace(/'/g, "\\'")}', ${islem.tutar})" style="background:rgba(255,255,255,0.04); padding:16px; border-radius:18px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; border: 1px solid rgba(255,255,255,0.03);">
+                <div style="flex:1; padding-right:12px; overflow:hidden;"><div style="color:#f1f5f9; font-size:16px; font-weight:600; margin-bottom:4px;" class="text-truncate">${islem.kalem}</div><div style="color:#64748b; font-size:13px;">${islem.tur} • ${islem.odeme} • ${islem.tarih}</div></div>
+                <div style="color:${renk}; font-size:16px; font-weight:700;">${typeof formatTL === 'function' ? formatTL(islem.tutar) : '₺' + islem.tutar}</div></div>`;
+        });
+
+        sheetHTML += `<button onclick="document.getElementById('premium-undo-modal').style.opacity='0'; document.getElementById('premium-undo-modal').firstElementChild.style.transform='translateY(100%)'; setTimeout(() => document.getElementById('premium-undo-modal').remove(), 400);" style="width:100%; padding:16px; background:rgba(244, 63, 94, 0.1); color:#f43f5e; border-radius:18px; border:none; font-size:16px; font-weight:700; margin-top:12px;">Vazgeç</button></div>`;
+        overlay.innerHTML = sheetHTML; document.body.appendChild(overlay);
+        overlay.offsetHeight; overlay.style.opacity = "1"; overlay.firstElementChild.style.transform = "translateY(0)";
+    }
+
+    async function seciliIslemiGeriAl(tarih, kalem, tutar) {
+        if(!confirm(`"${kalem}" işlemini geri almak istiyor musunuz?`)) return;
+        document.getElementById('premium-undo-modal').style.opacity='0'; 
+        document.getElementById('premium-undo-modal').firstElementChild.style.transform='translateY(100%)';
+        setTimeout(() => document.getElementById('premium-undo-modal').remove(), 400);
+        
+        const btn = document.querySelector('[onclick*="geriAl"]');
+        const origHTML = btn ? btn.innerHTML : "";
+        if(btn) btn.innerHTML = `<div class="premium-loader"><span></span><span></span><span></span></div>`;
+
+        try {
+            await fetch(API_URL, { 
+                method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, 
+                body: JSON.stringify({ action: "secili_geri_al", islem_tarihi: tarih, kalem: kalem, tutar: tutar }) 
+            });
+            setTimeout(async () => {
+                if(btn) { btn.innerHTML = `<span style="color:var(--emerald); font-weight:700;">Geri Alındı ✓</span>`; btn.style.background = "rgba(16, 185, 129, 0.1)"; }
+                await verileriCek();
+                setTimeout(() => { if(btn) { btn.innerHTML = origHTML; btn.style.background = ""; } }, 2000);
+            }, 1500);
+        } catch(e) { alert("Bağlantı hatası"); if(btn) btn.innerHTML = origHTML; }
+    }
     }
 
     function refreshCustomSelect(selectElement) {
@@ -3135,6 +3157,7 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
     // 1. BÖLÜM: KAPORTA (SADECE EKRANI ÇİZEN FONKSİYON)
     // =========================================================================
     function ekraniCiz(data, ilkAcilisMi = false) {
+        window.globalSonIslemler = data.sonIslemler || []; // Seçimli Geri Al için evrensel hafıza
         window.currentStats = data;
         window.tarihceData = data.tarihce || [];
         window.dinamikKategoriler = data.dinamikKategoriler || window.dinamikKategoriler;
