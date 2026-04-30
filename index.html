@@ -3275,8 +3275,24 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
             });
         }
 
+        // EVRENSEL FAİZ LİSTESİ: Nakit hariç tüm banka hesapları ve kredi kartları listelenir
         window.faizOptions = '<option value="" disabled selected>Seçiniz...</option>';
-        data.faizDetaylari.forEach(f => window.faizOptions += `<option value="${f.banka}">${f.banka} ${f.tur}</option>`);
+        
+        if (data.bankalar) {
+            data.bankalar.forEach(b => {
+                // Sadece Nakit olmayanları (Banka/KMH) ekler
+                if (b.tur !== "Nakit" && b.isim.toLowerCase().trim() !== "nakit") {
+                    window.faizOptions += `<option value="${b.isim}">${b.isim} (Banka/KMH)</option>`;
+                }
+            });
+        }
+        
+        if (data.kartlarDetayli) {
+            // Tüm Kredi Kartlarını ekler
+            data.kartlarDetayli.forEach(k => {
+                window.faizOptions += `<option value="${k.isim}">${k.isim} (Kredi Kartı)</option>`;
+            });
+        }
 
         // YENİ: Kredi ve Özel Borç Filtreleme Motoru
         let krediOptions = `<option value="" disabled selected>Seçiniz...</option>`;
