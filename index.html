@@ -3131,10 +3131,39 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
         input.setSelectionRange(cursorPosition, cursorPosition);
     }
 
-    // =========================================================================
+        // =========================================================================
     // 1. BÖLÜM: KAPORTA (SADECE EKRANI ÇİZEN FONKSİYON)
     // =========================================================================
     function ekraniCiz(data, ilkAcilisMi = false) {
+        // --- YENİ AY BOŞ VERİ ZIRHI (CRASH KORUMASI) ---
+        // Diziler için koruma
+        data.faizDetaylari = data.faizDetaylari || [];
+        data.varliklarListe = data.varliklarListe || [];
+        data.borclarListe = data.borclarListe || [];
+        data.bankalar = data.bankalar || [];
+        data.kartlarDetayli = data.kartlarDetayli || [];
+        data.sonIslemler = data.sonIslemler || [];
+        data.buAyIslemler = data.buAyIslemler || [];
+        data.tumSabitlerListe = data.tumSabitlerListe || [];
+        data.yaklasanOdemeler = data.yaklasanOdemeler || [];
+        data.ilerlemeBarlari = data.ilerlemeBarlari || [];
+        data.tarihce = data.tarihce || [];
+        
+        // Rakamlar için koruma (NaN hatalarını önler)
+        data.netServet = data.netServet || 0;
+        data.netServetUSD = data.netServetUSD || 0;
+        data.toplamKasa = data.toplamKasa || 0;
+        data.toplamBorc = data.toplamBorc || 0;
+        data.toplamCanYakan = data.toplamCanYakan || 0;
+        data.toplamPlanli = data.toplamPlanli || 0;
+        data.tahminiFaiz = data.tahminiFaiz || 0;
+        data.toplamOdenenFaiz = data.toplamOdenenFaiz || 0;
+        data.backendSafHarcama = data.backendSafHarcama || 0;
+        data.backendGunlukOrtalama = data.backendGunlukOrtalama || 0;
+        data.backendNetNakit = data.backendNetNakit || 0;
+        data.yaklasanToplam = data.yaklasanToplam || 0;
+        // -----------------------------------------------
+
         window.currentStats = data;
         window.tarihceData = data.tarihce || [];
         window.dinamikKategoriler = data.dinamikKategoriler || window.dinamikKategoriler;
