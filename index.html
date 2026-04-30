@@ -1244,6 +1244,10 @@
                         <input type="text" inputmode="numeric" id="kredi-yeni-gun" class="form-control" placeholder="1-31 Arası">
                     </div>
                     <div class="form-group">
+                        <label>Son Taksit Tarihi (Bitiş)</label>
+                        <input type="text" id="kredi-yeni-bitis" class="form-control" placeholder="Tarih Girmek İçin Dokun" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'">
+                    </div>
+                    <div class="form-group">
                         <label>Otomatik Ödeme Hesabı</label>
                         <select id="kredi-yeni-hesap" class="form-control"></select>
                     </div>
@@ -2786,15 +2790,21 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
             const vade = document.getElementById('kredi-yeni-vade').value; const aylik = document.getElementById('kredi-yeni-aylik').value;
             const gun = document.getElementById('kredi-yeni-gun').value; const hesap = getCustomVal('kredi-yeni-hesap');
             const tarih = document.getElementById('kredi-yeni-tarih').value;
+            const bitis = document.getElementById('kredi-yeni-bitis').value; // Yeni eklenen
+            
             let err = false;
             if(!isim) { markError('kredi-yeni-isim'); err = true; } if(!tutar) { markError('kredi-yeni-tutar'); err = true; }
             if(!vade) { markError('kredi-yeni-vade'); err = true; } if(!aylik) { markError('kredi-yeni-aylik'); err = true; }
-            if(!gun) { markError('kredi-yeni-gun'); err = true; } if(!hesap || hesap.includes("Seçin")) { markError('kredi-yeni-hesap'); err = true; }
+            if(!gun) { markError('kredi-yeni-gun'); err = true; } if(!bitis) { markError('kredi-yeni-bitis'); err = true; } 
+            if(!hesap || hesap.includes("Seçin")) { markError('kredi-yeni-hesap'); err = true; }
             if(!tarih) { markError('kredi-yeni-tarih'); err = true; }
+            
             if(err) return;
+            
             const simdi = new Date(); const tParca = tarih.split('-');
             const tamTarihLog = `${tParca[2]}.${tParca[1]}.${tParca[0]} ${String(simdi.getHours()).padStart(2,'0')}:${String(simdi.getMinutes()).padStart(2,'0')}`;
-            apiIstekAt({ action: "yeni_kredi", isim: isim, tutar: tutar, vade: vade, aylik_taksit: aylik, gun: gun, hesap: hesap, tarih: tamTarihLog, odeme_turu: window.hesapTurleri[hesap] || "Banka Hesabı" }, 'btn-submit-kredi-tanimla');
+            
+            apiIstekAt({ action: "yeni_kredi", isim: isim, tutar: tutar, vade: vade, aylik_taksit: aylik, gun: gun, bitis_tarihi: bitis, hesap: hesap, tarih: tamTarihLog, odeme_turu: window.hesapTurleri[hesap] || "Banka Hesabı" }, 'btn-submit-kredi-tanimla');
         }
 
         function submitOzelOde() {
