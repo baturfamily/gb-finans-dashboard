@@ -3442,29 +3442,16 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
         
         let globalSira = 0;
         
-        // EVRENSEL VE ÇÖKMEYE KARŞI KORUMALI SIRALAMA ZIRHI
         let siraliKategoriler = Object.keys(sGruplar).sort((a, b) => {
-            let toplamA = (Number(sGruplar[a].odendi) || 0) + (Number(sGruplar[a].kalan) || 0);
-            let toplamB = (Number(sGruplar[b].odendi) || 0) + (Number(sGruplar[b].kalan) || 0);
+            let toplamA = (sGruplar[a].odendi || 0) + (sGruplar[a].kalan || 0);
+            let toplamB = (sGruplar[b].odendi || 0) + (sGruplar[b].kalan || 0);
             return toplamB - toplamA;
         });
 
         siraliKategoriler.forEach(tur => {
-            let g = sGruplar[tur]; 
-            // iOS WebKit çökmesini önleyen matematiksel güvenlik katmanı
-            let odendiTutar = Number(g.odendi) || 0;
-            let kalanTutar = Number(g.kalan) || 0;
-            let toplamTutar = odendiTutar + kalanTutar;
-            let kategoriOdendiMi = (kalanTutar === 0);
-            
+            let g = sGruplar[tur]; let kategoriOdendiMi = (g.kalan === 0);
             let modernTik = kategoriOdendiMi ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px; flex-shrink:0;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>` : '';
-            
-            // Sayılar güvenliğe alındıktan sonra formata dönüştürülüyor
-            let gorselOdendi = odendiTutar.toLocaleString('tr-TR', {minimumFractionDigits: 0});
-            let gorselToplam = toplamTutar.toLocaleString('tr-TR', {minimumFractionDigits: 0});
-
-            let html = `<div class="sub-accordion-header" onclick="toggleSubAccordion('${globalSira}')"><div style="font-size: 14px; font-weight: 600; color: #e2e8f0; display:flex; align-items:center;"><svg id="sub-icon-${globalSira}" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px; color:var(--text-muted); transition: transform 0.3s ease;"><polyline points="9 18 15 12 9 6"></polyline></svg>${modernTik}${tur}</div><div style="text-align:right;"><span style="font-size:12px; font-weight:800; color:${kategoriOdendiMi ? 'var(--emerald)' : 'var(--amber)'}; letter-spacing: -0.2px;">₺${gorselOdendi}</span><span style="font-size:11px; color:var(--text-muted); font-weight:600; margin-left:2px;"> / ₺${gorselToplam}</span></div></div><div class="sub-accordion-content" id="sub-content-${globalSira}">`;
-            
+            let html = `<div class="sub-accordion-header" onclick="toggleSubAccordion('${globalSira}')"><div style="font-size: 14px; font-weight: 600; color: #e2e8f0; display:flex; align-items:center;"><svg id="sub-icon-${globalSira}" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px; color:var(--text-muted); transition: transform 0.3s ease;"><polyline points="9 18 15 12 9 6"></polyline></svg>${modernTik}${tur}</div><div style="text-align:right;"><span style="font-size:12px; font-weight:800; color:${g.kalan === 0 ? 'var(--emerald)' : 'var(--amber)'}; letter-spacing: -0.2px;">₺${(g.odendi||0).toLocaleString('tr-TR')}</span><span style="font-size:11px; color:var(--text-muted); font-weight:600; margin-left:2px;"> / ₺${((g.odendi||0) + (g.kalan||0)).toLocaleString('tr-TR')}</span></div></div><div class="sub-accordion-content" id="sub-content-${globalSira}">`;
             g.liste.forEach(s => {
                 let durumIcon = s.odendiMi ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>` : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`;
                 let op = s.odendiMi ? 'opacity: 0.6;' : 'opacity: 1;'; let tClass = s.odendiMi ? 'text-gray' : 'text-red';
