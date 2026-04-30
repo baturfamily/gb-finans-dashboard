@@ -2613,11 +2613,15 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
             const btnOde = document.getElementById('btn-tab-kredi-ode');
             const btnEkle = document.getElementById('btn-tab-kredi-ekle');
             if(tab === 'ode') {
-                btnOde.className = 'segment-btn active-borc-ode'; btnEkle.className = 'segment-btn';
-                document.getElementById('tab-kredi-ode').style.display = 'block'; document.getElementById('tab-kredi-ekle').style.display = 'none';
+                btnOde.className = 'segment-btn active-borc-ode'; // Mavi
+                btnEkle.className = 'segment-btn';
+                document.getElementById('tab-kredi-ode').style.display = 'block'; 
+                document.getElementById('tab-kredi-ekle').style.display = 'none';
             } else {
-                btnOde.className = 'segment-btn'; btnEkle.className = 'segment-btn active-borc-guncelle';
-                document.getElementById('tab-kredi-ode').style.display = 'none'; document.getElementById('tab-kredi-ekle').style.display = 'block';
+                btnOde.className = 'segment-btn'; 
+                btnEkle.className = 'segment-btn active-gelir'; // Yeşil (Yeni kayıt ekleme mantığına uygun)
+                document.getElementById('tab-kredi-ode').style.display = 'none'; 
+                document.getElementById('tab-kredi-ekle').style.display = 'block';
             }
         }
 
@@ -2638,7 +2642,7 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
                 btnOde.className = 'segment-btn'; btnGuncelle.className = 'segment-btn active-borc-guncelle'; btnEkle.className = 'segment-btn';
                 document.getElementById('tab-ozel-guncelle').style.display = 'block';
             } else {
-                btnOde.className = 'segment-btn'; btnGuncelle.className = 'segment-btn'; btnEkle.className = 'segment-btn active';
+                btnOde.className = 'segment-btn'; btnGuncelle.className = 'segment-btn'; btnEkle.className = 'segment-btn active-gelir';
                 document.getElementById('tab-ozel-ekle').style.display = 'block';
             }
         }
@@ -3631,10 +3635,13 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
         // Sadece senin düzeltilmesini istediğin kutuların ID'leri:
         const hedefler = [
             'yh-tur',
+            'kbo-odeme-sekli',
+            'kredi-secim',
             'kredi-odeme-sekli',
-            'ozel-odeme-sekli',
             'kredi-yeni-hesap',
-            'kbo-odeme-sekli'
+            'ozel-secim',
+            'ozel-odeme-sekli',
+            'ozel-guncelle-secim'
         ];
 
         hedefler.forEach(function(id) {
