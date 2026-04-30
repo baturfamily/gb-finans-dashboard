@@ -2051,16 +2051,6 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
             refreshCustomSelect(sel);
         }
 
-        function toggleYeniBorc() {
-            const val = getCustomVal('bo-secim');
-            document.getElementById('bo-isim-yeni').style.display = val === '_yeni_' ? 'block' : 'none';
-            if(val === '_yeni_') document.getElementById('bo-isim-yeni').focus();
-        }
-        function toggleYeniBorcGuncelle() {
-            const val = getCustomVal('bg-secim');
-            document.getElementById('bg-isim-yeni').style.display = val === '_yeni_' ? 'block' : 'none';
-            if(val === '_yeni_') document.getElementById('bg-isim-yeni').focus();
-        }
         function toggleVarlikTab(tab) {
     vibe();
     const btnGuncelle = document.getElementById('btn-tab-varlik-guncelle');
@@ -2139,24 +2129,6 @@ function submitVarlikSil() {
     apiIstekAt({ action: "varlik_sil", varlik_adi: isim }, 'btn-submit-varlik-sil');
 }
 
-        function toggleOzelBorcTab(tab) {
-            vibe();
-            const btnOde = document.getElementById('btn-tab-borc-ode');
-            const btnEkle = document.getElementById('btn-tab-borc-ekle');
-            
-            if(tab === 'ode') {
-                btnOde.className = 'segment-btn active-borc-ode';
-                btnEkle.className = 'segment-btn';
-                document.getElementById('tab-borc-ode').style.display = 'block';
-                document.getElementById('tab-borc-ekle').style.display = 'none';
-            } else {
-                btnOde.className = 'segment-btn';
-                btnEkle.className = 'segment-btn active-borc-guncelle';
-                document.getElementById('tab-borc-ode').style.display = 'none';
-                document.getElementById('tab-borc-ekle').style.display = 'block';
-            }
-        }
-
         async function openSectionLive(ev, sectionId, title) {
             const btn = ev.currentTarget; const orig = btn.innerHTML;
             btn.innerHTML = `<div class="premium-loader"><span></span><span></span><span></span></div>`; vibe();
@@ -2195,11 +2167,17 @@ function submitVarlikSil() {
                 document.getElementById('kbo-odeme-sekli').value = 'tek';
                 toggleParcaliKartBorcOdeme(); refreshCustomSelect(document.getElementById('kbo-odeme-sekli'));
             }
-            if(id === 'section-ozel-borc') {
-document.getElementById('bo-secim').value = ''; document.getElementById('bo-isim-yeni').value = '';
-document.getElementById('bo-isim-yeni').style.display = 'none'; document.getElementById('bo-tarih').valueAsDate = new Date();
-                document.getElementById('bo-odeme-sekli').value = 'tek'; toggleParcaliBorcOdeme();
-                refreshCustomSelect(document.getElementById('bo-odeme-sekli')); refreshCustomSelect(document.getElementById('bo-secim'));
+            if(id === 'kredi-islemleri-screen') {
+                document.getElementById('kredi-secim').value = ''; document.getElementById('kredi-tarih').valueAsDate = new Date();
+                document.getElementById('kredi-odeme-sekli').value = 'tek'; toggleParcaliKrediOdeme(); 
+                refreshCustomSelect(document.getElementById('kredi-odeme-sekli')); refreshCustomSelect(document.getElementById('kredi-secim'));
+                toggleKrediTab('ode');
+            }
+            if(id === 'ozel-borc-islemleri-screen') {
+                document.getElementById('ozel-secim').value = ''; document.getElementById('ozel-tarih').valueAsDate = new Date();
+                document.getElementById('ozel-odeme-sekli').value = 'tek'; toggleParcaliOzelOdeme(); 
+                refreshCustomSelect(document.getElementById('ozel-odeme-sekli')); refreshCustomSelect(document.getElementById('ozel-secim'));
+                toggleOzelTab('ode');
             }
             if(id === 'section-varlik-guncelle') {
         document.getElementById('vg-secim').value = ''; 
@@ -2626,133 +2604,216 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
             }
             apiIstekAt(payload, 'btn-submit-kart-borc-ode');
         }
-
-        function toggleParcaliBorcOdeme() {
-            const sekil = getCustomVal('bo-odeme-sekli');
-            if(sekil === 'parcali') {
-                document.getElementById('bo-tek-hesap-alani').style.display = 'none';
-                document.getElementById('bo-parcali-hesap-alani').style.display = 'block';
-                document.getElementById('bo-parcalar-container').innerHTML = '';
-                addParcaBorc(); addParcaBorc(); hesaplaKalanParcaliBorc();
+        
+// ==========================================
+        // YENİ: KREDİ VE ÖZEL BORÇ YÖNETİM MOTORU
+        // ==========================================
+        function toggleKrediTab(tab) {
+            vibe();
+            const btnOde = document.getElementById('btn-tab-kredi-ode');
+            const btnEkle = document.getElementById('btn-tab-kredi-ekle');
+            if(tab === 'ode') {
+                btnOde.className = 'segment-btn active-borc-ode'; btnEkle.className = 'segment-btn';
+                document.getElementById('tab-kredi-ode').style.display = 'block'; document.getElementById('tab-kredi-ekle').style.display = 'none';
             } else {
-                document.getElementById('bo-tek-hesap-alani').style.display = 'block';
-                document.getElementById('bo-parcali-hesap-alani').style.display = 'none';
+                btnOde.className = 'segment-btn'; btnEkle.className = 'segment-btn active-borc-guncelle';
+                document.getElementById('tab-kredi-ode').style.display = 'none'; document.getElementById('tab-kredi-ekle').style.display = 'block';
             }
         }
 
-        function addParcaBorc() {
-            const container = document.getElementById('bo-parcalar-container');
-            if(container.querySelectorAll('.parca-satiri-borc').length >= 5) { alert("En fazla 5 parçaya bölebilirsiniz."); return; }
-            const row = document.createElement('div'); row.className = 'parca-satiri-borc';
+        function toggleOzelTab(tab) {
+            vibe();
+            const btnOde = document.getElementById('btn-tab-ozel-ode');
+            const btnGuncelle = document.getElementById('btn-tab-ozel-guncelle');
+            const btnEkle = document.getElementById('btn-tab-ozel-ekle');
+            
+            document.getElementById('tab-ozel-ode').style.display = 'none';
+            document.getElementById('tab-ozel-guncelle').style.display = 'none';
+            document.getElementById('tab-ozel-ekle').style.display = 'none';
+            
+            if(tab === 'ode') {
+                btnOde.className = 'segment-btn active-borc-ode'; btnGuncelle.className = 'segment-btn'; btnEkle.className = 'segment-btn';
+                document.getElementById('tab-ozel-ode').style.display = 'block';
+            } else if(tab === 'guncelle') {
+                btnOde.className = 'segment-btn'; btnGuncelle.className = 'segment-btn active-borc-guncelle'; btnEkle.className = 'segment-btn';
+                document.getElementById('tab-ozel-guncelle').style.display = 'block';
+            } else {
+                btnOde.className = 'segment-btn'; btnGuncelle.className = 'segment-btn'; btnEkle.className = 'segment-btn active';
+                document.getElementById('tab-ozel-ekle').style.display = 'block';
+            }
+        }
+
+        function toggleVadeliGrup() {
+            const check = document.getElementById('ozel-vadeli-check');
+            const grup = document.getElementById('ozel-vadeli-grup');
+            grup.style.display = check.checked ? 'block' : 'none';
+            if(!check.checked) document.getElementById('ozel-yeni-vade').value = "";
+        }
+
+        function toggleParcaliKrediOdeme() {
+            const sekil = getCustomVal('kredi-odeme-sekli');
+            if(sekil === 'parcali') {
+                document.getElementById('kredi-tek-hesap-alani').style.display = 'none';
+                document.getElementById('kredi-parcali-hesap-alani').style.display = 'block';
+                document.getElementById('kredi-parcalar-container').innerHTML = '';
+                addParcaKredi(); addParcaKredi(); hesaplaKalanParcaliKredi();
+            } else {
+                document.getElementById('kredi-tek-hesap-alani').style.display = 'block';
+                document.getElementById('kredi-parcali-hesap-alani').style.display = 'none';
+            }
+        }
+
+        function addParcaKredi() {
+            const container = document.getElementById('kredi-parcalar-container');
+            if(container.querySelectorAll('.parca-satiri-kredi').length >= 5) { alert("En fazla 5 parçaya bölebilirsiniz."); return; }
+            const row = document.createElement('div'); row.className = 'parca-satiri-kredi';
             row.style.cssText = "display: grid; grid-template-columns: 1.5fr 1fr auto; gap: 8px; margin-bottom: 10px; align-items: start;";
-            
-            const yontemSelect = document.getElementById('bo-yontem');
-            const dinamikSecenekler = yontemSelect ? yontemSelect.innerHTML : `<option value="">Hesap Seçin</option>`;
-            
-            const uniqueId = 'parca-bo-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
-            
-            row.innerHTML = `
-                <select id="${uniqueId}" class="form-control parca-hesap-borc" style="padding: 10px; font-size: 13px;">${dinamikSecenekler}</select>
-                <input type="text" inputmode="decimal" class="form-control parca-tutar-borc" placeholder="Tutar" oninput="tutarFormatla(this); hesaplaKalanParcaliBorc()" style="padding: 10px; font-size: 14px;">
-                <button onclick="this.parentElement.remove(); hesaplaKalanParcaliBorc();" style="background: rgba(244, 63, 94, 0.15); border: none; color: var(--rose); width: 38px; height: 38px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
-            `;
+            const uniqueId = 'parca-kr-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
+            row.innerHTML = `<select id="${uniqueId}" class="form-control parca-hesap-kredi" style="padding: 10px; font-size: 13px;">${window.hesapOptions}</select><input type="text" inputmode="decimal" class="form-control parca-tutar-kredi" placeholder="Tutar" oninput="tutarFormatla(this); hesaplaKalanParcaliKredi()" style="padding: 10px; font-size: 14px;"><button onclick="this.parentElement.remove(); hesaplaKalanParcaliKredi();" style="background: rgba(244, 63, 94, 0.15); border: none; color: var(--rose); width: 38px; height: 38px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>`;
             container.appendChild(row); refreshCustomSelect(document.getElementById(uniqueId));
         }
 
-        function hesaplaKalanParcaliBorc() {
-            const hedefTutar = parseSaha(document.getElementById('bo-tutar').value) || 0;
-            let girilenToplam = 0; document.querySelectorAll('.parca-tutar-borc').forEach(inp => girilenToplam += parseSaha(inp.value) || 0);
+        function hesaplaKalanParcaliKredi() {
+            const hedefTutar = parseSaha(document.getElementById('kredi-ode-tutar').value) || 0;
+            let girilenToplam = 0; document.querySelectorAll('.parca-tutar-kredi').forEach(inp => girilenToplam += parseSaha(inp.value) || 0);
             const kalan = hedefTutar - girilenToplam;
-            document.getElementById('bo-hedef-tutar').innerText = "₺" + hedefTutar.toLocaleString('tr-TR', {minimumFractionDigits:2});
-            
-            const kalanEl = document.getElementById('bo-kalan-tutar');
+            document.getElementById('kredi-hedef-tutar').innerText = "₺" + hedefTutar.toLocaleString('tr-TR', {minimumFractionDigits:2});
+            const kalanEl = document.getElementById('kredi-kalan-tutar');
             if(kalan === 0) { kalanEl.style.color = "var(--emerald)"; kalanEl.innerText = "₺0,00"; }
             else if (kalan < 0) { kalanEl.style.color = "var(--rose)"; kalanEl.innerText = "Fazla: ₺" + Math.abs(kalan).toLocaleString('tr-TR', {minimumFractionDigits:2}); }
             else { kalanEl.style.color = "var(--amber)"; kalanEl.innerText = "₺" + kalan.toLocaleString('tr-TR', {minimumFractionDigits:2}); }
         }
 
-        function submitBorcOde() {
-            let isim = getCustomVal('bo-secim');
-            if(isim === '_yeni_') isim = document.getElementById('bo-isim-yeni').value.trim();
-            const tutar = document.getElementById('bo-tutar').value;
-            const sekil = getCustomVal('bo-odeme-sekli');
-            const secilenTarih = document.getElementById('bo-tarih').value;
-            
-            let err = false;
-            if(!isim) { markError('bo-secim'); if(isim==="") markError('bo-isim-yeni'); err = true; }
-            if(tutar === "") { markError('bo-tutar'); err = true; }
-            if(!secilenTarih) { markError('bo-tarih'); err = true; }
-            if(err) return;
-            
-            const simdi = new Date();
-            const tParca = secilenTarih.split('-');
-            const tamTarihLog = `${tParca[2]}.${tParca[1]}.${tParca[0]} ${String(simdi.getHours()).padStart(2,'0')}:${String(simdi.getMinutes()).padStart(2,'0')}:${String(simdi.getSeconds()).padStart(2,'0')}`;
-            
-            let payload = { action: "borc_ode", borc_adi: isim, tutar: tutar, tarih: tamTarihLog, odeme_sekli: sekil };
-            
+        function toggleParcaliOzelOdeme() {
+            const sekil = getCustomVal('ozel-odeme-sekli');
             if(sekil === 'parcali') {
-                const parcalar = [];
-                document.querySelectorAll('.parca-satiri-borc').forEach(row => {
-                    let yontem = row.querySelector('.parca-hesap-borc').value;
-                    const pTutarVal = parseSaha(row.querySelector('.parca-tutar-borc').value);
-                    if(pTutarVal > 0) parcalar.push({ yontem: yontem, tutar: pTutarVal });
+                document.getElementById('ozel-tek-hesap-alani').style.display = 'none';
+                document.getElementById('ozel-parcali-hesap-alani').style.display = 'block';
+                document.getElementById('ozel-parcalar-container').innerHTML = '';
+                addParcaOzel(); addParcaOzel(); hesaplaKalanParcaliOzel();
+            } else {
+                document.getElementById('ozel-tek-hesap-alani').style.display = 'block';
+                document.getElementById('ozel-parcali-hesap-alani').style.display = 'none';
+            }
+        }
+
+        function addParcaOzel() {
+            const container = document.getElementById('ozel-parcalar-container');
+            if(container.querySelectorAll('.parca-satiri-ozel').length >= 5) { alert("En fazla 5 parçaya bölebilirsiniz."); return; }
+            const row = document.createElement('div'); row.className = 'parca-satiri-ozel';
+            row.style.cssText = "display: grid; grid-template-columns: 1.5fr 1fr auto; gap: 8px; margin-bottom: 10px; align-items: start;";
+            const uniqueId = 'parca-oz-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
+            row.innerHTML = `<select id="${uniqueId}" class="form-control parca-hesap-ozel" style="padding: 10px; font-size: 13px;">${window.hesapOptions}</select><input type="text" inputmode="decimal" class="form-control parca-tutar-ozel" placeholder="Tutar" oninput="tutarFormatla(this); hesaplaKalanParcaliOzel()" style="padding: 10px; font-size: 14px;"><button onclick="this.parentElement.remove(); hesaplaKalanParcaliOzel();" style="background: rgba(244, 63, 94, 0.15); border: none; color: var(--rose); width: 38px; height: 38px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>`;
+            container.appendChild(row); refreshCustomSelect(document.getElementById(uniqueId));
+        }
+
+        function hesaplaKalanParcaliOzel() {
+            const hedefTutar = parseSaha(document.getElementById('ozel-ode-tutar').value) || 0;
+            let girilenToplam = 0; document.querySelectorAll('.parca-tutar-ozel').forEach(inp => girilenToplam += parseSaha(inp.value) || 0);
+            const kalan = hedefTutar - girilenToplam;
+            document.getElementById('ozel-hedef-tutar').innerText = "₺" + hedefTutar.toLocaleString('tr-TR', {minimumFractionDigits:2});
+            const kalanEl = document.getElementById('ozel-kalan-tutar');
+            if(kalan === 0) { kalanEl.style.color = "var(--emerald)"; kalanEl.innerText = "₺0,00"; }
+            else if (kalan < 0) { kalanEl.style.color = "var(--rose)"; kalanEl.innerText = "Fazla: ₺" + Math.abs(kalan).toLocaleString('tr-TR', {minimumFractionDigits:2}); }
+            else { kalanEl.style.color = "var(--amber)"; kalanEl.innerText = "₺" + kalan.toLocaleString('tr-TR', {minimumFractionDigits:2}); }
+        }
+
+        function submitKrediOde() {
+            const borcAdi = getCustomVal('kredi-secim'); const tutar = document.getElementById('kredi-ode-tutar').value;
+            const sekil = getCustomVal('kredi-odeme-sekli'); const secilenTarih = document.getElementById('kredi-tarih').value;
+            let err = false;
+            if(!borcAdi || borcAdi.includes("Seçin")) { markError('kredi-secim'); err = true; }
+            if(!tutar || parseSaha(tutar) <= 0) { markError('kredi-ode-tutar'); err = true; }
+            if(!secilenTarih) { markError('kredi-tarih'); err = true; }
+            if(err) return;
+            const simdi = new Date(); const tParca = secilenTarih.split('-');
+            const tamTarihLog = `${tParca[2]}.${tParca[1]}.${tParca[0]} ${String(simdi.getHours()).padStart(2,'0')}:${String(simdi.getMinutes()).padStart(2,'0')}`;
+            let payload = { action: "kredi_ode", borc_adi: borcAdi, tutar: tutar, tarih: tamTarihLog, odeme_sekli: sekil };
+            if(sekil === 'parcali') {
+                const parcalar = []; let hataVar = false;
+                document.querySelectorAll('.parca-satiri-kredi').forEach(row => {
+                    let yontem = row.querySelector('.parca-hesap-kredi').value;
+                    if(!yontem) { const spanTxt = row.querySelector('.custom-select-trigger span'); if(spanTxt) yontem = spanTxt.innerText; }
+                    const pTutarVal = parseSaha(row.querySelector('.parca-tutar-kredi').value);
+                    if(pTutarVal <= 0) { row.querySelector('.parca-tutar-kredi').classList.add('error'); hataVar = true; }
+                    else { parcalar.push({ yontem: yontem, tutar: pTutarVal }); }
                 });
+                if(hataVar || parcalar.length === 0) return alert("Hatalı ödeme tutarı.");
                 payload.parcalar = parcalar; payload.odeme_turu = window.hesapTurleri[parcalar[0].yontem] || "Banka Hesabı";
             } else {
-                let tekYontem = getCustomVal('bo-yontem'); 
-                if(!tekYontem || tekYontem.includes("Seçin")) return markError('bo-yontem');
-                payload.yontem = tekYontem;
-                payload.odeme_turu = window.hesapTurleri[tekYontem] || "Banka Hesabı";
+                let tekYontem = getCustomVal('kredi-yontem');
+                if(!tekYontem || tekYontem.includes("Seçin")) return markError('kredi-yontem');
+                payload.yontem = tekYontem; payload.odeme_turu = window.hesapTurleri[tekYontem] || "Banka Hesabı";
             }
-            apiIstekAt(payload, 'btn-submit-borc-ode');
+            apiIstekAt(payload, 'btn-submit-kredi-ode');
         }
 
-        function updateTransferOptions() {
-            const cikisEl = document.getElementById('t-cikis');
-            const girisEl = document.getElementById('t-giris');
-            const seciliCikis = cikisEl.value; const seciliGiris = girisEl.value;
-            
-            const tempDiv = document.createElement('div'); tempDiv.innerHTML = window.vadesizOptions;
-            const tumSecenekler = Array.from(tempDiv.querySelectorAll('option')).filter(o => o.value !== "");
-            
-            let yeniCikisHTML = `<option value="">Seçiniz...</option>`;
-            tumSecenekler.forEach(opt => { if (opt.value !== seciliGiris) { yeniCikisHTML += `<option value="${opt.value}" ${opt.value === seciliCikis ? 'selected' : ''}>${opt.text}</option>`; } });
-            cikisEl.innerHTML = yeniCikisHTML; refreshCustomSelect(cikisEl);
-            
-            let yeniGirisHTML = `<option value="">Seçiniz...</option>`;
-            tumSecenekler.forEach(opt => { if (opt.value !== seciliCikis) { yeniGirisHTML += `<option value="${opt.value}" ${opt.value === seciliGiris ? 'selected' : ''}>${opt.text}</option>`; } });
-            girisEl.innerHTML = yeniGirisHTML; refreshCustomSelect(girisEl);
-        }
-
-        async function submitTransfer() {
-            const cikis = getCustomVal('t-cikis'); const giris = getCustomVal('t-giris');
-            const tutar = document.getElementById('t-tutar').value; const secilenTarih = document.getElementById('t-tarih').value;
-            
-            if(!tutar) return markError('t-tutar');
-            if(!cikis || cikis === "" || cikis === "Seçiniz...") return markError('t-cikis');
-            if(!giris || giris === "" || giris === "Seçiniz...") return markError('t-giris');
-            if(!secilenTarih) return markError('t-tarih');
-            
-            if(cikis === giris) { alert("Çıkış ve Giriş hesabı aynı olamaz."); return; }
-            
-            const simdi = new Date(); const saat = String(simdi.getHours()).padStart(2, '0');
-            const dak = String(simdi.getMinutes()).padStart(2, '0'); const sn = String(simdi.getSeconds()).padStart(2, '0');
-            const tParca = secilenTarih.split('-'); const tamTarih = `${tParca[2]}.${tParca[1]}.${tParca[0]} ${saat}:${dak}:${sn}`;
-            
-            apiIstekAt({ action: "transfer_yap", yontem: cikis, transfer_yeri: giris, tutar: tutar, tarih: tamTarih }, 'btn-submit-transfer');
-        }
-
-        function submitBorcGuncelle() {
-            let isim = getCustomVal('bg-secim');
-            if(isim === '_yeni_') isim = document.getElementById('bg-isim-yeni').value.trim();
-            const tutar = document.getElementById('bg-tutar').value;
+        function submitYeniKredi() {
+            const isim = document.getElementById('kredi-yeni-isim').value.trim(); const tutar = document.getElementById('kredi-yeni-tutar').value;
+            const vade = document.getElementById('kredi-yeni-vade').value; const aylik = document.getElementById('kredi-yeni-aylik').value;
+            const gun = document.getElementById('kredi-yeni-gun').value; const hesap = getCustomVal('kredi-yeni-hesap');
+            const tarih = document.getElementById('kredi-yeni-tarih').value;
             let err = false;
-            if(!isim) { markError('bg-secim'); if(isim==="") markError('bg-isim-yeni'); err = true; }
-            if(tutar === "") { markError('bg-tutar'); err = true; }
+            if(!isim) { markError('kredi-yeni-isim'); err = true; } if(!tutar) { markError('kredi-yeni-tutar'); err = true; }
+            if(!vade) { markError('kredi-yeni-vade'); err = true; } if(!aylik) { markError('kredi-yeni-aylik'); err = true; }
+            if(!gun) { markError('kredi-yeni-gun'); err = true; } if(!hesap || hesap.includes("Seçin")) { markError('kredi-yeni-hesap'); err = true; }
+            if(!tarih) { markError('kredi-yeni-tarih'); err = true; }
             if(err) return;
-            apiIstekAt({ action: "borc_guncelle", borc_adi: isim, tutar: tutar }, 'btn-submit-borc-guncelle');
+            const simdi = new Date(); const tParca = tarih.split('-');
+            const tamTarihLog = `${tParca[2]}.${tParca[1]}.${tParca[0]} ${String(simdi.getHours()).padStart(2,'0')}:${String(simdi.getMinutes()).padStart(2,'0')}`;
+            apiIstekAt({ action: "yeni_kredi", isim: isim, tutar: tutar, vade: vade, aylik_taksit: aylik, gun: gun, hesap: hesap, tarih: tamTarihLog, odeme_turu: window.hesapTurleri[hesap] || "Banka Hesabı" }, 'btn-submit-kredi-tanimla');
         }
 
+        function submitOzelOde() {
+            const borcAdi = getCustomVal('ozel-secim'); const tutar = document.getElementById('ozel-ode-tutar').value;
+            const sekil = getCustomVal('ozel-odeme-sekli'); const secilenTarih = document.getElementById('ozel-tarih').value;
+            let err = false;
+            if(!borcAdi || borcAdi.includes("Seçin")) { markError('ozel-secim'); err = true; }
+            if(!tutar || parseSaha(tutar) <= 0) { markError('ozel-ode-tutar'); err = true; }
+            if(!secilenTarih) { markError('ozel-tarih'); err = true; }
+            if(err) return;
+            const simdi = new Date(); const tParca = secilenTarih.split('-');
+            const tamTarihLog = `${tParca[2]}.${tParca[1]}.${tParca[0]} ${String(simdi.getHours()).padStart(2,'0')}:${String(simdi.getMinutes()).padStart(2,'0')}`;
+            let payload = { action: "ozel_borc_ode", borc_adi: borcAdi, tutar: tutar, tarih: tamTarihLog, odeme_sekli: sekil };
+            if(sekil === 'parcali') {
+                const parcalar = []; let hataVar = false;
+                document.querySelectorAll('.parca-satiri-ozel').forEach(row => {
+                    let yontem = row.querySelector('.parca-hesap-ozel').value;
+                    if(!yontem) { const spanTxt = row.querySelector('.custom-select-trigger span'); if(spanTxt) yontem = spanTxt.innerText; }
+                    const pTutarVal = parseSaha(row.querySelector('.parca-tutar-ozel').value);
+                    if(pTutarVal <= 0) { row.querySelector('.parca-tutar-ozel').classList.add('error'); hataVar = true; }
+                    else { parcalar.push({ yontem: yontem, tutar: pTutarVal }); }
+                });
+                if(hataVar || parcalar.length === 0) return alert("Hatalı ödeme tutarı.");
+                payload.parcalar = parcalar; payload.odeme_turu = window.hesapTurleri[parcalar[0].yontem] || "Banka Hesabı";
+            } else {
+                let tekYontem = getCustomVal('ozel-yontem');
+                if(!tekYontem || tekYontem.includes("Seçin")) return markError('ozel-yontem');
+                payload.yontem = tekYontem; payload.odeme_turu = window.hesapTurleri[tekYontem] || "Banka Hesabı";
+            }
+            apiIstekAt(payload, 'btn-submit-ozel-ode');
+        }
+
+        function submitOzelGuncelle() {
+            const isim = getCustomVal('ozel-guncelle-secim'); const yeniTutar = document.getElementById('ozel-guncelle-tutar').value;
+            if(!isim || isim.includes("Seçin")) return markError('ozel-guncelle-secim');
+            if(!yeniTutar) return markError('ozel-guncelle-tutar');
+            apiIstekAt({ action: "ozel_borc_guncelle", isim: isim, yeni_tutar: yeniTutar }, 'btn-submit-ozel-guncelle');
+        }
+
+        function submitYeniOzel() {
+            const isim = document.getElementById('ozel-yeni-isim').value.trim(); const tutar = document.getElementById('ozel-yeni-tutar').value;
+            const isVadeli = document.getElementById('ozel-vadeli-check').checked; const vade = document.getElementById('ozel-yeni-vade').value;
+            const tarih = document.getElementById('ozel-yeni-tarih').value;
+            let err = false;
+            if(!isim) { markError('ozel-yeni-isim'); err = true; } if(!tutar) { markError('ozel-yeni-tutar'); err = true; }
+            if(isVadeli && !vade) { markError('ozel-yeni-vade'); err = true; } if(!tarih) { markError('ozel-yeni-tarih'); err = true; }
+            if(err) return;
+            const simdi = new Date(); const tParca = tarih.split('-');
+            const tamTarihLog = `${tParca[2]}.${tParca[1]}.${tParca[0]} ${String(simdi.getHours()).padStart(2,'0')}:${String(simdi.getMinutes()).padStart(2,'0')}`;
+            apiIstekAt({ action: "yeni_ozel_borc", isim: isim, tutar: tutar, vade: isVadeli ? vade : "-", tarih: tamTarihLog }, 'btn-submit-ozel-tanimla');
+        }
+        
         function doldurSabitGuncelleForm() {
     const select = document.getElementById('sg-kural'); const opt = select.options[select.selectedIndex];
     const formAlani = document.getElementById('sabit-guncelle-form-alani');
@@ -3136,14 +3197,26 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
         window.faizOptions = '<option value="" disabled selected>Seçiniz...</option>';
         data.faizDetaylari.forEach(f => window.faizOptions += `<option value="${f.banka}">${f.banka} ${f.tur}</option>`);
 
-        let bgOptions = `<option value="">-- Borç Seçin --</option><option value="_yeni_">+ Yeni Borç Ekle</option>`;
-        let boOptions = `<option value="">-- Borç Seçin --</option><option value="_yeni_">+ Sistem Dışı Yeni Borç Öde</option>`;
+        // YENİ: Kredi ve Özel Borç Filtreleme Motoru
+        let krediOptions = `<option value="" disabled selected>Seçiniz...</option>`;
+        let ozelOptions = `<option value="" disabled selected>Seçiniz...</option>`;
+        
         data.borclarListe.forEach(b => {
-            bgOptions += `<option value="${b.isim}">${b.isim} (Kalan: ${formatTLTam(b.tutar)})</option>`;
-            boOptions += `<option value="${b.isim}">${b.isim} (Kalan: ${formatTLTam(b.tutar)})</option>`;
+            let pwaFormatliBorcTutar = formatTLTam(b.tutar);
+            if (b.tur && b.tur.toLowerCase() === "kredi") {
+                krediOptions += `<option value="${b.isim}">${b.isim} (Kalan: ${pwaFormatliBorcTutar})</option>`;
+            } else if (b.tur && b.tur.toLowerCase() === "özel") {
+                ozelOptions += `<option value="${b.isim}">${b.isim} (Kalan: ${pwaFormatliBorcTutar})</option>`;
+            }
         });
-        const bgSecim = document.getElementById('bg-secim'); if(bgSecim) { bgSecim.innerHTML = bgOptions; refreshCustomSelect(bgSecim); }
-        const boSecim = document.getElementById('bo-secim'); if(boSecim) { boSecim.innerHTML = boOptions; refreshCustomSelect(boSecim); }
+
+        const kSecim = document.getElementById('kredi-secim'); if(kSecim) { kSecim.innerHTML = krediOptions; refreshCustomSelect(kSecim); }
+        const oSecim = document.getElementById('ozel-secim'); if(oSecim) { oSecim.innerHTML = ozelOptions; refreshCustomSelect(oSecim); }
+        const ogSecim = document.getElementById('ozel-guncelle-secim'); if(ogSecim) { ogSecim.innerHTML = ozelOptions; refreshCustomSelect(ogSecim); }
+        
+        const kyHesap = document.getElementById('kredi-yeni-hesap'); if(kyHesap) { kyHesap.innerHTML = window.hesapOptions; refreshCustomSelect(kyHesap); }
+        const koYontem = document.getElementById('kredi-yontem'); if(koYontem) { koYontem.innerHTML = window.hesapOptions; refreshCustomSelect(koYontem); }
+        const ooYontem = document.getElementById('ozel-yontem'); if(ooYontem) { ooYontem.innerHTML = window.hesapOptions; refreshCustomSelect(ooYontem); }
         
         let kartIsimleriList = `<option value="">-- Kart Seçin (Güncel Borç) --</option>`;
         window.kartlarDetayli.forEach(k => {
@@ -3557,9 +3630,11 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
     setTimeout(function() {
         // Sadece senin düzeltilmesini istediğin kutuların ID'leri:
         const hedefler = [
-            'yh-tur',           // Yeni Hesap Ekle -> Hesap Türü
-            'bo-odeme-sekli',   // Mevcut Borcu Öde -> Ödeme Şekli
-            'kbo-odeme-sekli'   // Kart Borcu Öde -> Ödeme Şekli
+            'yh-tur',
+            'kredi-odeme-sekli',
+            'ozel-odeme-sekli',
+            'kredi-yeni-hesap',
+            'kbo-odeme-sekli'
         ];
 
         hedefler.forEach(function(id) {
