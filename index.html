@@ -1253,7 +1253,7 @@
                     </div>
                     <div class="form-group">
                         <label>Tarih</label>
-                        <input type="text" id="kredi-yeni-tarih" class="form-control" placeholder="Tarih Girmek İçin Dokun" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'">
+                        <input type="date" id="kredi-yeni-tarih" class="form-control">
                     </div>
                     <button class="btn-submit" id="btn-submit-kredi-tanimla" onclick="submitYeniKredi()">Yeni Kredi Tanımla</button>
                 </div>
@@ -1302,7 +1302,7 @@
 
                     <div class="form-group">
                         <label>Tarih</label>
-                        <input type="text" id="ozel-tarih" class="form-control" placeholder="Tarih Girmek İçin Dokun" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'">
+                        <input type="date" id="ozel-tarih" class="form-control">
                     </div>
                     <button class="btn-submit" id="btn-submit-ozel-ode" onclick="submitOzelOde()">Borcu Öde</button>
                 </div>
@@ -1329,7 +1329,7 @@
                     </div>
                     <div class="form-group">
                         <label>Tarih</label>
-                        <input type="text" id="ozel-yeni-tarih" class="form-control" placeholder="Tarih Girmek İçin Dokun" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'">
+                        <input type="date" id="ozel-yeni-tarih" class="form-control">
                     </div>
                     <button class="btn-submit" id="btn-submit-ozel-tanimla" onclick="submitYeniOzel()">Yeni Borç Tanımla</button>
                 </div>
@@ -2173,13 +2173,17 @@ function submitVarlikSil() {
                 toggleParcaliKartBorcOdeme(); refreshCustomSelect(document.getElementById('kbo-odeme-sekli'));
             }
             if(id === 'kredi-islemleri-screen') {
-                document.getElementById('kredi-secim').value = ''; document.getElementById('kredi-tarih').valueAsDate = new Date();
+                document.getElementById('kredi-secim').value = ''; 
+                document.getElementById('kredi-tarih').valueAsDate = new Date();
+                document.getElementById('kredi-yeni-tarih').valueAsDate = new Date();
                 document.getElementById('kredi-odeme-sekli').value = 'tek'; toggleParcaliKrediOdeme(); 
                 refreshCustomSelect(document.getElementById('kredi-odeme-sekli')); refreshCustomSelect(document.getElementById('kredi-secim'));
                 toggleKrediTab('ode');
             }
             if(id === 'ozel-borc-islemleri-screen') {
-                document.getElementById('ozel-secim').value = ''; document.getElementById('ozel-tarih').valueAsDate = new Date();
+                document.getElementById('ozel-secim').value = ''; 
+                document.getElementById('ozel-tarih').valueAsDate = new Date();
+                document.getElementById('ozel-yeni-tarih').valueAsDate = new Date();
                 document.getElementById('ozel-odeme-sekli').value = 'tek'; toggleParcaliOzelOdeme(); 
                 refreshCustomSelect(document.getElementById('ozel-odeme-sekli')); refreshCustomSelect(document.getElementById('ozel-secim'));
                 toggleOzelTab('ode');
