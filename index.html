@@ -1170,17 +1170,24 @@
                 <span class="back-link" onclick="showSection('araci-borc-menusu', 'Borç / Kredi İşlemleri')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Seçim Menüsüne Dön</span>
                 
                 <div class="segment-control" style="margin-bottom: 16px;">
-                    <div class="segment-btn active-borc-ode" id="btn-tab-kredi-ode" onclick="toggleKrediTab('ode')">Kredi Taksidi Öde</div>
+                    <div class="segment-btn active-borc-ode" id="btn-tab-kredi-ode" onclick="toggleKrediTab('ode')">Erken Kapama</div>
                     <div class="segment-btn" id="btn-tab-kredi-ekle" onclick="toggleKrediTab('ekle')">Yeni Kredi Tanımla</div>
                 </div>
 
-                <!-- SEKME 1: KREDİ BORCU ÖDE -->
+                <!-- SEKME 1: KREDİ ERKEN KAPAMA -->
                 <div id="tab-kredi-ode">
                     <div class="form-group">
-                        <label>Hangi Krediyi Ödüyorsun?</label>
-                        <select id="kredi-secim" class="form-control"></select>
+                        <label>Hangi Krediyi Erken Kapatacaksınız?</label>
+                        <!-- Evrensel kâr zırhı için onchange eklendi -->
+                        <select id="kredi-secim" class="form-control" onchange="hesaplaKrediKarZarar()"></select>
                     </div>
-                    <div class="form-group"><label>Ödenen Tutar (₺)</label><input type="text" inputmode="decimal" id="kredi-ode-tutar" class="form-control" placeholder="Örn: 5000" oninput="tutarFormatla(this); hesaplaKalanParcaliKredi()"></div>
+                    <div class="form-group"><label>Erken Kapama Tutarı (₺)</label><input type="text" inputmode="decimal" id="kredi-ode-tutar" class="form-control" placeholder="Örn: 250000" oninput="tutarFormatla(this); hesaplaKrediKarZarar(); hesaplaKalanParcaliKredi()"></div>
+                    
+                    <!-- PREMIUM KÂR GÖSTERGE KUTUSU -->
+                    <div id="kredi-kar-zarar-kutu" style="display:none; background: rgba(16, 185, 129, 0.05); padding: 15px; border-radius: 14px; border: 1px dashed rgba(16, 185, 129, 0.3); margin-top: -10px; margin-bottom: 15px; text-align: center;">
+                        <div style="font-size: 11px; color: var(--emerald); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">Erken Kapatmanız Halinde Net Kârınız</div>
+                        <div id="kredi-kar-rakam" class="tabular-nums" style="font-size: 24px; font-weight: 800; color: #fff;">₺0,00</div>
+                    </div>
                     
                     <div class="form-group">
                         <label>Ödeme Şekli</label>
@@ -1208,7 +1215,7 @@
                         <input type="text" id="kredi-tarih" class="form-control" placeholder="Tarih Girmek İçin Dokun" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'">
                     </div>
 
-                    <button class="btn-submit" id="btn-submit-kredi-ode" onclick="submitKrediOde()">Kredi Taksidini Öde</button>
+                    <button class="btn-submit" id="btn-submit-kredi-ode" onclick="submitKrediOde()">Krediyi Erken Kapat</button>
                 </div>
 
                 <!-- SEKME 2: YENİ KREDİ TANIMLA -->
@@ -2716,6 +2723,28 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
             else { kalanEl.style.color = "var(--amber)"; kalanEl.innerText = "₺" + kalan.toLocaleString('tr-TR', {minimumFractionDigits:2}); }
         }
 
+        function hesaplaKrediKarZarar() {
+            const secim = getCustomVal('kredi-secim');
+            const kutu = document.getElementById('kredi-kar-zarar-kutu');
+            const rakamEl = document.getElementById('kredi-kar-rakam');
+            const girilenTutar = parseSaha(document.getElementById('kredi-ode-tutar').value) || 0;
+
+            if (!secim || secim.includes("Seçin") || girilenTutar <= 0) {
+                if (kutu) kutu.style.display = 'none';
+                return;
+            }
+
+            // Sistemdeki kredi bakiyesini bul (borclarListe içinden evrensel sorgu)
+            const krediObj = window.currentStats.borclarListe.find(b => b.isim === secim);
+            if (krediObj && krediObj.tutar > 0) {
+                const kar = krediObj.tutar - girilenTutar;
+                if (kutu) kutu.style.display = 'block';
+                rakamEl.innerHTML = formatTL(kar);
+            } else {
+                if (kutu) kutu.style.display = 'none';
+            }
+        }
+
         function submitKrediOde() {
             const borcAdi = getCustomVal('kredi-secim'); const tutar = document.getElementById('kredi-ode-tutar').value;
             const sekil = getCustomVal('kredi-odeme-sekli'); const secilenTarih = document.getElementById('kredi-tarih').value;
@@ -2724,9 +2753,15 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
             if(!tutar || parseSaha(tutar) <= 0) { markError('kredi-ode-tutar'); err = true; }
             if(!secilenTarih) { markError('kredi-tarih'); err = true; }
             if(err) return;
+            
+            // KULLANICI ONAY ZIRHI
+            if(!confirm("Erken kapatma işlemini onaylarsanız seçtiğiniz kredi sistemden (Borçlar ve Sabit Kurallar sayfasından) tamamen silinecektir, onaylıyor musunuz?")) return;
+
             const simdi = new Date(); const tParca = secilenTarih.split('-');
             const tamTarihLog = `${tParca[2]}.${tParca[1]}.${tParca[0]} ${String(simdi.getHours()).padStart(2,'0')}:${String(simdi.getMinutes()).padStart(2,'0')}`;
-            let payload = { action: "kredi_ode", borc_adi: borcAdi, tutar: tutar, tarih: tamTarihLog, odeme_sekli: sekil };
+            
+            // Backend'deki yeni evrensel erken kapama modülüne yollanıyor
+            let payload = { action: "kredi_erken_kapama", borc_adi: borcAdi, tutar: tutar, tarih: tamTarihLog, odeme_sekli: sekil };
             if(sekil === 'parcali') {
                 const parcalar = []; let hataVar = false;
                 document.querySelectorAll('.parca-satiri-kredi').forEach(row => {
