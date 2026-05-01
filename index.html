@@ -2250,36 +2250,38 @@ function submitVarlikSil() {
     const btn = document.getElementById(buttonId); 
     const originalText = btn.innerHTML;
     
-    // Premium Loader Başlat
     btn.innerHTML = `<div class="premium-loader"><span></span><span></span><span></span></div>`; 
     btn.disabled = true; 
     vibe();
 
     try {
-        // Temizlenmiş (noktasız) veriyi gönderiyoruz
-        await fetch(API_URL, { 
+        const res = await fetch(API_URL, { 
             method: 'POST', 
-            mode: 'no-cors', 
+            // mode: 'no-cors',  <-- BURAYI SİLİYORUZ
             headers: { 'Content-Type': 'text/plain' }, 
             body: JSON.stringify(payload) 
         });
 
-        setTimeout(async () => {
+        // Artık backend'den dönen gerçek JSON'u okuyabiliriz
+        const result = await res.json(); 
+
+        if (result.status === "success") {
             vibe(); 
             btn.innerHTML = `Başarılı ✓`; 
             btn.style.background = "var(--emerald)";
             
-            const fabBtn = document.getElementById('fab-btn');
-            fabBtn.innerHTML = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
-            fabBtn.style.background = "var(--emerald)";
-            
-            if(fabBtn.querySelector('svg')) fabBtn.querySelector('svg').style.transform = "rotate(0deg)";
-            
-            await verileriCek();
-        }, 1500);
+            setTimeout(async () => {
+                await verileriCek();
+            }, 1000);
+        } else {
+            // Backend'den bilinçli bir hata mesajı geldiyse
+            alert("İşlem başarısız: " + result.message);
+            btn.innerHTML = originalText; 
+            btn.disabled = false;
+        }
 
     } catch (error) {
-        alert("Bağlantı hatası: " + error);
+        alert("Bağlantı veya Sunucu Hatası: İşlem kaydedilemedi.");
         btn.innerHTML = originalText; 
         btn.disabled = false;
     }
