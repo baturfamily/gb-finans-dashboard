@@ -745,44 +745,50 @@ function submitVarlikSil() {
             return val.trim(); 
         }
 
-                async function apiIstekAt(payload, buttonId) {
+                    async function apiIstekAt(payload, buttonId) {
         if(document.activeElement) document.activeElement.blur();
 
         const btn = document.getElementById(buttonId); 
         const originalText = btn.innerHTML;
         
-        // Premium Loader Başlat
         btn.innerHTML = `<div class="premium-loader"><span></span><span></span><span></span></div>`; 
         btn.disabled = true; 
         vibe();
 
         try {
-            // Temizlenmiş (noktasız) veriyi gönderiyoruz
-            await fetch(API_URL, { 
+            const res = await fetch(API_URL, { 
                 method: 'POST', 
-                mode: 'no-cors', 
                 headers: { 'Content-Type': 'text/plain' }, 
                 body: JSON.stringify(payload) 
             });
 
-            setTimeout(async () => {
+            const result = await res.json(); 
+
+            if (result.status === "success") {
                 vibe(); 
                 btn.innerHTML = `Başarılı ✓`; 
                 btn.style.background = "var(--emerald)";
                 
-                // --- KESİN ÇÖZÜM: Sağ Alttaki Yuvarlak Butonu Yeşil Tik Yap ---
+                // === FAB BUTONUNU (SAĞ ALT) YEŞİL TİK YAPMA ===
                 const fabBtn = document.getElementById('fab-btn');
-                if(fabBtn) {
-                    fabBtn.classList.remove('open'); // ROTASYONU ZORLA YAPAN SINIFI SİLİYORUZ
-                    fabBtn.innerHTML = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
-                    fabBtn.style.background = "var(--emerald)";
+                if (fabBtn) {
+                    // Arka planı zorla yeşil yapıyoruz
+                    fabBtn.style.setProperty('background', 'var(--emerald)', 'important');
+                    // SVG ikonu yeşil tik yapıp, CSS'teki 45 derece dönmeyi engelliyoruz
+                    fabBtn.innerHTML = `<svg style="transform: rotate(0deg) !important;" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
                 }
                 
-                await verileriCek();
-            }, 1500);
+                setTimeout(async () => {
+                    await verileriCek();
+                }, 1000);
+            } else {
+                alert("İşlem başarısız: " + result.message);
+                btn.innerHTML = originalText; 
+                btn.disabled = false;
+            }
 
         } catch (error) {
-            alert("Bağlantı hatası: " + error);
+            alert("Bağlantı veya Sunucu Hatası: İşlem kaydedilemedi.");
             btn.innerHTML = originalText; 
             btn.disabled = false;
         }
