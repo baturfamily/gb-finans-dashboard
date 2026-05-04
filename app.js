@@ -793,7 +793,7 @@ function submitVarlikSil() {
         }
     }
 
-                                async function loadSabitlerAndShow(sectionId, selectId, title) {
+                async function loadSabitlerAndShow(sectionId, selectId, title) {
             const ev = event.currentTarget; const orig = ev.innerHTML;
             ev.innerHTML = `<div class="premium-loader"><span></span><span></span><span></span></div>`; vibe();
             try {
@@ -802,48 +802,27 @@ function submitVarlikSil() {
                     headers: { 'Content-Type': 'text/plain' }, 
                     body: JSON.stringify({ action: "sabitleri_getir" }) 
                 });
-                
                 const result = await res.json();
                 
                 if(result.status === "success") {
                     if(sectionId === 'section-sabit-onayla') {
                         const sSimdi = new Date(); 
-                        
                         window.sabitDataRaw = result.data.filter(k => {
                             if (k.durum !== 'Aktif') return false; 
                             let turu = k.tur ? k.tur.toString().trim().toLowerCase() : "";
-                            
                             if (turu.includes('taksit') || turu.includes('abonelik') || turu.includes('yatırım') || turu.includes('otomatik')) return false;
                             
                             let zatenOdendiMi = false;
-                            
-                            // === GELİŞTİRİLMİŞ TARİH OKUMA ZIRHI ===
                             if (k.son_islem && k.son_islem.toString().trim() !== "" && k.son_islem.toString() !== "-") {
                                 let rawStr = k.son_islem.toString().trim();
                                 let sTarih = null;
+                                let p = rawStr.split(".");
+                                if(p.length === 3) sTarih = new Date(parseInt(p[2]), parseInt(p[1])-1, parseInt(p[0]));
+                                else sTarih = new Date(rawStr);
 
-                                // 1. Senaryo: Tarih zaten ISO formatındaysa (2026-04-30...)
-                                let dTest = new Date(rawStr);
-                                if (!isNaN(dTest.getTime())) {
-                                    sTarih = dTest;
-                                } else {
-                                    // 2. Senaryo: Tarih Türkiye formatındaysa (30.04.2026...)
-                                    let temizTarih = rawStr.split(" ")[0]; // Varsa saat kısmını at
-                                    let parcalar = temizTarih.split(".");
-                                    if (parcalar.length === 3) {
-                                        sTarih = new Date(parseInt(parcalar[2]), parseInt(parcalar[1]) - 1, parseInt(parcalar[0]));
-                                    }
-                                }
-                                
-                                // Mesafe Hesabı (Bugün - Son Ödeme Tarihi)
                                 if (sTarih && !isNaN(sTarih.getTime())) {
-                                    let farkMilisaniye = sSimdi.getTime() - sTarih.getTime();
-                                    let farkGun = farkMilisaniye / (1000 * 3600 * 24);
-
-                                    // Eğer bu faturayı son 20 gün içinde ödediysen LİSTEDEN GİZLE
-                                    if (farkGun < 20) {
-                                        zatenOdendiMi = true; 
-                                    }
+                                    let farkGun = (sSimdi.getTime() - sTarih.getTime()) / (1000 * 3600 * 24);
+                                    if (farkGun < 20) zatenOdendiMi = true; 
                                 }
                             }
                             return !zatenOdendiMi;
@@ -853,10 +832,8 @@ function submitVarlikSil() {
                         document.getElementById('so-odeme-sekli').value = 'tek';
                         document.getElementById('so-kalici-check').checked = false;
                         toggleParcaliOdeme(); refreshCustomSelect(document.getElementById('so-odeme-sekli'));
-                        
                         if(document.querySelectorAll('#so-main-segment .segment-btn').length > 0) {
-                            let ilkBtn = document.querySelectorAll('#so-main-segment .segment-btn')[0];
-                            setSabitMainFilter('Gider', ilkBtn);
+                            setSabitMainFilter('Gider', document.querySelectorAll('#so-main-segment .segment-btn')[0]);
                         }
                     } else {
                         window.sabitKurallarList = result.data || [];
@@ -865,25 +842,18 @@ function submitVarlikSil() {
                             setSabitFilter('Gider', document.querySelectorAll('#sabit-guncelle-segment .segment-btn')[0]);
                         }
                     }
-                } else {
-                    alert("Sunucu Hatası: " + result.message);
                 }
-            } catch(e) {
-                alert("Sistem Hatası: " + e.message);
-            }
+            } catch(e) { alert("Hata: " + e.message); }
             if (ev) ev.innerHTML = orig;
         }
 
-        // BU FONKSİYONU SAKIN SİLME - HATA ALMANI ENGELLER
+        // Kayıp fonksiyonu da buraya ekliyorum, silinmediğinden emin ol:
         let currentSabitMainType = 'Gider';
         function setSabitMainFilter(yon, btnElement) {
             vibe(); currentSabitMainType = yon;
             if (btnElement) {
-                document.querySelectorAll('#so-main-segment .segment-btn').forEach(btn => {
-                    btn.classList.remove('active', 'active-gider', 'active-gelir');
-                });
-                if(yon === 'Gider') btnElement.classList.add('active-gider');
-                else btnElement.classList.add('active-gelir');
+                document.querySelectorAll('#so-main-segment .segment-btn').forEach(btn => btn.classList.remove('active', 'active-gider', 'active-gelir'));
+                btnElement.classList.add(yon === 'Gider' ? 'active-gider' : 'active-gelir');
             }
             renderSabitKategori();
         }
