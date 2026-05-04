@@ -745,48 +745,48 @@ function submitVarlikSil() {
             return val.trim(); 
         }
 
-        async function apiIstekAt(payload, buttonId) {
-    if(document.activeElement) document.activeElement.blur();
+            async function apiIstekAt(payload, buttonId) {
+        if(document.activeElement) document.activeElement.blur();
 
-    const btn = document.getElementById(buttonId); 
-    const originalText = btn.innerHTML;
-    
-    btn.innerHTML = `<div class="premium-loader"><span></span><span></span><span></span></div>`; 
-    btn.disabled = true; 
-    vibe();
+        const btn = document.getElementById(buttonId); 
+        const originalText = btn.innerHTML;
+        
+        // Premium Loader Başlat
+        btn.innerHTML = `<div class="premium-loader"><span></span><span></span><span></span></div>`; 
+        btn.disabled = true; 
+        vibe();
 
-    try {
-        const res = await fetch(API_URL, { 
-            method: 'POST', 
-            // mode: 'no-cors',  <-- BURAYI SİLİYORUZ
-            headers: { 'Content-Type': 'text/plain' }, 
-            body: JSON.stringify(payload) 
-        });
+        try {
+            // Temizlenmiş (noktasız) veriyi gönderiyoruz
+            await fetch(API_URL, { 
+                method: 'POST', 
+                mode: 'no-cors', 
+                headers: { 'Content-Type': 'text/plain' }, 
+                body: JSON.stringify(payload) 
+            });
 
-        // Artık backend'den dönen gerçek JSON'u okuyabiliriz
-        const result = await res.json(); 
-
-        if (result.status === "success") {
-            vibe(); 
-            btn.innerHTML = `Başarılı ✓`; 
-            btn.style.background = "var(--emerald)";
-            
             setTimeout(async () => {
+                vibe(); 
+                btn.innerHTML = `Başarılı ✓`; 
+                btn.style.background = "var(--emerald)";
+                
+                // --- DÜZELTİLEN KISIM: SAĞ ALTTAKİ YUVARLAK BUTONU (FAB) YEŞİL TİK YAP ---
+                const fabBtn = document.getElementById('fab-btn');
+                if(fabBtn) {
+                    // ÖNEMLİ: CSS'teki 45 derece dönme animasyonunu ezmek için style içine !important ekledik
+                    fabBtn.innerHTML = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="transform: rotate(0deg) !important;"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+                    fabBtn.style.background = "var(--emerald)";
+                }
+                
                 await verileriCek();
-            }, 1000);
-        } else {
-            // Backend'den bilinçli bir hata mesajı geldiyse
-            alert("İşlem başarısız: " + result.message);
+            }, 1500);
+
+        } catch (error) {
+            alert("Bağlantı hatası: " + error);
             btn.innerHTML = originalText; 
             btn.disabled = false;
         }
-
-    } catch (error) {
-        alert("Bağlantı veya Sunucu Hatası: İşlem kaydedilemedi.");
-        btn.innerHTML = originalText; 
-        btn.disabled = false;
     }
-}
 
         async function loadSabitlerAndShow(sectionId, selectId, title) {
             const ev = event.currentTarget; const orig = ev.innerHTML;
