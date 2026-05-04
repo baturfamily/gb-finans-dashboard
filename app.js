@@ -793,7 +793,7 @@ function submitVarlikSil() {
         }
     }
 
-                async function loadSabitlerAndShow(sectionId, selectId, title) {
+                        async function loadSabitlerAndShow(sectionId, selectId, title) {
             const ev = event.currentTarget; const orig = ev.innerHTML;
             ev.innerHTML = `<div class="premium-loader"><span></span><span></span><span></span></div>`; vibe();
             try {
@@ -814,14 +814,25 @@ function submitVarlikSil() {
                             
                             let zatenOdendiMi = false;
                             if (k.son_islem && k.son_islem.toString().trim() !== "" && k.son_islem.toString() !== "-") {
-                                let rawStr = k.son_islem.toString().trim();
+                                // === ZIRHLI TARİH ÇÖZÜCÜ ===
+                                let rawStr = k.son_islem.toString().trim().split(" ")[0]; // Sadece tarih kısmını al
                                 let sTarih = null;
+                                
+                                // Noktaları parçala (30.04.2026 -> [30, 04, 2026])
                                 let p = rawStr.split(".");
-                                if(p.length === 3) sTarih = new Date(parseInt(p[2]), parseInt(p[1])-1, parseInt(p[0]));
-                                else sTarih = new Date(rawStr);
+                                if(p.length === 3) {
+                                    // JavaScript'e tarihi elle öğretiyoruz: Yıl, Ay(0-11), Gün
+                                    sTarih = new Date(parseInt(p[2]), parseInt(p[1]) - 1, parseInt(p[0]));
+                                } else {
+                                    sTarih = new Date(rawStr); // Eğer format farklıysa standart dene
+                                }
 
                                 if (sTarih && !isNaN(sTarih.getTime())) {
-                                    let farkGun = (sSimdi.getTime() - sTarih.getTime()) / (1000 * 3600 * 24);
+                                    // Saat farklarını sıfırlayıp sadece gün farkına odaklanalım
+                                    let baslangic = new Date(sTarih.setHours(0,0,0,0));
+                                    let bitis = new Date(sSimdi.setHours(0,0,0,0));
+                                    let farkGun = Math.floor((bitis - baslangic) / (1000 * 3600 * 24));
+
                                     if (farkGun < 20) zatenOdendiMi = true; 
                                 }
                             }
@@ -832,6 +843,7 @@ function submitVarlikSil() {
                         document.getElementById('so-odeme-sekli').value = 'tek';
                         document.getElementById('so-kalici-check').checked = false;
                         toggleParcaliOdeme(); refreshCustomSelect(document.getElementById('so-odeme-sekli'));
+                        
                         if(document.querySelectorAll('#so-main-segment .segment-btn').length > 0) {
                             setSabitMainFilter('Gider', document.querySelectorAll('#so-main-segment .segment-btn')[0]);
                         }
@@ -843,11 +855,11 @@ function submitVarlikSil() {
                         }
                     }
                 }
-            } catch(e) { alert("Hata: " + e.message); }
+            } catch(e) { alert("Sistem Hatası: " + e.message); }
             if (ev) ev.innerHTML = orig;
         }
 
-        // Kayıp fonksiyonu da buraya ekliyorum, silinmediğinden emin ol:
+        // === setSabitMainFilter fonksiyonunun burada olduğundan emin ol ===
         let currentSabitMainType = 'Gider';
         function setSabitMainFilter(yon, btnElement) {
             vibe(); currentSabitMainType = yon;
