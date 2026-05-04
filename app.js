@@ -745,7 +745,7 @@ function submitVarlikSil() {
             return val.trim(); 
         }
 
-                    async function apiIstekAt(payload, buttonId) {
+                        async function apiIstekAt(payload, buttonId) {
         if(document.activeElement) document.activeElement.blur();
 
         const btn = document.getElementById(buttonId); 
@@ -769,13 +769,12 @@ function submitVarlikSil() {
                 btn.innerHTML = `Başarılı ✓`; 
                 btn.style.background = "var(--emerald)";
                 
-                // === FAB BUTONUNU (SAĞ ALT) YEŞİL TİK YAPMA ===
+                // === FAB BUTONUNU YEŞİL TİK YAP ===
                 const fabBtn = document.getElementById('fab-btn');
                 if (fabBtn) {
-                    // Arka planı zorla yeşil yapıyoruz
-                    fabBtn.style.setProperty('background', 'var(--emerald)', 'important');
-                    // SVG ikonu yeşil tik yapıp, CSS'teki 45 derece dönmeyi engelliyoruz
-                    fabBtn.innerHTML = `<svg style="transform: rotate(0deg) !important;" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+                    fabBtn.classList.remove('open'); // Çarpıya dönmesini sağlayan kuralı siliyoruz
+                    fabBtn.innerHTML = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+                    fabBtn.style.background = "var(--emerald)";
                 }
                 
                 setTimeout(async () => {
