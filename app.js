@@ -862,6 +862,19 @@ function submitVarlikSil() {
             if (ev) ev.innerHTML = orig;
         }
 
+let currentSabitMainType = 'Gider';
+        function setSabitMainFilter(yon, btnElement) {
+            vibe(); currentSabitMainType = yon;
+            if (btnElement) {
+                document.querySelectorAll('#so-main-segment .segment-btn').forEach(btn => {
+                    btn.classList.remove('active', 'active-gider', 'active-gelir');
+                });
+                if(yon === 'Gider') btnElement.classList.add('active-gider');
+                else btnElement.classList.add('active-gelir');
+            }
+            renderSabitKategori();
+        }
+
         function renderSabitKategori() {
             const katSelect = document.getElementById('so-kategori');
             let html = `<option value="Hepsi">Tüm Kategoriler</option>`;
