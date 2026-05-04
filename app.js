@@ -198,7 +198,7 @@ if (gecmisKayitlar.length > 0) {
             const el = document.getElementById(inputId); if(el) el.value = now.toISOString().slice(0,16);
         }
 
-                function toggleModal() {
+        function toggleModal() {
             vibe();
             const modal = document.getElementById('action-modal'); const btn = document.getElementById('fab-btn');
             modal.classList.toggle('active');
@@ -238,13 +238,6 @@ if (gecmisKayitlar.length > 0) {
                 btn.innerHTML = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>`;
                 btn.style.background = "var(--brand-gradient)";
                 if(btn.querySelector('svg')) btn.querySelector('svg').style.transform = "";
-
-                // YENİ: Kapatma butonunu (Sağ üst) tekrar normal (X) haline getir
-                const closeBtn = document.querySelector('.close-btn');
-                if(closeBtn) {
-                    closeBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
-                    closeBtn.style = ""; // İç stilleri temizler
-                }
             }
         }
 
@@ -765,10 +758,12 @@ function submitVarlikSil() {
     try {
         const res = await fetch(API_URL, { 
             method: 'POST', 
+            // mode: 'no-cors',  <-- BURAYI SİLİYORUZ
             headers: { 'Content-Type': 'text/plain' }, 
             body: JSON.stringify(payload) 
         });
 
+        // Artık backend'den dönen gerçek JSON'u okuyabiliriz
         const result = await res.json(); 
 
         if (result.status === "success") {
@@ -776,19 +771,11 @@ function submitVarlikSil() {
             btn.innerHTML = `Başarılı ✓`; 
             btn.style.background = "var(--emerald)";
             
-            // YENİ: Kapatma butonunu (Sağ üst) yeşil tike çevir
-            const closeBtn = document.querySelector('.close-btn');
-            if(closeBtn) {
-                closeBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
-                closeBtn.style.color = "var(--emerald)";
-                closeBtn.style.borderColor = "var(--emerald)";
-                closeBtn.style.background = "rgba(16, 185, 129, 0.15)";
-            }
-            
             setTimeout(async () => {
                 await verileriCek();
             }, 1000);
         } else {
+            // Backend'den bilinçli bir hata mesajı geldiyse
             alert("İşlem başarısız: " + result.message);
             btn.innerHTML = originalText; 
             btn.disabled = false;
