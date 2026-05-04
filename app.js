@@ -793,7 +793,7 @@ function submitVarlikSil() {
         }
     }
 
-                        async function loadSabitlerAndShow(sectionId, selectId, title) {
+                                async function loadSabitlerAndShow(sectionId, selectId, title) {
             const ev = event.currentTarget; const orig = ev.innerHTML;
             ev.innerHTML = `<div class="premium-loader"><span></span><span></span><span></span></div>`; vibe();
             try {
@@ -812,38 +812,20 @@ function submitVarlikSil() {
                             let turu = k.tur ? k.tur.toString().trim().toLowerCase() : "";
                             if (turu.includes('taksit') || turu.includes('abonelik') || turu.includes('yatırım') || turu.includes('otomatik')) return false;
                             
-                            let zatenOdendiMi = false;
-                            if (k.son_islem && k.son_islem.toString().trim() !== "" && k.son_islem.toString() !== "-") {
-                                // === ZIRHLI TARİH ÇÖZÜCÜ ===
-                                let rawStr = k.son_islem.toString().trim().split(" ")[0]; // Sadece tarih kısmını al
-                                let sTarih = null;
-                                
-                                // Noktaları parçala (30.04.2026 -> [30, 04, 2026])
-                                let p = rawStr.split(".");
-                                if(p.length === 3) {
-                                    // JavaScript'e tarihi elle öğretiyoruz: Yıl, Ay(0-11), Gün
-                                    sTarih = new Date(parseInt(p[2]), parseInt(p[1]) - 1, parseInt(p[0]));
-                                } else {
-                                    sTarih = new Date(rawStr); // Eğer format farklıysa standart dene
-                                }
-
-                                if (sTarih && !isNaN(sTarih.getTime())) {
-                                    // Saat farklarını sıfırlayıp sadece gün farkına odaklanalım
-                                    let baslangic = new Date(sTarih.setHours(0,0,0,0));
-                                    let bitis = new Date(sSimdi.setHours(0,0,0,0));
-                                    let farkGun = Math.floor((bitis - baslangic) / (1000 * 3600 * 24));
-
-                                    if (farkGun < 20) zatenOdendiMi = true; 
+                            if (k.son_islem && k.son_islem !== "" && k.son_islem !== "-") {
+                                let sTarih = new Date(k.son_islem); // ISO formatı sayesinde tek satır!
+                                if (!isNaN(sTarih.getTime())) {
+                                    let farkGun = (sSimdi.getTime() - sTarih.getTime()) / (1000 * 3600 * 24);
+                                    if (farkGun < 20) return false; // 20 günden yakınsa listeden çıkar
                                 }
                             }
-                            return !zatenOdendiMi;
+                            return true;
                         });
                         
                         showSection(sectionId, title);
                         document.getElementById('so-odeme-sekli').value = 'tek';
                         document.getElementById('so-kalici-check').checked = false;
                         toggleParcaliOdeme(); refreshCustomSelect(document.getElementById('so-odeme-sekli'));
-                        
                         if(document.querySelectorAll('#so-main-segment .segment-btn').length > 0) {
                             setSabitMainFilter('Gider', document.querySelectorAll('#so-main-segment .segment-btn')[0]);
                         }
@@ -859,7 +841,7 @@ function submitVarlikSil() {
             if (ev) ev.innerHTML = orig;
         }
 
-        // === setSabitMainFilter fonksiyonunun burada olduğundan emin ol ===
+        // Yardımcı fonksiyonun (Aynı kaldı, dokunma)
         let currentSabitMainType = 'Gider';
         function setSabitMainFilter(yon, btnElement) {
             vibe(); currentSabitMainType = yon;
