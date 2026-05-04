@@ -793,11 +793,10 @@ function submitVarlikSil() {
         }
     }
 
-                        async function loadSabitlerAndShow(sectionId, selectId, title) {
+                                async function loadSabitlerAndShow(sectionId, selectId, title) {
             const ev = event.currentTarget; const orig = ev.innerHTML;
             ev.innerHTML = `<div class="premium-loader"><span></span><span></span><span></span></div>`; vibe();
             try {
-                // === DÜZELTME 1: Gizli sekme (CORS) engelini aşmak için headers eklendi ===
                 const res = await fetch(API_URL, { 
                     method: 'POST', 
                     headers: { 'Content-Type': 'text/plain' }, 
@@ -817,18 +816,33 @@ function submitVarlikSil() {
                             if (turu.includes('taksit') || turu.includes('abonelik') || turu.includes('yatırım') || turu.includes('otomatik')) return false;
                             
                             let zatenOdendiMi = false;
-                            if (k.son_islem && k.son_islem.toString().trim() !== "") {
-                                let islemTarihiStr = k.son_islem.toString().trim(); let sTarih;
-                                if (islemTarihiStr.includes("T")) sTarih = new Date(islemTarihiStr);
-                                else if (islemTarihiStr.includes(".")) {
-                                    let parts = islemTarihiStr.split(" ")[0].split(".");
-                                    if (parts.length === 3) sTarih = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
-                                } else sTarih = new Date(islemTarihiStr);
+                            
+                            // === GELİŞTİRİLMİŞ TARİH OKUMA ZIRHI ===
+                            if (k.son_islem && k.son_islem.toString().trim() !== "" && k.son_islem.toString() !== "-") {
+                                let rawStr = k.son_islem.toString().trim();
+                                let sTarih = null;
+
+                                // 1. Senaryo: Tarih zaten ISO formatındaysa (2026-04-30...)
+                                let dTest = new Date(rawStr);
+                                if (!isNaN(dTest.getTime())) {
+                                    sTarih = dTest;
+                                } else {
+                                    // 2. Senaryo: Tarih Türkiye formatındaysa (30.04.2026...)
+                                    let temizTarih = rawStr.split(" ")[0]; // Varsa saat kısmını at
+                                    let parcalar = temizTarih.split(".");
+                                    if (parcalar.length === 3) {
+                                        sTarih = new Date(parseInt(parcalar[2]), parseInt(parcalar[1]) - 1, parseInt(parcalar[0]));
+                                    }
+                                }
                                 
+                                // Mesafe Hesabı (Bugün - Son Ödeme Tarihi)
                                 if (sTarih && !isNaN(sTarih.getTime())) {
-                                    let farkGun = (sSimdi.getTime() - sTarih.getTime()) / (1000 * 3600 * 24);
+                                    let farkMilisaniye = sSimdi.getTime() - sTarih.getTime();
+                                    let farkGun = farkMilisaniye / (1000 * 3600 * 24);
+
+                                    // Eğer bu faturayı son 20 gün içinde ödediysen LİSTEDEN GİZLE
                                     if (farkGun < 20) {
-                                        zatenOdendiMi = true; // 20 günden yakınsa listeden gizler
+                                        zatenOdendiMi = true; 
                                     }
                                 }
                             }
@@ -852,17 +866,16 @@ function submitVarlikSil() {
                         }
                     }
                 } else {
-                    // Backend'den gelen bilinçli bir hata varsa görelim
                     alert("Sunucu Hatası: " + result.message);
                 }
             } catch(e) {
-                // === DÜZELTME 2: Gerçek hatayı ekrana yazdırıyoruz ===
                 alert("Sistem Hatası: " + e.message);
             }
             if (ev) ev.innerHTML = orig;
         }
 
-let currentSabitMainType = 'Gider';
+        // BU FONKSİYONU SAKIN SİLME - HATA ALMANI ENGELLER
+        let currentSabitMainType = 'Gider';
         function setSabitMainFilter(yon, btnElement) {
             vibe(); currentSabitMainType = yon;
             if (btnElement) {
