@@ -1517,33 +1517,45 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
         apiIstekAt({ action: "kart_ekstre_guncelle", kart_adi: isim, yeni_gun: gun }, 'btn-submit-ekstre-guncelle');
     }
 
-    async function geriAl() {
-        if(!confirm("Son işlemi (harcama/gelir/transfer/ödeme) tamamen geri almak istediğinize emin misiniz? (Tüm hesaplar, cüzdan ve sabit kural durumları otomatik onarılacaktır.)")) return;
-        const btn = document.querySelector('.undo-btn');
-        const orig = btn.innerHTML;
-        btn.innerHTML = `<div class="premium-loader"><span style="background-color: var(--rose);"></span><span style="background-color: var(--rose);"></span><span style="background-color: var(--rose);"></span></div>`;
+        function showGeriAlEkrani() {
         vibe();
-        try {
-            const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: "geri_al" }) });
-            const result = await res.json();
-            if(result.status === "success") {
-                btn.innerHTML = "İşlem Geri Alındı ✓";
-                btn.style.color = "var(--emerald)";
-                btn.style.borderColor = "var(--emerald)";
-                btn.style.background = "rgba(16, 185, 129, 0.1)";
-                setTimeout(async () => {
-                    await verileriCek();
-                    btn.innerHTML = orig;
-                    btn.style = "";
-                }, 1500);
-            } else {
-                alert(result.message);
-                btn.innerHTML = orig;
-            }
-        } catch(e) {
-            alert("Bağlantı hatası: " + e.message);
-            btn.innerHTML = orig;
+        const listContainer = document.getElementById('geri-al-list-container');
+        let html = "";
+
+        if (!window.currentStats.sonIslemler || window.currentStats.sonIslemler.length === 0 || window.currentStats.sonIslemler[0].tarih === "-") {
+            html = `<div style="text-align:center; padding: 20px; color:var(--text-muted); font-size: 13px;">Geri alınabilecek işlem bulunamadı.</div>`;
+        } else {
+            // Son 5 işlemi ekrana döküyoruz
+            let islemler = window.currentStats.sonIslemler.slice(0, 5);
+            islemler.forEach((islem, index) => {
+                let btnId = `btn-gerial-${index}`;
+                let isaret = islem.tur === 'Gelir' ? '+' : (islem.tur === 'Transfer' ? '' : '-');
+                let renkClass = islem.tur === 'Gelir' ? 'text-green' : (islem.tur === 'Transfer' ? 'text-gray' : 'text-red');
+                let detay = islem.tur === 'Gelir' ? (islem.hedef || islem.odeme) : islem.odeme;
+                if((islem.tur === 'Transfer' || islem.tur === 'Kart Ödemesi' || islem.tur === 'Borç Ödemesi') && islem.hedef) detay = `${islem.odeme} ➔ ${islem.hedef}`;
+                
+                html += `
+                <div class="t-row" style="background: rgba(244, 63, 94, 0.05); padding: 14px; border-radius: 12px; margin-bottom: 10px; border: 1px dashed rgba(244, 63, 94, 0.2); cursor:pointer; align-items:center;" onclick="geriAlOnayla('${islem.satir}', '${islem.kalem}', '${btnId}')">
+                    <div class="t-details" style="flex:1;">
+                        <div class="t-name" style="font-size: 14px; font-weight: 600; color: #fff; margin-bottom:4px;">${islem.kalem}</div>
+                        <div class="t-meta" style="font-size: 11px;">${islem.tarih} • ${detay}</div>
+                    </div>
+                    <div class="t-amt ${renkClass}" style="font-size: 16px; font-weight: 800;">${isaret}${formatTL(islem.tutar)}</div>
+                    <div id="${btnId}" style="margin-left: 10px; color: var(--rose);">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>
+                    </div>
+                </div>`;
+            });
         }
+        listContainer.innerHTML = html;
+        showSection('section-geri-al', 'İşlem Geri Al');
+    }
+
+    function geriAlOnayla(satir, kalemIsmi, btnId) {
+        if(!confirm(`"${kalemIsmi}" işlemini tamamen geri almak istediğinize emin misiniz? (İlgili bakiyeler ve kurallar onarılacaktır)`)) return;
+        
+        // Cerrahi silme işlemi için API'ye Satır ve Kalem adını gönderiyoruz
+        apiIstekAt({ action: 'geri_al', satir: satir, kalem: kalemIsmi }, btnId);
     }
 
     function refreshCustomSelect(selectElement) {
