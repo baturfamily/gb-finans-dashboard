@@ -793,15 +793,20 @@ function submitVarlikSil() {
         }
     }
 
-                async function loadSabitlerAndShow(sectionId, selectId, title) {
+                        async function loadSabitlerAndShow(sectionId, selectId, title) {
             const ev = event.currentTarget; const orig = ev.innerHTML;
             ev.innerHTML = `<div class="premium-loader"><span></span><span></span><span></span></div>`; vibe();
             try {
-                const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: "sabitleri_getir" }) });
+                // === DÜZELTME 1: Gizli sekme (CORS) engelini aşmak için headers eklendi ===
+                const res = await fetch(API_URL, { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'text/plain' }, 
+                    body: JSON.stringify({ action: "sabitleri_getir" }) 
+                });
+                
                 const result = await res.json();
+                
                 if(result.status === "success") {
-                    
-                    // 1. DURUM: "Bekleyenleri Onayla" Ekranı (Filtreli ve Zırhlı Alan)
                     if(sectionId === 'section-sabit-onayla') {
                         const sSimdi = new Date(); 
                         
@@ -820,11 +825,10 @@ function submitVarlikSil() {
                                     if (parts.length === 3) sTarih = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
                                 } else sTarih = new Date(islemTarihiStr);
                                 
-                                // === KUSURSUZ DEĞİŞİKLİK: 20 GÜNLÜK SESSİZ KALKAN ===
                                 if (sTarih && !isNaN(sTarih.getTime())) {
                                     let farkGun = (sSimdi.getTime() - sTarih.getTime()) / (1000 * 3600 * 24);
                                     if (farkGun < 20) {
-                                        zatenOdendiMi = true; // 20 günden yakınsa "zaten ödendi" sayıp listeden gizler
+                                        zatenOdendiMi = true; // 20 günden yakınsa listeden gizler
                                     }
                                 }
                             }
@@ -840,18 +844,20 @@ function submitVarlikSil() {
                             let ilkBtn = document.querySelectorAll('#so-main-segment .segment-btn')[0];
                             setSabitMainFilter('Gider', ilkBtn);
                         }
-                    } 
-                    // 2. DURUM: "Düzenli Kayıt Güncelle" Ekranı (Filtresiz Yönetim Alanı)
-                    else {
+                    } else {
                         window.sabitKurallarList = result.data || [];
                         showSection(sectionId, title);
                         if(document.querySelectorAll('#sabit-guncelle-segment .segment-btn').length > 0) {
                             setSabitFilter('Gider', document.querySelectorAll('#sabit-guncelle-segment .segment-btn')[0]);
                         }
                     }
+                } else {
+                    // Backend'den gelen bilinçli bir hata varsa görelim
+                    alert("Sunucu Hatası: " + result.message);
                 }
             } catch(e) {
-                alert("Kayıtlar çekilemedi. İnternetinizi kontrol edin.");
+                // === DÜZELTME 2: Gerçek hatayı ekrana yazdırıyoruz ===
+                alert("Sistem Hatası: " + e.message);
             }
             if (ev) ev.innerHTML = orig;
         }
