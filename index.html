@@ -767,17 +767,17 @@
             <!-- ARACI MENÜ: BORÇ / KREDİ SEÇİMİ -->
             <!-- ========================================== -->
             <div id="araci-borc-menusu" class="form-section">
-                <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Ana Menüye Dön</span>
-                
-                <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 20px;">
-                    <button class="btn-submit" style="height: 85px; font-size: 18px; margin: 0; width: 100%; display: flex; align-items: center; justify-content: center; gap: 15px;" onclick="openSectionLive(event, 'kredi-islemleri-screen', 'Banka Kredisi İşlemleri')">
-                        <i class="fas fa-landmark" style="font-size: 26px;"></i> Banka Kredileri
-                    </button>
-                    <button class="btn-submit" style="height: 85px; font-size: 18px; margin: 0; width: 100%; display: flex; align-items: center; justify-content: center; gap: 15px; background: linear-gradient(135deg, #10b981 0%, #059669 100%);" onclick="openSectionLive(event, 'ozel-borc-islemleri-screen', 'Şahıs & Özel Borçlar')">
-                        <i class="fas fa-handshake" style="font-size: 26px;"></i> Özel Borçlar
-                    </button>
-                </div>
-            </div>
+    <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Ana Menüye Dön</span>
+    
+    <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 20px;">
+        <button class="btn-submit btn-banka-kredileri" style="height: 85px; font-size: 18px; margin: 0; width: 100%; display: flex; align-items: center; justify-content: center; gap: 15px;" onclick="openSectionLive(event, 'kredi-islemleri-screen', 'Banka Kredisi İşlemleri')">
+            <i class="fas fa-landmark" style="font-size: 26px;"></i> Banka Kredileri
+        </button>
+        <button class="btn-submit btn-ozel-borclar" style="height: 85px; font-size: 18px; margin: 0; width: 100%; display: flex; align-items: center; justify-content: center; gap: 15px;" onclick="openSectionLive(event, 'ozel-borc-islemleri-screen', 'Şahıs & Özel Borçlar')">
+            <i class="fas fa-handshake" style="font-size: 26px;"></i> Özel Borçlar
+        </button>
+    </div>
+</div>
 
             <!-- ========================================== -->
             <!-- 1. KREDİ BORÇLARI MODÜLÜ -->
