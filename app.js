@@ -927,7 +927,7 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
             refreshCustomSelect(sel); onKuralChange();
         }
 
-                function onKuralChange() {
+                        function onKuralChange() {
             const select = document.getElementById('so-kural');
             const opt = select.options[select.selectedIndex];
             if(!opt || !opt.value) {
@@ -936,15 +936,14 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
                 return;
             }
             
-            const dataTutar = opt.getAttribute('data-tutar');
+            const dataTutarRaw = opt.getAttribute('data-tutar');
             const yon = (opt.getAttribute('data-yon') || "").trim();
             
-            document.getElementById('so-referans-tutar').innerHTML = formatTL(parseSaha(dataTutar));
+            document.getElementById('so-referans-tutar').innerHTML = formatTL(parseSaha(dataTutarRaw));
             
-            // --- DÜZELTME: Kutuya veriyi basar basmaz klavye formatlayıcısını (makyajı) anında tetikliyoruz ---
-            const guncelInput = document.getElementById('so-guncel-tutar');
-            guncelInput.value = dataTutar.toString().replace('.', ',');
-            tutarFormatla(guncelInput); // Nokta ve virgülü anında koyar
+            // --- NİHAİ ÇÖZÜM: İmleç hatasına takılmadan doğrudan TR formatında basıyoruz ---
+            const tVal = parseFloat(dataTutarRaw) || 0;
+            document.getElementById('so-guncel-tutar').value = tVal.toLocaleString('tr-TR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
             
             const lblYontem = document.getElementById('lbl-so-yontem');
             if(lblYontem) lblYontem.innerText = yon === 'Gelir' ? 'Paranın Gireceği Hesap' : 'Paranın Çıktığı Hesap';
@@ -1379,7 +1378,7 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
             apiIstekAt({ action: "yeni_ozel_borc", isim: isim, tutar: tutar, vade: "-", tarih: tamTarihLog }, 'btn-submit-ozel-tanimla');
         }
         
-                function doldurSabitGuncelleForm() {
+                        function doldurSabitGuncelleForm() {
     const select = document.getElementById('sg-kural'); const opt = select.options[select.selectedIndex];
     const formAlani = document.getElementById('sabit-guncelle-form-alani');
 
@@ -1391,10 +1390,9 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
     }
     if(formAlani) formAlani.style.display = 'block';
 
-    // --- DÜZELTME: Güncelleme kutusuna da ilk açılışta nokta/virgül formatı eklendi ---
-    const sgTutarInput = document.getElementById('sg-tutar');
-    sgTutarInput.value = opt.getAttribute('data-tutar').toString().replace('.', ',');
-    tutarFormatla(sgTutarInput); 
+    // --- NİHAİ ÇÖZÜM: Güncelleme kutusuna da doğrudan TR formatında basıyoruz ---
+    const sTutar = parseFloat(opt.getAttribute('data-tutar')) || 0;
+    document.getElementById('sg-tutar').value = sTutar.toLocaleString('tr-TR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
 
     document.getElementById('sg-gun').value = opt.getAttribute('data-gun');
     document.getElementById('sg-sure').value = opt.getAttribute('data-sure');
