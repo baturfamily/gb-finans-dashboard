@@ -412,3 +412,24 @@
     transform: scale(0.96);
     box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3) !important;
 }
+
+/* ========================================================================= */
+/* 🌟 iOS PWA SCROLL (KAYDIRMA) TİTREMESİ VE SİYAH EKRAN ZIRHI               */
+/* ========================================================================= */
+.accordion-content, 
+.sub-accordion-content, 
+.custom-scrollbar,
+.content-container,
+.tab-section {
+    -webkit-overflow-scrolling: touch !important; /* iOS için yumuşak kaydırmayı zorlar */
+    transform: translateZ(0) !important; /* Çizim işini İşlemciden alıp Ekran Kartına (GPU) verir */
+    backface-visibility: hidden !important; /* Arkada kalan piksellerin siyah patlamasını engeller */
+    perspective: 1000px !important; /* 3D hızlandırmayı tetikler */
+    will-change: transform; /* Cihazı kaydırma işlemine önceden hazırlar */
+}
+
+/* Sayfa sonu sekmelerinde ana arka planın siyah patlamasını engeller */
+html, body {
+    background-color: #0f1115 !important; /* Kendi tema rengin */
+    overscroll-behavior-y: none !important; /* iOS'un kendi lastik etkisini (rubber-band) kapatır */
+}
