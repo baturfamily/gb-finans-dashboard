@@ -1734,31 +1734,33 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
         }
         fListe.innerHTML = fHtml;
 
-                const vListe = document.getElementById('varlik-listesi');
+                        const vListe = document.getElementById('varlik-listesi');
         let vHtml = "";
         
         // Evrensel Varlık Havuzu (Fiziki Varlıklar + Artı Bakiyeli Bankalar/Nakit)
         let tumVarliklarHavuzu = [...data.varliklarListe];
         if (data.bankalar) {
             data.bankalar.forEach(banka => {
-                if (banka.bakiye > 0) { 
+                // KUSURSUZ ZIRH: Bakiye en az 1 kuruş (0.01) ise listeye dahil et
+                if (parseFloat(banka.bakiye) >= 0.01) { 
                     tumVarliklarHavuzu.push({ isim: banka.isim, deger: banka.bakiye }); 
                 }
             });
         }
 
-        // SIFIR BAKİYE ZIRHI: Sadece değeri 0'dan büyük olanları listele
-        let filtrelenmisVarliklar = tumVarliklarHavuzu.filter(v => (v.deger || 0) > 0);
+        // KUSURSUZ ZIRH 2: Listeyi ekrana basmadan önce son kez kontrol et
+        let filtrelenmisVarliklar = tumVarliklarHavuzu.filter(v => parseFloat(v.deger) >= 0.01);
 
         let anlikToplamVarlik = 0;
-        filtrelenmisVarliklar.forEach(v => anlikToplamVarlik += (v.deger || 0));
+        filtrelenmisVarliklar.forEach(v => anlikToplamVarlik += parseFloat(v.deger) || 0);
 
-        filtrelenmisVarliklar.sort((a, b) => b.deger - a.deger).forEach(v => {
-            let p = anlikToplamVarlik > 0 ? Math.round((v.deger / anlikToplamVarlik) * 100) : 0;
-            vHtml += `<div class="t-row"><div class="t-details"><div class="t-name">${v.isim}</div><div class="progress-container" style="height:4px; margin-top:6px; background:rgba(255,255,255,0.05);"><div class="progress-bar" style="width:${p}%; background:var(--emerald);"></div></div></div><div class="t-amt text-green">${formatTL(v.deger)}</div></div>`;
+        filtrelenmisVarliklar.sort((a, b) => parseFloat(b.deger) - parseFloat(a.deger)).forEach(v => {
+            let val = parseFloat(v.deger) || 0;
+            let p = anlikToplamVarlik > 0 ? Math.round((val / anlikToplamVarlik) * 100) : 0;
+            vHtml += `<div class="t-row"><div class="t-details"><div class="t-name">${v.isim}</div><div class="progress-container" style="height:4px; margin-top:6px; background:rgba(255,255,255,0.05);"><div class="progress-bar" style="width:${p}%; background:var(--emerald);"></div></div></div><div class="t-amt text-green">${formatTL(val)}</div></div>`;
         });
         
-        vHtml += `<div class="t-row" style="border-top: 1px solid rgba(255,255,255,0.1); margin-top: 8px; padding-top: 12px;"><div class="t-details"><div class="t-name" style="font-weight: 800; color: #fff;">Toplam Varlık ve Kasa</div></div><div class="t-amt text-green" style="font-size: 18px; font-weight: 800;">${formatTL(anlikToplamVarlik)}</div></div>`;
+        // Alt kısımdaki gereksiz toplam satırı tamamen SİLİNDİ
         vListe.innerHTML = vHtml;
 
         // BAŞLIĞA TOPLAM VARLIĞI YAZDIRMA
@@ -1772,23 +1774,26 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
 
         if(data.bankalar) {
           data.bankalar.forEach(banka => {
-            if(banka.bakiye < 0) { tumBorclarHavuzu.push({ isim: banka.isim + " (KMH)", tutar: Math.abs(banka.bakiye) }); }
+            // KMH Borcu için en az -0.01 zırhı
+            if(parseFloat(banka.bakiye) <= -0.01) { tumBorclarHavuzu.push({ isim: banka.isim + " (KMH)", tutar: Math.abs(parseFloat(banka.bakiye)) }); }
           });
         }
         if(data.kartlarDetayli) {
           data.kartlarDetayli.forEach(kart => {
-            if(kart.borc > 0) { tumBorclarHavuzu.push({ isim: kart.isim, tutar: kart.borc }); }
+            if(parseFloat(kart.borc) >= 0.01) { tumBorclarHavuzu.push({ isim: kart.isim, tutar: kart.borc }); }
           });
         }
 
-        // SIFIR BAKİYE ZIRHI: Sadece borcu 0'dan büyük olanları listele
-        let filtrelenmisBorclar = tumBorclarHavuzu.filter(b => (b.tutar || 0) > 0);
+        // KUSURSUZ ZIRH: Sadece borcu 1 kuruştan büyük olanları listele
+        let filtrelenmisBorclar = tumBorclarHavuzu.filter(b => parseFloat(b.tutar) >= 0.01);
 
-        filtrelenmisBorclar.sort((a, b) => b.tutar - a.tutar).forEach(b => {
-          let p = data.toplamBorc > 0 ? Math.round((b.tutar / data.toplamBorc) * 100) : 0;
-          bHtml += `<div class="t-row"><div class="t-details"><div class="t-name">${b.isim}</div><div class="progress-container" style="height:4px; margin-top:6px; background:rgba(255,255,255,0.05);"><div class="progress-bar" style="width:${p}%; background:var(--rose);"></div></div></div><div class="t-amt text-red">${formatTL(b.tutar)}</div></div>`;
+        filtrelenmisBorclar.sort((a, b) => parseFloat(b.tutar) - parseFloat(a.tutar)).forEach(b => {
+          let val = parseFloat(b.tutar) || 0;
+          let p = data.toplamBorc > 0 ? Math.round((val / data.toplamBorc) * 100) : 0;
+          bHtml += `<div class="t-row"><div class="t-details"><div class="t-name">${b.isim}</div><div class="progress-container" style="height:4px; margin-top:6px; background:rgba(255,255,255,0.05);"><div class="progress-bar" style="width:${p}%; background:var(--rose);"></div></div></div><div class="t-amt text-red">${formatTL(val)}</div></div>`;
         });
-        bHtml += `<div class="t-row" style="border-top: 1px solid rgba(255,255,255,0.1); margin-top: 8px; padding-top: 12px;"><div class="t-details"><div class="t-name" style="font-weight: 800; color: #fff;">Toplam Borç</div></div><div class="t-amt text-red" style="font-size: 18px; font-weight: 800;">${formatTL(data.toplamBorc)}</div></div>`;
+        
+        // Alt kısımdaki gereksiz toplam satırı tamamen SİLİNDİ
         bListe.innerHTML = bHtml;
 
         // BAŞLIĞA TOPLAM BORCU YAZDIRMA
