@@ -101,7 +101,7 @@ const API_URL = "https://script.google.com/macros/s/AKfycbx-xS-14nAMrIU36zMkzh88
                                                            const easeProgress = 1 - Math.pow(1 - progress, 4); const currentVal = endValue * easeProgress; obj.innerHTML = formatUSD(currentVal); 
                                                            if (progress < 1) window.requestAnimationFrame(step); else obj.innerHTML = formatUSD(endValue); }; window.requestAnimationFrame(step); }
 
-        function updateTrends(days, btnElement) {
+                function updateTrends(days, btnElement) {
             document.querySelectorAll('.time-btn').forEach(btn => btn.classList.remove('active'));
             if(btnElement) btnElement.classList.add('active');
 
@@ -130,13 +130,13 @@ const API_URL = "https://script.google.com/macros/s/AKfycbx-xS-14nAMrIU36zMkzh88
             
             let gecmisKayitlar = window.tarihceData.filter(row => { let t = parseTarihceDate(row[0]); return t > 0 && t <= targetTime; });
             let bestRow = null;
-if (gecmisKayitlar.length > 0) {
-    bestRow = gecmisKayitlar[gecmisKayitlar.length - 1]; 
-} else if (window.tarihceData.length > 1) {
-    bestRow = window.tarihceData[1]; // DİKKAT: 0 yerine 1 oldu!
-} else {
-    return; 
-}
+            if (gecmisKayitlar.length > 0) {
+                bestRow = gecmisKayitlar[gecmisKayitlar.length - 1]; 
+            } else if (window.tarihceData.length > 1) {
+                bestRow = window.tarihceData[1]; 
+            } else {
+                return; 
+            }
 
             let pastToplamVarlik = parseSaha(bestRow[1]); 
             let pastNetServet    = parseSaha(bestRow[2]); 
@@ -155,15 +155,21 @@ if (gecmisKayitlar.length > 0) {
 
             let pastNetServetUSD = pastNetServet / pastDolarKuru; 
 
+            // === GÜNCELLEME: Borç kalemlerinde Math.abs (Mutlak Değer) kullanılarak büyüklük kontrolü yapılır ===
             if(document.getElementById('trend-toplam-varlik')) renderTrend('trend-toplam-varlik', window.currentStats.toplamVarlik, pastToplamVarlik, false);
             if(document.getElementById('trend-net-servet')) renderTrend('trend-net-servet', window.currentStats.netServet, pastNetServet, false);
             if(document.getElementById('trend-net-servet-usd')) renderTrend('trend-net-servet-usd', window.currentStats.netServetUSD, pastNetServetUSD, false, '$');
-            if(document.getElementById('trend-borc')) renderTrend('trend-borc', window.currentStats.toplamBorc, pastBorc, true);
-            if(document.getElementById('trend-can-yakan')) renderTrend('trend-can-yakan', window.currentStats.toplamCanYakan, pastCanYakan, true);
-            if(document.getElementById('trend-planli')) renderTrend('trend-planli', window.currentStats.toplamPlanli, pastPlanli, true);
-            if(document.getElementById('trend-faiz')) renderTrend('trend-faiz', window.currentStats.tahminiFaiz, pastFaiz, true);
+            
+            // Borç/Gider trendleri (Mutlak değer zırhı eklendi)
+            if(document.getElementById('trend-borc')) renderTrend('trend-borc', Math.abs(window.currentStats.toplamBorc), Math.abs(pastBorc), true);
+            if(document.getElementById('trend-can-yakan')) renderTrend('trend-can-yakan', Math.abs(window.currentStats.toplamCanYakan), Math.abs(pastCanYakan), true);
+            if(document.getElementById('trend-planli')) renderTrend('trend-planli', Math.abs(window.currentStats.toplamPlanli), Math.abs(pastPlanli), true);
+            if(document.getElementById('trend-faiz')) renderTrend('trend-faiz', Math.abs(window.currentStats.tahminiFaiz), Math.abs(pastFaiz), true);
+            if(document.getElementById('trend-kart')) renderTrend('trend-kart', Math.abs(window.currentStats.kartToplam), Math.abs(pastKart), true);
+            if(document.getElementById('trend-saf-harcama')) renderTrend('trend-saf-harcama', Math.abs(window.currentStats.safHarcama), Math.abs(pastSafHarcama), true);
+            if(document.getElementById('trend-gunluk-ortalama')) renderTrend('trend-gunluk-ortalama', Math.abs(window.currentStats.gunlukOrt), Math.abs(pastGunlukOrt), true);
+
             if(document.getElementById('trend-kasa')) renderTrend('trend-kasa', window.currentStats.toplamKasa, pastKasa, false);
-            if(document.getElementById('trend-kart')) renderTrend('trend-kart', window.currentStats.kartToplam, pastKart, true);
             if(document.getElementById('trend-dolar-kuru')) renderTrend('trend-dolar-kuru', window.currentStats.usdRate, pastDolarKuru, false, '₺');
 
             let guncelOran = 0;
@@ -174,8 +180,6 @@ if (gecmisKayitlar.length > 0) {
             
             if(document.getElementById('trend-borc-varlik')) renderTrend('trend-borc-varlik', guncelOran, pastOranYuzde, true, '%');
             if(document.getElementById('trend-nakit-koruma')) renderTrend('trend-nakit-koruma', window.currentStats.nakitKorumaSuresi, pastKoruma, false, '');
-            if(document.getElementById('trend-saf-harcama')) renderTrend('trend-saf-harcama', window.currentStats.safHarcama, pastSafHarcama, true);
-            if(document.getElementById('trend-gunluk-ortalama')) renderTrend('trend-gunluk-ortalama', window.currentStats.gunlukOrt, pastGunlukOrt, true);
             if(document.getElementById('trend-net-kalan')) renderTrend('trend-net-kalan', window.currentStats.netKalan, pastNetKalan, false);
         }
 
