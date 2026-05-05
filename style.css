@@ -413,21 +413,38 @@
     box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3) !important;
 }
 
-/* ========================================================================= */
-/* 🌟 iOS PWA SİYAH EKRAN KORUMASI (GÜVENLİ VE HAFİF VERSİYON)               */
-/* ========================================================================= */
+        /* ========================================================================= */
+        /* 🌟 ANA GÖVDE VE İŞLETİM SİSTEMİ ZIRHI (TERTEMİZ VERSİYON)                 */
+        /* ========================================================================= */
+        
+        html {
+            background-color: #0f1115 !important; /* Safari'de sayfa sonu beyazlamasını önler */
+        }
 
-/* Ana arka planı siyaha sabitleyerek scroll sırasındaki siyah patlamaları keser */
-html {
-    background-color: #0f1115 !important; 
-}
+        body { 
+            background-color: var(--bg-dark) !important; 
+            color: var(--text-main); 
+            padding-bottom: calc(env(safe-area-inset-bottom) + 120px);
+            overflow-y: auto;
+            overscroll-behavior-y: contain; /* PWA'nın lastik gibi uzayıp esnemesini engeller */
+            -webkit-font-smoothing: antialiased; /* Yazıları daha net ve pürüzsüz yapar */
+        }
 
-body {
-    background-color: #0f1115 !important;
-    -webkit-font-smoothing: antialiased; /* iOS'ta yazıları pürüzsüzleştirir */
-}
+        /* 🌟 SİYAH EKRAN PATLAMASINI ÖNLEYEN GERÇEK ÇÖZÜM 🌟
+           Mor gradient ışığı body'den söküp, sabit ve bağımsız bir katman yaptık.
+           (Sadece bu katmanda GPU kullanıyoruz, böylece menüler asla bozulmuyor) */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.12) 0%, transparent 60%);
+            z-index: -1;
+            pointer-events: none;
+            transform: translateZ(0); 
+            will-change: transform;
+        }
 
-/* Sadece kendi içinde kayan özel alanlara yumuşak kaydırma verir, iskeleti bozmaz */
-.custom-scrollbar {
-    -webkit-overflow-scrolling: touch !important;
-}
+        /* 🌟 iOS İÇİ KAYDIRILABİLİR LİSTELER (SADECE BUNU TUTUYORUZ) 🌟 */
+        .custom-scrollbar {
+            -webkit-overflow-scrolling: touch !important; /* Listelerin yağ gibi akmasını sağlar */
+        }
