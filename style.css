@@ -20,20 +20,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; -webkit-user-select: none; user-select: none; }
         input, textarea, select { -webkit-user-select: auto; user-select: auto; }
 
-                html { background-color: #0f1115 !important; }
 
-        body { 
-            background-color: var(--bg-dark) !important; 
-            color: var(--text-main); 
-            padding-bottom: calc(env(safe-area-inset-bottom) + 120px);
-            overflow-y: auto; overscroll-behavior-y: contain; -webkit-font-smoothing: antialiased;
-        }
-
-        body::before {
-            content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background-image: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.12) 0%, transparent 60%);
-            z-index: -1; pointer-events: none; transform: translateZ(0); will-change: transform;
-        }
 
         body.modal-open { overflow: hidden; touch-action: none; }
         .tabular-nums { font-variant-numeric: tabular-nums; }
@@ -418,12 +405,12 @@
     box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3) !important;
 }
 
-        /* ========================================================================= */
+                /* ========================================================================= */
         /* 🌟 ANA GÖVDE VE İŞLETİM SİSTEMİ ZIRHI (TERTEMİZ VERSİYON)                 */
         /* ========================================================================= */
         
         html {
-            background-color: #0f1115 !important; /* Safari'de sayfa sonu beyazlamasını önler */
+            background-color: #0f1115 !important; 
         }
 
         body { 
@@ -431,11 +418,21 @@
             color: var(--text-main); 
             padding-bottom: calc(env(safe-area-inset-bottom) + 120px);
             overflow-y: auto;
-            overscroll-behavior-y: contain; /* PWA'nın lastik gibi uzayıp esnemesini engeller */
-            -webkit-font-smoothing: antialiased; /* Yazıları daha net ve pürüzsüz yapar */
+            overscroll-behavior-y: contain;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* 🌟 iOS İÇİ KAYDIRILABİLİR LİSTELER (SADECE BUNU TUTUYORUZ) 🌟 */
-.custom-scrollbar {
-    -webkit-overflow-scrolling: touch !important; /* Listelerin yağ gibi akmasını sağlar */
-}
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.12) 0%, transparent 60%);
+            z-index: -1;
+            pointer-events: none;
+            transform: translateZ(0); 
+            will-change: transform;
+        }
+
+        .custom-scrollbar {
+            -webkit-overflow-scrolling: touch !important; 
+        }
