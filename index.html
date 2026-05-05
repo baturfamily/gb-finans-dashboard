@@ -86,11 +86,14 @@
 
                     </div>
 
-                                        <div id="varlik-dagilimi-alani" class="sensitive-data" style="margin-top: 20px; width: 100%; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px; text-align: left;">
+                                                            <div id="varlik-dagilimi-alani" class="sensitive-data" style="margin-top: 20px; width: 100%; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px; text-align: left;">
                         <div class="sub-accordion-header" onclick="toggleSubAccordion('varlik')" style="padding: 0 0 12px 0; border: none; display: flex; justify-content: space-between; align-items: center;">
                             <div style="font-size:12px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;">Varlık Dağılımı</div>
                             <div style="display: flex; align-items: center; gap: 8px;">
-                                <span id="header-toplam-varlik" class="tabular-nums sensitive-data" style="font-size: 13px; font-weight: 700; color: var(--emerald);">₺0,00</span>
+                                <div style="display: flex; flex-direction: column; align-items: flex-end;">
+                                    <span id="header-toplam-varlik" class="tabular-nums sensitive-data" style="font-size: 13px; font-weight: 700; color: var(--emerald);">₺0,00</span>
+                                    <div id="trend-header-varlik" class="trend-box tabular-nums sensitive-data" style="font-size: 9px; margin-top: 4px;"></div>
+                                </div>
                                 <svg id="sub-icon-varlik" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted); transition: transform 0.3s ease;"><polyline points="9 18 15 12 9 6"></polyline></svg>
                             </div>
                         </div>
@@ -103,7 +106,10 @@
                         <div class="sub-accordion-header" onclick="toggleSubAccordion('borc')" style="padding: 0 0 12px 0; border: none; display: flex; justify-content: space-between; align-items: center;">
                             <div style="font-size:12px; font-weight:600; color:var(--rose); text-transform:uppercase; letter-spacing:0.5px;">Borç Dağılımı</div>
                             <div style="display: flex; align-items: center; gap: 8px;">
-                                <span id="header-toplam-borc" class="tabular-nums sensitive-data" style="font-size: 13px; font-weight: 700; color: var(--rose);">₺0,00</span>
+                                <div style="display: flex; flex-direction: column; align-items: flex-end;">
+                                    <span id="header-toplam-borc" class="tabular-nums sensitive-data" style="font-size: 13px; font-weight: 700; color: var(--rose);">₺0,00</span>
+                                    <div id="trend-header-borc" class="trend-box tabular-nums sensitive-data" style="font-size: 9px; margin-top: 4px;"></div>
+                                </div>
                                 <svg id="sub-icon-borc" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted); transition: transform 0.3s ease;"><polyline points="9 18 15 12 9 6"></polyline></svg>
                             </div>
                         </div>
