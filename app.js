@@ -927,7 +927,7 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
             refreshCustomSelect(sel); onKuralChange();
         }
 
-        function onKuralChange() {
+                function onKuralChange() {
             const select = document.getElementById('so-kural');
             const opt = select.options[select.selectedIndex];
             if(!opt || !opt.value) {
@@ -940,8 +940,11 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
             const yon = (opt.getAttribute('data-yon') || "").trim();
             
             document.getElementById('so-referans-tutar').innerHTML = formatTL(parseSaha(dataTutar));
-            // Input'un makyaj kodunu (tutarFormatla) bozmamak için veriyi virgülle kutuya basıyoruz
-            document.getElementById('so-guncel-tutar').value = dataTutar.toString().replace('.', ',');
+            
+            // --- DÜZELTME: Kutuya veriyi basar basmaz klavye formatlayıcısını (makyajı) anında tetikliyoruz ---
+            const guncelInput = document.getElementById('so-guncel-tutar');
+            guncelInput.value = dataTutar.toString().replace('.', ',');
+            tutarFormatla(guncelInput); // Nokta ve virgülü anında koyar
             
             const lblYontem = document.getElementById('lbl-so-yontem');
             if(lblYontem) lblYontem.innerText = yon === 'Gelir' ? 'Paranın Gireceği Hesap' : 'Paranın Çıktığı Hesap';
@@ -1376,7 +1379,7 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
             apiIstekAt({ action: "yeni_ozel_borc", isim: isim, tutar: tutar, vade: "-", tarih: tamTarihLog }, 'btn-submit-ozel-tanimla');
         }
         
-        function doldurSabitGuncelleForm() {
+                function doldurSabitGuncelleForm() {
     const select = document.getElementById('sg-kural'); const opt = select.options[select.selectedIndex];
     const formAlani = document.getElementById('sabit-guncelle-form-alani');
 
@@ -1388,20 +1391,21 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
     }
     if(formAlani) formAlani.style.display = 'block';
 
-    document.getElementById('sg-tutar').value = opt.getAttribute('data-tutar');
+    // --- DÜZELTME: Güncelleme kutusuna da ilk açılışta nokta/virgül formatı eklendi ---
+    const sgTutarInput = document.getElementById('sg-tutar');
+    sgTutarInput.value = opt.getAttribute('data-tutar').toString().replace('.', ',');
+    tutarFormatla(sgTutarInput); 
+
     document.getElementById('sg-gun').value = opt.getAttribute('data-gun');
     document.getElementById('sg-sure').value = opt.getAttribute('data-sure');
 
     const yontem = opt.getAttribute('data-yontem'); 
     const durum = opt.getAttribute('data-durum');
-    const yon = opt.getAttribute('data-yon'); // İşlemin Gelir mi Gider mi olduğunu alıyoruz
+    const yon = opt.getAttribute('data-yon'); 
 
     const yontemSel = document.getElementById('sg-yontem');
     if(yontemSel) { 
-        // 1. Önce Ayarlar E3'ten gelen hesap listesini kutuya basıyoruz (Gelirse Vadesiz, Giderse Tüm Kart/Hesaplar)
         yontemSel.innerHTML = (yon === 'Gelir') ? window.vadesizOptions : window.hesapOptions;
-        
-        // 2. Sonra işlemin kayıtlı hesabını otomatik seçili hale getiriyoruz
         yontemSel.value = yontem; 
         refreshCustomSelect(yontemSel); 
     }
