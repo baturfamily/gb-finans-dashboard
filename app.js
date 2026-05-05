@@ -105,7 +105,7 @@ const API_URL = "https://script.google.com/macros/s/AKfycbx-xS-14nAMrIU36zMkzh88
             document.querySelectorAll('.time-btn').forEach(btn => btn.classList.remove('active'));
             if(btnElement) btnElement.classList.add('active');
 
-            const ids = ['trend-net-servet', 'trend-net-servet-usd', 'trend-borc', 'trend-can-yakan', 'trend-planli', 'trend-faiz', 'trend-kasa', 'trend-kart', 'trend-toplam-varlik', 'trend-dolar-kuru', 'trend-borc-varlik', 'trend-nakit-koruma', 'trend-saf-harcama', 'trend-gunluk-ortalama', 'trend-net-kalan'];
+                        const ids = ['trend-net-servet', 'trend-net-servet-usd', 'trend-borc', 'trend-can-yakan', 'trend-planli', 'trend-faiz', 'trend-kasa', 'trend-kart', 'trend-toplam-varlik', 'trend-dolar-kuru', 'trend-borc-varlik', 'trend-nakit-koruma', 'trend-saf-harcama', 'trend-gunluk-ortalama', 'trend-net-kalan', 'trend-header-varlik', 'trend-header-borc'];
             if (days === 0) { ids.forEach(id => { setHtml(id, ""); }); return; }
 
             if(!window.tarihceData || window.tarihceData.length < 2) {
@@ -159,6 +159,8 @@ const API_URL = "https://script.google.com/macros/s/AKfycbx-xS-14nAMrIU36zMkzh88
             if(document.getElementById('trend-toplam-varlik')) renderTrend('trend-toplam-varlik', window.currentStats.toplamVarlik, pastToplamVarlik, false);
             if(document.getElementById('trend-net-servet')) renderTrend('trend-net-servet', window.currentStats.netServet, pastNetServet, false);
             if(document.getElementById('trend-net-servet-usd')) renderTrend('trend-net-servet-usd', window.currentStats.netServetUSD, pastNetServetUSD, false, '$');
+            if(document.getElementById('trend-header-varlik')) renderTrend('trend-header-varlik', window.currentStats.toplamVarlik, pastToplamVarlik, false);
+            if(document.getElementById('trend-header-borc')) renderTrend('trend-header-borc', Math.abs(window.currentStats.toplamBorc), Math.abs(pastBorc), true);
             
             // Borç/Gider trendleri (Mutlak değer zırhı eklendi)
             if(document.getElementById('trend-borc')) renderTrend('trend-borc', Math.abs(window.currentStats.toplamBorc), Math.abs(pastBorc), true);
