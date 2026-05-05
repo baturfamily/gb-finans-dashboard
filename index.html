@@ -86,10 +86,13 @@
 
                     </div>
 
-                    <div id="varlik-dagilimi-alani" class="sensitive-data" style="margin-top: 20px; width: 100%; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px; text-align: left;">
-                        <div class="sub-accordion-header" onclick="toggleSubAccordion('varlik')" style="padding: 0 0 12px 0; border: none;">
+                                        <div id="varlik-dagilimi-alani" class="sensitive-data" style="margin-top: 20px; width: 100%; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px; text-align: left;">
+                        <div class="sub-accordion-header" onclick="toggleSubAccordion('varlik')" style="padding: 0 0 12px 0; border: none; display: flex; justify-content: space-between; align-items: center;">
                             <div style="font-size:12px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;">Varlık Dağılımı</div>
-                            <svg id="sub-icon-varlik" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted); transition: transform 0.3s ease;"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span id="header-toplam-varlik" class="tabular-nums sensitive-data" style="font-size: 13px; font-weight: 700; color: var(--emerald);">₺0,00</span>
+                                <svg id="sub-icon-varlik" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted); transition: transform 0.3s ease;"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                            </div>
                         </div>
                         <div class="sub-accordion-content" id="sub-content-varlik">
                             <div id="varlik-listesi"></div>
@@ -97,14 +100,17 @@
                     </div>
                     
                     <div id="borc-dagilimi-alani" class="sensitive-data" style="margin-top: 10px; width: 100%; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px; text-align: left;">
-                        <div class="sub-accordion-header" onclick="toggleSubAccordion('borc')" style="padding: 0 0 12px 0; border: none;">
+                        <div class="sub-accordion-header" onclick="toggleSubAccordion('borc')" style="padding: 0 0 12px 0; border: none; display: flex; justify-content: space-between; align-items: center;">
                             <div style="font-size:12px; font-weight:600; color:var(--rose); text-transform:uppercase; letter-spacing:0.5px;">Borç Dağılımı</div>
-                            <svg id="sub-icon-borc" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted); transition: transform 0.3s ease;"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span id="header-toplam-borc" class="tabular-nums sensitive-data" style="font-size: 13px; font-weight: 700; color: var(--rose);">₺0,00</span>
+                                <svg id="sub-icon-borc" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted); transition: transform 0.3s ease;"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                            </div>
                         </div>
                         <div class="sub-accordion-content" id="sub-content-borc">
                             <div id="borc-listesi"></div>
-                </div>
-            </div>
+                        </div>
+                    </div>
         </div> </div> <div class="card accordion" id="acc-nakit-akisi">
     <div class="accordion-header" onclick="toggleAccordion(this.parentElement)" style="justify-content: flex-start;">
         <h3 style="color: var(--emerald); margin-right: auto; flex: 1; text-align: left;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right:4px;"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> Aylık Nakit Akışı</h3>
