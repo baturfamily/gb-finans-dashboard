@@ -843,7 +843,7 @@
                     </div>
                     <div class="form-group">
                         <label>Toplam (Faiz Dahil) Kredi Tutarı (₺)</label>
-                        <input type="text" inputmode="decimal" id="kredi-yeni-tutar" class="form-control" placeholder="Kredinin kapanacağı tüm borç tutarı..." oninput="tutarFormatla(this)">
+                        <input type="text" inputmode="decimal" id="kredi-yeni-tutar" class="form-control" placeholder="Kredinin faizler dahil tüm borcu..." oninput="tutarFormatla(this)">
                     </div>
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
                         <div class="form-group">
@@ -864,7 +864,7 @@
                         <input type="text" id="kredi-yeni-bitis" class="form-control" placeholder="Tarih Girmek İçin Dokun" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'">
                     </div>
                     <div class="form-group">
-                        <label>Otomatik Ödeme Hesabı</label>
+                        <label>Ödeme Hesabı</label>
                         <select id="kredi-yeni-hesap" class="form-control"></select>
                     </div>
                     <div class="form-group">
