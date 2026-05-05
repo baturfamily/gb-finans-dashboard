@@ -1734,7 +1734,7 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
         }
         fListe.innerHTML = fHtml;
 
-        const vListe = document.getElementById('varlik-listesi');
+                const vListe = document.getElementById('varlik-listesi');
         let vHtml = "";
         
         // Evrensel Varlık Havuzu (Fiziki Varlıklar + Artı Bakiyeli Bankalar/Nakit)
@@ -1747,17 +1747,24 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
             });
         }
 
-        // Yüzdelerin matematiksel olarak taşmaması için havuzun anlık gerçek toplamını buluyoruz
-        let anlikToplamVarlik = 0;
-        tumVarliklarHavuzu.forEach(v => anlikToplamVarlik += (v.deger || 0));
+        // SIFIR BAKİYE ZIRHI: Sadece değeri 0'dan büyük olanları listele
+        let filtrelenmisVarliklar = tumVarliklarHavuzu.filter(v => (v.deger || 0) > 0);
 
-        tumVarliklarHavuzu.sort((a, b) => b.deger - a.deger).forEach(v => {
+        let anlikToplamVarlik = 0;
+        filtrelenmisVarliklar.forEach(v => anlikToplamVarlik += (v.deger || 0));
+
+        filtrelenmisVarliklar.sort((a, b) => b.deger - a.deger).forEach(v => {
             let p = anlikToplamVarlik > 0 ? Math.round((v.deger / anlikToplamVarlik) * 100) : 0;
             vHtml += `<div class="t-row"><div class="t-details"><div class="t-name">${v.isim}</div><div class="progress-container" style="height:4px; margin-top:6px; background:rgba(255,255,255,0.05);"><div class="progress-bar" style="width:${p}%; background:var(--emerald);"></div></div></div><div class="t-amt text-green">${formatTL(v.deger)}</div></div>`;
         });
         
         vHtml += `<div class="t-row" style="border-top: 1px solid rgba(255,255,255,0.1); margin-top: 8px; padding-top: 12px;"><div class="t-details"><div class="t-name" style="font-weight: 800; color: #fff;">Toplam Varlık ve Kasa</div></div><div class="t-amt text-green" style="font-size: 18px; font-weight: 800;">${formatTL(anlikToplamVarlik)}</div></div>`;
         vListe.innerHTML = vHtml;
+
+        // BAŞLIĞA TOPLAM VARLIĞI YAZDIRMA
+        const headerVarlikEl = document.getElementById('header-toplam-varlik');
+        if (headerVarlikEl) headerVarlikEl.innerHTML = formatTL(anlikToplamVarlik);
+
 
         const bListe = document.getElementById('borc-listesi');
         let bHtml = "";
@@ -1774,12 +1781,19 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
           });
         }
 
-        tumBorclarHavuzu.sort((a, b) => b.tutar - a.tutar).forEach(b => {
+        // SIFIR BAKİYE ZIRHI: Sadece borcu 0'dan büyük olanları listele
+        let filtrelenmisBorclar = tumBorclarHavuzu.filter(b => (b.tutar || 0) > 0);
+
+        filtrelenmisBorclar.sort((a, b) => b.tutar - a.tutar).forEach(b => {
           let p = data.toplamBorc > 0 ? Math.round((b.tutar / data.toplamBorc) * 100) : 0;
           bHtml += `<div class="t-row"><div class="t-details"><div class="t-name">${b.isim}</div><div class="progress-container" style="height:4px; margin-top:6px; background:rgba(255,255,255,0.05);"><div class="progress-bar" style="width:${p}%; background:var(--rose);"></div></div></div><div class="t-amt text-red">${formatTL(b.tutar)}</div></div>`;
         });
         bHtml += `<div class="t-row" style="border-top: 1px solid rgba(255,255,255,0.1); margin-top: 8px; padding-top: 12px;"><div class="t-details"><div class="t-name" style="font-weight: 800; color: #fff;">Toplam Borç</div></div><div class="t-amt text-red" style="font-size: 18px; font-weight: 800;">${formatTL(data.toplamBorc)}</div></div>`;
         bListe.innerHTML = bHtml;
+
+        // BAŞLIĞA TOPLAM BORCU YAZDIRMA
+        const headerBorcEl = document.getElementById('header-toplam-borc');
+        if (headerBorcEl) headerBorcEl.innerHTML = formatTL(data.toplamBorc);
 
         const bankaList = document.getElementById('banka-listesi');
         let bankaHtml = "";
