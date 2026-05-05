@@ -210,9 +210,10 @@
                 <div class="accordion-content">
                     <div class="summary-grid" style="grid-template-columns: 1fr 1fr 1fr;">
                         
-                        <div class="summary-item br-right br-bottom" style="padding: 12px 8px;">
-                            <span class="summary-label" style="color:var(--amber); font-size: 10px; line-height: 1.1;">Tahmini Faiz<br>(Bu Ay)</span>
+                        <div class="summary-item br-right br-bottom" style="padding: 12px 8px; display: flex; flex-direction: column; justify-content: center;">
+                            <span class="summary-label" style="color:var(--amber); font-size: 10px; line-height: 1.1; margin-bottom: 4px;">Tahmini Faiz<br>(Bu Ay)</span>
                             <span class="summary-val tabular-nums sensitive-data" id="val-tahmini-faiz" style="font-size: 14px; color: var(--amber);">₺ 0,00</span>
+                            <div class="trend-box tabular-nums sensitive-data" id="trend-faiz" style="font-size:10px; margin-top: 4px;"></div>
                         </div>
                         
                         <div class="summary-item br-right br-bottom" style="padding: 12px 8px;">
@@ -233,7 +234,8 @@
                                 </div>
                             </div>
                             <div id="faiz-detay-listesi" style="padding: 0 4px;"></div>
-                        </div> </div> </div> </div> </section> <section id="section-cuzdan" class="tab-section">
+                        </div> 
+</div> </div> </div> </section> <section id="section-cuzdan" class="tab-section">
 
 <div class="card accordion" id="acc-finansal-ozet">
                 <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
