@@ -1715,6 +1715,10 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
         animateValue('val-borc-acil', data.toplamCanYakan, aSure);
         animateValue('val-borc-planli', data.toplamPlanli, aSure);
         animateValue('val-tahmini-faiz', data.tahminiFaiz, aSure);
+        
+        // --- FAİZ ANALİZİ (3'LÜ KART) EKRANA YANSITMA ---
+        animateValue('val-aylik-faiz', data.aylikFaizGuncel, aSure);
+        animateValue('val-gecen-ay-faiz', data.gecenAyFaiz, aSure);
         animateValue('val-toplam-odenen-faiz', data.toplamOdenenFaiz, aSure);
 
         updateTrends(0, document.querySelectorAll('.time-btn')[0]);
