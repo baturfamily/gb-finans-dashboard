@@ -20,14 +20,19 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; -webkit-user-select: none; user-select: none; }
         input, textarea, select { -webkit-user-select: auto; user-select: auto; }
 
+                html { background-color: #0f1115 !important; }
+
         body { 
-            background-color: var(--bg-dark); 
-            background-image: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.12) 0%, transparent 60%);
-            background-attachment: fixed;
+            background-color: var(--bg-dark) !important; 
             color: var(--text-main); 
             padding-bottom: calc(env(safe-area-inset-bottom) + 120px);
-            overflow-y: auto;
-            overscroll-behavior-y: contain;
+            overflow-y: auto; overscroll-behavior-y: contain; -webkit-font-smoothing: antialiased;
+        }
+
+        body::before {
+            content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background-image: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.12) 0%, transparent 60%);
+            z-index: -1; pointer-events: none; transform: translateZ(0); will-change: transform;
         }
 
         body.modal-open { overflow: hidden; touch-action: none; }
