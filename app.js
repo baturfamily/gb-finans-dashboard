@@ -2097,10 +2097,28 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
             kalanKutu.style.color = "var(--rose)"; // Borç kırmızısı
         }
 
-        const yListe = document.getElementById('yaklasan-listesi');
+                const yListe = document.getElementById('yaklasan-listesi');
         if (data.yaklasanOdemeler.length > 0) {
             let yHtml = "";
-            data.yaklasanOdemeler.forEach(y => {
+            
+            // --- KUSURSUZ ZIRH: Ana veriyi bozmamak için kopyasını (klonunu) alıp sadece burada sıralıyoruz ---
+            const bugunGunu = new Date().getDate();
+            const buAyKacGun = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
+            
+            // [...data] yazarak ana veriden bağımsız yeni bir liste yaratıyoruz
+            let siraliYaklasanlar = [...data.yaklasanOdemeler].sort((a, b) => {
+                let farkA = a.gun - bugunGunu;
+                if (farkA < 0) farkA += buAyKacGun; // Ay geçişi koruması (Örn: 28'den 2'sine)
+                
+                let farkB = b.gun - bugunGunu;
+                if (farkB < 0) farkB += buAyKacGun; 
+                
+                return farkA - farkB;
+            });
+            // ------------------------------------------------------------------------------------------------
+
+            // Ekrana basarken de ana veriyi değil, bizim sıraladığımız bu klon listeyi kullanıyoruz
+            siraliYaklasanlar.forEach(y => {
                 let kural = data.tumSabitlerListe.find(k => k.kalem === y.kalem);
                 let kategoriMetni = (kural && kural.tur && kural.tur !== "-") ? `${kural.tur} - ` : "";
                 yHtml += `<div class="t-row" style="background: rgba(245, 158, 11, 0.05); padding: 12px; border-radius: 12px; margin-bottom: 8px; border: 1px dashed rgba(245, 158, 11, 0.2);"><div class="t-details"><div class="t-name" style="font-size: 14px; color: var(--amber);"><i class="fas fa-exclamation-circle" style="margin-right:6px;"></i>${(kategoriMetni && !y.kalem.startsWith(kategoriMetni.replace(' - ', ''))) ? kategoriMetni : ""}${y.kalem}</div><div class="t-meta" style="font-size: 11px;">Ayın ${y.gun}. Günü • ${y.yontem}</div></div><div class="t-amt text-red" style="font-size: 15px;">${formatTL(y.tutar)}</div></div>`;
