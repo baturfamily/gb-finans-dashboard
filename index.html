@@ -65,6 +65,7 @@
                         <div style="display: flex; align-items: center; gap: 10px;">
                             <div class="tabular-nums" id="val-net-servet-usd" style="font-size: 20px; font-weight: 800; color: #cbd5e1;"><span style="font-size:0.8em; opacity:0.7; font-weight:600; margin-right:2px;">$</span>0<span style="font-size:0.8em; opacity:0.7; font-weight:600;">,00</span></div>
                             <div class="trend-box tabular-nums" id="trend-net-servet-usd" style="margin-top:0; font-size: 11px;"></div>
+                            <div id="usd-kur-bilgisi" style="font-size: 10px; color: var(--text-muted); margin-top: 2px; font-weight: 600; opacity: 0.6;"></div>
                         </div>
                     </div>
 
@@ -125,17 +126,25 @@
         <div id="nakit-akisi-listesi-container">
             </div>
 
-        <div style="background: rgba(16, 185, 129, 0.1); padding: 16px 14px; border-radius: 12px; display:flex; justify-content:space-between; align-items:center; margin-top: 15px; border: 1px dashed rgba(16, 185, 129, 0.3);" id="kutu-net-nakit">
-            <span style="font-size:14px; color:#fff; font-weight:700;">Net Kalan (Cepteki Para)</span>
-            <div style="text-align:right; display:flex; flex-direction:column; align-items:flex-end;">
-    <span id="val-net-nakit" class="tabular-nums" style="font-size:19px; font-weight:800; color:var(--emerald);">₺0,00</span>
-    <div class="trend-box tabular-nums" id="trend-net-kalan" style="font-size:11px; margin-top:4px; display:inline-block;"></div>
-</div>
-        </div>
-    </div>
-</div>          
-
- <div class="card accordion" id="acc-son-islemler">
+                <div style="background: rgba(16, 185, 129, 0.1); padding: 16px 14px; border-radius: 12px; margin-top: 15px; border: 1px dashed rgba(16, 185, 129, 0.3);" id="kutu-net-nakit">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:14px; color:#fff; font-weight:700;">Net Kalan (Cepteki Para)</span>
+                <div style="text-align:right; display:flex; flex-direction:column; align-items:flex-end;">
+                    <span id="val-net-nakit" class="tabular-nums" style="font-size:19px; font-weight:800; color:var(--emerald);">₺0,00</span>
+                    <div class="trend-box tabular-nums" id="trend-net-kalan" style="font-size:11px; margin-top:4px; display:inline-block;"></div>
+                </div>
+            </div>
+            
+                        <div id="tuketim-bari-kapsayici" style="margin-top: 16px; padding-top: 12px; border-top: 1px dashed rgba(255,255,255,0.05); display: none;">
+                <div style="display: flex; justify-content: space-between; font-size: 10px; color: var(--text-muted); margin-bottom: 6px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
+                    <span>Gelir Tüketimi</span>
+                    <span id="tuketim-yuzdesi">%0</span>
+                </div>
+                <div class="progress-container" style="height: 6px; background: rgba(0,0,0,0.4); border-radius: 6px;">
+                    <div id="tuketim-bari-doluluk" class="progress-bar" style="width: 0%; background: var(--emerald); border-radius: 6px; transition: width 1s cubic-bezier(0.1, 0.5, 0.1, 1), background-color 0.5s ease;"></div>
+                </div>
+            </div>
+        </div> </div> </div> <div class="card accordion" id="acc-son-islemler">
     <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
         <h3>
             <svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -161,7 +170,7 @@
         <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
     </div>
     <div class="accordion-content">
-        <div class="summary-grid" style="margin-bottom: 16px;">
+                <div class="summary-grid" style="margin-bottom: 12px;">
             <div class="summary-item br-right">
                 <span class="summary-label" style="color: var(--rose);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg> Toplam Tüketim</span>
                 <span class="summary-val text-red tabular-nums" id="saf-gider-toplam">₺0,00</span>
@@ -171,6 +180,16 @@
                 <span class="summary-label">Günlük Ortalama</span>
                 <span class="summary-val tabular-nums" id="saf-gunluk-ortalama">₺0,00</span>
                 <div class="trend-box tabular-nums" id="trend-gunluk-ortalama" style="font-size:11px; margin-top:6px; display:inline-block;"></div>
+            </div>
+        </div>
+
+        <div id="saf-ay-sonu-tahmin" style="display: none; background: rgba(244, 63, 94, 0.05); padding: 12px 14px; border-radius: 12px; border: 1px dashed rgba(244, 63, 94, 0.25); justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <i class="fas fa-chart-line" style="color: var(--rose); font-size: 13px;"></i>
+                <span style="font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Günlük Ortalamaya Göre Ay Sonu Tahmini</span>
+            </div>
+            <div style="text-align: right;">
+                <span id="saf-ay-sonu-rakam" class="tabular-nums" style="color: var(--rose); font-size: 16px; font-weight: 800; letter-spacing: -0.3px;">₺0,00</span>
             </div>
         </div>
 
@@ -198,7 +217,7 @@
             <div style="position: relative; height: 220px; margin-bottom: 20px;">
                 <canvas id="expenseChart" class="sensitive-data"></canvas>
                 <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: none;">
-                    <div style="font-size: 10px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">SAF HARCAMA</div>
+                    <div id="pasta-merkez-baslik" style="font-size: 10px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">SAF HARCAMA</div>
                     <div id="pasta-toplam-rakam" class="tabular-nums" style="font-size: 18px; font-weight: 800; color: #fff; line-height: 1.2;">₺0,00</div>
                 </div>
             </div>
@@ -346,28 +365,34 @@
                         <div style="text-align:center; color:var(--text-muted); padding: 10px 0;"><span class="spinner" style="border-left-color: var(--text-muted);"></span>Yükleniyor...</div>
                     </div>
 
-                    <div style="margin-top:20px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 16px;">
+                                           <div style="margin-top:20px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 16px;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                             <span style="font-weight:600; color:#cbd5e1; font-size: 14px;">Aylık Toplam Sabit Yük:</span>
                             <span id="sabit-genel-toplam" class="tabular-nums" style="color:var(--amber); font-weight:800; font-size:17px; letter-spacing:-0.3px;">₺0,00</span>
                         </div>
 
-                        <div style="display: flex; justify-content: space-between; background: rgba(0,0,0,0.25); padding: 12px 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.03);">
-                            <div>
+                        <div style="display: flex; justify-content: space-between; background: rgba(0,0,0,0.25); padding: 12px 16px 10px 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.03); flex-wrap: wrap;">
+                            <div style="width: 45%;">
                                 <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">Ödenen</div>
                                 <div id="sabit-odenen-toplam" class="tabular-nums" style="color: var(--emerald); font-weight: 700; font-size: 15px;">₺0,00</div>
                             </div>
-                            <div style="width: 1px; background: rgba(255,255,255,0.05); margin: 0 10px;"></div>
-                            <div style="text-align: right;">
+                            <div style="width: 45%; text-align: right;">
                                 <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">Kalan Ödeme</div>
                                 <div id="sabit-kalan-toplam" class="tabular-nums" style="color: var(--rose); font-weight: 700; font-size: 15px;">₺0,00</div>
                             </div>
+                            
+                                                        <div style="width: 100%; margin-top: 14px; padding-top: 10px; border-top: 1px dashed rgba(255,255,255,0.05);">
+                                <div style="display: flex; justify-content: space-between; font-size: 9px; color: var(--text-muted); font-weight: 700; margin-bottom: 5px; text-transform: uppercase;">
+                                    <span>Sabit Gider Tamamlanma</span>
+                                    <span id="sabit-tamamlanma-yuzde">%0</span>
+                                </div>
+                                <div class="progress-container" style="height: 6px; background: rgba(255,255,255,0.05); border-radius: 6px;">
+                                    <div id="sabit-tamamlanma-bar" class="progress-bar" style="width: 0%; background: var(--blue); border-radius: 6px; transition: width 1s cubic-bezier(0.1, 0.5, 0.1, 1);"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <div class="card accordion" id="acc-kredi-ilerleme">
+                </div> </div> <div class="card accordion" id="acc-kredi-ilerleme">
                 <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
                     <h3><svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg> Kredi İlerlemeleri</h3>
                     <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
@@ -644,7 +669,7 @@
                 <button class="btn-submit" id="btn-submit-ekstre-guncelle" onclick="submitEkstreGuncelle()">Ekstreyi Güncelle</button>
             </div>
 
-            <div id="section-anlik" class="form-section">
+                        <div id="section-anlik" class="form-section">
                 <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Geri Dön</span>
                 
                 <div class="segment-control" style="margin-bottom: 16px;" id="anlik-segment">
@@ -654,7 +679,7 @@
 
                 <div class="form-group">
                     <label>Tutar (₺)</label>
-                    <input type="text" inputmode="decimal" id="an-tutar" class="form-control" placeholder="0,00" oninput="tutarFormatla(this)">
+                    <input type="text" inputmode="decimal" id="an-tutar" class="form-control" placeholder="0,00" oninput="tutarFormatla(this); hesaplaKalanParcaliAnlik()">
                 </div>
 
                 <div class="form-group">
@@ -684,9 +709,30 @@
                     <select id="an-faiz-detay" class="form-control"></select>
                 </div>
 
-                <div class="form-group">
-                    <label id="an-yontem-label">Ödeme Hesabı</label>
-                    <select id="an-yontem" class="form-control"></select>
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label class="form-label" style="font-size: 11px; opacity: 0.7;">ÖDEME / GİRİŞ ŞEKLİ</label>
+                    <select id="an-odeme-sekli" class="form-control" onchange="toggleParcaliAnlik()">
+                        <option value="tek">Tek Hesaptan</option>
+                        <option value="parcali">Parça Parça (Çoklu Hesap)</option>
+                    </select>
+                </div>
+
+                <div id="an-tek-hesap-alani">
+                    <div class="form-group">
+                        <label id="an-yontem-label" class="form-label">Ödeme Hesabı</label>
+                        <select id="an-yontem" class="form-control"></select>
+                    </div>
+                </div>
+
+                <div id="an-parcali-hesap-alani" style="display:none; background: rgba(0,0,0,0.2); padding: 16px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 16px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px dashed rgba(255,255,255,0.1);">
+                        <span style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Hedef: <span id="an-hedef-tutar" style="color:#fff; font-weight:800;" class="tabular-nums">₺0,00</span></span>
+                        <span style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Kalan: <span id="an-kalan-tutar" style="color:var(--amber); font-weight:800;" class="tabular-nums">₺0,00</span></span>
+                    </div>
+                    <div id="an-parcalar-container"></div>
+                    <button onclick="addParcaAnlik()" style="background: rgba(255,255,255,0.05); border: 1px dashed rgba(255,255,255,0.2); color: #cbd5e1; width: 100%; padding: 12px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 10px; transition: 0.2s;">
+                        + Yeni Hesap / Parça Ekle
+                    </button>
                 </div>
 
                 <div class="form-group">
