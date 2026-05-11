@@ -1,4 +1,4 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbx-xS-14nAMrIU36zMkzh88JahpUppIDm2u76X7adFKEsATlV6AXNDGo2LitBXDMoT_/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbxXffGd4V-8GslsyEK056NVod-7nPCWTwsNFG6lFqTn9GFAl8oLCgHUU_OA6ej3uLw_kw/exec";
 
         let expenseChartInstance = null; window.tarihceData = []; window.currentStats = {};
         window.hesapOptions = ""; window.vadesizOptions = ""; window.hesapTurleri = { "Nakit": "Nakit" }; 
@@ -68,23 +68,30 @@ const API_URL = "https://script.google.com/macros/s/AKfycbx-xS-14nAMrIU36zMkzh88
     if (typeof val === 'number') return val; 
     if (!val) return 0; 
     
-    // 1. Metne çevir, para sembolü ve boşlukları temizle
+    // 1. Temizlik: Para sembolü ve boşluklar gider
     let s = val.toString().replace(/₺/g, "").replace(/\s/g, ""); 
     
-    // 2. AKILLI KONTROL: Noktanın binlik mi yoksa kuruş mu olduğunu anlar
+    // 2. HEM NOKTA HEM VİRGÜL VARSA (Örn: 1.250,50)
+    // Nokta binliktir (sil), virgül ondalıktır (noktaya çevir)
     if (s.includes('.') && s.includes(',')) {
-        // Hem nokta hem virgül varsa (2.865,00) nokta kesinlikle binliktir
         s = s.split('.').join('').replace(',', '.');
-    } else if (s.includes(',')) {
-        // Sadece virgül varsa (532,18) kuruş ayracıdır
+    } 
+    // 3. SADECE VİRGÜL VARSA (Örn: 532,18)
+    // Bu kesinlikle kuruş ayracıdır
+    else if (s.includes(',')) {
         s = s.replace(',', '.');
-    } else if (s.includes('.')) {
-        // Sadece nokta varsa: Sağında 2 rakam varsa kuruş (532.18), 3 rakam varsa binliktir (100.000)
+    } 
+    // 4. SADECE NOKTA VARSA (KRİTİK EMEK VERİLEN TAHMİN KISMI)
+    else if (s.includes('.')) {
         let parts = s.split('.');
-        if (parts[parts.length - 1].length > 2) { s = s.split('.').join(''); }
+        // Eğer noktanın sağında 3 rakam varsa (Örn: 9.650) binliktir, sileriz.
+        // Eğer 1 veya 2 rakam varsa (Örn: 10.5) kuruş ayracıdır, dokunmayız.
+        if (parts[parts.length - 1].length > 2) { 
+            s = s.split('.').join(''); 
+        }
     }
     
-    // 3. Sayıya çevir ve hata kontrolü yap
+    // 5. Sayıya çevir ve hata kontrolü yap
     let sonuc = parseFloat(s);
     return isNaN(sonuc) ? 0 : sonuc; 
 };
@@ -341,6 +348,13 @@ const API_URL = "https://script.google.com/macros/s/AKfycbx-xS-14nAMrIU36zMkzh88
             labelEl.innerText = type === 'Gelir' ? 'Giriş Yapılacak Hesap' : 'Ödeme Hesabı';
             selectEl.innerHTML = type === 'Gelir' ? window.vadesizOptions : window.hesapOptions;
             refreshCustomSelect(selectEl);
+
+                // --- MİMAR DÜZELTMESİ: ÖDEME ŞEKLİ KUTUSUNU PREMİUM YAP ---
+    const odSekli = document.getElementById('an-odeme-sekli');
+    if(odSekli) {
+        odSekli.value = 'tek'; // Her sekme değişiminde 'Tek Hesaptan'a sıfırla
+        if(typeof refreshCustomSelect === 'function') refreshCustomSelect(odSekli);
+    }    
             
             setTimeout(() => checkAnlikKalem(), 50);
         }
@@ -440,59 +454,83 @@ if (lblTur) {
         }
 
         async function submitAnlik() {
-            const anaKalemSecimi = getCustomVal('an-kalem');
-            const secilenTarih = document.getElementById('an-tarih').value;
-            const yontem = getCustomVal('an-yontem');
-            const tutarStr = document.getElementById('an-tutar').value;
-            const tutar = parseSaha(tutarStr);
-            
-            let err = false;
-            if(!anaKalemSecimi || anaKalemSecimi === "Seçiniz...") { markError('an-kalem'); err = true; }
-            if(!tutarStr || tutar <= 0) { markError('an-tutar'); err = true; }
-            if(!yontem || yontem === "Seçiniz...") { markError('an-yontem'); err = true; }
-            if(!secilenTarih) { markError('an-tarih'); err = true; }
-            
-            if(err) return;
-            
-            let finalKalem = anaKalemSecimi;
-            if(anaKalemSecimi.toLowerCase() === "diğer") {
-                const digerInput = document.getElementById('an-kalem-diger').value.trim();
-                if(!digerInput) return markError('an-kalem-diger');
-                finalKalem = digerInput;
-            } else if (anaKalemSecimi && anaKalemSecimi.toLowerCase().includes("faiz") && anaKalemSecimi.toLowerCase().includes("banka")) {
-                const faizDetay = getCustomVal('an-faiz-detay');
-                if(!faizDetay) return alert("Faiz uygulanan hesabı seçin!");
-                finalKalem = faizDetay + " Faizi";
+    const anaKalemSecimi = getCustomVal('an-kalem');
+    const secilenTarih = document.getElementById('an-tarih').value;
+    const tutarStr = document.getElementById('an-tutar').value;
+    const tutar = parseSaha(tutarStr);
+    
+    let err = false;
+    if(!anaKalemSecimi || anaKalemSecimi === "Seçiniz...") { markError('an-kalem'); err = true; }
+    if(!tutarStr || tutar <= 0) { markError('an-tutar'); err = true; }
+    if(!secilenTarih) { markError('an-tarih'); err = true; }
+    
+    if(err) return;
+    
+    // MİMAR KORUMASI: Açıklama oluşturma mantığı (Bozulmadı)
+    let finalKalem = anaKalemSecimi;
+    if(anaKalemSecimi.toLowerCase() === "diğer") {
+        const digerInput = document.getElementById('an-kalem-diger').value.trim();
+        if(!digerInput) return markError('an-kalem-diger');
+        finalKalem = digerInput;
+    } else if (anaKalemSecimi && anaKalemSecimi.toLowerCase().includes("faiz") && anaKalemSecimi.toLowerCase().includes("banka")) {
+        const faizDetay = getCustomVal('an-faiz-detay');
+        if(!faizDetay) return alert("Faiz uygulanan hesabı seçin!");
+        finalKalem = faizDetay + " Faizi";
+    } else {
+        const ekCheck = document.getElementById('an-ek-check');
+        const ekInput = document.getElementById('an-ek-input').value.trim();
+        if(ekCheck && ekCheck.checked && ekInput) finalKalem = ekInput;
+    }
+    
+    const simdi = new Date();
+    const tParca = secilenTarih.split('-');
+    const tamTarih = `${tParca[2]}.${tParca[1]}.${tParca[0]} ${String(simdi.getHours()).padStart(2, '0')}:${String(simdi.getMinutes()).padStart(2, '0')}:${String(simdi.getSeconds()).padStart(2, '0')}`;
+    
+    let payload = {
+        action: "yeni_hareket",
+        tur: currentAnlikType,
+        kategori: anaKalemSecimi,
+        kalem: finalKalem,
+        taksit: 1,
+        tarih: tamTarih
+    };
+
+    const sekil = document.getElementById('an-odeme-sekli').value;
+    
+    if (sekil === 'parcali') {
+        const parcalar = [];
+        let parcaHata = false;
+        document.querySelectorAll('.parca-satiri-anlik').forEach(row => {
+            const selectEl = row.querySelector('.an-parca-hesap');
+            let hesap = selectEl.value;
+            if(!hesap || hesap === "") {
+                const spanTxt = row.querySelector('.custom-select-trigger span');
+                if(spanTxt) hesap = spanTxt.innerText;
+            }
+            const pTutarVal = parseSaha(row.querySelector('.an-parca-tutar').value);
+            if (!hesap || hesap.includes("Seçiniz") || pTutarVal <= 0) {
+                parcaHata = true;
+                row.querySelector('.an-parca-tutar').classList.add('error');
             } else {
-const ekCheck = document.getElementById('an-ek-check');
-const ekInput = document.getElementById('an-ek-input').value.trim();
-if(ekCheck && ekCheck.checked && ekInput) {
-// DÜZELTME: Kategoriyi birleştirmeyi bıraktık. Sadece yazılan açıklamayı (örn: Kedi Kumu) gönderir.
-finalKalem = ekInput;
+                parcalar.push({
+                    yontem: hesap,
+                    tutar: pTutarVal,
+                    odeme_turu: window.hesapTurleri[hesap] || "Banka Hesabı"
+                });
+            }
+        });
+        if (parcaHata || parcalar.length === 0) return alert("Parçalı ödeme alanlarını kontrol edin!");
+        payload.parcalar = parcalar;
+    } else {
+        const yontem = getCustomVal('an-yontem');
+        if(!yontem || yontem === "Seçiniz...") { markError('an-yontem'); return; }
+        payload.yontem = yontem;
+        payload.tutar = tutar;
+        payload.odeme_turu = window.hesapTurleri[yontem] || "Banka Hesabı";
+    }
+    
+    apiIstekAt(payload, 'btn-submit-anlik');
 }
-}
-            
-            const simdi = new Date();
-            const saat = String(simdi.getHours()).padStart(2, '0');
-            const dak = String(simdi.getMinutes()).padStart(2, '0');
-            const sn = String(simdi.getSeconds()).padStart(2, '0');
-            const tParca = secilenTarih.split('-');
-            const tamTarih = `${tParca[2]}.${tParca[1]}.${tParca[0]} ${saat}:${dak}:${sn}`;
-            
-            const odTuru = window.hesapTurleri[yontem] || "Banka Hesabı";
-            
-            apiIstekAt({
-                action: "yeni_hareket",
-                tur: currentAnlikType,
-                kategori: anaKalemSecimi, // DÜZELTİLEN SATIR: "Değişken" yerine doğrudan senin seçtiğin kategoriyi alıyor (Örn: Market)
-                kalem: finalKalem,
-                yontem: yontem,
-                tutar: tutar,
-                taksit: 1,
-                odeme_turu: odTuru,
-                tarih: tamTarih
-            }, 'btn-submit-anlik');
-        }
 
         async function submitDuzenli() {
             const tur = getCustomVal('du-tur');
@@ -659,11 +697,15 @@ function submitVarlikSil() {
             setText('modal-title', title);
             document.querySelectorAll('.form-control').forEach(el => { el.value = ''; el.classList.remove('error'); });
             
-            if(id === 'section-anlik') {
+                        if(id === 'section-anlik') {
+                // MİMAR DOKUNUŞU: Formu tertemiz yap
+                resetAnlikForm();
+
                 if(document.querySelectorAll('#anlik-segment .segment-btn').length > 0) {
                     document.querySelectorAll('#anlik-segment .segment-btn')[0].classList.add('active');
                     document.querySelectorAll('#anlik-segment .segment-btn')[1].classList.remove('active');
                 }
+                // Filtreyi Gider olarak başlat (Bu işlem kategorileri doldurur)
                 setAnlikFilter('Gider', document.querySelectorAll('#anlik-segment .segment-btn')[0]);
             }
             if(id === 'section-duzenli') {
@@ -790,22 +832,36 @@ function submitVarlikSil() {
             const result = await res.json(); 
 
             if (result.status === "success") {
-                vibe(); 
+            vibe(); 
+            
+            // --- GERİ AL LİSTESİNDEKİ O GÖRÜNTÜYÜ DÜZELTEN KISIM ---
+            if (payload.action === 'geri_al') {
+                // Yazıyı siliyoruz, arka planı şeffaf yapıyoruz, sadece temiz bir yeşil TİK koyuyoruz
+                btn.innerHTML = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+                btn.style.background = "transparent"; 
+                btn.style.boxShadow = "none";
+                btn.style.border = "none";
+            } 
+            // --- DİĞER TÜM ANA BUTONLAR (KAYDET, GÜNCELLE VS.) İÇİN STANDART HAL ---
+            else {
                 btn.innerHTML = `Başarılı ✓`; 
                 btn.style.background = "var(--emerald)";
                 
-                // === FAB BUTONUNU YEŞİL TİK YAP ===
+                // Form gönderildiğinde ekranın sağ altındaki artı butonunu da yeşil yap
                 const fabBtn = document.getElementById('fab-btn');
                 if (fabBtn) {
-                    fabBtn.classList.remove('open'); // Çarpıya dönmesini sağlayan kuralı siliyoruz
+                    fabBtn.classList.remove('open');
                     fabBtn.innerHTML = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
                     fabBtn.style.background = "var(--emerald)";
                 }
-                
-                setTimeout(async () => {
-                    await verileriCek();
-                }, 1000);
-            } else {
+            }
+            
+            // Verileri yenile
+            setTimeout(async () => {
+                await verileriCek();
+            }, 1000);
+
+        } else {
                 alert("İşlem başarısız: " + result.message);
                 btn.innerHTML = originalText; 
                 btn.disabled = false;
@@ -1643,31 +1699,41 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
         document.querySelectorAll('.custom-select-wrapper').forEach(w => w.classList.remove('open'));
     });
 
-    // --- YENİLENMİŞ: EVRENSEL TUTAR FORMATLAYICI ---
-    function tutarFormatla(input) {
-        let cursorPosition = input.selectionStart;
-        let originalLength = input.value.length;
-        let value = input.value;
+function tutarFormatla(input) {
+    let cursorPosition = input.selectionStart;
+    let originalLength = input.value.length;
+    let value = input.value;
 
-        let isNegative = value.startsWith('-');
-        value = value.replace(/[^0-9,]/g, '');
+    let isNegative = value.startsWith('-');
+    // Sadece rakam ve virgül kalacak şekilde temizle (Senin kuralın)
+    value = value.replace(/[^0-9,]/g, '');
 
-        let parts = value.split(',');
-        if (parts.length > 2) value = parts[0] + ',' + parts.slice(1).join('');
+    let parts = value.split(',');
+    if (parts.length > 2) value = parts[0] + ',' + parts.slice(1).join('');
 
-        parts = value.split(',');
-        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    parts = value.split(',');
+    // Binlik noktalarını yerleştir (Senin kuralın)
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
-        input.value = (isNegative ? '-' : '') + parts.join(',');
+    let finalValue = (isNegative ? '-' : '') + parts.join(',');
+    input.value = finalValue;
 
-        // --- KRİTİK EKLEME: Evrensellik Kimliği ---
-        // Bu inputun "formatlı bir para alanı" olduğunu işaretliyoruz
-        input.dataset.isCurrency = "true"; 
+    // --- KRİTİK EMEK: Evrensellik Kimliği (Aynen Korundu) ---
+    input.dataset.isCurrency = "true"; 
 
-        let newLength = input.value.length;
-        cursorPosition = cursorPosition + (newLength - originalLength);
-        input.setSelectionRange(cursorPosition, cursorPosition);
+    // --- KRİTİK DÜZELTME: İMLEÇ SIRALAMASI ---
+    // 9650 yazarken araya nokta girdiğinde imlecin yerini korur, rakam yutmaz.
+    let newLength = input.value.length;
+    cursorPosition = cursorPosition + (newLength - originalLength);
+    input.setSelectionRange(cursorPosition, cursorPosition);
+
+    // --- TETİKLEYİCİ: Eğer anlık işlem kutusuysa aşağıyı güncelle ---
+    if (input.id === 'an-tutar' || input.classList.contains('an-parca-tutar')) {
+        if(typeof hesaplaKalanParcaliAnlik === 'function') {
+            hesaplaKalanParcaliAnlik();
+        }
     }
+}
 
         // =========================================================================
     // 1. BÖLÜM: KAPORTA (SADECE EKRANI ÇİZEN FONKSİYON)
@@ -1725,6 +1791,13 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
         animateValue('val-net-servet', data.netServet, aSure);
         animateValueUSD('val-net-servet-usd', data.netServetUSD, aSure);
 
+                    // --- MİMAR DOKUNUŞU: Kur Bilgisini Ekrana Bas (Zırhlı) ---
+        const kurEl = document.getElementById('usd-kur-bilgisi');
+        let guncelKur = parseSaha(data.usdRate); // Backendden ne gelirse gelsin rakama çevirir
+        if (kurEl && guncelKur > 0) {
+            kurEl.innerText = `(Güncel Kur: ₺${guncelKur.toLocaleString('tr-TR', {minimumFractionDigits:2, maximumFractionDigits:2})})`;
+        }
+
         // Net Varlık Dinamik Renk Zırhı
         const netServetEl = document.getElementById('val-net-servet');
         if (netServetEl) {
@@ -1733,8 +1806,25 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
 
         setText('val-borc-varlik-orani', data.borcVarlikOrani);
         setText('val-nakit-koruma', data.nakitKorumaSuresi + ' Ay');
-        animateValue('val-kasa', data.toplamKasa, aSure);
+                animateValue('val-kasa', data.toplamKasa, aSure);
         animateValue('val-borc', data.toplamBorc, aSure);
+        
+        // --- MİMAR DOKUNUŞU: "Sıfır Stres" Psikoloji Motoru ---
+        const canYakanKutu = document.getElementById('val-borc-acil');
+        const canYakanLabel = canYakanKutu ? canYakanKutu.parentElement.querySelector('.summary-label') : null;
+        if (canYakanKutu && canYakanLabel) {
+            if (data.toplamCanYakan === 0) {
+                // Borç sıfırsa Zümrüt Yeşili ve Başarı İkonu
+                canYakanLabel.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:5px;"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path><path d="m9 12 2 2 4-4"></path></svg> Sıfır Stres`;
+                canYakanLabel.style.color = 'var(--emerald)';
+                canYakanKutu.style.color = 'var(--emerald)';
+            } else {
+                // Borç varsa Orijinal Kırmızı Uyarı
+                canYakanLabel.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:5px;"><path d="M12 2c0 0-5 6.5-5 11a5 5 0 0 0 10 0c0-4.5-5-11-5-11Z"/><path d="M12 13a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"/></svg> Can Yakan`;
+                canYakanLabel.style.color = 'var(--rose)';
+                canYakanKutu.style.color = 'var(--rose)';
+            }
+        }
         animateValue('val-borc-acil', data.toplamCanYakan, aSure);
         animateValue('val-borc-planli', data.toplamPlanli, aSure);
         animateValue('val-tahmini-faiz', data.tahminiFaiz, aSure);
@@ -1822,7 +1912,7 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
 
                     bHtml += `
         <div style="margin-top:15px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.05);">
-            <button onclick="this.style.pointerEvents='none'; loadSabitlerAndShow('ozel-borc-islemleri-screen', 'ozel-secim', 'Şahıs & Özel Borçlar').then(() => { const m=document.getElementById('action-modal'); const b=document.getElementById('fab-btn'); m.classList.add('active'); b.classList.add('open'); document.body.classList.add('modal-open'); toggleOzelTab('ode'); this.style.pointerEvents='auto'; });" class="btn-ozel-borclar" style="width:100%; height:38px; border-radius:10px; font-size:12px; font-weight:800; display:flex; align-items:center; justify-content:center; gap:8px; border:none; cursor:pointer;">
+            <button onclick="this.style.pointerEvents='none'; loadSabitlerAndShow('ozel-borc-islemleri-screen', 'ozel-secim', 'Şahıs & Özel Borçlar').then(() => { const m=document.getElementById('action-modal'); const b=document.getElementById('fab-btn'); m.classList.add('active'); b.classList.add('open'); document.body.classList.add('modal-open'); toggleOzelTab('ode'); this.style.pointerEvents='auto'; });" style="width:100%; height:38px; background:rgba(244, 63, 94, 0.1); border:1px solid rgba(244, 63, 94, 0.2); color:var(--rose); border-radius:10px; font-size:12px; font-weight:800; display:flex; align-items:center; justify-content:center; gap:8px; cursor:pointer;">
                 <i class="fas fa-hand-holding-dollar"></i> ÖZEL BORÇ ÖDE
             </button>
         </div>`;
@@ -1836,6 +1926,8 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
 
         const bankaList = document.getElementById('banka-listesi');
         let bankaHtml = "";
+        let toplamLikidite = 0; // MİMAR EKLENTİSİ: Sıcak Para Havuzu
+
         data.bankalar.sort((a, b) => {
             if (a.isim.trim().toLowerCase() === "nakit") return -1;
             if (b.isim.trim().toLowerCase() === "nakit") return 1;
@@ -1851,10 +1943,28 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
                 kmhDurumu = `<div style="font-size:10px; color:var(--text-muted); margin-top:4px;">KMH Kullanımı: %${kYuzde}</div>`;
             }
             bankaHtml += `<div class="t-row"><div class="t-details"><div class="t-name">${icon} ${b.isim}</div>${kmhDurumu}</div><div class="t-amt ${tutarRengi}">${formatTL(b.bakiye)}</div></div>`;
+            
+            // MİMAR EKLENTİSİ: Sadece cebindeki ve hesaptaki ARTILARI topla
+            if(b.bakiye > 0) {
+                toplamLikidite += b.bakiye;
+            }
         });
-        bankaList.innerHTML = bankaHtml;
 
-        window.kartlarDetayli = data.kartlarDetayli || [];
+        // MİMAR EKLENTİSİ: Özgüven veren dip toplam satırı
+        bankaHtml += `
+        <div class="t-row" style="border-top: 1px dashed rgba(255,255,255,0.1); margin-top: 4px; padding: 12px 10px; background: rgba(16, 185, 129, 0.05); border-radius: 8px; display: flex; align-items: center; min-height: 48px;">
+            <div class="t-details" style="display: flex; align-items: center; flex: 1;">
+                <i class="fas fa-shield-alt" style="color: var(--emerald); font-size: 14px; margin-right: 8px; display: flex; align-items: center;"></i>
+                <div style="font-size: 12px; font-weight: 700; color: var(--emerald); line-height: 1;">Kullanılabilir Nakit Gücü</div>
+            </div>
+            <div class="t-amt" style="font-size: 16px; font-weight: 800; color: var(--emerald); display: flex; align-items: center;">
+                ${formatTL(toplamLikidite)}
+            </div>
+        </div>`;
+
+        bankaList.innerHTML = bankaHtml;
+            window.kartlarDetayli = data.kartlarDetayli || [];
+            
         const kSecim = document.getElementById('dashboard-kart-secim');
         if (kSecim) {
             let kOptions = `<option value="hepsi">Tüm Kartlar (Özet)</option>`;
@@ -2016,6 +2126,23 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
         if(safToplamEl) safToplamEl.innerHTML = formatTL(gercekSafHarcama);
         if(safOrtalamaEl) safOrtalamaEl.innerHTML = formatTL(gercekGunlukOrtalama) + `<span style="font-size:11px; opacity:0.5; font-weight:500; margin-left:4px;">/gün</span>`;
 
+        // --- MİMAR DOKUNUŞU: Ay Sonu Projeksiyon Motoru (Yeni Tasarıma Uyumlu) ---
+        const tahminKutuEl = document.getElementById('saf-ay-sonu-tahmin');
+        const tahminRakamEl = document.getElementById('saf-ay-sonu-rakam');
+        
+        if (tahminKutuEl && tahminRakamEl) {
+            const bugun = new Date();
+            const buAyKacGun = new Date(bugun.getFullYear(), bugun.getMonth() + 1, 0).getDate();
+            const aySonuTahminiTutar = gercekGunlukOrtalama * buAyKacGun;
+            
+            if (gercekGunlukOrtalama > 0) {
+                tahminKutuEl.style.display = 'flex'; // Veri varsa yatay banner olarak göster
+                tahminRakamEl.innerHTML = formatTL(aySonuTahminiTutar);
+            } else {
+                tahminKutuEl.style.display = 'none'; // Henüz harcama yoksa gizle, yer kaplamasın
+            }
+        }
+
         const v14_container = document.getElementById('saf-gider-listesi');
         if (v14_container) {
             if (v14_safListe.length === 0) {
@@ -2107,13 +2234,63 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
         animateValue('val-nakit-cikis', (nakitAkisiGruplar["Nakit Giderler (Banka/Kasa)"].toplam + nakitAkisiGruplar["Toplam Borç Ödemeleri"].toplam), aSure);
         animateValue('val-net-nakit', netAkis, aSure);
 
-        const kutuNet = document.getElementById('kutu-net-nakit'); const valNet = document.getElementById('val-net-nakit');
+                // 1. Kutu Rengini Ayarla (Sadece BİR KERE tanımlıyoruz)
+        const kutuNet = document.getElementById('kutu-net-nakit'); 
+        const valNet = document.getElementById('val-net-nakit');
         if (kutuNet && valNet) {
             if (netAkis < 0) {
-                kutuNet.style.background = 'rgba(244, 63, 94, 0.1)'; kutuNet.style.borderColor = 'rgba(244, 63, 94, 0.3)'; valNet.style.color = 'var(--rose)';
+                kutuNet.style.background = 'rgba(244, 63, 94, 0.1)'; 
+                kutuNet.style.borderColor = 'rgba(244, 63, 94, 0.3)'; 
+                valNet.style.color = 'var(--rose)';
             } else {
-                kutuNet.style.background = 'rgba(16, 185, 129, 0.1)'; kutuNet.style.borderColor = 'rgba(16, 185, 129, 0.3)'; valNet.style.color = 'var(--emerald)';
+                kutuNet.style.background = 'rgba(16, 185, 129, 0.1)'; 
+                kutuNet.style.borderColor = 'rgba(16, 185, 129, 0.3)'; 
+                valNet.style.color = 'var(--emerald)';
             }
+        }
+
+                // 2. Akıllı Tüketim Barı Motoru
+        try {
+            const tuketimKapsayici = document.getElementById('tuketim-bari-kapsayici');
+            const tuketimYuzdeEl = document.getElementById('tuketim-yuzdesi');
+            const tuketimBarDoluluk = document.getElementById('tuketim-bari-doluluk');
+            
+            if (tuketimKapsayici && tuketimYuzdeEl && tuketimBarDoluluk) {
+                let toplamGelir = nakitAkisiGruplar["Toplam Gelirler"].toplam || 0;
+                let toplamGider = (nakitAkisiGruplar["Nakit Giderler (Banka/Kasa)"].toplam || 0) + (nakitAkisiGruplar["Toplam Borç Ödemeleri"].toplam || 0);
+                
+                // MİMAR KURALI: Bar gelir olsun olmasın HER ZAMAN görünür olacak!
+                tuketimKapsayici.style.display = 'block'; 
+                
+                if (toplamGelir > 0) {
+                    let yuzdeHesap = (toplamGider / toplamGelir) * 100;
+                    let barYuzdesi = Math.min(yuzdeHesap, 100); 
+                    
+                    setTimeout(() => {
+                        tuketimBarDoluluk.style.width = barYuzdesi + '%';
+                        if (yuzdeHesap >= 90) {
+                            tuketimBarDoluluk.style.backgroundColor = 'var(--rose)';
+                            tuketimYuzdeEl.style.color = 'var(--rose)';
+                        } else if (yuzdeHesap >= 75) {
+                            tuketimBarDoluluk.style.backgroundColor = 'var(--amber)';
+                            tuketimYuzdeEl.style.color = 'var(--amber)';
+                        } else {
+                            tuketimBarDoluluk.style.backgroundColor = 'var(--emerald)';
+                            tuketimYuzdeEl.style.color = 'var(--text-muted)';
+                        }
+                        tuketimYuzdeEl.innerText = '%' + yuzdeHesap.toFixed(0);
+                    }, 100); 
+                } else {
+                    // EĞER HENÜZ GELİR GİRİLMEDİYSE: Bar gizlenmez, boş bekler.
+                    setTimeout(() => {
+                        tuketimBarDoluluk.style.width = '0%';
+                        tuketimYuzdeEl.innerText = 'Gelir Bekleniyor';
+                        tuketimYuzdeEl.style.color = 'var(--text-muted)';
+                    }, 100);
+                }
+            }
+        } catch (e) {
+            console.error("Bar cizim hatasi:", e);
         }
 
         const sKategoriContainer = document.getElementById('sabitler-kategori-container');
@@ -2160,17 +2337,37 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
         </div>`;
         sKategoriContainer.innerHTML = sKategoriHtml;
 
-        document.getElementById('sabit-genel-toplam').innerHTML = formatTL(sOdenenGider + sKalanGider);
+                document.getElementById('sabit-genel-toplam').innerHTML = formatTL(sOdenenGider + sKalanGider);
         document.getElementById('sabit-odenen-toplam').innerHTML = formatTL(sOdenenGider);
         
+        // --- MİMAR DOKUNUŞU: Aylık Yük Erime Barı Hesaplaması ---
+        let genelTop = sOdenenGider + sKalanGider;
+        let tamYuzde = genelTop > 0 ? (sOdenenGider / genelTop) * 100 : 0;
+        
+        const barEl = document.getElementById('sabit-tamamlanma-bar');
+        const yuzdeEl = document.getElementById('sabit-tamamlanma-yuzde');
+        if (barEl && yuzdeEl) {
+            setTimeout(() => {
+                barEl.style.width = tamYuzde + '%';
+                yuzdeEl.innerText = '%' + tamYuzde.toFixed(0);
+                if (tamYuzde === 100) {
+                    barEl.style.backgroundColor = 'var(--emerald)';
+                    yuzdeEl.style.color = 'var(--emerald)';
+                } else {
+                    barEl.style.backgroundColor = 'var(--blue)'; 
+                    yuzdeEl.style.color = 'var(--text-muted)';
+                }
+            }, 100);
+        }
+
         // EVRENSEL SIFIR BORÇ MOTİVASYON MOTORU
         const kalanKutu = document.getElementById('sabit-kalan-toplam');
-        if (sKalanGider === 0) {
-            kalanKutu.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px; vertical-align:-3px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>` + formatTL(sKalanGider);
-            kalanKutu.style.color = "var(--emerald)"; // Başarı yeşili
+        if (sKalanGider === 0 && genelTop > 0) {
+            kalanKutu.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px; vertical-align:-3px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>TAMAMLANDI`;
+            kalanKutu.style.color = "var(--emerald)"; 
         } else {
             kalanKutu.innerHTML = formatTL(sKalanGider);
-            kalanKutu.style.color = "var(--rose)"; // Borç kırmızısı
+            kalanKutu.style.color = "var(--rose)"; 
         }
 
                 const yListe = document.getElementById('yaklasan-listesi');
@@ -2193,30 +2390,62 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
             });
             // ------------------------------------------------------------------------------------------------
 
-                                    siraliYaklasanlar.forEach(y => {
+                            siraliYaklasanlar.forEach(y => {
                 const otoLogListesi = (data.dinamikKategoriler && data.dinamikKategoriler.otoLog) ? data.dinamikKategoriler.otoLog : [];
                 const isOtomatik = otoLogListesi.includes(y.tur);
 
-                // --- MANTIK KORUNDU: Kategori Metni Hazırlığı ---
                 const kategoriMetni = (y.tur && y.tur !== "-" && !y.kalem.startsWith(y.tur)) 
                     ? `<span style="opacity:0.85; font-weight:500;">${y.tur}</span>&nbsp;-&nbsp;` 
                     : "";
 
-                // --- MANTIK KORUNDU: Badge / Onayla Butonu Fonksiyonu ---
                 const badge = isOtomatik 
                     ? `<span style="font-size:9px; background:rgba(59, 130, 246, 0.15); color:#60a5fa; padding:2px 6px; border-radius:4px; border:1px solid rgba(59, 130, 246, 0.3); font-weight:800; display:inline-flex; align-items:center;"><i class="fas fa-robot" style="margin-right:3px;"></i>OTOMATİK</span>`
                     : `<button onclick="this.style.pointerEvents='none'; loadSabitlerAndShow('section-sabit-onayla', 'so-kural', 'Bekleyen İşlemi Onayla').then(() => { const m=document.getElementById('action-modal'); const b=document.getElementById('fab-btn'); if(!m.classList.contains('active')) { m.classList.add('active'); b.classList.add('open'); document.body.classList.add('modal-open'); } this.style.pointerEvents='auto'; }); event.stopPropagation();" style="border:none; cursor:pointer; min-width:64px; height:22px; font-size:9px; background:rgba(245, 158, 11, 0.2); color:#fbbf24; padding:0 8px; border-radius:6px; border:1px solid rgba(245, 158, 11, 0.4); font-weight:900; display:inline-flex; align-items:center; justify-content:center; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">ONAYLA</button>`;
 
-                // --- YENİ TASARIM: 3 Katmanlı Standart Yapı ---
+                // --- MİMAR DOKUNUŞU: Zaman Sensörü ve "Nabız" (Pulse) Efekti ---
+                let fark = y.gun - bugunGunu;
+                if (fark < 0) fark += buAyKacGun; // Ay devretme koruması
+
+                let geriSayimBadge = "";
+                let rowStyleEk = "";
+                
+                                if (fark === 0) {
+                    // BUGÜN: Mimar Dokunuşu - Tüm satır kırmızıya çalar ve nabız gibi yanıp söner
+                    geriSayimBadge = `<span style="font-size:9px; background:rgba(244, 63, 94, 0.15); color:var(--rose); padding:2px 6px; border-radius:4px; font-weight:800; border:1px solid rgba(244, 63, 94, 0.3); margin-left:6px;"><i class="fas fa-exclamation-triangle" style="margin-right:3px;"></i>BUGÜN</span>`;
+                    
+                    // Satıra eklenecek animasyon stili
+                    rowStyleEk = `border-color: rgba(244, 63, 94, 0.6); animation: sirenPulse 1.2s infinite;`;
+                    
+                    if (!document.getElementById('siren-pulse-style')) {
+                        const s = document.createElement('style'); s.id = 'siren-pulse-style';
+                        // Hem arka plan rengi kızarır hem de dışarıya hafif kırmızı bir ışık yayar
+                        s.innerHTML = `@keyframes sirenPulse { 
+                            0% { background-color: rgba(244, 63, 94, 0.05); box-shadow: 0 0 0px rgba(244,63,94,0); } 
+                            50% { background-color: rgba(244, 63, 94, 0.3); box-shadow: 0 0 12px rgba(244,63,94,0.5); } 
+                            100% { background-color: rgba(244, 63, 94, 0.05); box-shadow: 0 0 0px rgba(244,63,94,0); } 
+                        }`;
+                        document.head.appendChild(s);
+                    }
+                } else if (fark === 1) {
+                    // YARIN: Satır turuncu (amber) olur
+                    geriSayimBadge = `<span style="font-size:9px; background:rgba(245, 158, 11, 0.15); color:var(--amber); padding:2px 6px; border-radius:4px; font-weight:800; border:1px solid rgba(245, 158, 11, 0.3); margin-left:6px;"><i class="fas fa-clock" style="margin-right:3px;"></i>YARIN</span>`;
+                    rowStyleEk = `background: rgba(245, 158, 11, 0.08); border-color: rgba(245, 158, 11, 0.3);`;
+                } else {
+                    // DİĞER GÜNLER: Klasik görünüm, sadece gün sayar
+                    geriSayimBadge = `<span style="font-size:9px; background:rgba(255, 255, 255, 0.05); color:var(--text-muted); padding:2px 6px; border-radius:4px; font-weight:700; border:1px solid rgba(255, 255, 255, 0.1); margin-left:6px;">${fark} GÜN KALDI</span>`;
+                    rowStyleEk = `background: rgba(245, 158, 11, 0.03); border-color: rgba(245, 158, 11, 0.15);`;
+                }
+
+                // YENİ TASARIM
                 yHtml += `
-                <div class="t-row" style="background: rgba(245, 158, 11, 0.05); padding: 14px 12px; border-radius: 12px; margin-bottom: 8px; border: 1px dashed rgba(245, 158, 11, 0.25); align-items: center;">
+                <div class="t-row" style="padding: 14px 12px; border-radius: 12px; margin-bottom: 8px; border: 1px dashed; align-items: center; transition: 0.3s; ${rowStyleEk}">
                     <div class="t-details" style="flex: 1; display: flex; flex-direction: column; gap: 7px;">
-                        <div style="font-size: 14px; color: var(--amber); font-weight:700; line-height:1.2; word-break: break-word;">
+                        <div style="font-size: 14px; color: #fff; font-weight:700; line-height:1.2; word-break: break-word;">
                             ${kategoriMetni}${y.kalem}
                         </div>
                         
-                        <div style="display: flex;">
-                            ${badge}
+                        <div style="display: flex; align-items: center; flex-wrap: wrap;">
+                            ${badge}${geriSayimBadge}
                         </div>
                         
                         <div style="font-size: 10px; color:rgba(255,255,255,0.4); font-weight:500;">
@@ -2274,15 +2503,20 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
             krediListe.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size: 13px; padding: 10px 0;">Aktif kredi ilerlemesi bulunamadı.</div>`;
         }
 
-        const ctxPasta = document.getElementById('expenseChart');
+                const ctxPasta = document.getElementById('expenseChart');
         if (ctxPasta) {
             const cCtx = ctxPasta.getContext('2d');
-            let pastaData = {}; let pastaSafToplam = 0;
+            let pastaData = {}; 
+            let pastaSafToplam = 0;
+
+            // --- 1. VERİ TOPLAMA VE GRUPLAMA (DİLİMLER İÇİN) ---
             if (data.buAyIslemler && data.buAyIslemler.length > 0) {
                 data.buAyIslemler.forEach(islem => {
                     if (islem.tur === 'Gider') { 
-                        let kat = islem.kalem || "Diğer";
+                        // KRİTİK: Dilimler artık Kalem(E) değil, Kategori(C) bazlı oluşuyor
+                        let kat = islem.kategori || "Diğer";
                         if (kat.toLowerCase().includes("faiz")) kat = "Toplam Faiz Gideri";
+                        
                         pastaData[kat] = (pastaData[kat] || 0) + islem.tutar;
                         pastaSafToplam += islem.tutar;
                     }
@@ -2292,55 +2526,122 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
             // ÖNEMLİ: Grafik varsa önce yok et (İki kere üst üste çizilmesini engeller)
             if (expenseChartInstance) expenseChartInstance.destroy();
 
-            const sortedKategoriler = Object.entries(pastaData).sort((a, b) => b[1] - a[1]);
-            let labels = []; let values = []; let digerToplam = 0;
+            // Kategorileri tutara göre büyükten küçüğe sırala
+            const sortedPastaKategoriler = Object.entries(pastaData).sort((a, b) => b[1] - a[1]);
+            let labels = []; 
+            let values = []; 
+            let digerToplam = 0;
 
-            sortedKategoriler.forEach((item, index) => {
+            sortedPastaKategoriler.forEach((item, index) => {
                 if (index < 5) { labels.push(item[0]); values.push(item[1]); } else { digerToplam += item[1]; }
             });
             if (digerToplam > 0) { labels.push("Diğer"); values.push(digerToplam); }
 
-                        if (values.length > 0) {
+            // --- 2. AY BAŞI KONTROLÜ VE GRAFİK ÇİZİMİ ---
+            if (values.length > 0) {
                 const premiumColors = ['#f43f5e', '#f59e0b', '#3b82f6', '#10b981', '#8b5cf6', '#ec4899', '#64748b'];
                 try {
                     expenseChartInstance = new Chart(cCtx, {
                         type: 'doughnut',
                         data: {
                             labels: labels,
-                            datasets: [{ data: values, backgroundColor: labels.map((label, index) => label === "Diğer" ? '#64748b' : premiumColors[index]), borderWidth: 0, hoverOffset: 8 }]
+                            datasets: [{ 
+                                data: values, 
+                                backgroundColor: labels.map((label, index) => label === "Diğer" ? '#64748b' : premiumColors[index]), 
+                                borderWidth: 0, 
+                                hoverOffset: 12 
+                            }]
                         },
                         options: {
-                            responsive: true, maintainAspectRatio: false, cutout: '75%', 
+                            responsive: true, 
+                            maintainAspectRatio: false, 
+                            cutout: '75%', 
                             plugins: {
                                 legend: { display: false }, 
-                                tooltip: { backgroundColor: '#1e2128', titleColor: '#94a3b8', bodyColor: '#fff', bodyFont: { weight: 'bold' }, padding: 12, cornerRadius: 8, displayColors: true,
-                                    callbacks: { label: function(context) { let val = context.raw || 0; let perc = ((val / pastaSafToplam) * 100).toFixed(1); return ` ₺${val.toLocaleString('tr-TR', {minimumFractionDigits: 2})} (%${perc})`; } }
+                                tooltip: { enabled: false } // Siyah kutu çakışmasını önler
+                            },
+                            // --- DİNAMİK MERKEZ YAZIM MANTIĞI ---
+                            onHover: (event, chartElement) => {
+                                const mBaslik = document.getElementById('pasta-merkez-baslik');
+                                const mDeger = document.getElementById('pasta-toplam-rakam');
+                                if(!mBaslik || !mDeger) return;
+
+                                if (chartElement.length > 0) {
+                                    const index = chartElement[0].index;
+                                    const label = labels[index];
+                                    const val = values[index];
+                                    const yuzde = pastaSafToplam > 0 ? ((val / pastaSafToplam) * 100).toFixed(1) : 0;
+                                    
+                                    mBaslik.innerText = label.toUpperCase() + " (%" + yuzde + ")";
+                                    mBaslik.style.color = "var(--amber)"; 
+                                    mDeger.innerHTML = formatTL(val); 
+                                } else {
+                                    mBaslik.innerText = "SAF HARCAMA";
+                                    mBaslik.style.color = "var(--text-muted)";
+                                    mDeger.innerHTML = formatTL(pastaSafToplam); 
                                 }
                             }
                         }
                     });
                 } catch(e) { console.error("Grafik çizim hatası:", e); }
 
-                const pastaToplamEl = document.getElementById('pasta-toplam-rakam'); if(pastaToplamEl) pastaToplamEl.innerHTML = formatTL(pastaSafToplam);
+                // İlk açılışta merkezi doldur
+                const pastaToplamEl = document.getElementById('pasta-toplam-rakam'); 
+                if(pastaToplamEl) pastaToplamEl.innerHTML = formatTL(pastaSafToplam);
 
+                                // --- 3. ALTTAKİ TOP 5 LİSTESİ (KATEGORİ - AÇIKLAMA) VE ISI HARİTASI ---
                 const top5Container = document.getElementById('pasta-ozet-grid');
                 if (top5Container) {
                     let top5Html = "";
-                    sortedKategoriler.slice(0, 5).forEach((item, index) => {
-                        const katAdi = item[0]; const katTutar = item[1]; const yuzde = pastaSafToplam > 0 ? ((katTutar / pastaSafToplam) * 100).toFixed(1) : 0;
-                        top5Html += `<div class="t-row" style="padding: 10px 0; border-bottom: 1px dashed rgba(255,255,255,0.05); align-items: center;"><div class="t-details" style="flex: 1;"><div class="t-name" style="font-size: 13px; color: #cbd5e1;"><span style="color: var(--text-muted); margin-right: 4px; font-weight: 400;">${index + 1}.</span> ${katAdi}</div></div><div class="t-amt" style="text-align: right;"><div class="text-red" style="font-size: 14px; font-weight: 700;">${formatTL(katTutar)}</div><div style="font-size: 10px; color: var(--text-muted); font-weight: 600;">%${yuzde}</div></div></div>`;
+                    
+                    // MİMAR DOKUNUŞU: Artık tekil fişleri değil, doğrudan Pasta Grafiğindeki KATEGORİLERİ (labels/values) çekiyoruz.
+                    // En yüksek kategori tutarını (1. sıradakini) Isı Haritası referansı için alıyoruz
+                    let maxTutar = values.length > 0 ? values[0] : 0;
+
+                    labels.forEach((kategoriAdi, index) => {
+                        const tutar = values[index]; 
+                        const pay = pastaSafToplam > 0 ? ((tutar / pastaSafToplam) * 100).toFixed(1) : 0;
+                        
+                        // Isı Haritası Bar Genişliği (1. Kategori %100, diğerleri ona göre oranlanır)
+                        const isiYuzdesi = maxTutar > 0 ? (tutar / maxTutar) * 100 : 0;
+                        
+                        top5Html += `
+                        <div class="t-row" style="position: relative; padding: 10px 8px; border-bottom: 1px dashed rgba(255,255,255,0.05); align-items: center; border-radius: 8px; overflow: hidden; margin-bottom: 4px;">
+                            
+                            <div style="position: absolute; top: 0; left: 0; height: 100%; width: ${isiYuzdesi}%; background: linear-gradient(90deg, rgba(244, 63, 94, 0.15) 0%, rgba(244, 63, 94, 0.05) 100%); z-index: 0; border-right: 1px solid rgba(244, 63, 94, 0.3); transition: width 1s ease-out;"></div>
+                            
+                            <div class="t-details" style="flex: 1; z-index: 1; position: relative;">
+                                <div class="t-name" style="font-size: 13px; color: #cbd5e1;">
+                                    <span style="color: var(--text-muted); margin-right: 4px; font-weight: 400;">${index + 1}.</span> ${kategoriAdi}
+                                </div>
+                            </div>
+                            <div class="t-amt" style="text-align: right; z-index: 1; position: relative;">
+                                <div class="text-red" style="font-size: 14px; font-weight: 700;">${formatTL(tutar)}</div>
+                                <div style="font-size: 10px; color: var(--text-muted); font-weight: 600;">%${pay}</div>
+                            </div>
+                        </div>`;
                     });
                     top5Container.innerHTML = top5Html;
                 }
             } else {
-                cCtx.clearRect(0,0,ctxPasta.width,ctxPasta.height); cCtx.font = "13px Inter"; cCtx.fillStyle = "#94a3b8"; cCtx.textAlign = "center"; cCtx.fillText("Bu ay henüz saf harcama yok", ctxPasta.canvas.width/2, ctxPasta.canvas.height/2);
+                // AY BAŞI KORUMASI: Hiç veri yoksa temizle ve placeholder yaz
+                cCtx.clearRect(0,0,ctxPasta.width,ctxPasta.height); 
+                cCtx.font = "13px Inter"; 
+                cCtx.fillStyle = "#94a3b8"; 
+                cCtx.textAlign = "center"; 
+                cCtx.fillText("Bu ay henüz saf harcama yok", ctxPasta.canvas.width/2, ctxPasta.canvas.height/2);
+                const pastaToplamEl = document.getElementById('pasta-toplam-rakam');
+                if(pastaToplamEl) pastaToplamEl.innerHTML = formatTL(0);
+                const t5C = document.getElementById('pasta-ozet-grid');
+                if(t5C) t5C.innerHTML = "";
             }
         }
         
-        // Son güncellenme saatini yaz
+        // Header tarihini her zaman güncelle
         const simdi = new Date();
         const formatliTarih = `${simdi.getDate()} ${simdi.toLocaleString('tr-TR', { month: 'long' })} ${simdi.getFullYear()}, ${gunler[simdi.getDay()]}`;
-        document.getElementById('header-date').innerText = formatliTarih;
+        const headDateEl = document.getElementById('header-date');
+        if(headDateEl) headDateEl.innerText = formatliTarih;
     }
 
 
@@ -2424,12 +2725,38 @@ let gorunenAd = (temizTur && temizTur !== "-") ? (temizKalem ? `${temizTur} - ${
         animateValue('val-kart-donemici', cDonemIci, 600);
         animateValue('val-kart-gelecek', cGelecek, 600);
         
-        document.getElementById('bar-kart-limit').style.width = doluluk + '%';
+                document.getElementById('bar-kart-limit').style.width = doluluk + '%';
         const dBadge = document.getElementById('val-kart-doluluk');
-        dBadge.innerText = '%' + doluluk + ' Dolu';
-        if (doluluk > 80) dBadge.style.background = 'rgba(244, 63, 94, 0.15)', dBadge.style.color = 'var(--rose)';
-        else if (doluluk > 50) dBadge.style.background = 'rgba(245, 158, 11, 0.15)', dBadge.style.color = 'var(--amber)';
-        else dBadge.style.background = 'rgba(16, 185, 129, 0.15)', dBadge.style.color = 'var(--emerald)';
+        
+        // --- MİMAR DOKUNUŞU: Kritik Limit Animasyonu ---
+        
+        // Önce CSS animasyonunu bir kere sayfaya enjekte edelim (Yoksa ekle)
+        if (!document.getElementById('pulse-anim-style')) {
+            const style = document.createElement('style');
+            style.id = 'pulse-anim-style';
+            style.innerHTML = `@keyframes criticalPulse { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.4); } 70% { transform: scale(1.05); box-shadow: 0 0 0 6px rgba(244, 63, 94, 0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(244, 63, 94, 0); } }`;
+            document.head.appendChild(style);
+        }
+
+        // Animasyonu varsayılan olarak temizle
+        dBadge.style.animation = "none";
+        dBadge.style.border = "none";
+
+        if (doluluk >= 90) { // %90 ve üzeri KRİTİK ALARM
+            dBadge.innerText = `KRİTİK LİMİT (%${doluluk})`;
+            dBadge.style.background = 'rgba(244, 63, 94, 0.2)'; 
+            dBadge.style.color = 'var(--rose)';
+            dBadge.style.border = '1px solid rgba(244, 63, 94, 0.5)';
+            dBadge.style.animation = "criticalPulse 1.5s infinite";
+        } else if (doluluk >= 75) { // %75 - %89 arası SARI UYARI
+            dBadge.innerText = '%' + doluluk + ' Dolu';
+            dBadge.style.background = 'rgba(245, 158, 11, 0.15)'; 
+            dBadge.style.color = 'var(--amber)';
+        } else { // %75 altı GÜVENLİ BÖLGE
+            dBadge.innerText = '%' + doluluk + ' Dolu';
+            dBadge.style.background = 'rgba(16, 185, 129, 0.15)'; 
+            dBadge.style.color = 'var(--emerald)';
+        }
     }
 
     function toggleSubAccordion(id) {
@@ -2703,4 +3030,116 @@ function getKalanAyBadge(kalan) {
     }
 
     return `<span style="font-size:9px; background:${bgColor}; color:${textColor}; padding:2px 6px; border-radius:4px; margin-left:8px; font-weight:700; border:1px solid ${bgColor.replace('0.12', '0.25')}; white-space:nowrap; display:inline-flex; align-items:center; vertical-align:middle;">${text}</span>`;
+}
+
+function toggleParcaliAnlik() {
+    const sekil = document.getElementById('an-odeme-sekli').value;
+    const isParcali = (sekil === 'parcali');
+    document.getElementById('an-tek-hesap-alani').style.display = isParcali ? 'none' : 'block';
+    document.getElementById('an-parcali-hesap-alani').style.display = isParcali ? 'block' : 'none';
+    if(isParcali) {
+        document.getElementById('an-parcalar-container').innerHTML = '';
+        addParcaAnlik(); addParcaAnlik();
+        hesaplaKalanParcaliAnlik();
+    }
+}
+
+function addParcaAnlik() {
+    const container = document.getElementById('an-parcalar-container');
+    // MİMAR DÜZELTMESİ: EKSİK UYARI EKLENDİ
+    if(container.querySelectorAll('.parca-satiri-anlik').length >= 5) {
+        alert("En fazla 5 farklı hesap ekleyebilirsiniz.");
+        return;
+    }
+    
+    const uniqueId = 'parca-an-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
+    const options = (currentAnlikType === 'Gelir') ? window.vadesizOptions : window.hesapOptions;
+
+    const row = document.createElement('div');
+    row.className = 'parca-satiri-anlik';
+    row.style.cssText = "display: grid; grid-template-columns: 1.5fr 1fr auto; gap: 8px; margin-bottom: 10px; align-items: start;";
+    row.innerHTML = `
+        <select id="${uniqueId}" class="form-control an-parca-hesap" style="padding: 10px; font-size: 13px;">${options}</select>
+        <input type="text" inputmode="decimal" class="form-control an-parca-tutar" placeholder="Tutar" oninput="tutarFormatla(this); hesaplaKalanParcaliAnlik()" style="padding: 10px; font-size: 14px;">
+        <button onclick="this.parentElement.remove(); hesaplaKalanParcaliAnlik();" style="background: rgba(244, 63, 94, 0.15); border: none; color: var(--rose); width: 38px; height: 38px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+    `;
+    container.appendChild(row);
+    
+    // MİMAR DÜZELTMESİ: LİSTE KAPANMAMA VE ESKİ TASARIM SORUNU BURADA ÇÖZÜLÜYOR
+    if(typeof refreshCustomSelect === 'function') {
+        refreshCustomSelect(document.getElementById(uniqueId));
+    }
+}
+
+function hesaplaKalanParcaliAnlik() {
+    const anaTutarRaw = document.getElementById('an-tutar').value;
+    const hedefTutar = parseSaha(anaTutarRaw) || 0;
+    
+    let girilenToplam = 0;
+    document.querySelectorAll('.an-parca-tutar').forEach(inp => {
+        girilenToplam += parseSaha(inp.value) || 0;
+    });
+    
+    const kalan = hedefTutar - girilenToplam;
+    
+    // MİMAR DÜZELTMESİ: HTML içeriği koruyarak merkeze yazdırıyoruz
+    document.getElementById('an-hedef-tutar').innerHTML = formatTL(hedefTutar);
+    const kalanEl = document.getElementById('an-kalan-tutar');
+    
+    if (kalan === 0) {
+        kalanEl.innerHTML = "₺0,00";
+        kalanEl.style.color = "var(--emerald)";
+    } else if (kalan < 0) {
+        kalanEl.innerHTML = "Fazla: " + formatTL(Math.abs(kalan));
+        kalanEl.style.color = "var(--rose)";
+    } else {
+        kalanEl.innerHTML = formatTL(kalan);
+        kalanEl.style.color = "var(--amber)";
+    }
+}
+
+function resetAnlikForm() {
+    // 1. Yazı alanlarını temizle
+    const inputlar = ['an-tutar', 'an-kalem-diger', 'an-ek-input'];
+    inputlar.forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.value = '';
+    });
+
+    // 2. Checkbox'ı kapat ve ek alanları gizle
+    const ekCheck = document.getElementById('an-ek-check');
+    if(ekCheck) ekCheck.checked = false;
+    
+    const gizlenecekler = ['an-ek-input-konteyner', 'an-diger-konteyner', 'an-faiz-grubu', 'an-parcali-hesap-alani'];
+    gizlenecekler.forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.style.display = 'none';
+    });
+
+    // 3. Ödeme şeklini "Tek"e döndür ve görünürlüğü ayarla
+    const odemeSekli = document.getElementById('an-odeme-sekli');
+    if(odemeSekli) {
+        odemeSekli.value = 'tek';
+        document.getElementById('an-tek-hesap-alani').style.display = 'block';
+    }
+
+    // 4. Parçalı ödeme konteynerini boşalt
+    const parcaKapsayici = document.getElementById('an-parcalar-container');
+    if(parcaKapsayici) parcaKapsayici.innerHTML = '';
+
+    // 5. Tarihi bugüne çek
+    document.getElementById('an-tarih').valueAsDate = new Date();
+
+    // 6. PREMIUM MAKYAJ: Seçim kutularını (Custom Select) görsel olarak sıfırla
+    // Bu kısım çok önemli, yoksa görsel olarak eski isimler kalır.
+    const selects = ['an-kalem', 'an-odeme-sekli', 'an-yontem', 'an-faiz-detay'];
+    selects.forEach(id => {
+        const sel = document.getElementById(id);
+        if(sel) {
+            sel.selectedIndex = 0;
+            if(typeof refreshCustomSelect === 'function') refreshCustomSelect(sel);
+        }
+    });
 }
