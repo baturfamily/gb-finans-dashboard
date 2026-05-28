@@ -1,0 +1,1572 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-startup-image" href="https://i.ibb.co/mnN5B5k/Finans-Merkezi-kon.png">
+    <meta name="apple-mobile-web-app-title" content="Finans">
+    <meta name="theme-color" content="#0f1115">
+    
+    <title id="app-title">Finans Merkezi</title>
+    <link rel="apple-touch-icon" href="https://i.ibb.co/mnN5B5k/Finans-Merkezi-kon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    
+    <link rel="stylesheet" href="style.css?v=1.1">
+</head>
+<body>
+
+    <div id="toast-container"></div>
+    <div id="pull-indicator">Aşağı çek...</div>
+
+    <div class="top-container">
+        <div class="header-section">
+            <div class="header-top-row">
+                <h1>Finans Merkezi</h1>
+                
+            </div>
+            <div id="header-date" style="font-size: 14px; font-weight: 500; color: #cbd5e1; margin-bottom: 2px;"></div>
+            <div class="system-status">
+                <span id="baglanti-durumu" class="text-amber"><span class="spinner"></span>Bağlanıyor</span>
+                <span class="update-time tabular-nums" id="last-update">Bekleniyor</span>
+            </div>
+        </div>
+        <div class="time-selector-wrapper">
+            <div class="time-selector" id="time-filters">
+                <div class="time-btn active" onclick="updateTrends(0, this)">Güncel</div>
+                <div class="time-btn" onclick="updateTrends(1, this)">1 Gün</div>
+                <div class="time-btn" onclick="updateTrends(7, this)">1 Hafta</div>
+                <div class="time-btn" onclick="updateTrends(30, this)">1 Ay</div>
+                <div class="time-btn" onclick="updateTrends(90, this)">3 Ay</div>
+                <div class="time-btn" onclick="updateTrends(180, this)">6 Ay</div>
+                <div class="time-btn" onclick="updateTrends(365, this)">1 Yıl</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-container">
+
+        <section id="section-ozet" class="tab-section active">
+            <div class="card main-stats accordion" id="acc-net-servet">
+    <div class="accordion-header" onclick="toggleAccordion(this.parentElement)" style="flex-direction: column; align-items: flex-start; gap: 0; padding-bottom: 0;">
+        <div style="width:100%; display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
+            <div style="font-size: 11px; color: rgba(255,255,255,0.4); font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Bu Ay Kalan</div>
+            <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </div>
+        <div class="amount-large tabular-nums" id="hero-net-kalan" style="font-size: 46px; letter-spacing: -2px; color: var(--emerald); line-height: 1;">₺0</div>
+        <div id="trend-net-kalan-hero" class="trend-box tabular-nums" style="font-size: 10px; margin-top: 8px; display: inline-block;"></div>
+        <div style="margin-top: 8px; display: flex; justify-content: space-between; align-items: center; gap: 6px;">
+            <span style="font-size: 10px; color: rgba(255,255,255,0.2); font-weight: 600;">Net Varlık</span>
+            <div style="display:flex; align-items:center; gap:4px;">
+                <span id="val-net-servet" class="tabular-nums sensitive-data" style="font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.25);">₺0</span>
+                <div class="trend-box tabular-nums" id="trend-net-servet" style="font-size: 9px; opacity: 0.4;"></div>
+            </div>
+        </div>
+        <div class="sensitive-data" style="margin-top: 3px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px;">
+    <span style="font-size: 10px; color: rgba(255,255,255,0.2); font-weight: 600; flex-shrink:0;">Dolar Bazında Net Varlık</span>
+                <div style="display:flex; align-items:center; gap:4px;">
+                    <span id="val-net-servet-usd" class="tabular-nums sensitive-data" style="font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.25); text-align:right; flex-shrink:0;">$0</span>
+                    <div class="trend-box tabular-nums" id="trend-net-servet-usd" style="font-size: 9px; opacity: 0.4;"></div>
+                </div>
+            </div>
+            <span id="usd-kur-bilgisi" style="font-size: 9px; color: rgba(255,255,255,0.15); font-weight: 600;"></span>
+        </div>
+    </div>
+
+    <div class="accordion-content">
+        <!-- Gelir Tüketimi -->
+        <div style="margin-bottom: 16px; width: 100%;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; width: 100%;">
+                <div style="font-size: 10px; color: rgba(255,255,255,0.55); font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px;">Gelir Tüketimi</div>
+                <span id="hero-tuketim-yuzde" class="tabular-nums" style="font-size: 28px; font-weight: 900; color: var(--amber); letter-spacing: -1px;">%0</span>
+            </div>
+            <div style="height: 10px; background: rgba(255,255,255,0.07); border-radius: 6px; overflow: hidden; margin-bottom: 12px;">
+                <div id="hero-tuketim-bar" style="height: 100%; width: 0%; background: linear-gradient(90deg, var(--emerald), var(--amber)); border-radius: 6px; transition: width 1s cubic-bezier(0.1,0.5,0.1,1);"></div>
+            </div>
+            <!-- BLOK 1: Harcama Kontrolü -->
+            <div style="background: rgba(255,255,255,0.03); border-radius: 12px; padding: 12px 14px; margin-bottom: 10px;">
+                <div class="hero-block-title">Harcama Kontrolü</div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                    <span style="font-size:12px; color:rgba(255,255,255,0.5); font-weight:600;">Gelir</span>
+                    <span id="hero-gelir-val" class="tabular-nums" style="font-size:14px; color:var(--emerald); font-weight:800;">₺0</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                    <span style="font-size:12px; color:rgba(255,255,255,0.5); font-weight:600;">Harcama</span>
+                    <span id="hero-gider-val" class="tabular-nums" style="font-size:14px; color:var(--rose); font-weight:800;">₺0</span>
+                </div>
+                <div style="font-size:11px; color:rgba(255,255,255,0.4); line-height:1.6; margin-bottom:10px;">Bu ay nakit ya da kredi kartıyla ödediğin alışveriş ve harcamaların toplamı. Kredi ya da kredi kartı gibi hiçbir borç ödemesi <span style="text-decoration:underline;">dahil değildir</span>.</div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <div style="flex:1; height:5px; background:rgba(255,255,255,0.07); border-radius:4px; overflow:hidden;">
+                        <div id="hero-harcama-bar" style="height:100%; width:0%; background:var(--emerald); border-radius:4px; transition:width 1s cubic-bezier(0.1,0.5,0.1,1);"></div>
+                    </div>
+                    <span id="hero-harcama-yuzde" class="tabular-nums" style="font-size:12px; color:rgba(255,255,255,0.6); font-weight:700; flex-shrink:0;">%0</span>
+                </div>
+            </div>
+
+            <!-- BLOK 2: Nakit Akışı -->
+            <div style="background: rgba(255,255,255,0.03); border-radius: 12px; padding: 12px 14px; margin-bottom: 10px;">
+                <div class="hero-block-title">Bu Ay Nakit Akışı</div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                    <span style="font-size:12px; color:rgba(255,255,255,0.5); font-weight:600;">Nakit Girişi (Gelir)</span>
+                    <span class="tabular-nums" style="font-size:14px; color:var(--emerald); font-weight:800;" id="hero-nakit-gelir-val">₺0</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                    <span style="font-size:12px; color:rgba(255,255,255,0.5); font-weight:600;">Nakit Çıkışı (Gider)</span>
+                    <span id="hero-nakit-gider-val" class="tabular-nums" style="font-size:14px; color:var(--rose); font-weight:800;">₺0</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <span style="font-size:12px; color:rgba(255,255,255,0.5); font-weight:600;">Nakit Çıkışı (Borç Ödemeleri)</span>
+                    <span id="hero-borc-odeme-val" class="tabular-nums" style="font-size:14px; color:var(--amber); font-weight:800;">₺0</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+                    <div style="flex:1; height:5px; background:rgba(255,255,255,0.07); border-radius:4px; overflow:hidden;">
+                        <div id="hero-nakit-bar" style="height:100%; width:0%; background:var(--amber); border-radius:4px; transition:width 1s cubic-bezier(0.1,0.5,0.1,1);"></div>
+                    </div>
+                    <span id="hero-nakit-yuzde" class="tabular-nums" style="font-size:12px; color:rgba(255,255,255,0.6); font-weight:700; flex-shrink:0;">%0</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.07);">
+                    <span style="font-size:12px; color:rgba(255,255,255,0.6); font-weight:700; text-transform:uppercase; letter-spacing:0.5px;">Kalan</span>
+                    <span id="hero-kalan-ref" class="tabular-nums" style="font-size:17px; color:var(--emerald); font-weight:900; letter-spacing:-0.5px;">₺0</span>
+                </div>
+                <div style="font-size:11px; color:rgba(255,255,255,0.4); line-height:1.6;">Bu ay tüm borç, kredi ve kredi kartı ekstresi ödemelerinden sonra kasanda kalan para. <strong style="color:rgba(255,255,255,0.6); font-weight:700;">Dikkat:</strong> Bu ayki kredi kartı harcamaların bu ayın kalan tutarını değil gelecek ayın kalan tutarını etkiler.</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+        <div class="card accordion" id="acc-nakit-akisi">
+    <div class="accordion-header" onclick="toggleAccordion(this.parentElement)" style="justify-content: flex-start;">
+        <h3 style="margin-right: auto; flex: 1; text-align: left;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right:4px;"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> Aylık Nakit Akışı Detayları</h3>
+        <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    </div>
+    <div class="accordion-content">
+        <div id="nakit-akisi-listesi-container">
+            </div>
+
+                <div style="background: rgba(16, 185, 129, 0.1); padding: 16px 14px; border-radius: 12px; margin-top: 15px; border: 1px dashed rgba(16, 185, 129, 0.3);" id="kutu-net-nakit">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:14px; color:#fff; font-weight:700;">Net Kalan (Cepteki Para)</span>
+                <div style="text-align:right; display:flex; flex-direction:column; align-items:flex-end;">
+                    <span id="val-net-nakit" class="tabular-nums" style="font-size:19px; font-weight:800; color:var(--emerald);">₺0,00</span>
+                    <div class="trend-box tabular-nums" id="trend-net-kalan" style="font-size:11px; margin-top:4px; display:inline-block;"></div>
+                </div>
+            </div>
+            
+                        <div id="tuketim-bari-kapsayici" style="margin-top: 16px; padding-top: 12px; border-top: 1px dashed rgba(255,255,255,0.05); display: none;">
+                <div style="display: flex; justify-content: space-between; font-size: 10px; color: var(--text-muted); margin-bottom: 6px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
+                    <span>Gelir Tüketimi</span>
+                    <span id="tuketim-yuzdesi">%0</span>
+                </div>
+                <div class="progress-container" style="height: 6px; background: rgba(0,0,0,0.4); border-radius: 6px;">
+                    <div id="tuketim-bari-doluluk" class="progress-bar" style="width: 0%; background: var(--emerald); border-radius: 6px; transition: width 1s cubic-bezier(0.1, 0.5, 0.1, 1), background-color 0.5s ease;"></div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+
+        <!-- KART: Finansal Özet -->
+        <div class="card accordion" id="acc-finansal-ozet">
+            <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
+                <h3><svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg> Finansal Özet</h3>
+                <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+            <div class="accordion-content">
+                <div class="summary-grid">
+                    <div class="summary-item br-right br-bottom"><span class="summary-label">Kasa</span><span class="summary-val text-green tabular-nums" id="val-kasa">₺ 0,00</span><div class="trend-box tabular-nums" id="trend-kasa"></div></div>
+                    <div class="summary-item br-bottom"><span class="summary-label">Genel Borç</span><span class="summary-val tabular-nums" id="val-borc">₺ 0,00</span><div class="trend-box tabular-nums" id="trend-borc"></div></div>
+                    <div class="summary-item br-right"><span class="summary-label text-rose"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:5px;"><path d="M12 2c0 0-5 6.5-5 11a5 5 0 0 0 10 0c0-4.5-5-11-5-11Z"/><path d="M12 13a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"/></svg> Can Yakan</span><span class="summary-val text-red tabular-nums" id="val-borc-acil">₺ 0,00</span><div class="trend-box tabular-nums" id="trend-can-yakan"></div></div>
+                    <div class="summary-item"><span class="summary-label">Planlı</span><span class="summary-val tabular-nums" id="val-borc-planli" style="color:#cbd5e1;">₺ 0,00</span><div class="trend-box tabular-nums" id="trend-planli"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- KART: Son 30 Günlük Seyir -->
+        <div class="card accordion" id="acc-tarihce-grafik">
+            <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
+                <h3><svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> Son 30 Günlük Seyir</h3>
+                <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+            <div class="accordion-content">
+                <div style="position: relative; height: 180px;">
+                    <div style="display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap;">
+    <button onclick="seciTarihcePeriod(30, this)" id="btn-period-30" style="padding:4px 10px; border-radius:8px; font-size:11px; font-weight:700; cursor:pointer; background:rgba(16,185,129,0.15); border:1px solid var(--emerald); color:var(--emerald);">30 Gün</button>
+    <button onclick="seciTarihcePeriod(90, this)" id="btn-period-90" style="padding:4px 10px; border-radius:8px; font-size:11px; font-weight:700; cursor:pointer; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:var(--text-muted);">3 Ay</button>
+    <button onclick="seciTarihcePeriod(180, this)" id="btn-period-180" style="padding:4px 10px; border-radius:8px; font-size:11px; font-weight:700; cursor:pointer; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:var(--text-muted);">6 Ay</button>
+    <button onclick="seciTarihcePeriod(365, this)" id="btn-period-365" style="padding:4px 10px; border-radius:8px; font-size:11px; font-weight:700; cursor:pointer; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:var(--text-muted);">1 Yıl</button>
+</div>
+                    <canvas id="tarihce-mini-grafik"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- KART: Varlık & Borç Dağılımı -->
+        <div class="card accordion" id="acc-varlik-borc">
+            <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
+                <h3><svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Varlık & Borç Dağılımı</h3>
+                <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+            <div class="accordion-content" style="padding-top: 4px;">
+
+                <!-- VARLIKLAR BÖLÜMÜ -->
+                <div class="sensitive-data">
+                    <div onclick="toggleSubAccordion('vb-varlik')" style="display:flex; align-items:center; gap:12px; padding:14px 0; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.06);">
+                        <div style="width:38px; height:38px; border-radius:11px; background:linear-gradient(135deg,rgba(16,185,129,0.25),rgba(16,185,129,0.08)); display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 2px 8px rgba(16,185,129,0.15);">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--emerald);"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3H8l-2 4h12l-2-4z"/></svg>
+                        </div>
+                        <span style="flex:1; font-size:13px; font-weight:700; color:var(--emerald); text-transform:uppercase; letter-spacing:0.4px; white-space:nowrap; overflow:hidden;">Toplam Varlık</span>
+                        <span id="header-toplam-varlik" class="tabular-nums" style="font-size:15px; font-weight:800; color:var(--emerald); flex-shrink:0;">₺0</span>
+                        <svg id="sub-icon-vb-varlik" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted); transition:transform 0.3s ease; flex-shrink:0;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </div>
+                    <div class="sub-accordion-content" id="sub-content-vb-varlik">
+                        <div id="varlik-listesi" style="padding: 8px 0 4px 0;"></div>
+                    </div>
+                </div>
+
+                <!-- BORÇLAR BÖLÜMÜ -->
+                <div class="sensitive-data">
+                    <div onclick="toggleSubAccordion('vb-borc')" style="display:flex; align-items:center; gap:12px; padding:14px 0; cursor:pointer;">
+                        <div style="width:38px; height:38px; border-radius:11px; background:linear-gradient(135deg,rgba(244,63,94,0.25),rgba(244,63,94,0.08)); display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 2px 8px rgba(244,63,94,0.15);">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--rose);"><path d="M12 2c0 0-5 6.5-5 11a5 5 0 0 0 10 0c0-4.5-5-11-5-11Z"/><path d="M12 13a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"/></svg>
+                        </div>
+                        <span style="flex:1; font-size:13px; font-weight:700; color:var(--rose); text-transform:uppercase; letter-spacing:0.4px; white-space:nowrap; overflow:hidden;">Toplam Borç</span>
+                        <span id="header-toplam-borc" class="tabular-nums" style="font-size:15px; font-weight:800; color:var(--rose); flex-shrink:0;">₺0</span>
+                        <svg id="sub-icon-vb-borc" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted); transition:transform 0.3s ease; flex-shrink:0;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </div>
+                    <div class="sub-accordion-content" id="sub-content-vb-borc">
+                        <div style="padding-bottom: 8px;">
+
+                            <!-- Kart Borçları -->
+                            <div id="borc-grup-kart" style="display:none; margin-bottom: 6px; margin-top: 4px;">
+                                <div style="display:flex; justify-content:space-between; align-items:center; padding: 10px 14px 10px 12px; border-left: 3px solid var(--rose); background:rgba(244,63,94,0.05); border-radius:0 10px 10px 0; margin-bottom:10px;">
+                                    <div style="display:flex; align-items:center; gap:8px;">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--rose);"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                                        <span style="font-size:12px; font-weight:800; color:#e2e8f0; letter-spacing:0.3px; text-transform:uppercase;">Kart Borçları</span>
+                                    </div>
+                                    <span id="borc-grup-kart-toplam" class="tabular-nums" style="font-size:14px; font-weight:800; color:var(--rose);">₺0</span>
+                                </div>
+                                <div id="borc-grup-kart-liste" style="padding: 0 4px;"></div>
+                            </div>
+
+                            <!-- Banka Kredileri -->
+                            <div id="borc-grup-kredi" style="display:none; margin-bottom: 6px; margin-top: 16px;">
+                                <div style="display:flex; justify-content:space-between; align-items:center; padding: 10px 14px 10px 12px; border-left: 3px solid var(--blue); background:rgba(59,130,246,0.05); border-radius:0 10px 10px 0; margin-bottom:10px;">
+                                    <div style="display:flex; align-items:center; gap:8px;">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--blue);"><line x1="3" y1="22" x2="21" y2="22"/><line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/><line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/><polygon points="12 2 20 7 4 7"/></svg>
+                                        <span style="font-size:12px; font-weight:800; color:#e2e8f0; letter-spacing:0.3px; text-transform:uppercase;">Banka Kredileri</span>
+                                    </div>
+                                    <span id="borc-grup-kredi-toplam" class="tabular-nums" style="font-size:14px; font-weight:800; color:var(--blue);">₺0</span>
+                                </div>
+                                <div id="borc-grup-kredi-liste" style="padding: 0 4px;"></div>
+                            </div>
+
+                            <!-- KMH -->
+                            <div id="borc-grup-kmh" style="display:none; margin-bottom: 6px; margin-top: 16px;">
+                                <div style="display:flex; justify-content:space-between; align-items:center; padding: 10px 14px 10px 12px; border-left: 3px solid var(--amber); background:rgba(245,158,11,0.05); border-radius:0 10px 10px 0; margin-bottom:10px;">
+                                    <div style="display:flex; align-items:center; gap:8px;">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--amber);"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                                        <span style="font-size:12px; font-weight:800; color:#e2e8f0; letter-spacing:0.3px; text-transform:uppercase;">KMH</span>
+                                    </div>
+                                    <span id="borc-grup-kmh-toplam" class="tabular-nums" style="font-size:14px; font-weight:800; color:var(--amber);">₺0</span>
+                                </div>
+                                <div id="borc-grup-kmh-liste" style="padding: 0 4px;"></div>
+                            </div>
+
+                            <!-- Özel Borçlar -->
+                            <div id="borc-grup-ozel" style="display:none; margin-bottom: 4px; margin-top: 16px;">
+                                <div style="display:flex; justify-content:space-between; align-items:center; padding: 10px 14px 10px 12px; border-left: 3px solid var(--rose); background:rgba(148,163,184,0.04); border-radius:0 10px 10px 0; margin-bottom:10px;">
+                                    <div style="display:flex; align-items:center; gap:8px;">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:#94a3b8;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                        <span style="font-size:12px; font-weight:800; color:#e2e8f0; letter-spacing:0.3px; text-transform:uppercase;">Özel Borçlar</span>
+                                    </div>
+                                    <span id="borc-grup-ozel-toplam" class="tabular-nums" style="font-size:14px; font-weight:800; color:var(--rose);">₺0</span>
+                                </div>
+                                <div id="borc-grup-ozel-liste" style="padding: 0 4px;"></div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="card accordion" id="acc-son-islemler">
+    <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
+        <h3>
+            <svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/>
+                <line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>
+            </svg> 
+            Son 10 İşlem
+        </h3>
+        <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+    </div>
+    <div class="accordion-content">
+    <div id="islem-listesi">
+        <div style="text-align:center; padding: 18px 0;"><span class="spinner spinner-muted"></span>Yükleniyor</div>
+    </div>
+</div>
+            </div>
+        </section> <section id="section-islemler" class="tab-section">
+            <div class="card accordion" id="acc-gelecek-ay-yuk">
+                <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
+                    <h3><svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Gelecek Ay Tahmini Yük</h3>
+                    <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+                <div class="accordion-content">
+
+                    <!-- Kart Ekstresi -->
+                    <div onclick="toggleSubAccordion('gelecek-ekstre')" style="display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.06); cursor:pointer;">
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <svg id="sub-icon-gelecek-ekstre" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted); transition:transform 0.3s ease;"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                            <span style="font-size:13px; font-weight:600; color:var(--text-muted);">💳 Kart Ekstresi (Birikmiş)</span>
+                        </div>
+                        <span id="gelecek-kart-ekstre" class="tabular-nums" style="font-size:14px; font-weight:800; color:var(--rose);">₺0</span>
+                    </div>
+                    <div class="sub-accordion-content" id="sub-content-gelecek-ekstre">
+    <div id="gelecek-ekstre-kartlar" style="padding:4px 0;"></div>
+    <div style="padding:6px 0 4px 0; border-top:1px dashed rgba(255,255,255,0.08); margin-top:4px; display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-size:11px; color:var(--text-muted); font-weight:600;">Tahmini Toplam Ekstre</span>
+        <span id="gelecek-ekstre-tahmini-toplam" class="tabular-nums" style="font-size:13px; font-weight:800; color:var(--rose);">₺0</span>
+    </div>
+</div>
+
+                    <!-- Borç Taksitleri -->
+                    <div onclick="toggleSubAccordion('gelecek-taksit')" style="display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.06); cursor:pointer;">
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <svg id="sub-icon-gelecek-taksit" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted); transition:transform 0.3s ease;"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                            <span style="font-size:13px; font-weight:600; color:var(--text-muted);">🏦 Kredi &amp; Borç Taksitleri</span>
+                        </div>
+                        <span id="gelecek-borc-taksit" class="tabular-nums" style="font-size:14px; font-weight:800; color:var(--rose);">₺0</span>
+                    </div>
+                    <div class="sub-accordion-content" id="sub-content-gelecek-taksit">
+                        <div id="gelecek-taksit-liste" style="padding:8px 0 4px 22px;"></div>
+                    </div>
+
+                    <!-- Sabit Nakit Giderler -->
+                    <div onclick="toggleSubAccordion('gelecek-sabit')" style="display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.06); cursor:pointer;">
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <svg id="sub-icon-gelecek-sabit" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted); transition:transform 0.3s ease;"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                            <span style="font-size:13px; font-weight:600; color:var(--text-muted);">📋 Sabit Nakit Giderler</span>
+                        </div>
+                        <span id="gelecek-sabit-gider" class="tabular-nums" style="font-size:14px; font-weight:800; color:var(--rose);">₺0</span>
+                    </div>
+                    <div class="sub-accordion-content" id="sub-content-gelecek-sabit">
+                        <div id="gelecek-sabit-liste" style="padding:8px 0 4px 22px;"></div>
+                    </div>
+
+                    <!-- Toplam -->
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding:14px 0 4px 0;">
+                        <span style="font-size:12px; font-weight:700; color:rgba(255,255,255,0.5); text-transform:uppercase; letter-spacing:0.5px;">Toplam Beklenen Çıkış</span>
+                        <span id="gelecek-toplam-cikis" class="tabular-nums" style="font-size:17px; font-weight:900; color:var(--amber); letter-spacing:-0.5px;">₺0</span>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="card accordion" id="acc-aylik-butce">
+    <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
+        <h3><svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg> Saf Harcama Analizi</h3>
+        <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    </div>
+    <div class="accordion-content">
+                <div class="summary-grid" style="margin-bottom: 12px;">
+            <div class="summary-item br-right">
+                <span class="summary-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg> Toplam Tüketim</span>
+                <span class="summary-val text-red tabular-nums" id="saf-gider-toplam">₺0,00</span>
+                <div class="trend-box tabular-nums" id="trend-saf-harcama" class="trend-inline tabular-nums"></div>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Günlük Ortalama</span>
+                <span class="summary-val tabular-nums" id="saf-gunluk-ortalama">₺0,00</span>
+                <div class="trend-box tabular-nums" id="trend-gunluk-ortalama" class="trend-inline tabular-nums"></div>
+            </div>
+        </div>
+
+        <div id="saf-ay-sonu-tahmin" style="display: none; background: rgba(244, 63, 94, 0.05); padding: 12px 14px; border-radius: 12px; border: 1px dashed rgba(244, 63, 94, 0.25); justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <div class="flex-gap-8">
+                <i class="fas fa-chart-line" style="color: var(--rose); font-size: 13px;"></i>
+                <span style="font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Günlük Ortalamaya Göre Ay Sonu Tahmini</span>
+            </div>
+            <div style="text-align: right;">
+                <span id="saf-ay-sonu-rakam" class="tabular-nums" style="color: var(--rose); font-size: 16px; font-weight: 800; letter-spacing: -0.3px;">₺0,00</span>
+            </div>
+        </div>
+
+        <div id="saf-harcama-detay-alani" class="sensitive-data" style="margin-top: 10px; width: 100%; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px; text-align: left;">
+            <div class="sub-accordion-header" onclick="toggleSubAccordion('saf-harcama')" style="padding: 0 0 12px 0; border: none;">
+                <div style="font-size:12px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;">Bu Ayki Tüm Harcamalar</div>
+                <svg id="sub-icon-saf-harcama" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted); transition: transform 0.3s ease;"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </div>
+            <div class="sub-accordion-content" id="sub-content-saf-harcama">
+                <div class="custom-scrollbar" id="saf-gider-listesi" style="max-height: 280px; overflow-y: auto; overflow-x: hidden; padding-right: 8px; overscroll-behavior: contain;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+            
+
+            <div class="card accordion" id="acc-harcama-grafik">
+    <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
+        <h3><svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg> Gider Dağılımı</h3>
+        <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    </div>
+    <div class="accordion-content">
+        <div class="budget-module" style="padding: 10px 5px;">
+            <div style="position: relative; height: 220px; margin-bottom: 20px;">
+                <canvas id="expenseChart" class="sensitive-data"></canvas>
+                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: none;">
+                    <div id="pasta-merkez-baslik" style="font-size: 10px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">SAF HARCAMA</div>
+                    <div id="pasta-toplam-rakam" class="tabular-nums" style="font-size: 18px; font-weight: 800; color: #fff; line-height: 1.2;">₺0,00</div>
+                </div>
+            </div>
+
+            <div id="pasta-top5-container" style="margin-top: 24px; padding: 0 5px; text-align: left;">
+                <div style="display: flex; justify-content: space-between; font-size:10px; font-weight:700; color:var(--text-muted); margin-bottom:12px; text-transform:uppercase; letter-spacing:1px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;">
+                    <span>KATEGORİ</span>
+                    <span>TUTAR / PAY</span>
+                </div>
+                <div id="pasta-ozet-grid" style="display: flex; flex-direction: column; text-align: left;">
+                    </div>
+            </div>
+        </div> </div> </div> 
+
+            <div class="card accordion" id="acc-faiz-durumu">
+                <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
+                    <h3 class="text-amber"><svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="5" x2="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg> Faiz Yükü & Analizi</h3>
+                    <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+                <div class="accordion-content">
+                    <div class="summary-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+                        
+                        <div class="summary-item br-right br-bottom" style="padding: 12px 8px; display: flex; flex-direction: column; justify-content: center;">
+                            <span class="summary-label" style="color:var(--amber); font-size: 10px; line-height: 1.1; margin-bottom: 4px;">Tahmini Faiz<br>(Bu Ay)</span>
+                            <span class="summary-val tabular-nums" id="val-tahmini-faiz" style="font-size: 14px; color: var(--amber);">₺ 0,00</span>
+                            <div class="trend-box tabular-nums" id="trend-faiz" style="font-size:10px; margin-top: 4px;"></div>
+                        </div>
+                        
+                        <div class="summary-item br-right br-bottom" style="padding: 12px 8px;">
+                            <span class="summary-label" style="font-size: 10px; line-height: 1.1;">Geçen Ay<br>Ödenen Faiz</span>
+                            <span class="summary-val tabular-nums" id="val-gecen-ay-faiz" style="font-size: 14px; color: var(--text-muted);">₺ 0,00</span>
+                        </div>
+                        
+                        <div class="summary-item br-bottom" style="padding: 12px 4px;">
+                            <span id="lbl-faiz-baslangic" class="summary-label" style="font-size: 10px; line-height: 1.1;">Başlangıçtan<br>Beri</span>
+                            <span class="summary-val tabular-nums" id="val-toplam-odenen-faiz" style="font-size: 14px; color: var(--text-main);">₺ 0,00</span>
+                        </div>
+                        
+                        <div class="summary-item" style="grid-column: span 3; padding: 12px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(244, 63, 94, 0.07); padding: 14px 16px; border-radius: 16px; margin-bottom: 12px; border: 1px solid rgba(244, 63, 94, 0.12);">
+                                <span class="summary-label" style="color:var(--rose); font-size:12px; text-transform:uppercase; letter-spacing:0.8px; font-weight: 700; line-height: 1;">BU AY ÖDENEN FAİZ</span>
+                                <div style="display: flex; align-items: baseline;">
+                                    <div class="tabular-nums" id="val-aylik-faiz" style="font-size: 18px; color: var(--rose); font-weight: 800; line-height: 1; margin-bottom: 1px;">₺ 0,00</div>
+                                </div>
+                            </div>
+                            <div id="faiz-detay-listesi" style="padding: 0 4px;"></div>
+                        </div> 
+</div> </div> </div> </section> <section id="section-cuzdan" class="tab-section">
+
+            
+            <div class="card accordion" id="acc-kredi-karti">
+                <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
+                    <h3><svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> Kredi Kartı Durumu</h3>
+                    <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+                <div class="accordion-content">
+                    
+                    <div class="form-group" style="margin-bottom: 12px; margin-top: -5px;">
+                        <select id="dashboard-kart-secim" class="form-control" onchange="renderKartDurumu()">
+                            <option value="hepsi">Tüm Kartlar (Özet)</option>
+                        </select>
+                    </div>
+
+                    <div style="margin-bottom: 20px; background: rgba(0,0,0,0.2); padding: 16px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.04);">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:13px;">
+                            <span style="color:var(--text-muted); font-weight:600;">Kullanılabilir Limit</span>
+                            <span id="val-kart-kullanilabilir" class="tabular-nums" style="color:var(--emerald); font-weight:800; font-size:15px;">₺0,00</span>
+                        </div>
+                        <div class="progress-container" style="height: 12px; background: rgba(255,255,255,0.1);">
+                            <div class="progress-bar" id="bar-kart-limit" style="width: 0%; background: var(--brand-gradient); border-radius: 12px; transition: width 1.5s cubic-bezier(0.1, 0.5, 0.1, 1);"></div>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; margin-top:8px; font-size:12px; color:var(--text-muted); font-weight:500;">
+                            <span>Toplam Limit: <span id="val-kart-limit" style="color:#cbd5e1;">₺0,00</span></span>
+                            <div style="display: flex; gap: 8px;">
+                                <span id="val-kart-puan" style="background: rgba(16, 185, 129, 0.15); color: var(--emerald); padding: 2px 8px; border-radius: 8px; font-weight: 700; display: none;">0 Puan</span>
+                                <span id="val-kart-doluluk" style="background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 8px;">%0 Dolu</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="background: var(--panel-bg); padding: 16px 14px; display:flex; justify-content:space-between; align-items:center;">
+                            <span style="font-size:14px; color:#e2e8f0; font-weight:600;">Toplam Güncel Borç</span>
+                            <div style="text-align:right; display:flex; flex-direction:column; align-items:flex-end;">
+                                <span id="val-kart-toplam" class="tabular-nums" style="font-size:19px; font-weight:800; color:#fff; letter-spacing:-0.5px;">₺0,00</span>
+                                <div id="trend-kart" class="trend-box tabular-nums" style="margin-top:4px; font-size:11px; display:inline-block;"></div>
+                            </div>
+                        </div>
+                        <div style="background: var(--panel-bg); padding: 14px; display:flex; justify-content:space-between; align-items:center;">
+                            <span id="lbl-kart-donemici" style="font-size:13px; color:var(--text-muted); font-weight:500;">Dönem İçi (Bu Ay)</span>
+                            <span id="val-kart-donemici" class="tabular-nums" style="font-size:16px; font-weight:700; color:var(--rose);">₺0,00</span>
+                        </div>
+                        <div style="background: var(--panel-bg); padding: 14px; display:flex; justify-content:space-between; align-items:center;">
+    <span id="lbl-kart-gelecek" style="font-size:13px; color:var(--text-muted); font-weight:500;">Gelecek Dönem</span>
+    <span id="val-kart-gelecek" class="tabular-nums" style="font-size:16px; font-weight:700; color:var(--amber);">₺0,00</span>
+</div>
+<div style="background: var(--panel-bg); padding: 14px; display:flex; justify-content:space-between; align-items:center;">
+    <span style="font-size:13px; color:var(--text-muted); font-weight:500;">Devreden Bakiye</span>
+    <span id="val-kart-devreden" class="tabular-nums" style="font-size:16px; font-weight:700; color:var(--amber);">₺0,00</span>
+</div>
+<div style="background: var(--panel-bg); padding: 14px; display:flex; justify-content:space-between; align-items:center;">
+    <span style="font-size:13px; color:var(--text-muted); font-weight:500;">Tahmini Faiz</span>
+    <span id="val-kart-tahminifaiz" class="tabular-nums" style="font-size:16px; font-weight:700; color:var(--amber);">₺0,00</span>
+</div>
+<div style="background: var(--panel-bg); padding: 14px; display:flex; justify-content:space-between; align-items:center; display:none;" id="satir-kart-odemetip">
+    <span style="font-size:13px; color:var(--text-muted); font-weight:500;">Ödeme Tipi</span>
+    <span id="val-kart-odemetip" style="font-size:11px; padding: 2px 10px; border-radius: 8px; font-weight:800;">-</span>
+</div>
+<div style="margin-top:12px; padding: 0 14px 14px 14px; display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+    <button onclick="this.style.pointerEvents='none'; loadSabitlerAndShow(event,'section-kart-borc-ode', 'kbo-secim', 'Kart Borcu Öde').then(() => { const m=document.getElementById('action-modal'); const b=document.getElementById('fab-btn'); m.classList.add('active'); b.classList.add('open'); document.body.classList.add('modal-open'); this.style.pointerEvents='auto'; });" style="height:38px; background:rgba(244, 63, 94, 0.15); border:1px solid rgba(244, 63, 94, 0.3); color:var(--rose); border-radius:12px; font-size:12px; font-weight:800; display:flex; align-items:center; justify-content:center; gap:8px; cursor:pointer;">
+        <i class="fas fa-credit-card"></i> Borç Öde
+    </button>
+    <button onclick="const m=document.getElementById('action-modal');const b=document.getElementById('fab-btn');if(!m.classList.contains('active')){m.classList.add('active');b.classList.add('open');document.body.classList.add('modal-open');} showSection('section-kart-merkezi','💳 Kredi Kartı İşlemleri');" style="height:38px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:var(--text-muted); border-radius:12px; font-size:12px; font-weight:800; display:flex; align-items:center; justify-content:center; gap:8px; cursor:pointer;">
+    <i class="fas fa-cog"></i> Kart İşlemleri
+</button>
+</div>
+                    </div> </div> <div class="card accordion" id="acc-bankalar">
+                <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
+                    <h3><svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="22" x2="21" y2="22"/><line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/><line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/><polygon points="12 2 20 7 4 7"/></svg> Banka Hesaplarım</h3>
+                    <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+                <div class="accordion-content" id="banka-listesi">
+                    <div class="text-center-muted"><span class="spinner spinner-muted"></span>Yükleniyor...</div>
+                </div>
+            </div>
+
+        </section>
+
+        <section id="section-takvim" class="tab-section">
+            <div class="card accordion" id="acc-yaklasan">
+                <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
+                    <h3><svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg> Yaklaşan Ödemeler (7 Gün)</h3>
+                    <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+                <div class="accordion-content" id="yaklasan-listesi">
+                    <div style="text-align:center; color:var(--text-muted); font-size: 15px; padding: 12px 0;"><span class="spinner spinner-muted"></span>Analiz ediliyor...</div>
+                </div>
+            </div>
+
+            <div class="card accordion" id="acc-tum-sabitler">
+                <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
+                    <h3><svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 22v-6h6"/></svg> Sabit İşlemler</h3>
+                    <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+                <div class="accordion-content">
+                    <div id="sabitler-kategori-container">
+                        <div class="text-center-muted"><span class="spinner spinner-muted"></span>Yükleniyor...</div>
+                    </div>
+
+                                           <div style="margin-top:20px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 16px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                            <span style="font-weight:600; color:#cbd5e1; font-size: 14px;">Aylık Toplam Sabit Yük:</span>
+                            <span id="sabit-genel-toplam" class="tabular-nums" style="color:var(--amber); font-weight:800; font-size:17px; letter-spacing:-0.3px;">₺0,00</span>
+                        </div>
+
+                        <div style="display: flex; justify-content: space-between; background: rgba(0,0,0,0.25); padding: 12px 16px 10px 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.03); flex-wrap: wrap;">
+                            <div style="width: 45%;">
+                                <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">Ödenen</div>
+                                <div id="sabit-odenen-toplam" class="tabular-nums" style="color: var(--emerald); font-weight: 700; font-size: 15px;">₺0,00</div>
+                            </div>
+                            <div style="width: 45%; text-align: right;">
+                                <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">Kalan Ödeme</div>
+                                <div id="sabit-kalan-toplam" class="tabular-nums" style="color: var(--rose); font-weight: 700; font-size: 15px;">₺0,00</div>
+                            </div>
+                            
+                                                        <div style="width: 100%; margin-top: 14px; padding-top: 10px; border-top: 1px dashed rgba(255,255,255,0.05);">
+                                <div style="display: flex; justify-content: space-between; font-size: 9px; color: var(--text-muted); font-weight: 700; margin-bottom: 5px; text-transform: uppercase;">
+                                    <span>Sabit Gider Tamamlanma</span>
+                                    <span id="sabit-tamamlanma-yuzde">%0</span>
+                                </div>
+                                <div class="progress-container" style="height: 6px; background: rgba(255,255,255,0.05); border-radius: 6px;">
+                                    <div id="sabit-tamamlanma-bar" class="progress-bar" style="width: 0%; background: var(--blue); border-radius: 6px; transition: width 1s cubic-bezier(0.1, 0.5, 0.1, 1);"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div> </div> <div class="card accordion" id="acc-kredi-ilerleme">
+                <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
+                    <h3><svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="22" x2="21" y2="22"/><line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/><line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/><polygon points="12 2 20 7 4 7"/></svg> Kredi İlerlemeleri</h3>
+                    <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+                <div class="accordion-content" id="kredi-ilerleme-container">
+                    <div class="text-center-muted"><span class="spinner spinner-muted"></span>Yükleniyor...</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="section-ai" class="tab-section" style="min-height: 85vh;">
+            <div class="card">
+                <div class="ai-empty">
+                    <i class="fas fa-sparkles"></i>
+                    <h3>Yapay Zeka Analizi</h3>
+                    <p style="margin-top: 10px; line-height: 1.5;">Finansal alışkanlıklarınız analiz ediliyor...<br>Gelecek güncellemeyle burada olacak.</p>
+                </div>
+            </div>
+        </section>
+
+        <nav class="bottom-nav">
+            <a href="javascript:void(0)" class="nav-item active" onclick="switchTab('ozet', this)">
+                <i class="fas fa-th-large"></i>
+                <span>Özet</span>
+            </a>
+            <a href="javascript:void(0)" class="nav-item" onclick="switchTab('islemler', this)">
+                <i class="fas fa-receipt"></i>
+                <span>Analiz</span>
+            </a>
+            <a href="javascript:void(0)" class="nav-item" onclick="switchTab('cuzdan', this)">
+                <i class="fas fa-wallet"></i>
+                <span>Hesaplar</span>
+            </a>
+            <a href="javascript:void(0)" class="nav-item" onclick="switchTab('takvim', this)">
+                <i class="fas fa-file-invoice-dollar"></i>
+                <span>Ödemeler</span>
+            </a>
+            <a href="javascript:void(0)" class="nav-item" onclick="switchTab('ai', this)">
+                <i class="fas fa-robot"></i>
+                <span>Y.Zeka</span>
+            </a>
+        </nav>
+
+    </div>
+
+    <div class="fab-btn" id="fab-btn" onclick="toggleModal()">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+    </div>
+
+    <div class="modal-overlay" id="action-modal" onclick="closeModalOnOutside(event)">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Ne yapmak istersin?</h2>
+                <button class="close-btn" onclick="toggleModal()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+            </div>
+
+            <div id="section-menu" class="form-section active">
+                
+                <div class="hybrid-grid">
+                    
+                    <div class="action-card-grid" onclick="openSectionLive(event, 'section-varlik-guncelle', 'Varlık İşlemleri')">
+                        <div class="i-wrap" style="background: rgba(6, 182, 212, 0.15); color: #06b6d4;">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                        </div>
+                        <span>Varlık<br>İşlemleri</span>
+                    </div>
+                    
+                    <div class="action-card-grid" onclick="showSection('section-hesap-yonetimi', 'Banka Hesaplarım')">
+    <div class="i-wrap" style="background: rgba(99, 102, 241, 0.15); color: #6366f1;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+    </div>
+    <span>Banka<br>Hesaplarım</span>
+</div>
+                    
+                    <div class="action-card-grid" onclick="showSection('araci-borc-menusu', 'Borç/Kredi İşlemleri')">
+                        <div class="i-wrap" style="background: rgba(245, 158, 11, 0.15); color: var(--amber);">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+                        </div>
+                        <span>Kredi/<br>Borç İşlemleri</span>
+                    </div>
+
+                    <div class="action-card-grid" onclick="loadSabitlerAndShow(event,'section-sabit-onayla', 'so-kural', 'Bekleyenleri Onayla')">
+                        <div class="i-wrap" style="background: rgba(168, 85, 247, 0.15); color: #a855f7;">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        </div>
+                        <span>Bekleyen<br>Onayla</span>
+                    </div>
+                    
+                    <div class="action-card-grid" onclick="showSection('section-transfer', 'Hesaplar Arası Transfer')">
+                        <div class="i-wrap" style="background: rgba(148, 163, 184, 0.15); color: #cbd5e1;">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg>
+                        </div>
+                        <span>Transfer<br>Yap</span>
+                    </div>
+
+                    <div class="action-card-grid" onclick="showSection('section-kart-merkezi', '💳 Kredi Kartı İşlemleri')">
+                        <div class="i-wrap" style="background: rgba(59, 130, 246, 0.15); color: var(--blue);">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                        </div>
+                        <span>Kart<br>İşlemleri</span>
+                    </div>
+                    <div class="action-card-grid" onclick="showSection('section-butce-limitleri', 'Bütçe Limitleri')">
+                        <div class="i-wrap" style="background: rgba(16, 185, 129, 0.15); color: var(--emerald);">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                        </div>
+                        <span>Bütçe<br>Limitleri</span>
+                    </div>
+                </div>
+        
+                <div style="height: 1px; background: rgba(255,255,255,0.06); margin-bottom: 16px; border-radius: 1px;"></div>
+        
+                <div class="hybrid-list">
+                    <div class="action-list-item" onclick="showSection('section-anlik', '⚡ Anlık Harcama / Gelir')">
+                        <div class="i-wrap" style="background: rgba(244, 63, 94, 0.15); color: var(--rose);">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                        </div>
+                        <span>Anlık İşlem Girişi</span>
+                    </div>
+                    
+                    <div class="action-list-item" onclick="showSection('section-duzenli-merkezi', '📅 Düzenli Kayıt İşlemleri')">
+                        <div class="i-wrap" style="background: rgba(16, 185, 129, 0.15); color: var(--emerald);">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                        </div>
+                        <span>Düzenli Kayıt İşlemleri</span>
+                    </div>
+                    
+                    <div class="action-list-item" onclick="showGeriAlEkrani()">
+                        <div class="i-wrap" style="background: rgba(244, 63, 94, 0.1); color: var(--rose);">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>
+                        </div>
+                        <span style="color: var(--rose);">Son Harcama / Ödemeyi Geri Al</span>
+                    </div>
+                </div>
+            </div>
+            <div id="section-geri-al" class="form-section">
+                <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Ana Menüye Dön</span>
+                <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 10px; border: 1px dashed rgba(255,255,255,0.05);">
+                    💡 Son 5 işleminiz aşağıdadır. Geri almak istediğiniz işleme dokunun. Sabit kurallar otomatik onarılacaktır.
+                </div>
+                <div id="geri-al-list-container"></div>
+            </div>
+            
+            <div id="section-duzenli-merkezi" class="form-section">
+                <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Ana Menüye Dön</span>
+                
+                <div class="action-grid mt-10">
+                    <div class="action-card" onclick="showSection('section-duzenli', '📅 Yeni Düzenli Kayıt')" style="grid-column: span 2; padding: 20px;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#10b981; margin-bottom:10px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                        <span style="font-size:14px;">Yeni Düzenli Kayıt Ekle</span>
+                    </div>
+                    <div class="action-card" onclick="loadSabitlerAndShow(event,'section-sabit-guncelle', 'sg-kural', 'Düzenli Kayıtları Yönet')" style="grid-column: span 2; padding: 20px;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#a855f7; margin-bottom:10px;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                        <span style="font-size:14px;">Mevcut Kayıtları Güncelle</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="section-kart-merkezi" class="form-section">
+                <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Ana Menüye Dön</span>
+                
+                <div class="action-grid mt-10">
+                    <div class="action-card" onclick="showSection('section-yeni-kart', 'Yeni Kredi Kartı Ekle')">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--emerald);"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/><line x1="12" y1="14" x2="12" y2="18"/><line x1="10" y1="16" x2="14" y2="16"/></svg>
+                        <span>Yeni Kart Ekle</span>
+                    </div>
+                    <div class="action-card" onclick="openSectionLive(event, 'section-kart-borc-ode', 'Kart Borcu Öde')">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-rose"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                        <span>Kart Borcu Öde</span>
+                    </div>
+                    <div class="action-card" onclick="openSectionLive(event, 'section-kart-limit-guncelle', 'Kart Limiti Güncelle')">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--amber);"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                        <span>Limit Güncelle</span>
+                    </div>
+                    <div class="action-card" onclick="openSectionLive(event, 'section-kart-ekstre-guncelle', 'Ekstre Günü Güncelle')">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--blue);"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                        <span>Ekstre Güncelle</span>
+                    </div>
+                    <div class="action-card" onclick="openSectionLive(event, 'section-kart-borc-duzelt', '💳 Borç Eşitleme')">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-rose"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+    <span>Borç<br>Eşitle</span>
+</div>
+                </div>
+            </div>
+
+            <div id="section-kart-borc-duzelt" class="form-section">
+    <span class="back-link" onclick="showSection('section-kart-merkezi', '💳 Kredi Kartı İşlemleri')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Geri Dön</span>
+    
+    <div class="form-group">
+        <label>İşlem Yapılacak Kart</label>
+        <select id="kbd-kart-secim" class="form-control" onchange="updateKartBorcIslemBilgi()"></select>
+    </div>
+
+    <div id="kbd-mevcut-bilgi" style="display:none; background: rgba(244, 63, 94, 0.05); padding: 15px; border-radius: 14px; border: 1px dashed rgba(244, 63, 94, 0.2); margin-bottom: 20px;">
+        <div style="display:flex; justify-content:space-between;">
+            <span class="label-xs-muted">Sistemdeki Güncel Borç:</span>
+            <span id="kbd-mevcut-borc" style="font-weight:700; color:#fff;">₺0,00</span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Bankadaki GERÇEK Borç Tutarı (₺)</label>
+        <input type="text" inputmode="decimal" id="kbd-yeni-borc" class="form-control" placeholder="Örn: 12500" oninput="tutarFormatla(this)">
+        <p style="font-size:11px; color:var(--rose); margin-top:8px; font-weight:600;">* Girdiğiniz tutar "güncel borç" olarak sistemle eşitlenecektir.</p>
+    </div>
+
+    <button class="btn-submit" id="btn-submit-kart-borc-duzelt" data-default-text="Borcu Eşitle" onclick="submitKartBorcDuzelt()">Borcu Eşitle</button>
+</div>
+
+            <div id="section-yeni-kart" class="form-section">
+                <span class="back-link" onclick="showSection('section-kart-merkezi', '💳 Kredi Kartı İşlemleri')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Kart İşlemlerine Dön</span>
+                
+                <div class="form-group"><label>Kredi Kartı Adı</label><input type="text" id="yk-isim" class="form-control" placeholder="Örn: X Bankası Kredi Kartı"></div>
+                <div class="grid-2col">
+                    <div class="form-group"><label>Toplam Limit (₺)</label><input type="text" inputmode="decimal" id="yk-limit" class="form-control" placeholder="Örn: 100000" oninput="tutarFormatla(this)"></div>
+                    <div class="form-group"><label>Ekstre Günü</label><input type="text" inputmode="numeric" id="yk-ekstre" class="form-control" placeholder="Ayın Kaçı? (1-31)"></div>
+                </div>
+                <div class="form-group">
+    <label>Toplam Güncel Borç (₺)</label>
+    <input type="text" inputmode="decimal" id="yk-borc" class="form-control" placeholder="Sıfır kart ise 0 yazın" oninput="tutarFormatla(this)">
+    <div style="font-size:11px; color:var(--text-muted); margin-top:6px;">* Taksitler dahil tüm güncel borcunuzu yazın.</div>
+</div>
+<div class="form-group">
+    <label>Son Ekstre Ödemesi</label>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <button type="button" id="btn-yk-tam" onclick="seciYeniKartOdemeTipi('Tam')" style="padding: 12px; border-radius: 12px; background: rgba(16,185,129,0.15); border: 2px solid var(--emerald); color: var(--emerald); font-weight: 700; cursor: pointer;">✅ Tam Ödedim</button>
+        <button type="button" id="btn-yk-asgari" onclick="seciYeniKartOdemeTipi('Asgari')" style="padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); font-weight: 700; cursor: pointer;">⚠️ Asgari Ödedim</button>
+    </div>
+</div>
+<input type="hidden" id="yk-odeme-tipi" value="Tam">
+<div id="yk-asgari-grup" style="display:none;">
+    <div class="form-group">
+        <label>Devreden Bakiye Ne Kadar? (₺)</label>
+        <input type="text" inputmode="decimal" id="yk-devreden" class="form-control" placeholder="Son ekstreden ödenmemiş kalan tutar" oninput="tutarFormatla(this)">
+        <div style="font-size:11px; color:var(--text-muted); margin-top:6px;">* Tahmini faiz hesabı için kullanılır.</div>
+    </div>
+</div>
+                <button class="btn-submit" id="btn-submit-yeni-kart" data-default-text="Kartı Sisteme Ekle" onclick="submitYeniKart()">Kartı Sisteme Ekle</button>
+            </div>
+
+            <div id="section-kart-borc-ode" class="form-section">
+                <span class="back-link" onclick="showSection('section-kart-merkezi', '💳 Kredi Kartı İşlemleri')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Kart İşlemlerine Dön</span>
+                
+                <div class="form-group"><label>Hangi Kartın Borcunu Ödüyorsun?</label><select id="kbo-secim" class="form-control"></select></div>
+                <div class="form-group"><label>Ödenen Toplam Tutar (₺)</label><input type="text" inputmode="decimal" id="kbo-tutar" class="form-control" placeholder="Örn: 5000" oninput="tutarFormatla(this); hesaplaKalanParcaliKartBorc()"></div>
+                
+                <div class="form-group">
+                    <label>Ödeme Şekli</label>
+                    <select id="kbo-odeme-sekli" class="form-control" onchange="toggleParcaliKartBorcOdeme()">
+                        <option value="tek">Tek Hesaptan Öde</option>
+                        <option value="parcali">Parça Parça (Farklı Hesaplardan) Öde</option>
+                    </select>
+                </div>
+
+                <div id="kbo-tek-hesap-alani">
+                    <div class="form-group"><label>Paranın Çıktığı Yer</label><select id="kbo-yontem" class="form-control"></select></div>
+                </div>
+
+                <div id="kbo-parcali-hesap-alani" class="sub-panel">
+                    <div class="row-between">
+                        <span class="label-muted">Hedef: <span id="kbo-hedef-tutar" class="text-white-bold tabular-nums">₺0</span></span>
+                        <span class="label-muted">Kalan: <span id="kbo-kalan-tutar" class="text-rose-bold tabular-nums">₺0</span></span>
+                    </div>
+                    <div id="kbo-parcalar-container"></div>
+                    <button onclick="addParca('kbo')" class="btn-outline-muted">
+                        + Yeni Hesap / Parça Ekle
+                    </button>
+                </div>
+
+                <div class="form-group">
+    <label>Ödeme Tipi</label>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <button type="button" id="btn-odeme-tam" onclick="seciOdemeTipi('Tam')" style="padding: 12px; border-radius: 12px; background: rgba(16,185,129,0.15); border: 2px solid var(--emerald); color: var(--emerald); font-weight: 700; cursor: pointer;">✅ Tam Ödeme</button>
+        <button type="button" id="btn-odeme-asgari" onclick="seciOdemeTipi('Asgari')" style="padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); font-weight: 700; cursor: pointer;">⚠️ Asgari Ödeme</button>
+    </div>
+</div>
+<input type="hidden" id="kart-odeme-tipi" value="Tam">
+                <div class="form-group">
+                    <label>Tarih</label>
+                    <input type="date" id="kbo-tarih" class="form-control">
+                </div>
+
+                <button class="btn-submit" id="btn-submit-kart-borc-ode" data-default-text="Kart Borcunu Öde" onclick="submitKartBorcuOde()">Kart Borcunu Öde</button>
+            </div>
+
+            <div id="section-kart-limit-guncelle" class="form-section">
+    <span class="back-link" onclick="showSection('section-kart-merkezi', ' 💳  Kredi Kartı İşlemleri')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Kart İşlemlerine Dön</span>
+    
+    <div class="form-group"><label>Hangi Kartın Limiti Güncellenecek?</label><select id="kl-secim" class="form-control" onchange="updateMevcutLimit()"></select></div>
+    
+    <div class="form-group" id="kl-mevcut-limit-grup" style="display:none; background: rgba(59, 130, 246, 0.05); padding: 15px; border-radius: 14px; border: 1px dashed rgba(59, 130, 246, 0.3); margin-top: -10px; margin-bottom: 15px;">
+        <label style="color: var(--blue);">Mevcut Kayıtlı Limit</label>
+        <div id="kl-mevcut-val" style="font-size: 18px; font-weight: 800; color: #fff;">₺0,00</div>
+    </div>
+    
+    <div class="form-group"><label>Yeni Toplam Limit (₺)</label><input type="text" inputmode="decimal" id="kl-yeni-limit" class="form-control" placeholder="Örn: 250000" oninput="tutarFormatla(this)"></div>
+    <button class="btn-submit" id="btn-submit-limit-guncelle" data-default-text="Limiti Güncelle" onclick="submitLimitGuncelle()">Limiti Güncelle</button>
+</div>
+
+            <div id="section-kart-ekstre-guncelle" class="form-section">
+                <span class="back-link" onclick="showSection('section-kart-merkezi', '💳 Kredi Kartı İşlemleri')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Kart İşlemlerine Dön</span>
+                <div class="form-group"><label>Hangi Kartın Ekstresi Değişecek?</label><select id="keg-secim" class="form-control"></select></div>
+                <div class="form-group"><label>Yeni Ekstre Kesim Günü (Ayın Kaçı?)</label><input type="text" inputmode="numeric" id="keg-yeni-gun" class="form-control" placeholder="Örn: 1-31 arası bir sayı"></div>
+                <button class="btn-submit" id="btn-submit-ekstre-guncelle" data-default-text="Ekstreyi Güncelle" onclick="submitEkstreGuncelle()">Ekstreyi Güncelle</button>
+            </div>
+
+                        <div id="section-anlik" class="form-section">
+                <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Geri Dön</span>
+                
+                <div class="segment-control mb-16" id="anlik-segment">
+                    <div class="segment-btn active-gider" onclick="setAnlikFilter('Gider', this)">Gider</div>
+                    <div class="segment-btn" onclick="setAnlikFilter('Gelir', this)">Gelir</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Tutar (₺)</label>
+                    <input type="text" inputmode="decimal" id="an-tutar" class="form-control" placeholder="0,00" oninput="tutarFormatla(this); hesaplaKalanParcaliAnlik()">
+                </div>
+
+                <div class="form-group">
+                    <label id="an-kalem-label">Gider Kalemi</label>
+                    <div id="an-kalem-konteyner">
+                        <select id="an-kalem" class="form-control" onchange="checkAnlikKalem()"></select>
+                    </div>
+                </div>
+
+                <div id="an-ek-aciklama-grup" style="display:none; margin-bottom: 15px;">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; cursor: pointer;" onclick="toggleEkInput()">
+                        <input type="checkbox" id="an-ek-check" style="width: 18px; height: 18px; pointer-events: none;">
+                        <span style="font-size: 13px; color: var(--text-muted);">Ek açıklama yazmak için dokun</span>
+                    </div>
+                    <div id="an-ek-input-konteyner" class="d-none">
+                        <input type="text" id="an-ek-input" class="form-control" placeholder="Açıklama...">
+                    </div>
+                </div>
+
+                <div class="form-group" id="an-diger-konteyner" style="display:none; margin-top: -10px; margin-bottom: 15px;">
+                    <label>Lütfen Kalem Adını Yazın</label>
+                    <input type="text" id="an-kalem-diger" class="form-control" placeholder="Kalem adı...">
+                </div>
+
+                <div class="form-group" id="an-faiz-grubu" style="display:none; background: rgba(245, 158, 11, 0.05); padding: 15px; border-radius: 14px; border: 1px dashed rgba(245, 158, 11, 0.3); margin-top: -10px; margin-bottom: 15px;">
+                    <label class="text-amber">Hangi bankanın hesabı ya da kredi kartının faizi?</label>
+                    <select id="an-faiz-detay" class="form-control"></select>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label class="form-label" style="font-size: 11px; opacity: 0.7;">ÖDEME / GİRİŞ ŞEKLİ</label>
+                    <select id="an-odeme-sekli" class="form-control" onchange="toggleParcaliAnlik()">
+                        <option value="tek">Tek Hesaptan</option>
+                        <option value="parcali">Parça Parça (Çoklu Hesap)</option>
+                    </select>
+                </div>
+
+                <div id="an-tek-hesap-alani">
+                    <div class="form-group">
+                        <label id="an-yontem-label" class="form-label">Ödeme Hesabı</label>
+                        <select id="an-yontem" class="form-control"></select>
+                    </div>
+                </div>
+
+                <div id="an-parcali-hesap-alani" class="sub-panel">
+                    <div class="row-between">
+                        <span class="label-muted">Hedef: <span id="an-hedef-tutar" class="text-white-bold tabular-nums">₺0,00</span></span>
+                        <span class="label-muted">Kalan: <span id="an-kalan-tutar" style="color:var(--amber); font-weight:800;" class="tabular-nums">₺0,00</span></span>
+                    </div>
+                    <div id="an-parcalar-container"></div>
+                    <button onclick="addParcaAnlik()" class="btn-outline-muted">
+                        + Yeni Hesap / Parça Ekle
+                    </button>
+                </div>
+
+                <div class="form-group">
+                    <label>İşlem Tarihi</label>
+                    <input type="date" id="an-tarih" class="form-control">
+                </div>
+
+                <button class="btn-submit" id="btn-submit-anlik" data-default-text="Şimdi Kaydet" onclick="submitAnlik()">Şimdi Kaydet</button>
+            </div>
+
+            <div id="section-duzenli" class="form-section">
+                <span class="back-link" onclick="showSection('section-duzenli-merkezi', '📅 Düzenli Kayıt İşlemleri')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Düzenli Kayıt İşlemlerine Dön</span>
+
+                <div class="segment-control mb-16" id="duzenli-segment">
+                    <div class="segment-btn active-gider" onclick="setDuzenliFilter('Gider', this)">Düzenli Gider</div>
+                    <div class="segment-btn" onclick="setDuzenliFilter('Gelir', this)">Düzenli Gelir</div>
+                </div>
+
+                <div class="form-group">
+                    <label id="lbl-du-tur">Kayıt Türü</label>
+                    <select id="du-tur" class="form-control" onchange="checkDuzenliTur()"></select>
+                </div>
+
+                <div id="taksit-tip-secici" style="display:none; margin-bottom: 12px;">
+                    <div class="segment-control" style="background: rgba(255,255,255,0.05); padding: 3px; border: 1px solid rgba(255,255,255,0.05);">
+                        <div class="segment-btn active" id="btn-taksit-tek" onclick="setTaksitInputType('tek')" style="padding: 8px; font-size: 11px;">Aylık Taksit Gir</div>
+                        <div class="segment-btn" id="btn-taksit-toplam" onclick="setTaksitInputType('toplam')" style="padding: 8px; font-size: 11px;">Toplam Tutarı Gir</div>
+                    </div>
+                </div>
+
+                <div class="form-group" id="du-tutar-grubu">
+                    <label id="lbl-du-tutar-ana" style="display: block; margin-bottom: 8px;">Tutar (₺)</label>
+                    <input type="text" inputmode="decimal" id="du-tutar" class="form-control" placeholder="0,00" oninput="tutarFormatla(this); hesaplaTaksitYardimci()">
+                    
+                    <div id="taksit-hesap-yardimci" style="display:none; font-size: 12px; color: var(--emerald); font-weight: 700; margin-top: 10px; padding: 8px; background: rgba(16, 185, 129, 0.1); border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.2);">
+                        Aylık Ödeme: ₺0,00
+                    </div>
+                </div>
+
+                <div class="grid-2col">
+                    <div class="form-group">
+                        <label id="lbl-du-gun">Ödeme Günü (1-31)</label>
+                        <input type="text" inputmode="numeric" id="du-gun" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label id="lbl-du-sure">Ödeme Süresi (Ay)</label>
+                        <input type="text" id="du-sure" class="form-control" placeholder="Örn: 12" oninput="hesaplaTaksitYardimci()">
+                    </div>
+                </div>
+
+                <div style="margin-top: -10px; margin-bottom: 20px; text-align: right;">
+                    <span id="helper-du-sure" onclick="document.getElementById('du-sure').value='Süresiz'; document.getElementById('du-sure').style.borderColor='var(--emerald)'; checkDuzenliTur();" style="color:var(--emerald); font-size:11px; cursor:pointer; font-weight:600;">
+                        Süresiz ödeme için tıklayın
+                    </span>
+                </div>
+
+                <div id="du-info-box" style="display:none; font-size:12px; color:var(--blue); background:rgba(59, 130, 246, 0.1); padding:10px; border-radius:10px; margin-top:-10px; margin-bottom:15px; border:1px solid rgba(59,130,246,0.2);"></div>
+
+                <div class="form-group">
+                    <label>Kalem Adı</label>
+                    <input type="text" id="du-kalem" class="form-control" placeholder="Kalem adı girin...">
+                </div>
+
+                <div class="form-group">
+                    <label id="du-yontem-label">Ödeme Şekli</label>
+                    <select id="du-yontem" class="form-control"></select>
+                </div>
+
+                <button class="btn-submit" id="btn-submit-duzenli" data-default-text="Kuralı Oluştur" onclick="submitDuzenli()">Kuralı Oluştur</button>
+            </div>
+
+            <div id="section-sabit-onayla" class="form-section">
+                <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Geri Dön</span>
+                
+                <div class="segment-control mb-16" id="so-main-segment">
+                    <div class="segment-btn active-gider" onclick="setSabitMainFilter('Gider', this)">Bekleyen Giderler</div>
+                    <div class="segment-btn" onclick="setSabitMainFilter('Gelir', this)">Bekleyen Gelirler</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Kategori Seçin</label>
+                    <select id="so-kategori" class="form-control" onchange="onKategoriChange()"></select>
+                </div>
+
+                <div class="form-group">
+                    <label>Bekleyen İşlemi Seçin</label>
+                    <select id="so-kural" class="form-control" onchange="onKuralChange()"></select>
+                </div>
+
+                <div style="background: rgba(59, 130, 246, 0.1); border: 1px dashed rgba(59, 130, 246, 0.3); padding: 12px; border-radius: 12px; margin-bottom: 8px; text-align:center;">
+                    <div style="font-size: 11px; color: var(--blue); font-weight: 700; margin-bottom: 4px; letter-spacing: 0.5px;">KAYITLI / GEÇEN AYKİ TUTAR</div>
+                    <div style="font-size: 22px; font-weight: 800; color: #fff;" id="so-referans-tutar">₺0,00</div>
+                </div>
+
+                <div style="text-align:right; margin-bottom: 16px;">
+                    <span onclick="submitPasGec()" style="color: var(--rose); font-size: 12px; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; background: rgba(244, 63, 94, 0.1); padding: 4px 10px; border-radius: 8px;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 4 15 12 5 20"></polygon><line x1="19" y1="5" x2="19" y2="19"></line></svg> İşlemi Bu Ay Pas Geç
+                    </span>
+                </div>
+
+                <div class="form-group">
+                    <label id="lbl-so-tutar">Bu Ay Gerçekleşen Net Tutar (₺)</label>
+                    <input type="text" inputmode="decimal" id="so-guncel-tutar" class="form-control" oninput="tutarFormatla(this); hesaplaKalanParcali()">
+                </div>
+
+                <div class="form-group" style="margin-top:-6px; margin-bottom:20px;">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--text-muted); font-size: 12px; font-weight:500;">
+                        <input type="checkbox" id="so-kalici-check" style="width: 16px; height: 16px; accent-color: var(--blue);">
+                        Bu tutarı gelecek aylar için kalıcı yap
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label>Ödeme/Tahsilat Şekli</label>
+                    <select id="so-odeme-sekli" class="form-control" onchange="toggleParcaliOdeme()">
+                        <option value="tek">Tek Hesaptan İşlem Yap</option>
+                        <option value="parcali">Parça Parça (Farklı Hesaplardan)</option>
+                    </select>
+                </div>
+
+                <div id="so-tek-hesap-alani">
+                    <div class="form-group">
+                        <label id="lbl-so-yontem">İşlem Yapılacak Hesap</label>
+                        <select id="so-yontem" class="form-control"></select>
+                    </div>
+                </div>
+
+                <div id="so-parcali-hesap-alani" class="sub-panel">
+                    <div class="row-between">
+                        <span class="label-muted">Hedef: <span id="so-hedef-tutar" class="text-white-bold tabular-nums">₺0</span></span>
+                        <span class="label-muted">Kalan: <span id="so-kalan-tutar" class="text-rose-bold tabular-nums">₺0</span></span>
+                    </div>
+                    <div id="so-parcalar-container"></div>
+                    <button onclick="addParca('so')" class="btn-outline-muted">
+                        + Yeni Hesap / Parça Ekle
+                    </button>
+                </div>
+
+                <button class="btn-submit" id="btn-submit-sabit-onayla" data-default-text="Onayla ve Kaydet" onclick="submitSabitOnayla()">Onayla ve Kaydet</button>
+            </div>
+
+            <!-- ========================================== -->
+            <!-- ARACI MENÜ: BORÇ / KREDİ SEÇİMİ -->
+            <!-- ========================================== -->
+            <div id="araci-borc-menusu" class="form-section">
+    <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Ana Menüye Dön</span>
+    
+    <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 20px;">
+        <button class="btn-submit btn-banka-kredileri" style="height: 85px; font-size: 18px; margin: 0; width: 100%; display: flex; align-items: center; justify-content: center; gap: 15px;" onclick="openSectionLive(event, 'kredi-islemleri-screen', 'Banka Kredisi İşlemleri')">
+            <i class="fas fa-landmark" style="font-size: 26px;"></i> Banka Kredileri
+        </button>
+        <button class="btn-submit btn-ozel-borclar" style="height: 85px; font-size: 18px; margin: 0; width: 100%; display: flex; align-items: center; justify-content: center; gap: 15px;" onclick="openSectionLive(event, 'ozel-borc-islemleri-screen', 'Şahıs & Özel Borçlar')">
+            <i class="fas fa-handshake" style="font-size: 26px;"></i> Özel Borçlar
+        </button>
+    </div>
+</div>
+
+            <!-- ========================================== -->
+            <!-- 1. KREDİ BORÇLARI MODÜLÜ -->
+            <!-- ========================================== -->
+            <div id="kredi-islemleri-screen" class="form-section">
+                <span class="back-link" onclick="showSection('araci-borc-menusu', 'Borç / Kredi İşlemleri')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Seçim Menüsüne Dön</span>
+                
+                <div class="segment-control mb-16">
+                    <div class="segment-btn active-borc-ode" id="btn-tab-kredi-ode" onclick="toggleKrediTab('ode')">Erken Kapama</div>
+                    <div class="segment-btn" id="btn-tab-kredi-ekle" onclick="toggleKrediTab('ekle')">Yeni Kredi Tanımla</div>
+                </div>
+
+                <!-- SEKME 1: KREDİ ERKEN KAPAMA -->
+                <div id="tab-kredi-ode">
+                    <div class="form-group">
+                        <label>Hangi Krediyi Erken Kapatacaksınız?</label>
+                        <!-- Evrensel kâr zırhı için onchange eklendi -->
+                        <select id="kredi-secim" class="form-control" onchange="hesaplaKrediKarZarar()"></select>
+                    </div>
+                    <div class="form-group"><label>Erken Kapama Tutarı (₺)</label><input type="text" inputmode="decimal" id="kredi-ode-tutar" class="form-control" placeholder="Örn: 250000" oninput="tutarFormatla(this); hesaplaKrediKarZarar(); hesaplaKalanParcaliKredi()"></div>
+                    
+                    <!-- PREMIUM KÂR GÖSTERGE KUTUSU -->
+                    <div id="kredi-kar-zarar-kutu" style="display:none; background: rgba(16, 185, 129, 0.05); padding: 15px; border-radius: 14px; border: 1px dashed rgba(16, 185, 129, 0.3); margin-top: -10px; margin-bottom: 15px; text-align: center;">
+                        <div style="font-size: 11px; color: var(--emerald); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">Erken Kapatmanız Halinde Net Kârınız</div>
+                        <div id="kredi-kar-rakam" class="tabular-nums" style="font-size: 24px; font-weight: 800; color: #fff;">₺0,00</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Ödeme Şekli</label>
+                        <select id="kredi-odeme-sekli" class="form-control" onchange="toggleParcaliKrediOdeme()">
+                            <option value="tek">Tek Hesaptan Öde</option>
+                            <option value="parcali">Parça Parça (Farklı Hesaplardan) Öde</option>
+                        </select>
+                    </div>
+
+                    <div id="kredi-tek-hesap-alani">
+                        <div class="form-group"><label>Paranın Çıktığı Yer</label><select id="kredi-yontem" class="form-control"></select></div>
+                    </div>
+
+                    <div id="kredi-parcali-hesap-alani" class="sub-panel">
+                        <div class="row-between">
+                            <span class="label-muted">Hedef: <span id="kredi-hedef-tutar" class="text-white-bold tabular-nums">₺0</span></span>
+                            <span class="label-muted">Kalan: <span id="kredi-kalan-tutar" class="text-rose-bold tabular-nums">₺0</span></span>
+                        </div>
+                        <div id="kredi-parcalar-container"></div>
+                        <button onclick="addParca('kredi')" class="btn-outline-muted">+ Yeni Hesap / Parça Ekle</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Tarih</label>
+                        <input type="date" id="kredi-tarih" class="form-control">
+                    </div>
+
+                    <button class="btn-submit" id="btn-submit-kredi-ode" data-default-text="Krediyi Erken Kapat" onclick="submitKrediOde()">Krediyi Erken Kapat</button>
+                </div>
+
+                <!-- SEKME 2: YENİ KREDİ TANIMLA -->
+                <div id="tab-kredi-ekle" class="d-none">
+                    <div class="form-group">
+                        <label>Kredi Adı</label>
+                        <input type="text" id="kredi-yeni-isim" class="form-control" placeholder="Örn: Ziraat Taşıt Kredisi">
+                        <div style="font-size:11px; color:var(--rose); margin-top:6px; font-weight: 600;">*Önemli: Lütfen geçmişte kullandığınız kredi isimleriyle aynı ismi kullanmayın.</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Toplam (Faiz Dahil) Kredi Tutarı (₺)</label>
+                        <input type="text" inputmode="decimal" id="kredi-yeni-tutar" class="form-control" placeholder="Kredinin faizler dahil tüm borcu..." oninput="tutarFormatla(this)">
+                    </div>
+                    <div class="grid-2col">
+                        <div class="form-group">
+                            <label>Vade (Ay)</label>
+                            <input type="text" inputmode="numeric" id="kredi-yeni-vade" class="form-control" placeholder="Örn: 12">
+                        </div>
+                        <div class="form-group">
+                            <label>Aylık Taksit (₺)</label>
+                            <input type="text" inputmode="decimal" id="kredi-yeni-aylik" class="form-control" placeholder="Örn: 5000" oninput="tutarFormatla(this)">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Ödeme Günü (Ayın Kaçı?)</label>
+                        <input type="text" inputmode="numeric" id="kredi-yeni-gun" class="form-control" placeholder="1-31 Arası">
+                    </div>
+                    <div class="form-group">
+                        <label>Son Taksit Tarihi (Bitiş)</label>
+                        <input type="text" id="kredi-yeni-bitis" class="form-control" placeholder="Tarih Girmek İçin Dokun" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'">
+                    </div>
+                    <div class="form-group">
+                        <label>Ödeme Hesabı</label>
+                        <select id="kredi-yeni-hesap" class="form-control"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Tarih</label>
+                        <input type="date" id="kredi-yeni-tarih" class="form-control">
+                    </div>
+                    <button class="btn-submit" id="btn-submit-kredi-tanimla" data-default-text="Yeni Kredi Tanımla" onclick="submitYeniKredi()">Yeni Kredi Tanımla</button>
+                </div>
+            </div>
+
+            <!-- ========================================== -->
+            <!-- 2. ÖZEL BORÇLAR MODÜLÜ -->
+            <!-- ========================================== -->
+            <div id="ozel-borc-islemleri-screen" class="form-section">
+                <span class="back-link" onclick="showSection('araci-borc-menusu', 'Borç / Kredi İşlemleri')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Seçim Menüsüne Dön</span>
+                
+                <div class="segment-control mb-16">
+                    <div class="segment-btn active-borc-ode" id="btn-tab-ozel-ode" onclick="toggleOzelTab('ode')">Borç Öde</div>
+                    <div class="segment-btn" id="btn-tab-ozel-guncelle" onclick="toggleOzelTab('guncelle')">Güncelle</div>
+                    <div class="segment-btn" id="btn-tab-ozel-ekle" onclick="toggleOzelTab('ekle')">Yeni Tanımla</div>
+                </div>
+
+                <!-- SEKME 1: ÖZEL BORÇ ÖDE -->
+                <div id="tab-ozel-ode">
+                    <div class="form-group">
+                        <label>Hangi Özel Borcu Ödüyorsun?</label>
+                        <select id="ozel-secim" class="form-control"></select>
+                    </div>
+                    <div class="form-group"><label>Ödenen Tutar (₺)</label><input type="text" inputmode="decimal" id="ozel-ode-tutar" class="form-control" placeholder="Örn: 500" oninput="tutarFormatla(this); hesaplaKalanParcaliOzel()"></div>
+                    
+                    <div class="form-group">
+                        <label>Ödeme Şekli</label>
+                        <select id="ozel-odeme-sekli" class="form-control" onchange="toggleParcaliOzelOdeme()">
+                            <option value="tek">Tek Hesaptan Öde</option>
+                            <option value="parcali">Parça Parça (Farklı Hesaplardan) Öde</option>
+                        </select>
+                    </div>
+
+                    <div id="ozel-tek-hesap-alani">
+                        <div class="form-group"><label>Paranın Çıktığı Yer</label><select id="ozel-yontem" class="form-control"></select></div>
+                    </div>
+
+                    <div id="ozel-parcali-hesap-alani" class="sub-panel">
+                        <div class="row-between">
+                            <span class="label-muted">Hedef: <span id="ozel-hedef-tutar" class="text-white-bold tabular-nums">₺0</span></span>
+                            <span class="label-muted">Kalan: <span id="ozel-kalan-tutar" class="text-rose-bold tabular-nums">₺0</span></span>
+                        </div>
+                        <div id="ozel-parcalar-container"></div>
+                        <button onclick="addParca('ozel')" class="btn-outline-muted">+ Yeni Hesap / Parça Ekle</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Tarih</label>
+                        <input type="date" id="ozel-tarih" class="form-control">
+                    </div>
+                    <button class="btn-submit" id="btn-submit-ozel-ode" data-default-text="Borcu Öde" onclick="submitOzelOde()">Borcu Öde</button>
+                </div>
+
+                <!-- SEKME 2: ÖZEL BORÇ GÜNCELLE -->
+                <div id="tab-ozel-guncelle" class="d-none">
+                    <div class="form-group">
+                        <label>Güncellenecek Borç</label>
+                        <select id="ozel-guncelle-secim" class="form-control"></select>
+                    </div>
+                    <div class="form-group"><label>Yeni Kalan Tutar (₺)</label><input type="text" inputmode="decimal" id="ozel-guncelle-tutar" class="form-control" oninput="tutarFormatla(this)"></div>
+                    <button class="btn-submit" id="btn-submit-ozel-guncelle" data-default-text="Kaydet / Güncelle" onclick="submitOzelGuncelle()">Kaydet / Güncelle</button>
+                </div>
+
+                <!-- SEKME 3: YENİ ÖZEL BORÇ TANIMLA -->
+                <div id="tab-ozel-ekle" class="d-none">
+                    <div class="form-group">
+                        <label>Özel Borç Adı</label>
+                        <input type="text" id="ozel-yeni-isim" class="form-control" placeholder="Örn: Ahmet'e Olan Borç">
+                    </div>
+                    <div class="form-group">
+                        <label>Toplam Borç Tutarı (₺)</label>
+                        <input type="text" inputmode="decimal" id="ozel-yeni-tutar" class="form-control" placeholder="Toplam tutarı girin..." oninput="tutarFormatla(this)">
+                    </div>
+                    <div class="form-group">
+    <label>Borç Türü</label>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <button type="button" id="btn-ozel-planli" onclick="seciOzelBorcTuru('Planlı')" style="padding: 12px; border-radius: 12px; background: rgba(16,185,129,0.15); border: 2px solid var(--emerald); color: var(--emerald); font-weight: 700; cursor: pointer;">✅ Planlı</button>
+        <button type="button" id="btn-ozel-canyakan" onclick="seciOzelBorcTuru('Can Yakan')" style="padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); font-weight: 700; cursor: pointer;">🔥 Can Yakan</button>
+    </div>
+</div>
+<input type="hidden" id="ozel-borc-turu" value="Planlı">
+                    <div class="form-group">
+                        <label>Tarih</label>
+                        <input type="date" id="ozel-yeni-tarih" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>Borç Dövizi</label>
+                        <select id="ozel-doviz" class="form-control" onchange="toggleOzelDovizAlani()">
+                            <option value="TL" selected>₺ Türk Lirası</option>
+                            <option value="USD">$ Dolar</option>
+                            <option value="EUR">€ Euro</option>
+                            <option value="Altın">🥇 Gram Altın</option>
+                        </select>
+                    </div>
+                    <div id="ozel-doviz-alani" style="display:none;">
+                        <div class="form-group">
+                            <label id="ozel-alis-kuru-label">Alış Kuru (Borç Alınırken 1 $ = kaç ₺)</label>
+                            <input type="text" inputmode="decimal" id="ozel-alis-kuru" class="form-control" placeholder="Örn: 45,50" oninput="tutarFormatla(this); hesaplaOzelDovizTL()">
+                        </div>
+                        <div class="form-group">
+                            <label id="ozel-miktar-label">Orijinal Miktar (Kaç $ / € / gram)</label>
+                            <input type="text" inputmode="decimal" id="ozel-alis-kuru-miktar" class="form-control" placeholder="Örn: 1.000" oninput="tutarFormatla(this); hesaplaOzelDovizTL()">
+                        </div>
+                        <div id="ozel-doviz-hesap-bilgi" style="font-size:12px; color:var(--text-muted); padding: 10px; background: rgba(255,255,255,0.05); border-radius: 10px; margin-bottom: 12px;">
+                            TL karşılığı otomatik hesaplanacak
+                        </div>
+                    </div>
+                    <button class="btn-submit" id="btn-submit-ozel-tanimla" data-default-text="Yeni Borç Tanımla" onclick="submitYeniOzel()">Yeni Borç Tanımla</button>
+                </div>
+            </div>
+            
+            <div id="section-transfer" class="form-section">
+                <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Geri Dön</span>
+                
+                <div class="form-group">
+                    <label>Transfer Tutarı (₺)</label>
+                    <input type="text" inputmode="decimal" id="t-tutar" class="form-control" placeholder="0,00" oninput="tutarFormatla(this)">
+                </div>
+
+                <div class="form-group" style="position:relative;">
+                    <label>Çıkış Yapılan (Gönderen)</label>
+                    <select id="t-cikis" class="form-control" onchange="updateTransferOptions()"></select>
+                    <button class="swap-btn" onclick="swapTransfer()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21 16-4 4-4-4"/><path d="M17 20V4"/><path d="m3 8 4-4 4 4"/><path d="M7 4v16"/></svg></button>
+                </div>
+
+                <div class="form-group">
+                    <label>Giriş Yapılan (Alan)</label>
+                    <select id="t-giris" class="form-control" onchange="updateTransferOptions()"></select>
+                </div>
+
+                <div class="form-group">
+                    <label>Tarih</label>
+                    <input type="date" id="t-tarih" class="form-control">
+                </div>
+
+                <button class="btn-submit" id="btn-submit-transfer" data-default-text="Transfer Yap" onclick="submitTransfer()">Transfer Yap</button>
+            </div>
+
+            <div id="section-sabit-guncelle" class="form-section">
+                <span class="back-link" onclick="showSection('section-duzenli-merkezi', '📅 Düzenli Kayıt İşlemleri')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Düzenli Kayıt İşlemlerine Dön</span>
+                
+                <div class="segment-control" style="margin-top:20px; margin-bottom: 15px;" id="sabit-guncelle-segment">
+                    <div class="segment-btn active-gider" onclick="setSabitFilter('Gider', this)">Düzenli Gider</div>
+                    <div class="segment-btn" onclick="setSabitFilter('Gelir', this)">Düzenli Gelir</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Güncellenecek Düzenli Kayıt</label>
+                    <select id="sg-kural" class="form-control" onchange="doldurSabitGuncelleForm()"></select>
+                </div>
+
+                <div id="sabit-guncelle-form-alani" style="display:none; border-top: 1px dashed rgba(255,255,255,0.1); padding-top:15px; margin-top: 15px;">
+                    <div class="form-group">
+                        <label>Kalıcı Tutar Şablonu (₺)</label>
+                        <input type="text" inputmode="decimal" id="sg-tutar" class="form-control" oninput="tutarFormatla(this)">
+                    </div>
+
+                    <div class="grid-2col">
+                        <div class="form-group"><label>Ayın Kaçı?</label><input type="text" inputmode="numeric" id="sg-gun" class="form-control"></div>
+                        <div class="form-group"><label>Kalan Ay</label><input type="text" id="sg-sure" class="form-control"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Hesap / Kart / Yöntem</label>
+                        <select id="sg-yontem" class="form-control"></select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Durum</label>
+                        <select id="sg-durum" class="form-control">
+                            <option value="Aktif">Aktif</option>
+                            <option value="İptal">İptal</option>
+                            <option value="Bitti">Bitti</option>
+                        </select>
+                    </div>
+
+                    <button class="btn-submit" id="btn-submit-sabit-guncelle" data-default-text="Kuralı Kalıcı Olarak Güncelle" onclick="submitSabitGuncelle()">Kuralı Kalıcı Olarak Güncelle</button>
+                </div>
+            </div>
+
+            <div id="section-varlik-guncelle" class="form-section">
+    <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Geri Dön</span>
+    
+    <div class="segment-control mb-16">
+        <div class="segment-btn active" id="btn-tab-varlik-guncelle" onclick="toggleVarlikTab('guncelle')">Değer Güncelle</div>
+        <div class="segment-btn" id="btn-tab-varlik-ekle-sil" onclick="toggleVarlikTab('ekle-sil')">Ekle / Sil</div>
+    </div>
+
+    <div id="tab-varlik-guncelle">
+        <div class="form-group">
+            <label>Varlık Adı</label>
+            <select id="vg-secim" class="form-control"></select>
+        </div>
+        <div class="form-group"><label>Güncel Değer (₺)</label><input type="text" inputmode="decimal" id="vg-deger" class="form-control" placeholder="Değer giriniz" oninput="tutarFormatla(this)"></div>
+        <button class="btn-submit" id="btn-submit-varlik-guncelle" data-default-text="Varlığı Güncelle" onclick="submitVarlikGuncelle()">Varlığı Güncelle</button>
+    </div>
+
+    <div id="tab-varlik-ekle-sil" class="d-none">
+        <div style="background: rgba(16, 185, 129, 0.05); padding: 15px; border-radius: 14px; border: 1px dashed rgba(16, 185, 129, 0.3); margin-bottom: 20px;">
+            <h4 style="color: var(--emerald); font-size: 14px; margin-bottom: 12px; font-weight: 600;">Yeni Varlık Ekle</h4>
+            <div class="form-group">
+                <label>Varlık Adı</label>
+                <input type="text" id="ve-isim" class="form-control" placeholder="Örn: Ev, Araba, Altın...">
+            </div>
+            <div class="form-group">
+                <label>Varlık Kategorisi</label>
+                <select id="ve-kategori" class="form-control"></select>
+            </div>
+            <div class="grid-2col">
+                <div class="form-group">
+                    <label>Satın Alım Maliyeti (₺)</label>
+                    <input type="text" inputmode="decimal" id="ve-maliyet" class="form-control" placeholder="0,00" oninput="tutarFormatla(this)">
+                </div>
+                <div class="form-group">
+                    <label>Güncel Değer (₺)</label>
+                    <input type="text" inputmode="decimal" id="ve-guncel" class="form-control" placeholder="0,00" oninput="tutarFormatla(this)">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Alındığı Tarih</label>
+                <input type="text" id="ve-tarih" class="form-control" placeholder="Tarih Girmek İçin Dokun" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'">
+            </div>
+            <button class="btn-submit" id="btn-submit-varlik-ekle" data-default-text="Varlığı Sisteme Ekle" onclick="submitVarlikEkle()" style="background: var(--emerald); width: 100%;">Varlığı Sisteme Ekle</button>
+        </div>
+
+        <div style="background: rgba(244, 63, 94, 0.05); padding: 15px; border-radius: 14px; border: 1px dashed rgba(244, 63, 94, 0.3);">
+            <h4 style="color: var(--rose); font-size: 14px; margin-bottom: 12px; font-weight: 600;">Sistemden Varlık Sil</h4>
+            <div class="form-group">
+                <label>Silinecek Varlık</label>
+                <select id="vs-secim" class="form-control"></select>
+            </div>
+            <button class="btn-submit" id="btn-submit-varlik-sil" data-default-text="Seçili Varlığı Kalıcı Olarak Sil" onclick="submitVarlikSil()" style="background: var(--rose); width: 100%;">Seçili Varlığı Kalıcı Olarak Sil</button>
+        </div>
+    </div>
+</div>
+<div id="section-hesap-yonetimi" class="form-section">
+    <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Ana Menüye Dön</span>
+    
+    <div class="action-grid mt-10">
+        <div class="action-card" onclick="showSection('section-yeni-hesap', 'Yeni Hesap Ekle')">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--emerald);"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+            <span>Yeni Hesap Ekle</span>
+        </div>
+        <div class="action-card" onclick="openSectionLive(event, 'section-hesap-islemleri', 'Hesap İşlemleri')">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--blue);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span>Bakiye / KMH Güncelle</span>
+        </div>
+    </div>
+</div>
+
+<div id="section-hesap-islemleri" class="form-section">
+    <span class="back-link" onclick="showSection('section-hesap-yonetimi', 'Banka Hesaplarım')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Geri Dön</span>
+    
+    <div class="form-group">
+        <label>İşlem Yapılacak Hesap</label>
+        <select id="hi-hesap-secim" class="form-control" onchange="updateHesapIslemBilgi()"></select>
+    </div>
+
+    <div id="hi-mevcut-bilgi" style="display:none; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 14px; border: 1px dashed rgba(255,255,255,0.1); margin-bottom: 20px;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+            <span class="label-xs-muted">Sistemdeki Bakiye:</span>
+            <span id="hi-mevcut-bakiye" style="font-weight:700; color:#fff;">₺0,00</span>
+        </div>
+        <div style="display:flex; justify-content:space-between;">
+            <span class="label-xs-muted">Sistemdeki KMH:</span>
+            <span id="hi-mevcut-kmh" style="font-weight:700; color:var(--amber);">₺0,00</span>
+        </div>
+    </div>
+
+    <div class="segment-control mb-16">
+        <div class="segment-btn active" id="btn-hi-bakiye" onclick="toggleHesapIslemTab('bakiye')">Bakiye Eşitle</div>
+        <div class="segment-btn" id="btn-hi-kmh" onclick="toggleHesapIslemTab('kmh')">KMH Güncelle</div>
+    </div>
+
+    <div id="tab-hi-bakiye">
+        <div class="form-group">
+            <label>Banka Uygulamasındaki GERÇEK Bakiye (₺)</label>
+            <input type="text" inputmode="text" id="hi-yeni-bakiye" class="form-control" placeholder="Eksi bakiye için - kullanın" oninput="tutarFormatla(this)">
+            <p style="font-size:11px; color:var(--emerald); margin-top:8px; font-weight:600;">* Sistem bu tutarı görebilmek için "Başlangıç Bakiyesini" formülleri bozmadan hesaplayıp eşitleyecektir.</p>
+        </div>
+        <button class="btn-submit" id="btn-submit-bakiye-duzelt" data-default-text="Bakiyeyi Eşitle" onclick="submitBakiyeDuzelt()">Bakiyeyi Eşitle</button>
+    </div>
+
+    <div id="tab-hi-kmh" style="display:none;">
+        <div class="form-group">
+            <label>Yeni KMH Limiti (₺)</label>
+            <input type="text" inputmode="decimal" id="hi-yeni-kmh" class="form-control" placeholder="KMH yoksa 0 yazın" oninput="tutarFormatla(this)">
+        </div>
+        <button class="btn-submit" id="btn-submit-kmh-guncelle" data-default-text="KMH Limitini Güncelle" onclick="submitKMHGuncelle()">KMH Limitini Güncelle</button>
+    </div>
+</div>
+            <div id="section-yeni-hesap" class="form-section">
+                <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Geri Dön</span>
+                
+                <div class="form-group">
+                    <label>Hesap Adı</label>
+                    <input type="text" id="yh-isim" class="form-control" placeholder="Örn: X Bankası, Kasa 1">
+                </div>
+
+                <div class="form-group">
+                    <label>Başlangıç Bakiyesi (₺)</label>
+                    <input type="text" inputmode="text" id="yh-bakiye" class="form-control" placeholder="Eksi bakiye için - kullanın" oninput="tutarFormatla(this)">
+                </div>
+
+                <div class="form-group">
+                    <label>Hesap Türü</label>
+                    <select id="yh-tur" class="form-control" onchange="checkYeniHesapTur()">
+    <option value="" disabled selected>Seçiniz...</option> <option value="Banka Hesabı">Banka Hesabı</option>
+    <option value="Nakit">Nakit (Kasa / Cüzdan)</option>
+</select>
+                </div>
+
+                <div class="form-group" id="yh-kmh-grubu">
+                    <label>KMH Limiti (₺)</label>
+                    <input type="text" inputmode="decimal" id="yh-kmh" class="form-control" placeholder="KMH yoksa 0 yazın" oninput="tutarFormatla(this)">
+                </div>
+
+                <button class="btn-submit" id="btn-submit-yeni-hesap" data-default-text="Hesabı Oluştur" onclick="submitYeniHesap()">Hesabı Oluştur</button>
+            </div>
+
+            <div id="section-butce-limitleri" class="form-section">
+                <span class="back-link" onclick="showSection('section-menu', 'Ne yapmak istersin?')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Ana Menüye Dön</span>
+                <p style="font-size:12px; color:var(--text-muted); margin-bottom:16px;">Kategori bazlı aylık harcama limiti belirle. Limitler aşıldığında uyarı gösterilir.</p>
+                <div class="form-group">
+                    <label>Kategori</label>
+                    <select id="bl-kategori" class="form-control"></select>
+                </div>
+                <div class="form-group">
+                    <label>Aylık Limit (₺) — 0 yazarsan limit kaldırılır</label>
+                    <input type="text" inputmode="decimal" id="bl-limit" class="form-control" placeholder="Örn: 5.000" oninput="tutarFormatla(this)">
+                </div>
+                <div id="bl-mevcut-bilgi" style="display:none; background:rgba(255,255,255,0.05); padding:12px; border-radius:12px; margin-bottom:16px; font-size:12px; color:var(--text-muted);">
+                    Mevcut limit: <span id="bl-mevcut-deger" style="color:#fff; font-weight:700;"></span>
+                </div>
+                <button class="btn-submit" id="btn-submit-butce" data-default-text="Limiti Kaydet" onclick="submitButceLimiti()">Limiti Kaydet</button>
+                <div id="bl-ozet-listesi" style="margin-top:24px;"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        
+    </script>
+    <script src="config.js?v=1.0"></script>
+    <script src="app.js?v=1.1" defer></script>
+    <script>
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
+</script>
+</body>
+</html>
