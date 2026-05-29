@@ -17,20 +17,6 @@ function donemLabelHesapla() {
     };
 }
 
-function hesaplaGelecekYukHero(data) {
-    var kartEkstre = 0;
-    (data.kartlarDetayli || []).forEach(function(k) {
-        kartEkstre += (k.donemIci || 0) + (k.devreden || 0) + (k.tahminiFaiz || 0);
-    });
-    var borcTaksit = 0, sabitNakit = 0;
-    (data.tumSabitlerListe || []).forEach(function(s) {
-        if (s.odendiMi) return;
-        if (s.yon === 'Borç Ödemesi') borcTaksit += (s.tutar || 0);
-        else if (s.yon === 'Gider') sabitNakit += (s.tutar || 0);
-    });
-    return kartEkstre + borcTaksit + sabitNakit;
-}
-
 function heroKartGuncelle(data, donem, gelecekYuk) {
     var kalan = data.backendNetNakit || 0;
     var eksiBakiye = kalan < 0;
@@ -200,11 +186,17 @@ function renderGelecekEkstreKartlar() {
     const ekstreEl = document.getElementById('gelecek-kart-ekstre');
     if (ekstreEl) ekstreEl.innerHTML = `<div style="text-align:right;">${formatTL(toplamEkstre)}${toplamEkstre > (window._kartlarDetayliToplamDonemIci || 0) ? `<div style="font-size:10px; color:var(--amber); margin-top:2px;">Devreden + faiz dahil</div>` : ''}</div>`;
 
-    const toplamEl = document.getElementById('gelecek-toplam-cikis');
+const toplamEl = document.getElementById('gelecek-toplam-cikis');
 if (toplamEl) {
     const borcTaksit = window._gelecekBorcTaksit || 0;
-const sabitNakit = window._gelecekSabitNakit || 0;
-toplamEl.innerHTML = formatTL(toplamEkstre + borcTaksit + sabitNakit);
+    const sabitNakit = window._gelecekSabitNakit || 0;
+    toplamEl.innerHTML = formatTL(toplamEkstre + borcTaksit + sabitNakit);
+}
+window._gelecekKartEkstre = toplamEkstre;
+    if (window.currentStats) {
+    var _hD = donemLabelHesapla();
+    var _hY = (window._gelecekKartEkstre || 0) + (window._gelecekBorcTaksit || 0) + (window._gelecekSabitNakit || 0);
+    heroKartGuncelle(window.currentStats, _hD, _hY);
 }
 }
 
@@ -2199,9 +2191,6 @@ function tutarFormatla(input) {
         // -----------------------------------------------
 
         window.currentStats = data;
-            var _heroDonem = donemLabelHesapla();
-var _heroGelecekYuk = hesaplaGelecekYukHero(data);
-heroKartGuncelle(data, _heroDonem, _heroGelecekYuk);
             window._gramKur = Number(data.gramAltinKuru) || 0;
         window._gramKur = data.gramAltinKuru ? Number(data.gramAltinKuru) : 0;
             console.log("gramAltinKuru:", data.gramAltinKuru, "| _gramKur:", window._gramKur);
