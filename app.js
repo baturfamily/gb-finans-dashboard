@@ -126,7 +126,7 @@ function renderGelecekEkstreKartlar() {
     if (tahminiEl) tahminiEl.innerHTML = formatTL(toplamEkstre);
 
     const ekstreEl = document.getElementById('gelecek-kart-ekstre');
-    if (ekstreEl) ekstreEl.innerHTML = formatTL(toplamEkstre) + (toplamEkstre > (window._kartlarDetayliToplamDonemIci || 0) ? `<div style="font-size:10px; color:var(--amber); margin-top:2px;">Devreden + faiz dahil</div>` : '');
+    if (ekstreEl) ekstreEl.innerHTML = `<div style="text-align:right;">${formatTL(toplamEkstre)}${toplamEkstre > (window._kartlarDetayliToplamDonemIci || 0) ? `<div style="font-size:10px; color:var(--amber); margin-top:2px;">Devreden + faiz dahil</div>` : ''}</div>`;
 
     const toplamEl = document.getElementById('gelecek-toplam-cikis');
 if (toplamEl) {
