@@ -2554,22 +2554,36 @@ bankaHtml += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;mar
         if (data.kartlarDetayli) data.kartlarDetayli.forEach(k => tumBakiyeler[k.isim.trim()] = { bakiye: (k.borc * -1), tur: "Kredi Kartı" });
         
         if (data.dinamikKategoriler && data.dinamikKategoriler.aktifHesaplar) {
-            data.dinamikKategoriler.aktifHesaplar.forEach(hesapAdi => {
-                let temizAd = hesapAdi.trim();
-                let b = tumBakiyeler[temizAd] || { bakiye: 0, tur: "Banka Hesabı" };
-                let optHtml = `<option value="${temizAd}">${temizAd} (${formatTLTam(b.bakiye)})</option>`;
-                window.hesapOptions += optHtml; window.vadesizOptions += optHtml; window.hesapTurleri[temizAd] = b.tur;
-            });
-        } else {
-            if(data.bankalar) data.bankalar.forEach(b => {
-                let optHtml = `<option value="${b.isim}">${b.isim} (${formatTLTam(b.bakiye)})</option>`;
-                window.hesapOptions += optHtml; window.vadesizOptions += optHtml; window.hesapTurleri[b.isim] = b.tur;
-            });
-            if(data.kartlarDetayli) data.kartlarDetayli.forEach(k => {
-                let optHtml = `<option value="${k.isim}">${k.isim} (${formatTLTam(k.borc * -1)})</option>`;
-                window.hesapOptions += optHtml; window.vadesizOptions += optHtml; window.hesapTurleri[k.isim] = "Kredi Kartı";
-            });
-        }
+    const nakit = [], bankalar = [], kartlar = [];
+    data.dinamikKategoriler.aktifHesaplar.forEach(hesapAdi => {
+        let temizAd = hesapAdi.trim();
+        let b = tumBakiyeler[temizAd] || { bakiye: 0, tur: "Banka Hesabı" };
+        window.hesapTurleri[temizAd] = b.tur;
+        let optHtml = `<option value="${temizAd}">${temizAd} (${formatTLTam(b.bakiye)})</option>`;
+        if (b.tur === "Nakit") nakit.push(optHtml);
+        else if (b.tur === "Kredi Kartı") kartlar.push(optHtml);
+        else bankalar.push(optHtml);
+    });
+    let grupluHtml = '';
+    if (nakit.length) grupluHtml += nakit.join('');
+    if (bankalar.length) grupluHtml += `<optgroup label="── Banka Hesapları ──">${bankalar.join('')}</optgroup>`;
+    if (kartlar.length) grupluHtml += `<optgroup label="── Kredi Kartları ──">${kartlar.join('')}</optgroup>`;
+    window.hesapOptions += grupluHtml;
+    if (nakit.length) window.vadesizOptions += nakit.join('');
+    if (bankalar.length) window.vadesizOptions += `<optgroup label="── Banka Hesapları ──">${bankalar.join('')}</optgroup>`;
+} else {
+    let bankaHtml = '', kartHtml = '';
+    if(data.bankalar) data.bankalar.forEach(b => {
+        let optHtml = `<option value="${b.isim}">${b.isim} (${formatTLTam(b.bakiye)})</option>`;
+        bankaHtml += optHtml; window.vadesizOptions += optHtml; window.hesapTurleri[b.isim] = b.tur;
+    });
+    if(data.kartlarDetayli) data.kartlarDetayli.forEach(k => {
+        let optHtml = `<option value="${k.isim}">${k.isim} (${formatTLTam(k.borc * -1)})</option>`;
+        kartHtml += optHtml; window.hesapTurleri[k.isim] = "Kredi Kartı";
+    });
+    if (bankaHtml) window.hesapOptions += `<optgroup label="── Banka Hesapları ──">${bankaHtml}</optgroup>`;
+    if (kartHtml) window.hesapOptions += `<optgroup label="── Kredi Kartları ──">${kartHtml}</optgroup>`;
+}
 
         // EVRENSEL FAİZ LİSTESİ: Nakit hariç tüm banka hesapları ve kredi kartları listelenir
         window.faizOptions = '<option value="" disabled selected>Seçiniz...</option>';
