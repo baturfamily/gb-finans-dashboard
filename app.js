@@ -1062,7 +1062,7 @@ showToast(mesaj, 'success');
         }
     }
 
-async function loadSabitlerAndShow(ev, sectionId, selectId, title) {
+async function loadSabitlerAndShow(ev, sectionId, selectId, title, yon) {
     ev = ev.currentTarget || ev; const orig = ev.innerHTML;
             ev.innerHTML = `<div class="premium-loader"><span></span><span></span><span></span></div>`; vibe();
             try {
@@ -1096,7 +1096,9 @@ async function loadSabitlerAndShow(ev, sectionId, selectId, title) {
                         document.getElementById('so-kalici-check').checked = false;
                         toggleParcaliOdeme(); refreshCustomSelect(document.getElementById('so-odeme-sekli'));
                         if(document.querySelectorAll('#so-main-segment .segment-btn').length > 0) {
-                            setSabitMainFilter('Gider', document.querySelectorAll('#so-main-segment .segment-btn')[0]);
+                            const hedefYon = yon || 'Gider';
+const hedefBtn = [...document.querySelectorAll('#so-main-segment .segment-btn')].find(b => b.textContent.trim() === hedefYon) || document.querySelectorAll('#so-main-segment .segment-btn')[0];
+setSabitMainFilter(hedefYon, hedefBtn);
                         }
                     } else {
                         window.sabitKurallarList = result.data || [];
@@ -2956,7 +2958,7 @@ if (gListe) {
         siraliGelirler.forEach(g => {
             const kategoriMetniG = (g.tur && g.tur !== "-" && !g.kalem.startsWith(g.tur))
                 ? `<span style="opacity:0.85; font-weight:500;">${g.tur}</span>&nbsp;-&nbsp;` : "";
-            const badgeG = `<button onclick="this.style.pointerEvents='none'; loadSabitlerAndShow(event,'section-sabit-onayla', 'so-kural', 'Bekleyen İşlemi Onayla').then(() => { const m=document.getElementById('action-modal'); const b=document.getElementById('fab-btn'); if(!m.classList.contains('active')) { m.classList.add('active'); b.classList.add('open'); document.body.classList.add('modal-open'); } this.style.pointerEvents='auto'; }); event.stopPropagation();" style="border:none; cursor:pointer; min-width:64px; height:22px; font-size:9px; background:rgba(245, 158, 11, 0.2); color:#fbbf24; padding:0 8px; border-radius:6px; border:1px solid rgba(245, 158, 11, 0.4); font-weight:900; display:inline-flex; align-items:center; justify-content:center; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">ONAYLA</button>`;
+            const badgeG = `<button onclick="this.style.pointerEvents='none'; loadSabitlerAndShow(event,'section-sabit-onayla', 'so-kural', 'Bekleyen İşlemi Onayla', 'Gelir').then(() => { const m=document.getElementById('action-modal'); const b=document.getElementById('fab-btn'); if(!m.classList.contains('active')) { m.classList.add('active'); b.classList.add('open'); document.body.classList.add('modal-open'); } this.style.pointerEvents='auto'; }); event.stopPropagation();" style="border:none; cursor:pointer; min-width:64px; height:22px; font-size:9px; background:rgba(245, 158, 11, 0.2); color:#fbbf24; padding:0 8px; border-radius:6px; border:1px solid rgba(245, 158, 11, 0.4); font-weight:900; display:inline-flex; align-items:center; justify-content:center; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">ONAYLA</button>`;
             let geriSayimBadgeG = "";
             let rowStyleEkG = "";
             if (g.gecikmisMi === true) {
