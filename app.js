@@ -2942,7 +2942,68 @@ bankaHtml += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;mar
             kalanKutu.style.color = "var(--rose)"; 
         }
 
-                const yListe = document.getElementById('yaklasan-listesi');
+const gListe = document.getElementById('yaklasan-gelirler-listesi');
+if (gListe) {
+    if (data.yaklasanGelirler && data.yaklasanGelirler.length > 0) {
+        let gHtml = "";
+        const bugunGunuG = new Date().getDate();
+        const buAyKacGunG = 30;
+        let siraliGelirler = [...data.yaklasanGelirler].sort((a, b) => {
+            let farkA = a.gun - bugunGunuG; if (farkA < 0) farkA += buAyKacGunG;
+            let farkB = b.gun - bugunGunuG; if (farkB < 0) farkB += buAyKacGunG;
+            return farkA - farkB;
+        });
+        siraliGelirler.forEach(g => {
+            const kategoriMetniG = (g.tur && g.tur !== "-" && !g.kalem.startsWith(g.tur))
+                ? `<span style="opacity:0.85; font-weight:500;">${g.tur}</span>&nbsp;-&nbsp;` : "";
+            const badgeG = `<button onclick="this.style.pointerEvents='none'; loadSabitlerAndShow(event,'section-sabit-onayla', 'so-kural', 'Bekleyen İşlemi Onayla').then(() => { const m=document.getElementById('action-modal'); const b=document.getElementById('fab-btn'); if(!m.classList.contains('active')) { m.classList.add('active'); b.classList.add('open'); document.body.classList.add('modal-open'); } this.style.pointerEvents='auto'; }); event.stopPropagation();" style="border:none; cursor:pointer; min-width:64px; height:22px; font-size:9px; background:rgba(245, 158, 11, 0.2); color:#fbbf24; padding:0 8px; border-radius:6px; border:1px solid rgba(245, 158, 11, 0.4); font-weight:900; display:inline-flex; align-items:center; justify-content:center; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">ONAYLA</button>`;
+            let geriSayimBadgeG = "";
+            let rowStyleEkG = "";
+            if (g.gecikmisMi === true) {
+                geriSayimBadgeG = `<span style="font-size:9px; background:rgba(244, 63, 94, 0.2); color:var(--rose); padding:2px 6px; border-radius:4px; font-weight:800; border:1px solid rgba(244, 63, 94, 0.5); margin-left:6px;"><i class="fas fa-exclamation-circle" style="margin-right:3px;"></i>GECİKMİŞ</span>`;
+                rowStyleEkG = `border-color: rgba(244, 63, 94, 0.6); background: rgba(244, 63, 94, 0.08);`;
+            } else {
+                let farkG = g.gun - bugunGunuG; if (farkG < 0) farkG += buAyKacGunG;
+                if (farkG === 0) {
+                    geriSayimBadgeG = `<span style="font-size:9px; background:rgba(244, 63, 94, 0.15); color:var(--rose); padding:2px 6px; border-radius:4px; font-weight:800; border:1px solid rgba(244, 63, 94, 0.3); margin-left:6px;"><i class="fas fa-exclamation-triangle" style="margin-right:3px;"></i>BUGÜN</span>`;
+                    rowStyleEkG = `border-color: rgba(244, 63, 94, 0.6); animation: sirenPulse 1.2s infinite;`;
+                } else if (farkG === 1) {
+                    geriSayimBadgeG = `<span style="font-size:9px; background:rgba(245, 158, 11, 0.15); color:var(--amber); padding:2px 6px; border-radius:4px; font-weight:800; border:1px solid rgba(245, 158, 11, 0.3); margin-left:6px;"><i class="fas fa-clock" style="margin-right:3px;"></i>YARIN</span>`;
+                    rowStyleEkG = `background: rgba(245, 158, 11, 0.08); border-color: rgba(245, 158, 11, 0.3);`;
+                } else {
+                    geriSayimBadgeG = `<span style="font-size:9px; background:rgba(255, 255, 255, 0.05); color:var(--text-muted); padding:2px 6px; border-radius:4px; font-weight:700; border:1px solid rgba(255, 255, 255, 0.1); margin-left:6px;">${farkG} GÜN KALDI</span>`;
+                    rowStyleEkG = `background: rgba(16, 185, 129, 0.03); border-color: rgba(16, 185, 129, 0.15);`;
+                }
+            }
+            gHtml += `
+            <div class="t-row" style="padding: 14px 12px; border-radius: 12px; margin-bottom: 8px; border: 1px dashed; align-items: center; transition: 0.3s; ${rowStyleEkG}">
+                <div class="t-details" style="flex: 1; display: flex; flex-direction: column; gap: 7px;">
+                    <div style="font-size: 14px; color: #fff; font-weight:700; line-height:1.2; word-break: break-word;">
+                        ${kategoriMetniG}${g.kalem}
+                    </div>
+                    <div style="display: flex; align-items: center; flex-wrap: wrap;">
+                        ${badgeG}${geriSayimBadgeG}
+                    </div>
+                    <div style="font-size: 10px; color:rgba(255,255,255,0.4); font-weight:500;">
+                        Ayın ${g.gun}. Günü • ${g.yontem}
+                    </div>
+                </div>
+                <div style="font-size: 16px; font-weight: 800; margin-left:10px; flex-shrink: 0; color: var(--emerald);">
+                    ${formatTL(g.tutar)}
+                </div>
+            </div>`;
+        });
+        gHtml += `
+        <div class="t-row" style="border-top: 1px dashed rgba(255,255,255,0.2); margin-top: 10px; padding-top: 12px; padding-right: 4px; display:flex; justify-content:flex-end; align-items:center;">
+            <div style="font-weight: 800; text-align: right; color: var(--text-muted); margin-right:10px; font-size:13px;">7 Günlük Toplam:</div>
+            <div style="font-size: 18px; font-weight: 900; color: var(--emerald);">${formatTL(data.yaklasanGelirlerToplam)}</div>
+        </div>`;
+        gListe.innerHTML = gHtml;
+    } else {
+        gListe.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size: 14px; padding: 10px 0;"><i class="fas fa-check-circle" style="color:var(--emerald); font-size:24px; display:block; margin-bottom:10px;"></i>Önümüzdeki 7 gün için bekleyen gelir yok.</div>`;
+    }
+}                
+            const yListe = document.getElementById('yaklasan-listesi');
         if (data.yaklasanOdemeler.length > 0) {
             let yHtml = "";
             
