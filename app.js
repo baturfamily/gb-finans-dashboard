@@ -2274,6 +2274,7 @@ renderTarihceMiniGrafik(data.tarihce || []);
             if (heroHarcamaYuzde) heroHarcamaYuzde.innerText = '%' + harcamaYuzde;
             const heroKalanRef = document.getElementById('hero-kalan-ref');
             if (heroKalanRef) {
+                var netKalan = data.backendNetNakit || 0;
     heroKalanRef.innerHTML = formatTL(netKalan);
     heroKalanRef.style.color = netKalan >= 0 ? 'var(--emerald)' : 'var(--rose)';
 }
