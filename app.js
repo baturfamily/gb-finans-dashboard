@@ -1998,21 +1998,28 @@ function submitButceLimiti() {
         customOptions.className = 'custom-options custom-scrollbar';
         
         Array.from(selectElement.options).forEach((opt, index) => {
-            if(opt.value === "") return;
-            const optionDiv = document.createElement('div');
-            optionDiv.className = 'custom-option text-truncate' + (opt.selected ? ' selected' : '');
-            optionDiv.innerHTML = opt.text;
-            optionDiv.addEventListener('click', function(e) {
-                e.stopPropagation();
-                selectElement.selectedIndex = index;
-                selectElement.dispatchEvent(new Event('change'));
-                trigger.querySelector('span').innerText = opt.text;
-                wrapper.classList.remove('open');
-                Array.from(customOptions.children).forEach(c => c.classList.remove('selected'));
-                this.classList.add('selected');
-            });
-            customOptions.appendChild(optionDiv);
-        });
+    if(opt.value === "" && !opt.disabled) return;
+    if(opt.disabled && opt.value === "") {
+        const groupDiv = document.createElement('div');
+        groupDiv.style.cssText = 'font-size:10px; font-weight:800; color:rgba(255,255,255,0.3); padding:10px 16px 4px; pointer-events:none; user-select:none;';
+        groupDiv.innerHTML = opt.text;
+        customOptions.appendChild(groupDiv);
+        return;
+    }
+    const optionDiv = document.createElement('div');
+    optionDiv.className = 'custom-option text-truncate' + (opt.selected ? ' selected' : '');
+    optionDiv.innerHTML = opt.text;
+    optionDiv.addEventListener('click', function(e) {
+        e.stopPropagation();
+        selectElement.selectedIndex = index;
+        selectElement.dispatchEvent(new Event('change'));
+        trigger.querySelector('span').innerText = opt.text;
+        wrapper.classList.remove('open');
+        Array.from(customOptions.children).forEach(c => c.classList.remove('selected'));
+        this.classList.add('selected');
+    });
+    customOptions.appendChild(optionDiv);
+});
         
         trigger.addEventListener('click', function(e) {
             e.stopPropagation();
