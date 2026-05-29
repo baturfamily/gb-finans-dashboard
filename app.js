@@ -44,12 +44,12 @@ function heroKartGuncelle(data, donem, gelecekYuk) {
     var el = function(id) { return document.getElementById(id); };
     if (el('hero-p-cur'))       el('hero-p-cur').textContent   = donem.cur;
     if (el('hero-p-nxt'))       el('hero-p-nxt').textContent   = donem.next;
-    if (el('hero-result-meta')) { el('hero-result-meta').textContent = donem.next + metaText; el('hero-result-meta').style.color = renk; }
+    if (el('hero-result-meta')) { el('hero-result-meta').textContent = 'Gelecek Dönem (' + donem.next + ')' + metaText; el('hero-result-meta').style.color = renk; }
     if (el('hero-net-kalan'))   { el('hero-net-kalan').innerHTML = formatTL(fark); el('hero-net-kalan').style.color = renk; }
-    if (el('hero-yuk-label'))   el('hero-yuk-label').textContent  = donem.next + ' Ödeme Yükü';
+    if (el('hero-yuk-label'))   el('hero-yuk-label').textContent  = 'Gelecek Dönem (' + donem.next + ') Ödeme Yükü';
     if (el('hero-yuk-bar'))     el('hero-yuk-bar').style.width    = '100%';
     if (el('hero-yuk-val'))     el('hero-yuk-val').innerHTML      = formatTL(gelecekYuk);
-    if (el('hero-kalan-label')) el('hero-kalan-label').textContent = donem.cur + ' Nakit Kalan';
+    if (el('hero-kalan-label')) el('hero-kalan-label').textContent = 'Bu Dönem (' + donem.cur + ') Nakit Kalan';
     if (el('hero-kalan-bar'))   { el('hero-kalan-bar').style.width = kalPct + '%'; el('hero-kalan-bar').style.background = kalBarBg; }
     if (el('hero-kalan-val'))   { el('hero-kalan-val').innerHTML = formatTL(kalan); el('hero-kalan-val').style.color = kalRenk; }
     if (el('hero-neg-badge'))   el('hero-neg-badge').style.display = eksiBakiye ? 'block' : 'none';
