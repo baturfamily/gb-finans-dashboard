@@ -1,4 +1,76 @@
 const API_URL = (typeof CONFIG !== 'undefined') ? CONFIG.API_URL : "";
+
+function donemLabelHesapla() {
+    var AYLAR = ["Oca","Şub","Mar","Nis","May","Haz","Tem","Ağu","Eyl","Eki","Kas","Ara"];
+    var b = new Date(), gun = b.getDate(), ay = b.getMonth();
+    var csA, nsA;
+    if (gun >= 15) {
+        csA = ay; nsA = ay + 1; if (nsA > 11) nsA = 0;
+    } else {
+        csA = ay - 1; if (csA < 0) csA = 11; nsA = ay;
+    }
+    var ceA = (csA + 1) > 11 ? 0 : csA + 1;
+    var neA = (nsA + 1) > 11 ? 0 : nsA + 1;
+    return {
+        cur:  "15 " + AYLAR[csA] + " – 14 " + AYLAR[ceA],
+        next: "15 " + AYLAR[nsA] + " – 14 " + AYLAR[neA]
+    };
+}
+
+function hesaplaGelecekYukHero(data) {
+    var kartEkstre = 0;
+    (data.kartlarDetayli || []).forEach(function(k) {
+        kartEkstre += (k.donemIci || 0) + (k.devreden || 0) + (k.tahminiFaiz || 0);
+    });
+    var borcTaksit = 0, sabitNakit = 0;
+    (data.tumSabitlerListe || []).forEach(function(s) {
+        if (s.odendiMi) return;
+        if (s.yon === 'Borç Ödemesi') borcTaksit += (s.tutar || 0);
+        else if (s.yon === 'Gider') sabitNakit += (s.tutar || 0);
+    });
+    return kartEkstre + borcTaksit + sabitNakit;
+}
+
+function heroKartGuncelle(data, donem, gelecekYuk) {
+    var kalan = data.backendNetNakit || 0;
+    var eksiBakiye = kalan < 0;
+    var fazlan = kalan >= gelecekYuk && gelecekYuk > 0;
+    var fark = Math.abs(gelecekYuk - kalan);
+    var ref = Math.max(Math.abs(kalan), gelecekYuk) || 1;
+    var kalPct = eksiBakiye ? 0 : Math.round((kalan / ref) * 100);
+
+    var renk, kalBarBg, kalRenk;
+    if (fazlan) {
+        renk = 'var(--emerald)'; kalBarBg = 'rgba(16,185,129,0.5)'; kalRenk = '#34d399';
+    } else if (eksiBakiye) {
+        renk = '#c084fc';
+        kalBarBg = 'repeating-linear-gradient(90deg,rgba(168,85,247,0.4) 0px,rgba(168,85,247,0.4) 4px,transparent 4px,transparent 8px)';
+        kalRenk = '#c084fc';
+    } else if (fark > 20000) {
+        renk = 'var(--rose)'; kalBarBg = 'rgba(99,102,241,0.5)'; kalRenk = '#fbbf24';
+    } else {
+        renk = 'var(--amber)'; kalBarBg = 'rgba(99,102,241,0.5)'; kalRenk = '#fbbf24';
+    }
+
+    var metaText = fazlan ? ' Nakit Fazlan' : ' Nakit Açık';
+    var gapText  = (fazlan ? 'Nakit Fazlan' : 'Nakit Açık') + ' (' + donem.next + ' Dönemi)';
+
+    var el = function(id) { return document.getElementById(id); };
+    if (el('hero-p-cur'))       el('hero-p-cur').textContent   = donem.cur;
+    if (el('hero-p-nxt'))       el('hero-p-nxt').textContent   = donem.next;
+    if (el('hero-result-meta')) { el('hero-result-meta').textContent = donem.next + metaText; el('hero-result-meta').style.color = renk; }
+    if (el('hero-net-kalan'))   { el('hero-net-kalan').innerHTML = formatTL(fark); el('hero-net-kalan').style.color = renk; }
+    if (el('hero-yuk-label'))   el('hero-yuk-label').textContent  = donem.next + ' Ödeme Yükü';
+    if (el('hero-yuk-bar'))     el('hero-yuk-bar').style.width    = '100%';
+    if (el('hero-yuk-val'))     el('hero-yuk-val').innerHTML      = formatTL(gelecekYuk);
+    if (el('hero-kalan-label')) el('hero-kalan-label').textContent = donem.cur + ' Nakit Kalan';
+    if (el('hero-kalan-bar'))   { el('hero-kalan-bar').style.width = kalPct + '%'; el('hero-kalan-bar').style.background = kalBarBg; }
+    if (el('hero-kalan-val'))   { el('hero-kalan-val').innerHTML = formatTL(kalan); el('hero-kalan-val').style.color = kalRenk; }
+    if (el('hero-neg-badge'))   el('hero-neg-badge').style.display = eksiBakiye ? 'block' : 'none';
+    if (el('hero-gap-label'))   { el('hero-gap-label').textContent = gapText; el('hero-gap-label').style.color = renk; }
+    if (el('hero-gap-val'))     { el('hero-gap-val').innerHTML = formatTL(fark); el('hero-gap-val').style.color = renk; }
+}
+
         let expenseChartInstance = null; window.tarihceData = []; window.currentStats = {};
         let gelecekEkstreSecim = {};
         window.hesapOptions = ""; window.vadesizOptions = ""; window.hesapTurleri = { "Nakit": "Nakit" }; 
@@ -2127,6 +2199,9 @@ function tutarFormatla(input) {
         // -----------------------------------------------
 
         window.currentStats = data;
+            var _heroDonem = donemLabelHesapla();
+var _heroGelecekYuk = hesaplaGelecekYukHero(data);
+heroKartGuncelle(data, _heroDonem, _heroGelecekYuk);
             window._gramKur = Number(data.gramAltinKuru) || 0;
         window._gramKur = data.gramAltinKuru ? Number(data.gramAltinKuru) : 0;
             console.log("gramAltinKuru:", data.gramAltinKuru, "| _gramKur:", window._gramKur);
@@ -2153,14 +2228,6 @@ renderTarihceMiniGrafik(data.tarihce || []);
         let guncelKur = parseSaha(data.usdRate);
         if (kurEl && guncelKur > 0) {
             kurEl.innerText = `(Güncel Kur: ₺${guncelKur.toLocaleString('tr-TR', {minimumFractionDigits:2, maximumFractionDigits:2})})`;
-        }
-
-        // HERO: Bu Ay Kalan (birincil metrik)
-        const netKalan = data.backendNetNakit || 0;
-        const heroEl = document.getElementById('hero-net-kalan');
-        if (heroEl) {
-            heroEl.innerHTML = formatTL(netKalan);
-            heroEl.style.color = netKalan >= 0 ? 'var(--emerald)' : 'var(--rose)';
         }
 
         // HERO: Tüketim barı
