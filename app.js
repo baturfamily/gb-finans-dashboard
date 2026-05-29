@@ -1097,7 +1097,7 @@ async function loadSabitlerAndShow(ev, sectionId, selectId, title, yon) {
                         toggleParcaliOdeme(); refreshCustomSelect(document.getElementById('so-odeme-sekli'));
                         if(document.querySelectorAll('#so-main-segment .segment-btn').length > 0) {
                             const hedefYon = yon || 'Gider';
-const hedefBtn = [...document.querySelectorAll('#so-main-segment .segment-btn')].find(b => b.textContent.trim() === hedefYon) || document.querySelectorAll('#so-main-segment .segment-btn')[0];
+const hedefBtn = [...document.querySelectorAll('#so-main-segment .segment-btn')].find(b => b.textContent.trim().includes(hedefYon)) || document.querySelectorAll('#so-main-segment .segment-btn')[0];
 setSabitMainFilter(hedefYon, hedefBtn);
                         }
                     } else {
