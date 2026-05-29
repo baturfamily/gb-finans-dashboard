@@ -51,12 +51,41 @@
         <section id="section-ozet" class="tab-section active">
             <div class="card main-stats accordion" id="acc-net-servet">
     <div class="accordion-header" onclick="toggleAccordion(this.parentElement)" style="flex-direction: column; align-items: flex-start; gap: 0; padding-bottom: 0;">
-        <div style="width:100%; display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
-            <div style="font-size: 11px; color: rgba(255,255,255,0.4); font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Bu Ay Kalan</div>
-            <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        <div style="width:100%; display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+    <div style="display:flex; align-items:center; gap:6px; flex-wrap:nowrap; overflow:hidden;">
+        <span id="hero-p-cur" style="font-size:11px; font-weight:600; padding:3px 9px; border-radius:7px; background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.38); border:1px solid rgba(255,255,255,0.07); white-space:nowrap;"></span>
+        <span style="color:rgba(255,255,255,0.2); font-size:13px; flex-shrink:0;">→</span>
+        <span id="hero-p-nxt" style="font-size:11px; font-weight:600; padding:3px 9px; border-radius:7px; background:rgba(99,102,241,0.14); color:#a5b4fc; border:1px solid rgba(99,102,241,0.28); white-space:nowrap;"></span>
+    </div>
+    <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+</div>
+<div id="hero-result-meta" style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.9px; margin-bottom:3px;"></div>
+<div class="amount-large tabular-nums" id="hero-net-kalan" style="font-size:46px; letter-spacing:-2px; line-height:1;">₺0</div>
+<div id="hero-compare-section" style="margin-top:16px; margin-bottom:4px;">
+    <div style="margin-bottom:8px;">
+        <div id="hero-yuk-label" style="font-size:10px; font-weight:600; color:rgba(255,255,255,0.35); margin-bottom:4px;"></div>
+        <div style="display:flex; align-items:center; gap:10px;">
+            <div style="flex:1; height:7px; background:rgba(255,255,255,0.06); border-radius:4px; overflow:hidden;">
+                <div id="hero-yuk-bar" style="height:7px; border-radius:4px; background:rgba(244,63,94,0.55); width:0%; transition:width 0.8s ease;"></div>
+            </div>
+            <span id="hero-yuk-val" style="font-size:12px; font-weight:700; font-variant-numeric:tabular-nums; white-space:nowrap; min-width:72px; text-align:right; color:#f87171;"></span>
         </div>
-        <div class="amount-large tabular-nums" id="hero-net-kalan" style="font-size: 46px; letter-spacing: -2px; color: var(--emerald); line-height: 1;">₺0</div>
-        <div id="trend-net-kalan-hero" class="trend-box tabular-nums" style="font-size: 10px; margin-top: 8px; display: inline-block;"></div>
+    </div>
+    <div style="margin-bottom:4px;">
+        <div id="hero-kalan-label" style="font-size:10px; font-weight:600; color:rgba(255,255,255,0.35); margin-bottom:4px;"></div>
+        <div style="display:flex; align-items:center; gap:10px;">
+            <div style="flex:1; height:7px; background:rgba(255,255,255,0.06); border-radius:4px; overflow:hidden;">
+                <div id="hero-kalan-bar" style="height:7px; border-radius:4px; width:0%; transition:width 0.8s ease;"></div>
+            </div>
+            <span id="hero-kalan-val" style="font-size:12px; font-weight:700; font-variant-numeric:tabular-nums; white-space:nowrap; min-width:72px; text-align:right;"></span>
+        </div>
+        <div id="hero-neg-badge" style="display:none; margin-top:5px; background:rgba(168,85,247,0.1); border:1px solid rgba(168,85,247,0.25); border-radius:5px; padding:3px 8px; font-size:10px; font-weight:700; color:#c084fc;">Bu dönem eksi bakiyede — açık yükten büyük</div>
+    </div>
+    <div style="display:flex; align-items:center; gap:10px; padding:9px 0 4px; border-top:1px dashed rgba(255,255,255,0.07); margin-top:6px;">
+        <span id="hero-gap-label" style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.4px; flex:1; line-height:1.4;"></span>
+        <span id="hero-gap-val" style="font-size:12px; font-weight:700; font-variant-numeric:tabular-nums; white-space:nowrap; min-width:72px; text-align:right;"></span>
+    </div>
+</div>
         <div style="margin-top: 8px; display: flex; justify-content: space-between; align-items: center; gap: 6px;">
             <span style="font-size: 10px; color: rgba(255,255,255,0.2); font-weight: 600;">Net Varlık</span>
             <div style="display:flex; align-items:center; gap:4px;">
