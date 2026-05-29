@@ -2001,8 +2001,10 @@ function submitButceLimiti() {
     if(opt.value === "" && !opt.disabled) return;
     if(opt.disabled && opt.value === "") {
         const groupDiv = document.createElement('div');
-        groupDiv.style.cssText = 'font-size:10px; font-weight:800; color:rgba(255,255,255,0.3); padding:10px 16px 4px; pointer-events:none; user-select:none;';
-        groupDiv.innerHTML = opt.text;
+        const isBanka = opt.text.includes('Banka');
+const renk = isBanka ? '#10b981' : '#f59e0b';
+groupDiv.style.cssText = `font-size:10px; font-weight:800; color:${renk}; padding:10px 16px 4px; pointer-events:none; user-select:none; border-top: ${customOptions.children.length > 0 ? '1px solid rgba(255,255,255,0.05)' : 'none'}; margin-top:${customOptions.children.length > 0 ? '4px' : '0'};`;
+groupDiv.innerHTML = '● ' + opt.text;
         customOptions.appendChild(groupDiv);
         return;
     }
