@@ -22,46 +22,25 @@ function heroKartGuncelle(data, donem, gelecekYuk) {
     var durum = kalan - gelecekYuk;
     var poz = durum >= 0;
     var sonucRenk = poz ? 'var(--emerald)' : 'var(--rose)';
-    var sonucRenkSoluk = poz ? 'rgba(52,211,153,0.4)' : 'rgba(248,113,113,0.4)';
+    var sonucRenkSoluk = poz ? 'rgba(52,211,153,0.45)' : 'rgba(248,113,113,0.45)';
+    var kalanRenk = kalan > 0 ? 'var(--emerald)' : 'var(--rose)';
 
     var el = function(id) { return document.getElementById(id); };
 
     if (el('hero-p-cur')) el('hero-p-cur').textContent = donem.cur;
     if (el('hero-p-nxt')) el('hero-p-nxt').textContent = donem.next;
 
-    if (el('hero-result-meta')) {
-        el('hero-result-meta').textContent = 'Sonraki Dönem Nakit Durumu';
-        el('hero-result-meta').style.color = sonucRenk;
-    }
-    if (el('hero-result-meta-date')) {
-        el('hero-result-meta-date').textContent = donem.next;
-        el('hero-result-meta-date').style.color = sonucRenkSoluk;
-    }
-    if (el('hero-net-kalan')) {
-        el('hero-net-kalan').innerHTML = (durum < 0 ? '-' : '') + formatTL(Math.abs(durum));
-        el('hero-net-kalan').style.color = sonucRenk;
-    }
-
     if (el('hero-kalan-label')) el('hero-kalan-label').textContent = 'Bu Dönem Nakit Kalan';
     if (el('hero-kalan-date'))  el('hero-kalan-date').textContent  = donem.cur;
-    if (el('hero-kalan-val'))   el('hero-kalan-val').innerHTML     = formatTL(kalan);
+    if (el('hero-kalan-val'))   { el('hero-kalan-val').innerHTML = formatTL(kalan); el('hero-kalan-val').style.color = kalanRenk; }
 
     if (el('hero-yuk-label')) el('hero-yuk-label').textContent = 'Sonraki Dönem Ödeme Yükü';
     if (el('hero-yuk-date'))  el('hero-yuk-date').textContent  = donem.next;
     if (el('hero-yuk-val'))   el('hero-yuk-val').innerHTML     = formatTL(gelecekYuk);
 
-    if (el('hero-gap-label')) {
-        el('hero-gap-label').textContent = 'Sonraki Dönem Nakit Durumu';
-        el('hero-gap-label').style.color = sonucRenk;
-    }
-    if (el('hero-gap-date')) {
-        el('hero-gap-date').textContent = donem.next;
-        el('hero-gap-date').style.color = sonucRenkSoluk;
-    }
-    if (el('hero-gap-val')) {
-        el('hero-gap-val').innerHTML = (durum < 0 ? '-' : '') + formatTL(Math.abs(durum));
-        el('hero-gap-val').style.color = sonucRenk;
-    }
+    if (el('hero-gap-label')) { el('hero-gap-label').textContent = 'Sonraki Dönem Nakit Durumu'; el('hero-gap-label').style.color = sonucRenk; }
+    if (el('hero-gap-date'))  { el('hero-gap-date').textContent  = donem.next; el('hero-gap-date').style.color = sonucRenkSoluk; }
+    if (el('hero-gap-val'))   { el('hero-gap-val').innerHTML = (durum < 0 ? '-' : '') + formatTL(Math.abs(durum)); el('hero-gap-val').style.color = sonucRenk; }
 
     var baslikEl = document.getElementById('nakit-akisi-baslik');
     var altBaslikEl = document.getElementById('nakit-akisi-alt-baslik');
