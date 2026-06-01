@@ -3346,7 +3346,7 @@ const badge = isOtomatik
                             
                             <div class="t-details" style="flex: 1; z-index: 1; position: relative;">
                                 <div class="t-name" style="font-size: 13px; color: #cbd5e1;">
-                                    <span style="color: var(--text-muted); margin-right: 4px; font-weight: 400;">${index + 1}.</span> ${kategoriAdi}
+                            <span style=\"color: var(--text-muted); margin-right: 4px; font-weight: 400;\">${kategoriAdi === 'Diğer' ? '' : (index + 1) + '.'}</span> ${kategoriAdi}
                                 </div>
                             </div>
                             <div class="t-amt" style="text-align: right; z-index: 1; position: relative;">
