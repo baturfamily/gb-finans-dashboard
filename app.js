@@ -2426,7 +2426,10 @@ if (data.tarihce && data.tarihce.length > 0) {
         let fHtml = "";
         if (data.faizDetaylari && data.faizDetaylari.length > 0) {
             data.faizDetaylari.forEach(f => {
-                fHtml += `<div class="list-row"><div class="list-label"><span style="background: rgba(255,255,255,0.05); padding: 4px 8px; border-radius: 6px; font-size: 10px; margin-right: 8px; white-space: nowrap;">${f.tur}</span> ${f.banka}</div><div class="list-value text-red">${formatTL(f.aylik)}</div></div>`;
+                const badgeStyle = f.tur === 'KMH'
+    ? 'background:rgba(245,158,11,0.15); color:#fbbf24; border:1px solid rgba(245,158,11,0.25);'
+    : 'background:rgba(99,102,241,0.15); color:#a5b4fc; border:1px solid rgba(99,102,241,0.25);';
+fHtml += `<div class="list-row"><div class="list-label"><span style="${badgeStyle} padding: 2px 6px; border-radius: 5px; font-size: 9px; font-weight:700; margin-right: 8px; white-space: nowrap;">${f.tur}</span> ${f.banka}</div><div class="list-value text-red">${formatTL(f.aylik)}</div></div>`;
             });
         } else {
             fHtml = `<div class="list-row" style="border:none; padding:8px 0;"><span class="list-label" style="font-size:13px; color:var(--text-muted);">Bu ay gerçekleşen faiz yok.</span></div>`;
