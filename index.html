@@ -217,25 +217,24 @@
             </div>
         <div style="font-size:11px; color:rgba(255,255,255,0.6); line-height:1.6; padding: 6px 4px 4px;">Bu dönem tüm borç, kredi ve kredi kartı ekstresi ödemelerinden sonra kasanda kalan para. <strong style="color:rgba(255,255,255,0.5); font-weight:700;">Dikkat:</strong> Bu ayki kredi kartı harcamaların bu ayın kalan tutarını değil gelecek ayın kalan tutarını etkiler.</div>
 
-                <div style="background: rgba(16, 185, 129, 0.1); padding: 16px 14px; border-radius: 12px; margin-top: 15px; border: 1px dashed rgba(16, 185, 129, 0.3);" id="kutu-net-nakit">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <span style="font-size:14px; color:#fff; font-weight:700;">Net Kalan (Cepteki Para)</span>
-                <div style="text-align:right; display:flex; flex-direction:column; align-items:flex-end;">
-                    <span id="val-net-nakit" class="tabular-nums" style="font-size:19px; font-weight:800; color:var(--emerald);">₺0,00</span>
-                    <div class="trend-box tabular-nums" id="trend-net-kalan" style="font-size:11px; margin-top:4px; display:inline-block;"></div>
+                <div id="kutu-net-nakit" style="margin-top: 15px;">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px;">
+                        <div style="display:flex; flex-direction:column; gap:3px;">
+                            <span style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:rgba(255,255,255,0.35);">Net Kalan</span>
+                            <span id="val-net-nakit" class="tabular-nums" style="font-size:32px; font-weight:800; letter-spacing:-1.5px; color:var(--emerald); line-height:1;">₺0</span>
+                            <div class="trend-box tabular-nums" id="trend-net-kalan" style="font-size:10px; margin-top:2px; display:inline-block;"></div>
+                        </div>
+                        <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px; padding-top:2px;">
+                            <span style="font-size:10px; color:rgba(255,255,255,0.3); font-weight:700; text-transform:uppercase; letter-spacing:0.5px;">Gelir Tüketimi</span>
+                            <span id="tuketim-yuzdesi" style="font-size:22px; font-weight:800; color:var(--emerald); letter-spacing:-1px;">%0</span>
+                        </div>
+                    </div>
+                    <div id="tuketim-bari-kapsayici" style="display:none;">
+                        <div style="height:7px; background:rgba(255,255,255,0.06); border-radius:4px; overflow:hidden;">
+                            <div id="tuketim-bari-doluluk" class="progress-bar" style="width:0%; height:7px; background:var(--emerald); border-radius:4px; transition:width 1s cubic-bezier(0.1,0.5,0.1,1), background-color 0.5s ease;"></div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            
-                        <div id="tuketim-bari-kapsayici" style="margin-top: 16px; padding-top: 12px; border-top: 1px dashed rgba(255,255,255,0.05); display: none;">
-                <div style="display: flex; justify-content: space-between; font-size: 10px; color: var(--text-muted); margin-bottom: 6px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
-                    <span>Gelir Tüketimi</span>
-                    <span id="tuketim-yuzdesi">%0</span>
-                </div>
-                <div class="progress-container" style="height: 6px; background: rgba(0,0,0,0.4); border-radius: 6px;">
-                    <div id="tuketim-bari-doluluk" class="progress-bar" style="width: 0%; background: var(--emerald); border-radius: 6px; transition: width 1s cubic-bezier(0.1, 0.5, 0.1, 1), background-color 0.5s ease;"></div>
-                </div>
-            </div>
-        </div>
         </div>
     </div>
 
