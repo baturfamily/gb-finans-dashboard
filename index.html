@@ -132,6 +132,21 @@
                         <span id="header-toplam-borc" class="tabular-nums" style="font-size:15px; font-weight:800; color:var(--rose); flex-shrink:0;">₺0</span>
                         <svg id="sub-icon-vb-borc" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted); transition:transform 0.3s ease; flex-shrink:0;"><polyline points="6 9 12 15 18 9"></polyline></svg>
                     </div>
+                    <div class="sensitive-data" style="display:flex; gap:0; border-bottom:1px solid rgba(255,255,255,0.06);">
+                        <div style="flex:1; padding:10px 0 10px 0; border-right:1px solid rgba(255,255,255,0.06);">
+                            <div style="font-size:10px; color:rgba(255,255,255,0.35); font-weight:600; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px; display:flex; align-items:center; gap:4px;">
+                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--rose);"><path d="M12 2c0 0-5 6.5-5 11a5 5 0 0 0 10 0c0-4.5-5-11-5-11Z"/><path d="M12 13a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"/></svg>
+                                Can Yakan
+                            </div>
+                            <span id="val-borc-acil" class="tabular-nums" style="font-size:14px; font-weight:800; color:var(--rose);">₺0</span>
+                            <div class="trend-box tabular-nums" id="trend-can-yakan" style="font-size:9px; margin-top:2px;"></div>
+                        </div>
+                        <div style="flex:1; padding:10px 0 10px 12px;">
+                            <div style="font-size:10px; color:rgba(255,255,255,0.35); font-weight:600; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">Planlı</div>
+                            <span id="val-borc-planli" class="tabular-nums" style="font-size:14px; font-weight:800; color:#cbd5e1;">₺0</span>
+                            <div class="trend-box tabular-nums" id="trend-planli" style="font-size:9px; margin-top:2px;"></div>
+                        </div>
+                    </div>
                     <div class="sub-accordion-content" id="sub-content-vb-borc">
                         <div style="padding-bottom: 8px;">
 
@@ -289,20 +304,6 @@
 
                 </div>
             </div>
-
-        <!-- KART: Finansal Özet -->
-        <div class="card accordion" id="acc-finansal-ozet">
-            <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
-                <h3><svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg> Finansal Özet</h3>
-                <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </div>
-            <div class="accordion-content">
-                <div class="summary-grid">
-                    <div class="summary-item br-right br-bottom"><span class="summary-label">Kasa</span><span class="summary-val text-green tabular-nums" id="val-kasa">₺ 0,00</span><div class="trend-box tabular-nums" id="trend-kasa"></div></div>
-                    <div class="summary-item br-bottom"><span class="summary-label">Genel Borç</span><span class="summary-val tabular-nums" id="val-borc">₺ 0,00</span><div class="trend-box tabular-nums" id="trend-borc"></div></div>
-                    <div class="summary-item br-right"><span class="summary-label text-rose"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:5px;"><path d="M12 2c0 0-5 6.5-5 11a5 5 0 0 0 10 0c0-4.5-5-11-5-11Z"/><path d="M12 13a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"/></svg> Can Yakan</span><span class="summary-val text-red tabular-nums" id="val-borc-acil">₺ 0,00</span><div class="trend-box tabular-nums" id="trend-can-yakan"></div></div>
-                    <div class="summary-item"><span class="summary-label">Planlı</span><span class="summary-val tabular-nums" id="val-borc-planli" style="color:#cbd5e1;">₺ 0,00</span><div class="trend-box tabular-nums" id="trend-planli"></div></div>
-                </div>
             </div>
         </div>
 
