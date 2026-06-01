@@ -105,7 +105,88 @@
         </div>
     </div>
 
-    <div class="accordion-content">
+    <div class="accordion-content" style="padding-top: 4px;">
+
+                <!-- VARLIKLAR BÖLÜMÜ -->
+                <div class="sensitive-data">
+                    <div onclick="toggleSubAccordion('vb-varlik')" style="display:flex; align-items:center; gap:12px; padding:14px 0; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.06);">
+                        <div style="width:38px; height:38px; border-radius:11px; background:linear-gradient(135deg,rgba(16,185,129,0.25),rgba(16,185,129,0.08)); display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 2px 8px rgba(16,185,129,0.15);">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--emerald);"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3H8l-2 4h12l-2-4z"/></svg>
+                        </div>
+                        <span style="flex:1; font-size:13px; font-weight:700; color:var(--emerald); text-transform:uppercase; letter-spacing:0.4px; white-space:nowrap; overflow:hidden;">Toplam Varlık</span>
+                        <span id="header-toplam-varlik" class="tabular-nums" style="font-size:15px; font-weight:800; color:var(--emerald); flex-shrink:0;">₺0</span>
+                        <svg id="sub-icon-vb-varlik" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted); transition:transform 0.3s ease; flex-shrink:0;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </div>
+                    <div class="sub-accordion-content" id="sub-content-vb-varlik">
+                        <div id="varlik-listesi" style="padding: 8px 0 4px 0;"></div>
+                    </div>
+                </div>
+
+                <!-- BORÇLAR BÖLÜMÜ -->
+                <div class="sensitive-data">
+                    <div onclick="toggleSubAccordion('vb-borc')" style="display:flex; align-items:center; gap:12px; padding:14px 0; cursor:pointer;">
+                        <div style="width:38px; height:38px; border-radius:11px; background:linear-gradient(135deg,rgba(244,63,94,0.25),rgba(244,63,94,0.08)); display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 2px 8px rgba(244,63,94,0.15);">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--rose);"><path d="M12 2c0 0-5 6.5-5 11a5 5 0 0 0 10 0c0-4.5-5-11-5-11Z"/><path d="M12 13a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"/></svg>
+                        </div>
+                        <span style="flex:1; font-size:13px; font-weight:700; color:var(--rose); text-transform:uppercase; letter-spacing:0.4px; white-space:nowrap; overflow:hidden;">Toplam Borç</span>
+                        <span id="header-toplam-borc" class="tabular-nums" style="font-size:15px; font-weight:800; color:var(--rose); flex-shrink:0;">₺0</span>
+                        <svg id="sub-icon-vb-borc" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted); transition:transform 0.3s ease; flex-shrink:0;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </div>
+                    <div class="sub-accordion-content" id="sub-content-vb-borc">
+                        <div style="padding-bottom: 8px;">
+
+                            <!-- Kart Borçları -->
+                            <div id="borc-grup-kart" style="display:none; margin-bottom: 6px; margin-top: 4px;">
+                                <div style="display:flex; justify-content:space-between; align-items:center; padding: 10px 14px 10px 12px; border-left: 3px solid var(--rose); background:rgba(244,63,94,0.05); border-radius:0 10px 10px 0; margin-bottom:10px;">
+                                    <div style="display:flex; align-items:center; gap:8px;">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--rose);"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                                        <span style="font-size:12px; font-weight:800; color:#e2e8f0; letter-spacing:0.3px; text-transform:uppercase;">Kart Borçları</span>
+                                    </div>
+                                    <span id="borc-grup-kart-toplam" class="tabular-nums" style="font-size:14px; font-weight:800; color:var(--rose);">₺0</span>
+                                </div>
+                                <div id="borc-grup-kart-liste" style="padding: 0 4px;"></div>
+                            </div>
+
+                            <!-- Banka Kredileri -->
+                            <div id="borc-grup-kredi" style="display:none; margin-bottom: 6px; margin-top: 16px;">
+                                <div style="display:flex; justify-content:space-between; align-items:center; padding: 10px 14px 10px 12px; border-left: 3px solid var(--blue); background:rgba(59,130,246,0.05); border-radius:0 10px 10px 0; margin-bottom:10px;">
+                                    <div style="display:flex; align-items:center; gap:8px;">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--blue);"><line x1="3" y1="22" x2="21" y2="22"/><line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/><line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/><polygon points="12 2 20 7 4 7"/></svg>
+                                        <span style="font-size:12px; font-weight:800; color:#e2e8f0; letter-spacing:0.3px; text-transform:uppercase;">Banka Kredileri</span>
+                                    </div>
+                                    <span id="borc-grup-kredi-toplam" class="tabular-nums" style="font-size:14px; font-weight:800; color:var(--blue);">₺0</span>
+                                </div>
+                                <div id="borc-grup-kredi-liste" style="padding: 0 4px;"></div>
+                            </div>
+
+                            <!-- KMH -->
+                            <div id="borc-grup-kmh" style="display:none; margin-bottom: 6px; margin-top: 16px;">
+                                <div style="display:flex; justify-content:space-between; align-items:center; padding: 10px 14px 10px 12px; border-left: 3px solid var(--amber); background:rgba(245,158,11,0.05); border-radius:0 10px 10px 0; margin-bottom:10px;">
+                                    <div style="display:flex; align-items:center; gap:8px;">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--amber);"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                                        <span style="font-size:12px; font-weight:800; color:#e2e8f0; letter-spacing:0.3px; text-transform:uppercase;">KMH</span>
+                                    </div>
+                                    <span id="borc-grup-kmh-toplam" class="tabular-nums" style="font-size:14px; font-weight:800; color:var(--amber);">₺0</span>
+                                </div>
+                                <div id="borc-grup-kmh-liste" style="padding: 0 4px;"></div>
+                            </div>
+
+                            <!-- Özel Borçlar -->
+                            <div id="borc-grup-ozel" style="display:none; margin-bottom: 4px; margin-top: 16px;">
+                                <div style="display:flex; justify-content:space-between; align-items:center; padding: 10px 14px 10px 12px; border-left: 3px solid var(--rose); background:rgba(148,163,184,0.04); border-radius:0 10px 10px 0; margin-bottom:10px;">
+                                    <div style="display:flex; align-items:center; gap:8px;">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:#94a3b8;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                        <span style="font-size:12px; font-weight:800; color:#e2e8f0; letter-spacing:0.3px; text-transform:uppercase;">Özel Borçlar</span>
+                                    </div>
+                                    <span id="borc-grup-ozel-toplam" class="tabular-nums" style="font-size:14px; font-weight:800; color:var(--rose);">₺0</span>
+                                </div>
+                                <div id="borc-grup-ozel-liste" style="padding: 0 4px;"></div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
     </div>
 </div>
 
@@ -243,90 +324,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- KART: Varlık & Borç Dağılımı -->
-        <div class="card accordion" id="acc-varlik-borc">
-            <div class="accordion-header" onclick="toggleAccordion(this.parentElement)">
-                <h3><svg class="card-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Varlık & Borç Dağılımı</h3>
-                <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </div>
-            <div class="accordion-content" style="padding-top: 4px;">
-
-                <!-- VARLIKLAR BÖLÜMÜ -->
-                <div class="sensitive-data">
-                    <div onclick="toggleSubAccordion('vb-varlik')" style="display:flex; align-items:center; gap:12px; padding:14px 0; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.06);">
-                        <div style="width:38px; height:38px; border-radius:11px; background:linear-gradient(135deg,rgba(16,185,129,0.25),rgba(16,185,129,0.08)); display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 2px 8px rgba(16,185,129,0.15);">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--emerald);"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3H8l-2 4h12l-2-4z"/></svg>
-                        </div>
-                        <span style="flex:1; font-size:13px; font-weight:700; color:var(--emerald); text-transform:uppercase; letter-spacing:0.4px; white-space:nowrap; overflow:hidden;">Toplam Varlık</span>
-                        <span id="header-toplam-varlik" class="tabular-nums" style="font-size:15px; font-weight:800; color:var(--emerald); flex-shrink:0;">₺0</span>
-                        <svg id="sub-icon-vb-varlik" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted); transition:transform 0.3s ease; flex-shrink:0;"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                    </div>
-                    <div class="sub-accordion-content" id="sub-content-vb-varlik">
-                        <div id="varlik-listesi" style="padding: 8px 0 4px 0;"></div>
-                    </div>
-                </div>
-
-                <!-- BORÇLAR BÖLÜMÜ -->
-                <div class="sensitive-data">
-                    <div onclick="toggleSubAccordion('vb-borc')" style="display:flex; align-items:center; gap:12px; padding:14px 0; cursor:pointer;">
-                        <div style="width:38px; height:38px; border-radius:11px; background:linear-gradient(135deg,rgba(244,63,94,0.25),rgba(244,63,94,0.08)); display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 2px 8px rgba(244,63,94,0.15);">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--rose);"><path d="M12 2c0 0-5 6.5-5 11a5 5 0 0 0 10 0c0-4.5-5-11-5-11Z"/><path d="M12 13a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"/></svg>
-                        </div>
-                        <span style="flex:1; font-size:13px; font-weight:700; color:var(--rose); text-transform:uppercase; letter-spacing:0.4px; white-space:nowrap; overflow:hidden;">Toplam Borç</span>
-                        <span id="header-toplam-borc" class="tabular-nums" style="font-size:15px; font-weight:800; color:var(--rose); flex-shrink:0;">₺0</span>
-                        <svg id="sub-icon-vb-borc" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted); transition:transform 0.3s ease; flex-shrink:0;"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                    </div>
-                    <div class="sub-accordion-content" id="sub-content-vb-borc">
-                        <div style="padding-bottom: 8px;">
-
-                            <!-- Kart Borçları -->
-                            <div id="borc-grup-kart" style="display:none; margin-bottom: 6px; margin-top: 4px;">
-                                <div style="display:flex; justify-content:space-between; align-items:center; padding: 10px 14px 10px 12px; border-left: 3px solid var(--rose); background:rgba(244,63,94,0.05); border-radius:0 10px 10px 0; margin-bottom:10px;">
-                                    <div style="display:flex; align-items:center; gap:8px;">
-                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--rose);"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-                                        <span style="font-size:12px; font-weight:800; color:#e2e8f0; letter-spacing:0.3px; text-transform:uppercase;">Kart Borçları</span>
-                                    </div>
-                                    <span id="borc-grup-kart-toplam" class="tabular-nums" style="font-size:14px; font-weight:800; color:var(--rose);">₺0</span>
-                                </div>
-                                <div id="borc-grup-kart-liste" style="padding: 0 4px;"></div>
-                            </div>
-
-                            <!-- Banka Kredileri -->
-                            <div id="borc-grup-kredi" style="display:none; margin-bottom: 6px; margin-top: 16px;">
-                                <div style="display:flex; justify-content:space-between; align-items:center; padding: 10px 14px 10px 12px; border-left: 3px solid var(--blue); background:rgba(59,130,246,0.05); border-radius:0 10px 10px 0; margin-bottom:10px;">
-                                    <div style="display:flex; align-items:center; gap:8px;">
-                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--blue);"><line x1="3" y1="22" x2="21" y2="22"/><line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/><line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/><polygon points="12 2 20 7 4 7"/></svg>
-                                        <span style="font-size:12px; font-weight:800; color:#e2e8f0; letter-spacing:0.3px; text-transform:uppercase;">Banka Kredileri</span>
-                                    </div>
-                                    <span id="borc-grup-kredi-toplam" class="tabular-nums" style="font-size:14px; font-weight:800; color:var(--blue);">₺0</span>
-                                </div>
-                                <div id="borc-grup-kredi-liste" style="padding: 0 4px;"></div>
-                            </div>
-
-                            <!-- KMH -->
-                            <div id="borc-grup-kmh" style="display:none; margin-bottom: 6px; margin-top: 16px;">
-                                <div style="display:flex; justify-content:space-between; align-items:center; padding: 10px 14px 10px 12px; border-left: 3px solid var(--amber); background:rgba(245,158,11,0.05); border-radius:0 10px 10px 0; margin-bottom:10px;">
-                                    <div style="display:flex; align-items:center; gap:8px;">
-                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--amber);"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                                        <span style="font-size:12px; font-weight:800; color:#e2e8f0; letter-spacing:0.3px; text-transform:uppercase;">KMH</span>
-                                    </div>
-                                    <span id="borc-grup-kmh-toplam" class="tabular-nums" style="font-size:14px; font-weight:800; color:var(--amber);">₺0</span>
-                                </div>
-                                <div id="borc-grup-kmh-liste" style="padding: 0 4px;"></div>
-                            </div>
-
-                            <!-- Özel Borçlar -->
-                            <div id="borc-grup-ozel" style="display:none; margin-bottom: 4px; margin-top: 16px;">
-                                <div style="display:flex; justify-content:space-between; align-items:center; padding: 10px 14px 10px 12px; border-left: 3px solid var(--rose); background:rgba(148,163,184,0.04); border-radius:0 10px 10px 0; margin-bottom:10px;">
-                                    <div style="display:flex; align-items:center; gap:8px;">
-                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:#94a3b8;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                                        <span style="font-size:12px; font-weight:800; color:#e2e8f0; letter-spacing:0.3px; text-transform:uppercase;">Özel Borçlar</span>
-                                    </div>
-                                    <span id="borc-grup-ozel-toplam" class="tabular-nums" style="font-size:14px; font-weight:800; color:var(--rose);">₺0</span>
-                                </div>
-                                <div id="borc-grup-ozel-liste" style="padding: 0 4px;"></div>
-                            </div>
 
                         </div>
                     </div>
