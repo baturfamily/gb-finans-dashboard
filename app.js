@@ -40,8 +40,22 @@ function heroKartGuncelle(data, donem, gelecekYuk) {
 
     if (el('hero-gap-label')) { el('hero-gap-label').textContent = 'Sonraki Dönem Nakit Durumu'; el('hero-gap-label').style.color = sonucRenk; }
     if (el('hero-gap-date'))  { el('hero-gap-date').textContent  = donem.next; el('hero-gap-date').style.color = 'rgba(255,255,255,0.45)'; }
-    if (el('hero-gap-val'))   { el('hero-gap-val').innerHTML = (durum < 0 ? '-' : '') + formatTL(Math.abs(durum)); el('hero-gap-val').style.color = sonucRenk; }
-
+    if (el('hero-gap-val')) {
+        el('hero-gap-val').style.color = sonucRenk;
+        var prefix = durum < 0 ? '-' : '';
+        var hedef = Math.abs(durum);
+        var baslangic = null;
+        var sure = 900;
+        var adim = function(ts) {
+            if (!baslangic) baslangic = ts;
+            var ilerleme = Math.min((ts - baslangic) / sure, 1);
+            var ease = 1 - Math.pow(1 - ilerleme, 4);
+            el('hero-gap-val').innerHTML = prefix + formatTL(hedef * ease);
+            if (ilerleme < 1) window.requestAnimationFrame(adim);
+            else el('hero-gap-val').innerHTML = prefix + formatTL(hedef);
+        };
+        window.requestAnimationFrame(adim);
+    }
     var baslikEl = document.getElementById('nakit-akisi-baslik');
     var altBaslikEl = document.getElementById('nakit-akisi-alt-baslik');
     if (baslikEl) baslikEl.textContent = donem.cur + ' NAKİT DURUMU';
