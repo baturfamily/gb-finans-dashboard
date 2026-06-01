@@ -59,6 +59,10 @@ function heroKartGuncelle(data, donem, gelecekYuk) {
     var altBaslikEl = document.getElementById('nakit-akisi-alt-baslik');
     if (baslikEl) baslikEl.textContent = donem.cur + ' NAKİT AKIŞI DETAYLARI';
     if (altBaslikEl) altBaslikEl.textContent = '(BU DÖNEM)';
+    var gelecekBaslikEl = document.getElementById('gelecek-yuk-baslik');
+    var gelecekAltBaslikEl = document.getElementById('gelecek-yuk-alt-baslik');
+    if (gelecekBaslikEl) gelecekBaslikEl.textContent = donem.next + ' NAKİT AKIŞI';
+    if (gelecekAltBaslikEl) gelecekAltBaslikEl.textContent = '(GELECEK DÖNEM)';
 }
 
         let expenseChartInstance = null; window.tarihceData = []; window.currentStats = {};
