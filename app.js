@@ -39,7 +39,7 @@ function heroKartGuncelle(data, donem, gelecekYuk) {
     if (el('hero-yuk-val'))   el('hero-yuk-val').innerHTML     = formatTL(gelecekYuk);
 
     if (el('hero-gap-label')) { el('hero-gap-label').textContent = 'Sonraki Dönem Nakit Durumu'; el('hero-gap-label').style.color = sonucRenk; }
-    if (el('hero-gap-date'))  { el('hero-gap-date').textContent  = donem.next; el('hero-gap-date').style.color = sonucRenkSoluk; }
+    if (el('hero-gap-date'))  { el('hero-gap-date').textContent  = donem.next; el('hero-gap-date').style.color = 'rgba(255,255,255,0.45)'; }
     if (el('hero-gap-val'))   { el('hero-gap-val').innerHTML = (durum < 0 ? '-' : '') + formatTL(Math.abs(durum)); el('hero-gap-val').style.color = sonucRenk; }
 
     var baslikEl = document.getElementById('nakit-akisi-baslik');
