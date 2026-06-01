@@ -3339,19 +3339,22 @@ const badge = isOtomatik
                         // Isı Haritası Bar Genişliği (1. Kategori %100, diğerleri ona göre oranlanır)
                         const isiYuzdesi = maxTutar > 0 ? (tutar / maxTutar) * 100 : 0;
                         
+                        const dotRenk = kategoriAdi === 'Diğer' ? '#64748b' : premiumColors[index];
                         top5Html += `
-                        <div class="t-row" style="position: relative; padding: 10px 8px; border-bottom: 1px dashed rgba(255,255,255,0.05); align-items: center; border-radius: 8px; overflow: hidden; margin-bottom: 4px;">
-                            
-                            <div style="position: absolute; top: 0; left: 0; height: 100%; width: ${isiYuzdesi}%; background: linear-gradient(90deg, rgba(244, 63, 94, 0.15) 0%, rgba(244, 63, 94, 0.05) 100%); z-index: 0; border-right: 1px solid rgba(244, 63, 94, 0.3); transition: width 1s ease-out;"></div>
-                            
-                            <div class="t-details" style="flex: 1; z-index: 1; position: relative;">
-                                <div class="t-name" style="font-size: 13px; color: #cbd5e1;">
-                            <span style=\"color: var(--text-muted); margin-right: 4px; font-weight: 400;\">${kategoriAdi === 'Diğer' ? '' : (index + 1) + '.'}</span> ${kategoriAdi}
+                        <div style="display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.055);">
+                            <div style="width:8px; height:8px; border-radius:50%; background:${dotRenk}; flex-shrink:0;"></div>
+                            <div style="flex:1; min-width:0;">
+                                <div style="display:flex; align-items:center; gap:6px; margin-bottom:5px;">
+                                    <span style="font-size:10px; color:rgba(255,255,255,0.25); font-weight:700; flex-shrink:0;">${kategoriAdi === 'Diğer' ? '' : (index + 1) + '.'}</span>
+                                    <span style="font-size:13px; font-weight:600; color:#e2e8f0;">${kategoriAdi}</span>
+                                </div>
+                                <div style="height:4px; background:rgba(255,255,255,0.06); border-radius:2px; overflow:hidden;">
+                                    <div style="height:4px; border-radius:2px; background:${dotRenk}; width:${isiYuzdesi}%; transition:width 1s ease-out;"></div>
                                 </div>
                             </div>
-                            <div class="t-amt" style="text-align: right; z-index: 1; position: relative;">
-                                <div class="text-red" style="font-size: 14px; font-weight: 700;">${formatTL(tutar)}</div>
-                                <div style="font-size: 10px; color: var(--text-muted); font-weight: 600;">%${pay}</div>
+                            <div style="text-align:right; flex-shrink:0;">
+                                <div style="font-size:13px; font-weight:700; color:${dotRenk}; font-variant-numeric:tabular-nums;">${formatTL(tutar)}</div>
+                                <div style="font-size:10px; font-weight:600; color:rgba(255,255,255,0.3); margin-top:2px;">%${pay}</div>
                             </div>
                         </div>`;
                     });
