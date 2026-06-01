@@ -44,13 +44,13 @@ function heroKartGuncelle(data, donem, gelecekYuk) {
 
     var baslikEl = document.getElementById('nakit-akisi-baslik');
     var altBaslikEl = document.getElementById('nakit-akisi-alt-baslik');
-    if (baslikEl) baslikEl.textContent = donem.cur + ' NAKİT AKIŞI DETAYLARI';
+    if (baslikEl) baslikEl.textContent = donem.cur + ' NAKİT DURUMU';
     if (altBaslikEl) altBaslikEl.textContent = '(BU DÖNEM)';
 
     var gelecekBaslikEl = document.getElementById('gelecek-yuk-baslik');
     var gelecekAltBaslikEl = document.getElementById('gelecek-yuk-alt-baslik');
-    if (gelecekBaslikEl) gelecekBaslikEl.textContent = donem.next + ' NAKİT AKIŞI';
-    if (gelecekAltBaslikEl) gelecekAltBaslikEl.textContent = '(GELECEK DÖNEM)';
+    if (gelecekBaslikEl) gelecekBaslikEl.textContent = donem.next + ' NAKİT DURUMU';
+    if (gelecekAltBaslikEl) gelecekAltBaslikEl.textContent = '(SONRAKİ DÖNEM)';
 }
 
         let expenseChartInstance = null; window.tarihceData = []; window.currentStats = {};
