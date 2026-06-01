@@ -140,11 +140,18 @@
 
         <div class="card accordion" id="acc-nakit-akisi">
     <div class="accordion-header" onclick="toggleAccordion(this.parentElement)" style="justify-content: flex-start;">
-        <h3 style="margin-right: auto; flex: 1; text-align: left;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right:4px;"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> Aylık Nakit Akışı Detayları</h3>
+        <h3 style="margin-right: auto; flex: 1; text-align: left; display:flex; flex-direction:column; gap:3px;">
+            <span style="display:flex; align-items:center;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right:4px; flex-shrink:0;"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                <span id="nakit-akisi-baslik">Aylık Nakit Akışı Detayları</span>
+            </span>
+            <span id="nakit-akisi-alt-baslik" style="font-size:10px; color:rgba(255,255,255,0.35); font-weight:600; text-align:center; letter-spacing:0.5px;"></span>
+        </h3>
         <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><polyline points="6 9 12 15 18 9"></polyline></svg>
     </div>
     <div class="accordion-content">
         <div id="nakit-akisi-listesi-container">
+            <div style="font-size:11px; color:rgba(255,255,255,0.35); line-height:1.6; padding: 10px 4px 4px;">Bu ay tüm borç, kredi ve kredi kartı ekstresi ödemelerinden sonra kasanda kalan para. <strong style="color:rgba(255,255,255,0.5); font-weight:700;">Dikkat:</strong> Bu ayki kredi kartı harcamaların bu ayın kalan tutarını değil gelecek ayın kalan tutarını etkiler.</div>
             </div>
 
                 <div style="background: rgba(16, 185, 129, 0.1); padding: 16px 14px; border-radius: 12px; margin-top: 15px; border: 1px dashed rgba(16, 185, 129, 0.3);" id="kutu-net-nakit">
