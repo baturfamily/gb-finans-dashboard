@@ -2500,9 +2500,7 @@ if (data.tarihce && data.tarihce.length > 0) {
         if (data.kartlarDetayli) {
             data.kartlarDetayli.filter(k => parseFloat(k.borc) >= 0.01).sort((a,b) => b.borc - a.borc).forEach(k => {
                 kartGrupToplam += k.borc;
-                const faizSatiri = k.tahminiFaiz > 0 ? ` · <span style="color:var(--amber);">~${formatTL(k.tahminiFaiz)} tahmini faiz</span>` : '';
-const ekstra = k.donemIci > 0 ? `<div style="font-size:10px;color:var(--text-muted);margin-top:2px;">Dönem içi: <span style="color:var(--rose);font-weight:700;">${formatTL(k.donemIci)}</span> · Gelecek: <span style="color:var(--amber);font-weight:700;">${formatTL(k.gelecek)}</span>${faizSatiri}</div>` : '';
-                kartGrupHtml += borcSatirOlustur(k.isim, k.borc, ekstra);
+                kartGrupHtml += borcSatirOlustur(k.isim, k.borc, '');
             });
         }
         const kartGrupEl = document.getElementById('borc-grup-kart');
