@@ -55,6 +55,10 @@ function heroKartGuncelle(data, donem, gelecekYuk) {
     if (el('hero-neg-badge'))   el('hero-neg-badge').style.display = eksiBakiye ? 'block' : 'none';
     if (el('hero-gap-label'))   { el('hero-gap-label').textContent = gapText; el('hero-gap-label').style.color = renk; }
     if (el('hero-gap-val'))     { el('hero-gap-val').innerHTML = formatTL(fark); el('hero-gap-val').style.color = renk; }
+    var baslikEl = document.getElementById('nakit-akisi-baslik');
+    var altBaslikEl = document.getElementById('nakit-akisi-alt-baslik');
+    if (baslikEl) baslikEl.textContent = donem.cur + ' NAKİT AKIŞI DETAYLARI';
+    if (altBaslikEl) altBaslikEl.textContent = '(BU DÖNEM)';
 }
 
         let expenseChartInstance = null; window.tarihceData = []; window.currentStats = {};
