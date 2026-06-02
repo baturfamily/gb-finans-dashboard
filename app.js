@@ -1876,9 +1876,6 @@ function renderButceOzet() {
     const limtiler = window.currentStats.butceLimitleri || {};
     const harcamalar = {};
 
-    // Bu ayın harcamalarını kategori bazlı topla
-    console.log("butceLimitleri:", window.currentStats.butceLimitleri);
-console.log("buAyIslemler:", window.currentStats.buAyIslemler ? window.currentStats.buAyIslemler.length : "YOK");
         if (window.currentStats.buAyIslemler) {
         window.currentStats.buAyIslemler.forEach(i => {
             if (i.tur === 'Gider' && i.kategori && i.kategori !== '-') {
@@ -2211,9 +2208,7 @@ function tutarFormatla(input) {
         // -----------------------------------------------
 
         window.currentStats = data;
-            window._gramKur = Number(data.gramAltinKuru) || 0;
         window._gramKur = data.gramAltinKuru ? Number(data.gramAltinKuru) : 0;
-            console.log("gramAltinKuru:", data.gramAltinKuru, "| _gramKur:", window._gramKur);
         window._usdKur = data.usdRate ? Number(data.usdRate) : 0;
         window._euroKur = data.euroRate ? Number(data.euroRate) : 0;
         window.tarihceData = data.tarihce || [];
@@ -2239,86 +2234,7 @@ renderTarihceMiniGrafik(data.tarihce || []);
             kurEl.innerText = `(Güncel Kur: ₺${guncelKur.toLocaleString('tr-TR', {minimumFractionDigits:2, maximumFractionDigits:2})})`;
         }
 
-        // HERO: Tüketim barı
-        try {
-            const heroTuketimBar = document.getElementById('hero-tuketim-bar');
-            const heroTuketimYuzde = document.getElementById('hero-tuketim-yuzde');
-            const heroGelirVal = document.getElementById('hero-gelir-val');
-            const heroGiderVal = document.getElementById('hero-gider-val');
-            const heroNakitGiderVal = document.getElementById('hero-nakit-gider-val');
-            const heroBorcOdemeVal = document.getElementById('hero-borc-odeme-val');
-            const heroHarcamaYuzde = document.getElementById('hero-harcama-yuzde');
-            const toplamGelir = data.buAyToplamGelir || 0;
-
-            // Tüm giderler (kart dahil) — Harcama Kontrolü bloğu için
-            let heroTumGider = 0;
-            // Nakit gider ve borç ödemeleri — Nakit Akışı bloğu için
-            let heroNakitGider = 0;
-            let heroBorcOdeme = 0;
-            const _kartIsimleriHero = (data.kartlarDetayli || []).map(k => k.isim.toLowerCase().trim());
-
-            if (data.buAyIslemler) {
-                data.buAyIslemler.forEach(islem => {
-                    if (islem.tur === 'Gider') {
-                        heroTumGider += islem.tutar;
-                        const odeme = (islem.odeme || '').toLowerCase().trim();
-                        if (!_kartIsimleriHero.includes(odeme)) heroNakitGider += islem.tutar;
-                    } else if (islem.tur === 'Kart Ödemesi' || islem.tur === 'Borç Ödemesi') {
-                        heroBorcOdeme += islem.tutar;
-                    }
-                });
-            }
-
-            const harcamaYuzde = toplamGelir > 0 ? Math.min(Math.round((heroTumGider / toplamGelir) * 100), 100) : 0;
-            const nakitAkisYuzde = toplamGelir > 0 ? Math.min(Math.round(((heroNakitGider + heroBorcOdeme) / toplamGelir) * 100), 100) : 0;
-            // Büyük bar: nakit akışı yüzdesi (gerçek gelir tüketimi)
-            const tuketimYuzde = nakitAkisYuzde;
-
-            if (heroGelirVal) heroGelirVal.innerHTML = formatTL(toplamGelir);
-            const heroNakitGelirVal = document.getElementById('hero-nakit-gelir-val');
-            if (heroNakitGelirVal) heroNakitGelirVal.innerHTML = formatTL(toplamGelir);
-            if (heroGiderVal) heroGiderVal.innerHTML = formatTL(heroTumGider);
-            if (heroNakitGiderVal) heroNakitGiderVal.innerHTML = formatTL(heroNakitGider);
-            if (heroBorcOdemeVal) heroBorcOdemeVal.innerHTML = formatTL(heroBorcOdeme);
-            if (heroHarcamaYuzde) heroHarcamaYuzde.innerText = '%' + harcamaYuzde;
-            const heroKalanRef = document.getElementById('hero-kalan-ref');
-            if (heroKalanRef) {
-                var netKalan = data.backendNetNakit || 0;
-    heroKalanRef.innerHTML = formatTL(netKalan);
-    heroKalanRef.style.color = netKalan >= 0 ? 'var(--emerald)' : 'var(--rose)';
-}
-
-            setTimeout(() => {
-                // Büyük bar (Gelir Tüketimi) = nakit akışı
-                if (heroTuketimBar && heroTuketimYuzde) {
-                    heroTuketimBar.style.width = tuketimYuzde + '%';
-                    if (tuketimYuzde >= 90) { heroTuketimBar.style.background = 'var(--rose)'; heroTuketimYuzde.style.color = 'var(--rose)'; }
-                    else if (tuketimYuzde >= 75) { heroTuketimBar.style.background = 'var(--amber)'; heroTuketimYuzde.style.color = 'var(--amber)'; }
-                    else { heroTuketimBar.style.background = 'var(--emerald)'; heroTuketimYuzde.style.color = 'var(--emerald)'; }
-                    heroTuketimYuzde.innerText = '%' + tuketimYuzde;
-                }
-                // Blok 1 barı: harcama yüzdesi
-                const harcamaBar = document.getElementById('hero-harcama-bar');
-                if (harcamaBar) {
-                    harcamaBar.style.width = harcamaYuzde + '%';
-                    if (harcamaYuzde >= 90) harcamaBar.style.background = 'var(--rose)';
-                    else if (harcamaYuzde >= 75) harcamaBar.style.background = 'var(--amber)';
-                    else harcamaBar.style.background = 'var(--emerald)';
-                }
-                // Blok 2 barı: nakit akışı yüzdesi
-                const nakitBar = document.getElementById('hero-nakit-bar');
-                const nakitYuzdeEl = document.getElementById('hero-nakit-yuzde');
-                if (nakitBar) {
-                    nakitBar.style.width = nakitAkisYuzde + '%';
-                    if (nakitAkisYuzde >= 90) nakitBar.style.background = 'var(--rose)';
-                    else if (nakitAkisYuzde >= 75) nakitBar.style.background = 'var(--amber)';
-                    else nakitBar.style.background = 'var(--emerald)';
-                }
-                if (nakitYuzdeEl) nakitYuzdeEl.innerText = '%' + nakitAkisYuzde;
-            }, 100);
-        } catch(e) {}
-
-                animateValue('val-kasa', data.toplamKasa, aSure);
+        animateValue('val-kasa', data.toplamKasa, aSure);
 
         // GELECEK AY TAHMİNİ YÜK
         try {
