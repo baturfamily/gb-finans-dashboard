@@ -2100,8 +2100,18 @@ groupDiv.innerHTML = '● ' + opt.text;
         trigger.addEventListener('click', function(e) {
             e.stopPropagation();
             document.querySelectorAll('.custom-select-wrapper').forEach(w => {
-                if (w !== wrapper) w.classList.remove('open');
+                if (w !== wrapper) { w.classList.remove('open'); w.classList.remove('open-up'); }
             });
+            const isOpen = wrapper.classList.contains('open');
+            if (!isOpen) {
+                const rect = trigger.getBoundingClientRect();
+                const spaceBelow = window.innerHeight - rect.bottom;
+                if (spaceBelow < 240) {
+                    wrapper.classList.add('open-up');
+                } else {
+                    wrapper.classList.remove('open-up');
+                }
+            }
             wrapper.classList.toggle('open');
         });
         
