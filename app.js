@@ -2580,7 +2580,7 @@ fHtml += `<div class="list-row"><div class="list-label"><span style="${badgeStyl
 
         data.bankalar.forEach(b => {
             let icon = b.tur === "Nakit" ? '<i class="fas fa-wallet" style="color:var(--emerald); margin-right:8px;"></i>' : '<i class="fas fa-university" style="color:var(--blue); margin-right:8px;"></i>';
-            let tutarRengi = b.bakiye < 0 ? 'text-red' : 'text-green';
+            let tutarRengi = b.bakiye < 0 ? 'text-red' : (Math.abs(b.bakiye) < 0.10 ? 'text-muted' : 'text-green');
             let kmhDurumu = "";
             if(b.bakiye < 0 && b.limit > 0) {
                 let kYuzde = Math.round((Math.abs(b.bakiye) / b.limit) * 100);
